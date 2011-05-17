@@ -1,0 +1,635 @@
+#!/bin/bash
+
+#
+# pacaur: A simple cower and burp wrapper to fetch PKGBUILDS from aur & abs
+#
+
+name="pacaur"
+version="v0.9.0"
+description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
+author="Remy Marquis"
+date="2011/05/20"
+
+#
+# Default config
+#
+
+pacmanBin="pacman"              # pacman binary
+editor=$EDITOR                  # PKBUILD editor
+buildDir=/home/aur/build        # Build directory
+clean=true                      # Cleanup after install
+color=true                      # Enable color
+
+colorW="\e[1;37m"
+colorB="\e[1;34m"
+colorR="\e[1;31m"
+colorG="\e[1;32m"
+colorY="\e[1;33m"
+colorM="\e[1;35m"
+colorC="\e[1;36m"
+
+#
+# Source user config
+#
+
+source /etc/pacaur.conf
+
+#
+# Color
+#
+
+if $color; then
+    pacaur='cower --color=always'
+    bold=$(tput bold)
+    reset=$(tput sgr0)
+else
+    pacaur='cower'
+    bold=''
+    reset=''
+    colorW=''
+    colorB=''
+    colorR=''
+    colorG=''
+    colorY=''
+    colorM=''
+    colorC=''
+fi
+
+#
+# Working global variables
+#
+
+confSourced=false
+installPkg=false
+force=false
+
+#
+# Primary functions
+#
+
+SearchAur() {
+    $pacaur -s $@
+}
+
+InfoAur() {
+    $pacaur -i $@
+}
+
+InfoDetailsAur() {
+    $pacaur -ii $@
+}
+
+DownloadAur() {
+    $pacaur -d $@ -t $buildDir
+}
+
+DownloadDepsAur() {
+    # Download dependencies recursively and return AUR deps only
+    deps=$($pacaur -dd $@ -t $buildDir -f | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    # Exit if curl or package name error
+    if [[ $(echo $deps | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
+        exit
+    fi
+}
+
+CheckAur() {
+    $pacaur -u $@
+}
+
+UpgradeAur() {
+    CheckAur 
+    CheckUpdatesAur=$(${CheckAur})
+    
+    if [[ $CheckUpdatesAur == "" ]]; then
+        success " there is nothing to do"
+        exit   
+    fi
+
+    echo ""
+    notice "Proceed with installation? [Y/n]"
+    
+    while true; do
+        read yn
+        case $yn in
+        [Yy]* | Yes | yes)
+            u=$(CheckAur -q --color=never)
+            break
+        ;;
+        [Nn]* | No | no)
+            exit
+            break
+        ;;
+        *)
+            exit
+            break
+        ;;
+        esac
+    done
+}
+
+CopyAbs() {
+    for i in "$@"
+    do
+        if [ -e $buildDir/$i/PKGBUILD ]; then
+            failed "${colorW}$i${reset} PKBUILD already exists in $buildDir. Use -f to overwrite."
+        else
+            cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
+            success "${colorW}$i${reset} copied in $buildDir"
+        fi
+    done
+}
+
+CopyAbsForced() {
+    for i in "$@"
+    do
+        cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
+        success "${colorW}$i${reset} copied in $buildDir"
+    done
+}
+
+EditPkgs() {
+    for i in "$@"
+    do
+        if [ -e $buildDir/$i/PKGBUILD ]; then
+            $editor $buildDir/$i/PKGBUILD
+            success "${colorW}$i${reset} PKBUILD edited"
+        else
+            error "Could not open ${colorW}$i${reset} PKGBUILD"
+        fi
+    done
+}
+
+CleanUp() {
+    if $clean; then
+        cd $buildDir
+        for i in $@
+        do
+            notice "Cleaning up ${colorW}$i${reset}... "
+            rm -r $i && success "${colorW}$i${reset} cleaned" || failed "Could not clean ${colorW}$i${reset}"
+        done
+    fi
+}
+
+MakePkgs() {
+
+    # Reverse deps order
+    deps=$(echo $deps | awk -F "\n" '{for (i=NF;i>=1;i--) print $i}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}')
+    deps=( $deps );
+    notice "${colorW}$@${reset} AUR dependencies: ${colorW}${deps[@]}${reset}"
+
+    # Set architecture variables
+    if ! $confSourced; then
+        source /etc/makepkg.conf
+        source /etc/abs.conf
+        confSourced=true
+    fi
+
+    local j
+    for j in "${deps[@]}"
+    do
+        if [ -e $buildDir/$j/PKGBUILD ]; then
+            cd $buildDir/$j
+            if $installPkg; then
+                if $force; then
+                    notice "Building ${colorW}$j${reset} package..."
+                    cd $buildDir/$j
+                    makepkg -sfi
+                else
+                    notice "Building ${colorW}$j${reset} package..."
+                    cd $buildDir/$j
+                    makepkg -si
+                fi
+                # if AUR dep, install as --asdeps
+                if [[ $j != $@ ]]; then
+                    sudo $pacmanBin -D --asdeps ${deps[$j]}
+                fi
+            elif $force; then
+                notice "Building ${colorW}$j${reset} package..."
+                cd $buildDir/$j
+                #makepkg -sf
+                makepkg -df
+            else
+                notice "Building ${colorW}$j${reset} package..."
+                cd $buildDir/$j
+                #makepkg -s
+                makepkg -d
+            fi
+        else
+            error "Could not open ${colorW}$j${reset} PKGBUILD"
+        fi
+    done
+}
+
+#
+# Utility functions
+#
+
+error() {
+    echo -e "${colorR}::${reset} $1"
+    exit
+}
+
+success() {
+    echo -e "${colorG}::${reset} $1"
+}
+
+failed() {
+    echo -e "${colorY}::${reset} $1"
+}
+
+notice() {
+    echo -e "${colorB}::${reset} $1"
+}
+
+usage() {
+    echo -e "usage:  pacaur <operation> [options] [package(s)]"
+    echo -e "operations:"
+    echo -e "   -s, --search    search AUR repository for matching strings"
+    echo -e "   -i, --info      view package information -- pass twice for details"
+    echo -e "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
+    echo -e "   -m, --makepkg   download and make target(s)"
+    echo -e "   -y, --sync      download, make and install target(s)"
+    echo -e "   -q, --check     check for AUR update(s)"
+    echo -e "   -u, --update    update AUR package(s)"
+    echo -e "   -abs, --abs     copy target(s) from ABS directory to build directory"
+    echo -e ""
+    echo -e "options:"
+    echo -e "   -f, --force     force operation -- can be combined with the -d, -m flags"
+    echo -e "   -e, --edit      edit target PKBUILD -- can be combined with the -d, -m, -y, -u, -a flags"
+    echo -e ""
+    echo -e "pacman options:"
+    echo -e "   -a, --aur       only search or install packages from AUR, eg."
+    echo -e "                   ${name} -Ssa, -Sia, -Swa, -Sua, -Syua, -Qua"
+    echo -e ""
+    echo -e "general options:"
+    echo -e "   -v, --version   Display version information"
+}
+
+version() {
+    echo -e ""
+    echo -e "${colorY}    .--.         ${colorR} .---.        ${colorW}$name ${colorG}$version${reset}"
+    echo -e "${colorY}   '-._ \ ${colorW}.-.  .-${colorR}|O O  | ${colorB}~~    ${reset}$description"
+    echo -e "${colorY}   .-'  / ${colorW}'-'  '-${colorR}|~~~  | ${colorM} ~~~  ${reset}-${colorW}$author ${colorG}$date"
+    echo -e "${colorY}    '--'         ${colorR}|.-.-.| ${colorG}~~    ${reset}"
+}
+
+
+#
+# Main
+#
+
+main() {
+    case $1 in
+    # search
+    -s | --search)
+        shift
+        SearchAur $@
+    ;;
+    # info
+    -i | --info)
+        case $2 in
+        -i | --info)
+            shift 2
+            InfoDetailsAur $@
+        ;;
+        *)
+            shift
+            InfoAur $@
+        ;;
+        esac
+    ;;
+    # download
+    -d | --download)
+        case $2 in
+        -d | --download)
+            case $3 in
+            -f | --force)
+                case $4 in
+                -e | --edit)
+                    shift 4
+                    DownloadDepsAur $@ -f
+                    EditPkgs $deps
+                ;;
+                *)
+                    shift 3
+                    DownloadDepsAur $@ -f
+                ;;
+                esac
+            ;;
+            -e | --edit)
+                shift 3
+                DownloadDepsAur $@
+                EditPkgs $deps
+            ;;
+            *)
+                shift 2
+                DownloadDepsAur $@
+            ;;
+            esac
+        ;;
+        -f | --force)
+            case $3 in
+            -e | --edit)
+                shift 3
+                DownloadAur $@ -f
+                EditPkgs $deps
+            ;;
+            *)
+                shift 2
+                DownloadAur $@ -f
+            ;;
+            esac
+        ;;
+        -e | --edit)
+            shift 2
+            DownloadAur $@
+            EditPkgs $deps
+        ;;
+        *)  shift
+            DownloadAur $@
+        ;;
+        esac
+    ;;
+    # makepkg
+    -m | --makepkg)
+        case $2 in
+        -f | --force)
+            force=true
+            case $3 in
+            -e | --edit)
+                shift 2
+                DownloadDepsAur $@ -f
+                EditPkgs $deps
+                MakePkgs $@
+                CleanUp ${deps[@]}
+            ;;
+            *)
+                shift 2
+                DownloadDepsAur $@ -f
+                MakePkgs $@
+                CleanUp ${deps[@]}
+            ;;
+            esac
+        ;;
+        -e | --edit)
+            case $3 in
+            -f | --force)
+                force=true
+                shift 2
+                DownloadDepsAur $@ -f
+                EditPkgs $deps
+                MakePkgs $@
+                CleanUp ${deps[@]}
+            ;;
+            *)
+                shift 2
+                DownloadDepsAur $@ -f
+                EditPkgs $deps
+                MakePkgs $@
+                CleanUp ${deps[@]}
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            DownloadDepsAur $@ -f
+            MakePkgs $@
+            CleanUp ${deps[@]}
+        ;;
+        esac
+    ;;
+    # install
+    -y | --sync)
+    case $2 in
+        -e | --edit)
+            shift 2
+            DownloadDepsAur $@ -f
+            EditPkgs $deps
+            force=true
+            installPkg=true
+            MakePkgs $@
+            notice "Installing AUR package"
+            CleanUp ${deps[@]}
+        ;;
+        *)
+            shift
+            DownloadDepsAur $@ -f
+            force=true
+            installPkg=true
+            MakePkgs $@
+            notice "Installing AUR package"
+            CleanUp ${deps[@]}
+        ;;
+        esac
+    ;;
+    # check update
+    -q | --check)
+        notice "Checking AUR for package updates..."
+        shift
+        CheckAur $@
+    ;;
+    # update
+    -u | --update)
+        notice "Upgrading AUR packages..."
+        case $2 in
+        -e | --edit)
+            shift 2
+            UpgradeAur
+            DownloadDepsAur $u -f
+            EditPkgs $u
+            force=true
+            installPkg=true
+            MakePkgs $u 
+            CleanUp $u
+        ;;
+        *)
+            shift
+            UpgradeAur
+            DownloadDepsAur $u -f
+            force=true
+            installPkg=true
+            MakePkgs $u 
+            CleanUp $u
+        ;;
+        esac
+    ;;
+    # edit
+    -e | --edit)
+        shift
+        EditPkg $@
+    ;;
+    # abs
+    -abs | --abs)
+        case $2 in
+        -e | --edit)
+            case $3 in
+            -f | --force)
+                shift 3 
+                CopyAbsForced $@
+                EditPkgs $@
+            ;;
+            *)
+                shift 2
+                CopyAbs $@
+                EditPkgs $@
+            ;;
+            esac
+        ;;
+        -f | --force)
+            case $3 in
+            -e | --edit)
+                shift 3 
+                CopyAbsForced $@
+                EditPkgs $@
+            ;;
+            *)
+                shift 2
+                CopyAbsForced $@
+            ;;
+            esac
+        ;;
+        *)  shift
+            CopyAbs $@
+        ;;
+        esac
+    ;;
+    # version
+    -v | --version)
+        shift
+        version
+    ;;
+    # shortcuts
+    -ii)
+        shift
+        pacaur -i -i $@
+    ;;
+    -ae)
+        shift
+        pacaur -a -e $@
+    ;;
+    -af)
+        shift
+        pacaur -a -f $@
+    ;;
+    -afe | -aef)
+        shift
+        pacaur -a -f -e $@
+    ;;
+    -df)
+        shift
+        pacaur -d -f $@
+    ;;
+    -dfe)
+        shift
+        pacaur -d -f -e $@
+    ;;
+    -dd)
+        shift
+        pacaur -d -d $@
+    ;;
+    -ddf)
+        shift
+        pacaur -d -d -f $@
+    ;;
+    -dde)
+        shift
+        pacaur -d -d -e $@
+    ;;
+    -ddfe | -ddef)
+        shift
+        pacaur -d -d -f -e $@
+    ;;
+    -me)
+        shift
+        pacaur -m -e $@
+    ;;
+    -mf)
+        shift
+        pacaur -m -f $@
+    ;;
+    -mef | -mfe)
+        shift
+        pacaur -m -e -f $@
+    ;;
+    -ue)
+        shift
+        pacaur -u -e $@
+    ;;
+    -ye)
+        shift
+        pacaur -y -e $@
+    ;;
+    # pacman extension
+    -Ssa)
+        shift
+        pacaur -s $@
+    ;;
+    -Sia)
+        shift
+        pacaur -i $@
+    ;;
+    -Siia)
+        shift
+        pacaur -i -i $@
+    ;;
+    -Swa)
+        shift
+        pacaur -m -f $@
+    ;;
+    -Sua)
+        shift
+        pacaur -u $@
+    ;;
+    -Syua)
+        shift
+        pacaur -u $@
+    ;;
+    -Sa)
+        shift
+        pacaur -y $@
+    ;;
+    -Qua)
+        shift
+        pacaur -q $@
+    ;;
+    -D* | --database)
+        sudo $pacmanBin $@
+    ;;
+    -Q* | --query)
+        $pacmanBin $@
+    ;;
+    -R* | --remove)
+        sudo $pacmanBin $@
+    ;;
+    -S* | --sync)
+        sudo $pacmanBin $@
+    ;;
+    -T* | --deptest)
+        sudo $pacmanBin $@
+    ;;
+    -U* | --upgrade)
+        sudo $pacmanBin $@
+    ;;
+    -V | --Version)
+        $pacmanBin $@
+    ;;
+    -h | --help)
+        $pacmanBin $@
+    ;;
+    --*)
+        sudo $pacmanBin $@
+    ;;
+    *)
+        usage
+    ;;
+    esac
+}
+
+if [[ ! -d $buildDir ]]; then
+  error "Build directory does not exist!\nCheck configuration file /etc/${name}.conf"
+fi
+
+main "$@"
+
+# vim:set ts=2 sw=2 et:
