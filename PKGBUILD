@@ -1,7 +1,7 @@
 pkgname=pacaur
 _pkgname=pacaur
 pkgver=0.9.1
-pkgrel=2
+pkgrel=3
 pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 arch=('any')
 url="https://github.com/Spyhawk/pacaur"
@@ -25,6 +25,6 @@ build() {
     git clone $_gitroot && cd $_gitname
   fi
 
-  install -D -m644 ./config/$_pkgname.conf $pkgdir/etc/$_pkgname.conf || return 1
+  install -D -m644 ./$_pkgname.conf $pkgdir/etc/$_pkgname.conf || return 1
   install -D -m755 ./$_pkgname $pkgdir/usr/bin/$_pkgname || return 1
 }
