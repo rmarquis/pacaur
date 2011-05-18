@@ -5,7 +5,7 @@
 #
 
 name="pacaur"
-version="v0.9.1"
+version="v0.9.2"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 author="Remy Marquis"
 date="2011/05/18"
@@ -104,11 +104,17 @@ UpgradeAur() {
     CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     
     if [[ $CheckUpdatesAur == "" ]]; then
-        success " there is nothing to do"
+        #success " there is nothing to do"
+        echo -e " there is nothing to do"
         exit   
     fi
 
-    echo ""
+    # Exit if curl or package name error
+    if [[ $(echo $CheckUpdatesAur | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
+        exit
+    fi
+
+    echo -e ""
     notice "Proceed with installation? [Y/n]"
     
     while true; do
@@ -179,7 +185,7 @@ MakePkgs() {
     # Reverse deps order
     deps=$(echo $deps | awk -F "\n" '{for (i=NF;i>=1;i--) print $i}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}')
     deps=( $deps );
-    notice "AUR packages to build: ${colorW}${deps[@]}${reset}"
+    notice "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
 
     # Set architecture variables
     if ! $confSourced; then
@@ -264,7 +270,7 @@ usage() {
     echo -e ""
     echo -e "pacman options:"
     echo -e "   -a, --aur       only search or install packages from AUR, eg."
-    echo -e "                   ${name} -Ssa, -Sia, -Swa, -Sua, -Syua, -Qua"
+    echo -e "                   ${name} -Ssa, -Sia, -Swa, -Sua, -Qua"
     echo -e ""
     echo -e "general options:"
     echo -e "   -v, --version   display version information"
@@ -415,7 +421,6 @@ main() {
             force=true
             installPkg=true
             MakePkgs $@
-            notice "Installing AUR package"
             CleanUp ${deps[@]}
         ;;
         *)
@@ -424,20 +429,19 @@ main() {
             force=true
             installPkg=true
             MakePkgs $@
-            notice "Installing AUR package"
             CleanUp ${deps[@]}
         ;;
         esac
     ;;
     # check update
     -q | --check)
-        notice "Checking AUR for package updates..."
+        notice "${colorW}Checking AUR for package updates...${reset}"
         shift
         CheckAur $@
     ;;
     # update
     -u | --update)
-        notice "Upgrading AUR packages..."
+        notice "${colorW}Upgrading AUR package(s)...${reset}"
         case $2 in
         -e | --edit)
             shift 2
@@ -640,7 +644,7 @@ main() {
                 case $4 in
                 -a | --aur)
                     shift 4
-                    sudo $pacmanBin -Sy # no fallback here
+                    sudo $pacmanBin -Syu # fallback here
                     pacaur -u -e $@
                 ;;
                 *)
@@ -801,6 +805,10 @@ main() {
     -Sua)
         shift
         pacaur -S -u -a $@
+    ;;
+    -Sya)
+        shift
+        pacaur -S -y -a $@
     ;;
     -Syua)
         shift
