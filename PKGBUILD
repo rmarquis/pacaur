@@ -1,15 +1,15 @@
 pkgname=pacaur
 _pkgname=pacaur
 pkgver=0.9.0
-pkgrel=1
+pkgrel=2
 pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs."
 arch=('any')
 url="https://github.com/Spyhawk/pacaur"
-license=('MIT')
+license=('GPL')
 depends=('cower')
 optdepends=('pacman-color: matches output if color is used')
 makedepends=('git')
-backup=('etc/pbfetch.conf')
+backup=('etc/pacaur.conf')
 
 _gitroot="git://github.com/Spyhawk/pacaur.git"
 _gitname="pacaur"
