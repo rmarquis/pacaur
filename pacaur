@@ -267,7 +267,9 @@ usage() {
     echo -e "                   ${name} -Ssa, -Sia, -Swa, -Sua, -Syua, -Qua"
     echo -e ""
     echo -e "general options:"
-    echo -e "   -v, --version   Display version information"
+    echo -e "   -v, --version   display version information"
+    echo -e "   -h, --help      display help information"
+    echo -e ""
 }
 
 version() {
@@ -865,6 +867,7 @@ main() {
         $pacmanBin $@
     ;;
     -h | --help)
+        usage
         $pacmanBin $@
     ;;
     --*)
