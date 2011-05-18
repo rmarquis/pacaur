@@ -461,7 +461,7 @@ main() {
     # edit
     -e | --edit)
         shift
-        EditPkg $@
+        EditPkgs $@
     ;;
     # abs
     -abs | --abs)
