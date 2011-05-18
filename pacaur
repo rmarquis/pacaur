@@ -5,10 +5,14 @@
 #
 
 name="pacaur"
-version="v0.9.0"
+version="v0.9.1"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 author="Remy Marquis"
-date="2011/05/20"
+date="2011/05/18"
+
+# TODO
+# - pacman fallback
+# - check upgrade and --asdeps status
 
 #
 # Default config
@@ -561,6 +565,221 @@ main() {
         pacaur -y -e $@
     ;;
     # pacman extension
+    -S | --sync)
+        case $2 in
+        -s | --search)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -s $@
+            ;;
+            *)
+                shift 2
+                $pacmanBin -Ss $@
+            ;;
+            esac
+        ;;
+        -i | --info)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -i $@
+            ;;
+            -i | --info)
+                case $4 in
+                -a | --aur)
+                    shift 4
+                    pacaur -i -i $@
+                ;;
+                *)
+                    shift 3
+                    $pacmanBin -Sii $@
+                ;;
+                esac
+            ;;
+            *)
+                shift 2
+                $pacmanBin -Si $@
+            ;;
+            esac
+        ;;
+        -w | --downloadonly)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -m -f $@
+            ;;
+            *)
+                shift 2
+                sudo $pacmanBin -Sw $@
+            ;;
+            esac
+        ;;
+        -u | --upgrades)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -u $@
+            ;;
+            *)
+                shift 2
+                $pacmanBin -Su $@
+            ;;
+            esac
+        ;;
+        -y | --refresh)
+            case $3 in
+            -a | --aur)
+                shift 3
+                sudo $pacmanBin -Sy # no fallback here 
+                pacaur -y $@
+            ;;
+            -u | --sysupgrade)
+                case $4 in
+                -a | --aur)
+                    shift 4
+                    sudo $pacmanBin -Sy # no fallback here
+                    pacaur -u $@
+                ;;
+                *)
+                    shift 3
+                    sudo $pacmanBin -Syu $@
+                ;;
+                esac
+            ;;
+            *)
+                shift 2
+                sudo $pacmanBin -Sy $@
+            esac
+        ;;
+        -a | --aur)
+            shift 2
+            pacaur -y $@
+        ;;
+        *)
+            shift
+            sudo $pacmanBin -S $@
+        esac
+    ;;
+    -Ss)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -s -a $@
+        ;;
+        *)
+            shift
+            $pacmanBin -Ss $@
+        ;;
+        esac
+    ;;
+    -Si)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -i -a $@
+        ;;
+        -i | --info)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -S -i -i -a $@
+            ;;
+            *)
+                shift 2
+                $pacmanBin -Sii $@
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            $pacmanBin -Si $@
+        ;;
+        esac
+    ;;
+    -Sii)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -i -i -a $@
+        ;;
+        *)
+            shift
+            $pacmanBin -Sii $@
+        ;;
+        esac
+    ;;
+    -Sw)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -w -a $@
+        ;;
+        *)
+            shift
+            sudo $pacmanBin -Sw $@
+        ;;
+        esac
+    ;;
+    -Su)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -u -a $@
+        ;;
+        *)
+            shift
+            sudo $pacmanBin -Su $@
+        ;;
+        esac
+    ;;
+    -Sy)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -y -a $@
+        ;;
+        -u | --sysupgrade)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -S -y -u -a $@
+            ;;
+            *)
+                shift 2
+                sudo $pacmanBin -S -y -u $@
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            sudo $pacmanBin -S -y $@
+        esac
+    ;;
+    -Syu)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -y -u -a $@
+        ;;
+        *)
+            shift
+            sudo $pacmanBin -Syu $@
+        ;;
+        esac
+    ;;
+    -S)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -S -a $@
+        ;;
+        *)
+            shift
+            sudo $pacmanBin -S $@
+        ;;
+        esac
+    ;;
     -Ssa)
         shift
         pacaur -s $@
@@ -583,11 +802,42 @@ main() {
     ;;
     -Syua)
         shift
-        pacaur -u $@
+        pacaur -Sy -u -a $@
     ;;
     -Sa)
         shift
         pacaur -y $@
+    ;;
+    -Q)
+        case $2 in
+        -u | --upgrades)
+            case $3 in
+            -a | --aur)
+                shift 3
+                pacaur -q $@
+            ;;
+            *)
+                shift 2
+                $pacmanBin -Qu $@
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            $pacmanBin -Q $@
+        esac
+    ;;
+    -Qu)
+        case $2 in
+        -a | --aur)
+            shift 2
+            pacaur -q $@
+        ;;
+        *)
+            shift
+            $pacmanBin -Qu $@
+        ;;
+        esac
     ;;
     -Qua)
         shift
