@@ -12,7 +12,6 @@ date="2011/05/18"
 
 # TODO
 # - pacman fallback
-# - check upgrade and --asdeps status
 
 #
 # Default config
@@ -102,8 +101,7 @@ CheckAur() {
 }
 
 UpgradeAur() {
-    CheckAur 
-    CheckUpdatesAur=$(${CheckAur})
+    CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     
     if [[ $CheckUpdatesAur == "" ]]; then
         success " there is nothing to do"
@@ -117,7 +115,8 @@ UpgradeAur() {
         read yn
         case $yn in
         [Yy]* | Yes | yes)
-            u=$(CheckAur -q --color=never)
+            u=${CheckUpdatesAur}
+            upgrade=true
             break
         ;;
         [Nn]* | No | no)
@@ -180,7 +179,7 @@ MakePkgs() {
     # Reverse deps order
     deps=$(echo $deps | awk -F "\n" '{for (i=NF;i>=1;i--) print $i}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}')
     deps=( $deps );
-    notice "${colorW}$@${reset} AUR dependencies: ${colorW}${deps[@]}${reset}"
+    notice "AUR packages to build: ${colorW}${deps[@]}${reset}"
 
     # Set architecture variables
     if ! $confSourced; then
@@ -205,7 +204,8 @@ MakePkgs() {
                     makepkg -si
                 fi
                 # if AUR dep, install as --asdeps
-                if [[ $j != $@ ]]; then
+                # if upgrade, do no change dep status
+                if [[ $j != $@  && ! $upgrade ]]; then
                     sudo $pacmanBin -D --asdeps ${deps[$j]}
                 fi
             elif $force; then
@@ -607,7 +607,7 @@ main() {
             case $3 in
             -a | --aur)
                 shift 3
-                pacaur -m -f $@
+                pacaur -m -e -f $@
             ;;
             *)
                 shift 2
@@ -619,7 +619,7 @@ main() {
             case $3 in
             -a | --aur)
                 shift 3
-                pacaur -u $@
+                pacaur -u -e $@
             ;;
             *)
                 shift 2
@@ -632,14 +632,14 @@ main() {
             -a | --aur)
                 shift 3
                 sudo $pacmanBin -Sy # no fallback here 
-                pacaur -y $@
+                pacaur -y -e $@
             ;;
             -u | --sysupgrade)
                 case $4 in
                 -a | --aur)
                     shift 4
                     sudo $pacmanBin -Sy # no fallback here
-                    pacaur -u $@
+                    pacaur -u -e $@
                 ;;
                 *)
                     shift 3
@@ -654,7 +654,7 @@ main() {
         ;;
         -a | --aur)
             shift 2
-            pacaur -y $@
+            pacaur -y -e $@
         ;;
         *)
             shift
@@ -782,31 +782,31 @@ main() {
     ;;
     -Ssa)
         shift
-        pacaur -s $@
+        pacaur -S -s -a $@
     ;;
     -Sia)
         shift
-        pacaur -i $@
+        pacaur -S -i -a $@
     ;;
     -Siia)
         shift
-        pacaur -i -i $@
+        pacaur -S -i -i -a $@
     ;;
     -Swa)
         shift
-        pacaur -m -f $@
+        pacaur -S -w -a $@
     ;;
     -Sua)
         shift
-        pacaur -u $@
+        pacaur -S -u -a $@
     ;;
     -Syua)
         shift
-        pacaur -Sy -u -a $@
+        pacaur -S -y -u -a $@
     ;;
     -Sa)
         shift
-        pacaur -y $@
+        pacaur -S -a $@
     ;;
     -Q)
         case $2 in
@@ -831,7 +831,7 @@ main() {
         case $2 in
         -a | --aur)
             shift 2
-            pacaur -q $@
+            pacaur -Q -u -a $@
         ;;
         *)
             shift
@@ -841,7 +841,7 @@ main() {
     ;;
     -Qua)
         shift
-        pacaur -q $@
+        pacaur -Q -u -a $@
     ;;
     -D* | --database)
         sudo $pacmanBin $@
