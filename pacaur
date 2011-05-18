@@ -503,6 +503,11 @@ main() {
         shift
         version
     ;;
+    # help
+    -h | --help)
+        shift
+        usage
+    ;;
     # shortcuts
     -ii)
         shift
