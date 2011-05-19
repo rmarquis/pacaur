@@ -23,13 +23,13 @@ buildDir=/home/aur/build        # Build directory
 clean=true                      # Cleanup after install
 color=true                      # Enable color
 
-colorW="\e[1;37m"
-colorB="\e[1;34m"
 colorR="\e[1;31m"
 colorG="\e[1;32m"
 colorY="\e[1;33m"
+colorB="\e[1;34m"
 colorM="\e[1;35m"
 colorC="\e[1;36m"
+colorW="\e[1;37m"
 
 #
 # Source user config
@@ -49,13 +49,13 @@ else
     pacaur='cower'
     bold=''
     reset=''
-    colorW=''
-    colorB=''
     colorR=''
     colorG=''
     colorY=''
+    colorB=''
     colorM=''
     colorC=''
+    colorW=''
 fi
 
 #
@@ -97,10 +97,12 @@ DownloadDepsAur() {
 }
 
 CheckAur() {
+    notice "${colorW}Checking AUR for package updates...${reset}"
     $pacaur -u $@
 }
 
 UpgradeAur() {
+    notice "${colorW}Starting AUR upgrade...${reset}"
     CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     
     if [[ $CheckUpdatesAur == "" ]]; then
@@ -198,30 +200,23 @@ MakePkgs() {
     for j in "${deps[@]}"
     do
         if [ -e $buildDir/$j/PKGBUILD ]; then
+            notice "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
             if $installPkg; then
                 if $force; then
-                    notice "Building ${colorW}$j${reset} package..."
-                    cd $buildDir/$j
                     makepkg -sfi
                 else
-                    notice "Building ${colorW}$j${reset} package..."
-                    cd $buildDir/$j
                     makepkg -si
                 fi
                 # if AUR dep, install as --asdeps
-                # if upgrade, do no change dep status
+                # if upgrade, do no change status
                 if [[ $j != $@  && ! $upgrade ]]; then
                     sudo $pacmanBin -D --asdeps ${deps[$j]}
                 fi
             elif $force; then
-                notice "Building ${colorW}$j${reset} package..."
-                cd $buildDir/$j
                 #makepkg -sf
                 makepkg -df
             else
-                notice "Building ${colorW}$j${reset} package..."
-                cd $buildDir/$j
                 #makepkg -s
                 makepkg -d
             fi
@@ -279,11 +274,9 @@ usage() {
 }
 
 version() {
-    echo -e ""
-    echo -e "${colorY}    .--.         ${colorR} .---.        ${colorW}$name ${colorG}$version${reset}"
-    echo -e "${colorY}   '-._ \ ${colorW}.-.  .-${colorR}|O O  | ${colorB}~~    ${reset}$description"
-    echo -e "${colorY}   .-'  / ${colorW}'-'  '-${colorR}|~~~  | ${colorM} ~~~  ${reset}-${colorW}$author ${colorG}$date"
-    echo -e "${colorY}    '--'         ${colorR}|.-.-.| ${colorG}~~    ${reset}"
+    echo -e "\n    ${colorW}$name ${colorG}$version${reset}"
+    echo -e "    $description"
+    echo -e "    -${colorW}$author ${colorG}($date)\n"
 }
 
 
@@ -435,13 +428,11 @@ main() {
     ;;
     # check update
     -q | --check)
-        notice "${colorW}Checking AUR for package updates...${reset}"
         shift
         CheckAur $@
     ;;
     # update
     -u | --update)
-        notice "${colorW}Upgrading AUR package(s)...${reset}"
         case $2 in
         -e | --edit)
             shift 2
@@ -888,7 +879,7 @@ main() {
 }
 
 if [[ ! -d $buildDir ]]; then
-  error "Build directory does not exist!\nCheck configuration file /etc/${name}.conf"
+  error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
 fi
 
 main "$@"
