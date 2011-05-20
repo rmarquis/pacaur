@@ -338,7 +338,7 @@ main() {
             -e | --edit)
                 shift 3
                 DownloadAur $@ -f
-                EditPkgs $deps
+                EditPkgs $@
             ;;
             *)
                 shift 2
@@ -349,7 +349,7 @@ main() {
         -e | --edit)
             shift 2
             DownloadAur $@
-            EditPkgs $deps
+            EditPkgs $@
         ;;
         *)  shift
             DownloadAur $@
