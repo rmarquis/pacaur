@@ -88,7 +88,7 @@ DownloadAur() {
 
 DownloadDepsAur() {
     # Download dependencies recursively and return AUR deps only
-    deps=$($pacaur -dd $@ -t $buildDir -f | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    deps=$($pacaur -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # Exit if curl or package name error
     if [[ $(echo $deps | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
