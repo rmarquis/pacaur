@@ -356,6 +356,49 @@ main() {
         ;;
         esac
     ;;
+    # build
+    -b | --build)
+        case $2 in
+        -f | --force)
+            force=true
+            case $3 in
+            -e | --edit)
+                shift 2
+                FindDepsAur $@
+                EditPkgs $deps
+                MakePkgs $@
+            ;;
+            *)
+                shift 2
+                FindDepsAur $@
+                MakePkgs $@
+            ;;
+            esac
+        ;;
+        -e | --edit)
+            case $3 in
+            -f | --force)
+                force=true
+                shift 2
+                FindDepsAur $@
+                EditPkgs $deps
+                MakePkgs $@
+            ;;
+            *)
+                shift 2
+                FindDepsAur $@
+                EditPkgs $deps
+                MakePkgs $@
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            FindDepsAur $@
+            MakePkgs $@
+        ;;
+        esac
+    ;;
     # makepkg
     -m | --makepkg)
         case $2 in
