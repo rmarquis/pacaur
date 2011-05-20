@@ -460,6 +460,12 @@ main() {
         shift
         EditPkgs $@
     ;;
+    # clean
+    -c | --clean)
+        shift
+        clean=true
+        CleanUp $@
+    ;;
     # abs
     -abs | --abs)
         case $2 in
