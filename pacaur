@@ -5,10 +5,10 @@
 #
 
 name="pacaur"
-version="v0.9.2"
+version="v0.9.3"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 author="Remy Marquis"
-date="2011/05/18"
+date="2011/05/20"
 
 # TODO
 # - pacman fallback
