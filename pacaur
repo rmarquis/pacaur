@@ -10,9 +10,6 @@ description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 author="Remy Marquis"
 date="2011/05/21"
 
-# TODO
-# - pacman fallback
-
 #
 # Default config
 #
@@ -21,6 +18,7 @@ pacmanBin="pacman"              # pacman binary
 editor=$EDITOR                  # PKBUILD editor
 buildDir=/home/aur/build        # Build directory
 clean=true                      # Cleanup after install
+fallback=true                   # pacman fallback
 color=true                      # Enable color
 
 colorR="\e[1;31m"
@@ -678,6 +676,9 @@ main() {
             *)
                 shift 2
                 $pacmanBin -Ss $@
+                if $fallback; then
+                    pacaur -s $@
+                fi
             ;;
             esac
         ;;
@@ -696,12 +697,18 @@ main() {
                 *)
                     shift 3
                     $pacmanBin -Sii $@
+                    if $fallback; then
+                        pacaur -S -i -i -a $@
+                    fi
                 ;;
                 esac
             ;;
             *)
                 shift 2
                 $pacmanBin -Si $@
+                if $fallback; then
+                    pacaur -S -i -a $@
+                fi
             ;;
             esac
         ;;
@@ -714,6 +721,9 @@ main() {
             *)
                 shift 2
                 sudo $pacmanBin -Sw $@
+                if $fallback; then
+                    pacaur -S -w -a $@
+                fi
             ;;
             esac
         ;;
@@ -726,6 +736,9 @@ main() {
             *)
                 shift 2
                 $pacmanBin -Su $@
+                if $fallback; then
+                    pacaur -S -u -a $@
+                fi
             ;;
             esac
         ;;
@@ -746,12 +759,18 @@ main() {
                 *)
                     shift 3
                     sudo $pacmanBin -Syu $@
+                    if $fallback; then
+                        pacaur -S -u -a $@
+                    fi
                 ;;
                 esac
             ;;
             *)
                 shift 2
                 sudo $pacmanBin -Sy $@
+                if $fallback; then
+                    pacaur -S -a $@
+                fi
             esac
         ;;
         -a | --aur)
@@ -761,6 +780,9 @@ main() {
         *)
             shift
             sudo $pacmanBin -S $@
+            if $fallback; then
+                pacaur -S -a $@
+            fi
         esac
     ;;
     -Ss)
@@ -925,6 +947,9 @@ main() {
             *)
                 shift 2
                 $pacmanBin -Qu $@
+                if $fallback;then
+                    pacaur -q $@
+                fi
             ;;
             esac
         ;;
