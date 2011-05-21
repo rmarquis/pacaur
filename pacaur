@@ -793,7 +793,7 @@ main() {
         ;;
         *)
             shift
-            $pacmanBin -Ss $@
+            pacaur -S -s $@
         ;;
         esac
     ;;
@@ -811,13 +811,13 @@ main() {
             ;;
             *)
                 shift 2
-                $pacmanBin -Sii $@
+                pacaur -S -i -i $@
             ;;
             esac
         ;;
         *)
             shift
-            $pacmanBin -Si $@
+            pacaur -S -i $@
         ;;
         esac
     ;;
@@ -829,7 +829,7 @@ main() {
         ;;
         *)
             shift
-            $pacmanBin -Sii $@
+            pacaur -S -i -i $@
         ;;
         esac
     ;;
@@ -841,7 +841,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -Sw $@
+            pacaur -S -w $@
         ;;
         esac
     ;;
@@ -853,7 +853,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -Su $@
+            pacaur -S -u $@
         ;;
         esac
     ;;
@@ -871,13 +871,13 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -S -y -u $@
+                pacaur -S -y -u $@
             ;;
             esac
         ;;
         *)
             shift
-            sudo $pacmanBin -S -y $@
+            pacaur -S -y $@
         esac
     ;;
     -Syu)
@@ -888,7 +888,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -Syu $@
+            pacaur -S -y -u $@
         ;;
         esac
     ;;
@@ -900,7 +900,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -S $@
+            pacaur -S $@
         ;;
         esac
     ;;
@@ -966,7 +966,7 @@ main() {
         ;;
         *)
             shift
-            $pacmanBin -Qu $@
+            pacaur -Q -u $@
         ;;
         esac
     ;;
