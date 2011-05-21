@@ -296,6 +296,7 @@ usage() {
     echo -e "   -y, --sync      download, make and install target(s)"
     echo -e "   -q, --check     check for AUR update(s)"
     echo -e "   -u, --update    update AUR package(s)"
+    echo -e "   -c, --clean     clean target(s) existing PKGBUILD"
     echo -e "   -abs, --abs     copy target(s) from ABS directory to build directory"
     echo -e ""
     echo -e "options:"
