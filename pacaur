@@ -291,6 +291,7 @@ usage() {
     echo -e "   -s, --search    search AUR repository for matching strings"
     echo -e "   -i, --info      view package information -- pass twice for details"
     echo -e "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
+    echo -e "   -b, --build     use existing PKGBUILD and make target(s)"
     echo -e "   -m, --makepkg   download and make target(s)"
     echo -e "   -y, --sync      download, make and install target(s)"
     echo -e "   -q, --check     check for AUR update(s)"
