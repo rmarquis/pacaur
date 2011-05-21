@@ -725,7 +725,7 @@ main() {
             ;;
             *)
                 shift 2
-                $pacmanBin -Su $@
+                sudo $pacmanBin -Su $@
             ;;
             esac
         ;;
