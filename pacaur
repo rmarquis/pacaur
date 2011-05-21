@@ -633,6 +633,18 @@ main() {
         shift
         pacaur -d -d -f -e $@
     ;;
+    -be)
+        shift
+        pacaur -b -e $@
+    ;;
+    -bf)
+        shift
+        pacaur -b -f $@
+    ;;
+    -bef | -bfe)
+        shift
+        pacaur -b -e -f $@
+    ;;
     -me)
         shift
         pacaur -m -e $@
