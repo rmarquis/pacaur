@@ -409,7 +409,7 @@ main() {
             ;;
             *)
                 shift 2
-                EditPkgs ${deps[@]}
+                FindDepsAur $@
                 MakePkgs ${deps[@]}
             ;;
             esac
