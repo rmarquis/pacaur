@@ -19,9 +19,9 @@ date="2011/05/21"
 
 pacmanBin="pacman"              # pacman binary
 editor=$EDITOR                  # PKBUILD editor
-buildDir=/home/aur/build        # Build directory
-clean=true                      # Cleanup after install
-color=true                      # Enable color
+buildDir=/home/aur/build        # build directory
+clean=true                      # cleanup after install
+color=true                      # enable color
 
 colorR="\e[1;31m"
 colorG="\e[1;32m"
