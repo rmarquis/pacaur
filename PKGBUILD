@@ -9,7 +9,7 @@ depends=('cower' 'sudo')
 optdepends=('pacman-color: matches output if color is used')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf)
-md5sums=('e7f451fcb2f554127c3b1a44fc65e9b5'
+md5sums=('1a7a3b67cbc4f58b8f85416dbe6dd8d1'
          'f4979a0c73f9dc370e39a1f6af92e7a8')
 build() {
   mkdir -p "$pkgdir/etc/"

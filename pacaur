@@ -96,6 +96,44 @@ DownloadDepsAur() {
     fi
 }
 
+FindDepsAur() {
+    # Find dependencies
+    adeps=($($pacaur -ii $@ --format '%D%M' | awk -F "\n" '{print}' | awk -F " " '{print}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    # Exit if curl or package name error
+    if [[ $(echo $adeps | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
+        exit
+    fi
+
+    # if no dependency, no need to continue
+    if [[ ${#adeps[*]} -eq 0 ]]; then
+        return
+    fi
+
+    local i=0
+    for package in ${adeps[@]}; do
+        # Remove versioning from package names
+        adeps[$i]=${package%%=*}
+        adeps[$i]=${adeps[$i]%%>*}
+        adeps[$i]=${adeps[$i]%%<*}
+        # Remove packages found in repo
+        if [[ $(pacman -Sql | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
+            unset adeps[$i]
+        fi
+        ((i++))
+    done
+
+    adeps=$(echo ${adeps[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
+    adeps=( $adeps );
+
+    if [[ ${#adeps[*]} -gt 0 ]]; then
+        # Save AUR dependencies then continue"
+        deps=("$@" "${deps[@]}" "${adeps[@]}")
+        FindDepsAur ${adeps[@]} 
+    fi
+
+}
+
 CheckAur() {
     notice "${colorW}Checking AUR for package updates...${reset}"
     $pacaur -u $@
@@ -185,8 +223,8 @@ CleanUp() {
 MakePkgs() {
 
     # Reverse deps order
-    deps=$(echo $deps | awk -F "\n" '{for (i=NF;i>=1;i--) print $i}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}')
-    deps=( $deps );
+    deps=($(echo ${deps[@]} | awk -F "\n" '{for (i=NF;i>=1;i--) print $i}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
+
     notice "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
 
     # Set architecture variables
@@ -365,13 +403,13 @@ main() {
             -e | --edit)
                 shift 2
                 FindDepsAur $@
-                EditPkgs $deps
-                MakePkgs $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
             ;;
             *)
                 shift 2
-                FindDepsAur $@
-                MakePkgs $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
             ;;
             esac
         ;;
@@ -381,21 +419,21 @@ main() {
                 force=true
                 shift 2
                 FindDepsAur $@
-                EditPkgs $deps
-                MakePkgs $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
             ;;
             *)
                 shift 2
                 FindDepsAur $@
-                EditPkgs $deps
-                MakePkgs $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
             ;;
             esac
         ;;
         *)
             shift
             FindDepsAur $@
-            MakePkgs $@
+            MakePkgs ${deps[@]}
         ;;
         esac
     ;;
