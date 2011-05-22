@@ -10,9 +10,6 @@ description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 author="Remy Marquis"
 date="2011/05/21"
 
-# TODO
-# - pacman fallback
-
 #
 # Default config
 #
@@ -21,6 +18,7 @@ pacmanBin="pacman"              # pacman binary
 editor=$EDITOR                  # PKBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
+fallback=true                   # pacman fallback
 color=true                      # enable color
 
 colorR="\e[1;31m"
@@ -678,6 +676,9 @@ main() {
             *)
                 shift 2
                 $pacmanBin -Ss $@
+                if $fallback; then
+                    pacaur -s $@
+                fi
             ;;
             esac
         ;;
@@ -695,13 +696,33 @@ main() {
                 ;;
                 *)
                     shift 3
-                    $pacmanBin -Sii $@
+                    if $fallback; then
+                        result=$($pacmanBin -Sii $@ 2>&1)
+                        if [[ $(echo $result | grep -v "error: package") == "" ]]; then
+                            failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                            pacaur -S -i -i -a $@
+                        else
+                            $pacmanBin -Sii $@
+                        fi
+                    else
+                        $pacmanBin -Sii $@
+                    fi
                 ;;
                 esac
             ;;
             *)
                 shift 2
-                $pacmanBin -Si $@
+                if $fallback; then
+                    result=$($pacmanBin -Si $@ 2>&1)
+                    if [[ $(echo $result | grep -v "error: package") == "" ]]; then
+                        failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                        pacaur -S -i -a $@
+                    else
+                        $pacmanBin -Si $@
+                    fi
+                else
+                    $pacmanBin -Si $@
+                fi
             ;;
             esac
         ;;
@@ -713,7 +734,17 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -Sw $@
+                if $fallback; then
+                    result=$(sudo $pacmanBin -Sw $@ 2>&1)
+                    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+                        failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                        pacaur -S -w -a $@
+                    else
+                        sudo $pacmanBin -Sw $@
+                    fi
+                else
+                    sudo $pacmanBin -Sw $@
+                fi
             ;;
             esac
         ;;
@@ -726,6 +757,9 @@ main() {
             *)
                 shift 2
                 sudo $pacmanBin -Su $@
+                if $fallback; then
+                    pacaur -S -u -a $@
+                fi
             ;;
             esac
         ;;
@@ -746,12 +780,18 @@ main() {
                 *)
                     shift 3
                     sudo $pacmanBin -Syu $@
+                    if $fallback; then
+                        pacaur -S -u -a $@
+                    fi
                 ;;
                 esac
             ;;
             *)
                 shift 2
                 sudo $pacmanBin -Sy $@
+                if $fallback; then
+                    pacaur -S -a $@
+                fi
             esac
         ;;
         -a | --aur)
@@ -761,6 +801,9 @@ main() {
         *)
             shift
             sudo $pacmanBin -S $@
+            if $fallback; then
+                pacaur -S -a $@
+            fi
         esac
     ;;
     -Ss)
@@ -771,7 +814,7 @@ main() {
         ;;
         *)
             shift
-            $pacmanBin -Ss $@
+            pacaur -S -s $@
         ;;
         esac
     ;;
@@ -789,13 +832,13 @@ main() {
             ;;
             *)
                 shift 2
-                $pacmanBin -Sii $@
+                pacaur -S -i -i $@
             ;;
             esac
         ;;
         *)
             shift
-            $pacmanBin -Si $@
+            pacaur -S -i $@
         ;;
         esac
     ;;
@@ -807,7 +850,7 @@ main() {
         ;;
         *)
             shift
-            $pacmanBin -Sii $@
+            pacaur -S -i -i $@
         ;;
         esac
     ;;
@@ -819,7 +862,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -Sw $@
+            pacaur -S -w $@
         ;;
         esac
     ;;
@@ -831,7 +874,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -Su $@
+            pacaur -S -u $@
         ;;
         esac
     ;;
@@ -849,13 +892,13 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -S -y -u $@
+                pacaur -S -y -u $@
             ;;
             esac
         ;;
         *)
             shift
-            sudo $pacmanBin -S -y $@
+            pacaur -S -y $@
         esac
     ;;
     -Syu)
@@ -866,7 +909,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -Syu $@
+            pacaur -S -y -u $@
         ;;
         esac
     ;;
@@ -878,7 +921,7 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -S $@
+            pacaur -S $@
         ;;
         esac
     ;;
@@ -925,6 +968,9 @@ main() {
             *)
                 shift 2
                 $pacmanBin -Qu $@
+                if $fallback;then
+                    pacaur -q $@
+                fi
             ;;
             esac
         ;;
@@ -941,7 +987,7 @@ main() {
         ;;
         *)
             shift
-            $pacmanBin -Qu $@
+            pacaur -Q -u $@
         ;;
         esac
     ;;
