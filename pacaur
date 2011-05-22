@@ -766,7 +766,7 @@ main() {
             case $3 in
             -a | --aur)
                 shift 3
-                sudo $pacmanBin -Sy # no fallback here 
+                sudo $pacmanBin -Sy 
                 pacaur -y -e $@
             ;;
             -u | --sysupgrade)
@@ -787,10 +787,7 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -Sy $@
-                if $fallback; then
-                    pacaur -S -a $@
-                fi
+                sudo $pacmanBin -Sy $@ # no fallback here
             esac
         ;;
         -a | --aur)
