@@ -5,10 +5,10 @@
 #
 
 name="pacaur"
-version="v0.9.4"
+version="v0.9.5"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 author="Remy Marquis"
-date="2011/05/21"
+date="2011/05/22"
 
 #
 # Default config
