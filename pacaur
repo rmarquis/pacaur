@@ -15,7 +15,7 @@ date="2011/05/21"
 #
 
 pacmanBin="pacman"              # pacman binary
-editor=$EDITOR                  # PKBUILD editor
+editor=${EDITOR}                # PKBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
@@ -142,7 +142,6 @@ UpgradeAur() {
     CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     
     if [[ $CheckUpdatesAur == "" ]]; then
-        #success " there is nothing to do"
         echo -e " there is nothing to do"
         exit   
     fi
@@ -221,7 +220,7 @@ CleanUp() {
 MakePkgs() {
 
     # Reverse deps order
-    deps=($(echo ${deps[@]} | awk -F "\n" '{for (i=NF;i>=1;i--) print $i}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
+    deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
     notice "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
 
@@ -295,7 +294,7 @@ usage() {
     echo -e "   -q, --check     check for AUR update(s)"
     echo -e "   -u, --update    update AUR package(s)"
     echo -e "   -abs, --abs     copy target(s) from ABS directory to build directory"
-    echo -e "   -c, --clean     clean target(s) existing PKGBUILD"
+    echo -e "   -c, --clean     clean existing target(s) PKGBUILD"
     echo -e ""
     echo -e "options:"
     echo -e "   -f, --force     force operation -- can be combined with the -d, -m flags"
