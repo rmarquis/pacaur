@@ -734,7 +734,7 @@ main() {
             *)
                 shift 2
                 if $fallback; then
-                    result=$(sudo $pacmanBin -Sw $@ 2>&1)
+                    result=$($pacmanBin -Sw --print $@ 2>&1)
                     if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
                         failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
                         pacaur -S -w -a $@
@@ -755,9 +755,16 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -Su $@
                 if $fallback; then
-                    pacaur -S -u -a $@
+                    result=$($pacmanBin -Su --print $@ 2>&1)
+                    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+                        failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                        pacaur -S -u -a $@
+                    else
+                        sudo $pacmanBin -Su $@
+                    fi
+                else
+                    sudo $pacmanBin -Su $@
                 fi
             ;;
             esac
@@ -796,9 +803,16 @@ main() {
         ;;
         *)
             shift
-            sudo $pacmanBin -S $@
             if $fallback; then
-                pacaur -S -a $@
+                result=$($pacmanBin -S --print $@ 2>&1)
+                if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+                    failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                    pacaur -S -a $@
+                else
+                    sudo $pacmanBin -S $@
+                fi
+            else
+                sudo $pacmanBin -S $@
             fi
         esac
     ;;
