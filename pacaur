@@ -696,18 +696,32 @@ main() {
                 ;;
                 *)
                     shift 3
-                    $pacmanBin -Sii $@
                     if $fallback; then
-                        pacaur -S -i -i -a $@
+                        result=$($pacmanBin -Sii $@ 2>&1)
+                        if [[ $(echo $result | grep -v "error: package") == "" ]]; then
+                            failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                            pacaur -S -i -i -a $@
+                        else
+                            $pacmanBin -Sii $@
+                        fi
+                    else
+                        $pacmanBin -Sii $@
                     fi
                 ;;
                 esac
             ;;
             *)
                 shift 2
-                $pacmanBin -Si $@
                 if $fallback; then
-                    pacaur -S -i -a $@
+                    result=$($pacmanBin -Si $@ 2>&1)
+                    if [[ $(echo $result | grep -v "error: package") == "" ]]; then
+                        failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                        pacaur -S -i -a $@
+                    else
+                        $pacmanBin -Si $@
+                    fi
+                else
+                    $pacmanBin -Si $@
                 fi
             ;;
             esac
@@ -720,9 +734,16 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -Sw $@
                 if $fallback; then
-                    pacaur -S -w -a $@
+                    result=$(sudo $pacmanBin -Sw $@ 2>&1)
+                    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+                        failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
+                        pacaur -S -w -a $@
+                    else
+                        sudo $pacmanBin -Sw $@
+                    fi
+                else
+                    sudo $pacmanBin -Sw $@
                 fi
             ;;
             esac
