@@ -15,7 +15,7 @@ date="2011/05/22"
 #
 
 pacmanBin="pacman"              # pacman binary
-editor=${EDITOR}                # PKBUILD editor
+editor=$EDITOR                  # PKBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
@@ -65,7 +65,7 @@ installPkg=false
 force=false
 
 #
-# Primary functions
+# Functions
 #
 
 SearchAur() {
@@ -88,20 +88,14 @@ DownloadDepsAur() {
     # Download dependencies recursively and return AUR deps only
     deps=$($pacaur -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
-    # Exit if curl or package name error
-    if [[ $(echo $deps | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
-        exit
-    fi
+    ErrorExit $deps
 }
 
 FindDepsAur() {
     # Find dependencies
     adeps=($($pacaur -ii $@ --format '%D%M' | awk -F "\n" '{print}' | awk -F " " '{print}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
-    # Exit if curl or package name error
-    if [[ $(echo $adeps | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
-        exit
-    fi
+    ErrorExit $adeps
 
     # if no dependency, no need to continue
     if [[ ${#adeps[*]} -eq 0 ]]; then
@@ -129,7 +123,6 @@ FindDepsAur() {
         deps=("$@" "${deps[@]}" "${adeps[@]}")
         FindDepsAur ${adeps[@]} 
     fi
-
 }
 
 CheckAur() {
@@ -146,10 +139,7 @@ UpgradeAur() {
         exit   
     fi
 
-    # Exit if curl or package name error
-    if [[ $(echo $CheckUpdatesAur | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
-        exit
-    fi
+    ErrorExit $CheckUpdatesAur
 
     echo -e ""
     notice "Proceed with installation? [Y/n]"
@@ -177,20 +167,12 @@ UpgradeAur() {
 CopyAbs() {
     for i in "$@"
     do
-        if [ -e $buildDir/$i/PKGBUILD ]; then
+        if [[ -e $buildDir/$i/PKGBUILD && $force != true ]]; then
             failed "${colorW}$i${reset} PKBUILD already exists in $buildDir. Use -f to overwrite."
         else
             cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
             success "${colorW}$i${reset} copied in $buildDir"
         fi
-    done
-}
-
-CopyAbsForced() {
-    for i in "$@"
-    do
-        cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
-        success "${colorW}$i${reset} copied in $buildDir"
     done
 }
 
@@ -218,7 +200,6 @@ CleanUp() {
 }
 
 MakePkgs() {
-
     # Reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
@@ -261,9 +242,12 @@ MakePkgs() {
     done
 }
 
-#
-# Utility functions
-#
+ErrorExit(){
+    # Exit if curl or package name error
+    if [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
+        exit
+    fi
+}
 
 error() {
     echo -e "${colorR}::${reset} $1"
@@ -283,7 +267,7 @@ notice() {
 }
 
 usage() {
-    echo -e "usage:  pacaur <operation> [options] [package(s)]"
+    echo -e "usage:  ${name} <operation> [options] [package(s)]"
     echo -e "operations:"
     echo -e "   -s, --search    search AUR repository for matching strings"
     echo -e "   -i, --info      view package information -- pass twice for details"
@@ -553,7 +537,8 @@ main() {
             case $3 in
             -f | --force)
                 shift 3 
-                CopyAbsForced $@
+                force=true
+                CopyAbs $@
                 EditPkgs $@
             ;;
             *)
@@ -567,12 +552,14 @@ main() {
             case $3 in
             -e | --edit)
                 shift 3 
-                CopyAbsForced $@
+                force=true
+                CopyAbs $@
                 EditPkgs $@
             ;;
             *)
                 shift 2
-                CopyAbsForced $@
+                force=true
+                CopyAbs $@
             ;;
             esac
         ;;
