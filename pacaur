@@ -744,11 +744,11 @@ main() {
                 shift 2
                 if $fallback; then
                     result=$($pacmanBin -Su --print $@ 2>&1)
-                    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+                    if [[ ! $@ ]]; then
+                        sudo $pacmanBin -Su
+                        pacaur -S -u -a
+                    elif [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
                         failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
-                        pacaur -S -u -a $@
-                    elif [[ ! $@ ]]; then
-                        sudo $pacmanBin -Su $@
                         pacaur -S -u -a $@
                     else
                         sudo $pacmanBin -Su $@
