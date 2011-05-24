@@ -747,6 +747,9 @@ main() {
                     if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
                         failed "package ${colorW}$@${reset} was not found in repositories, trying ${colorM}aur${reset}..."
                         pacaur -S -u -a $@
+                    elif [[ ! $@ ]]; then
+                        sudo $pacmanBin -Su $@
+                        pacaur -S -u -a $@
                     else
                         sudo $pacmanBin -Su $@
                     fi
