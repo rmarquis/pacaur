@@ -285,8 +285,10 @@ usage() {
     echo -e "   -e, --edit      edit target PKBUILD -- can be combined with the -d, -b, -m, -y, -u, -abs flags"
     echo -e ""
     echo -e "pacman options:"
-    echo -e "   -a, --aur       only search or install packages from AUR, eg."
-    echo -e "                   ${name} -Ssa, -Sia, -Swa, -Sua, -Qua"
+    if $fallback; then
+    echo -e "   -r, --repo      only search or install packages from the repositories"
+    fi
+    echo -e "   -a, --aur       only search or install packages from the AUR"
     echo -e ""
     echo -e "general options:"
     echo -e "   -v, --version   display version information"
@@ -659,6 +661,10 @@ main() {
                 shift 3
                 pacaur -s $@
             ;;
+            -r | --repo)
+                shift 3
+                $pacmanBin -Ss $@
+            ;;
             *)
                 shift 2
                 $pacmanBin -Ss $@
@@ -674,11 +680,19 @@ main() {
                 shift 3
                 pacaur -i $@
             ;;
+            -r | --repo)
+                shift 3
+                $pacmanBin -Si $@
+            ;;
             -i | --info)
                 case $4 in
                 -a | --aur)
                     shift 4
                     pacaur -i -i $@
+                ;;
+                -r | --repo)
+                    shift 4
+                    $pacmanBin -Sii $@
                 ;;
                 *)
                     shift 3
@@ -718,6 +732,10 @@ main() {
                 shift 3
                 pacaur -m -e -f $@
             ;;
+            -r | --repo)
+                shift 3
+                sudo $pacmanBin -Sw $@
+            ;;
             *)
                 shift 2
                 if $fallback; then
@@ -739,6 +757,10 @@ main() {
             -a | --aur)
                 shift 3
                 pacaur -u -e $@
+            ;;
+            -r | --repo)
+                shift 3
+                sudo $pacmanBin -Su $@
             ;;
             *)
                 shift 2
@@ -763,8 +785,12 @@ main() {
             case $3 in
             -a | --aur)
                 shift 3
-                sudo $pacmanBin -Sy 
+                sudo $pacmanBin -Sy
                 pacaur -y -e $@
+            ;;
+            -r | --repo)
+                shift 3
+                sudo $pacmanBin -Sy $@
             ;;
             -u | --sysupgrade)
                 case $4 in
@@ -772,6 +798,10 @@ main() {
                     shift 4
                     sudo $pacmanBin -Syu # fallback here
                     pacaur -u -e $@
+                ;;
+                -r | --repo)
+                    shift 4
+                    sudo $pacmanBin -Syu
                 ;;
                 *)
                     shift 3
@@ -790,6 +820,10 @@ main() {
         -a | --aur)
             shift 2
             pacaur -y -e $@
+        ;;
+        -r | --repo)
+            shift 2
+            sudo $pacmanBin -S $@
         ;;
         *)
             shift
@@ -812,6 +846,10 @@ main() {
             shift 2
             pacaur -S -s -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -s -r $@
+        ;;
         *)
             shift
             pacaur -S -s $@
@@ -824,11 +862,19 @@ main() {
             shift 2
             pacaur -S -i -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -i -r $@
+        ;;
         -i | --info)
             case $3 in
             -a | --aur)
                 shift 3
                 pacaur -S -i -i -a $@
+            ;;
+            -r | --repo)
+                shift 3
+                pacaur -S -i -i -r $@
             ;;
             *)
                 shift 2
@@ -848,6 +894,10 @@ main() {
             shift 2
             pacaur -S -i -i -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -i -i -r $@
+        ;;
         *)
             shift
             pacaur -S -i -i $@
@@ -859,6 +909,10 @@ main() {
         -a | --aur)
             shift 2
             pacaur -S -w -a $@
+        ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -w -r $@
         ;;
         *)
             shift
@@ -872,6 +926,10 @@ main() {
             shift 2
             pacaur -S -u -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -u -r $@
+        ;;
         *)
             shift
             pacaur -S -u $@
@@ -884,11 +942,19 @@ main() {
             shift 2
             pacaur -S -y -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -y -r $@
+        ;;
         -u | --sysupgrade)
             case $3 in
             -a | --aur)
                 shift 3
                 pacaur -S -y -u -a $@
+            ;;
+            -r | --repo)
+                shift 3
+                pacaur -S -y -u -r $@
             ;;
             *)
                 shift 2
@@ -907,6 +973,10 @@ main() {
             shift 2
             pacaur -S -y -u -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -y -u -r $@
+        ;;
         *)
             shift
             pacaur -S -y -u $@
@@ -918,6 +988,10 @@ main() {
         -a | --aur)
             shift 2
             pacaur -S -a $@
+        ;;
+        -r | --repo)
+            shift 2
+            pacaur -S -r $@
         ;;
         *)
             shift
@@ -957,6 +1031,38 @@ main() {
         shift
         pacaur -S -a $@
     ;;
+    -Ssr)
+        shift
+        pacaur -S -s -r $@
+    ;;
+    -Sir)
+        shift
+        pacaur -S -i -r $@
+    ;;
+    -Siir)
+        shift
+        pacaur -S -i -i -r $@
+    ;;
+    -Swr)
+        shift
+        pacaur -S -w -r $@
+    ;;
+    -Sur)
+        shift
+        pacaur -S -u -r $@
+    ;;
+    -Syr)
+        shift
+        pacaur -S -y -r $@
+    ;;
+    -Syur)
+        shift
+        pacaur -S -y -u -r $@
+    ;;
+    -Sr)
+        shift
+        pacaur -S -r $@
+    ;;
     -Q)
         case $2 in
         -u | --upgrades)
@@ -964,6 +1070,10 @@ main() {
             -a | --aur)
                 shift 3
                 pacaur -q $@
+            ;;
+            -r | --repo)
+                shift 3
+                $pacmanBin -Qu $@
             ;;
             *)
                 shift 2
@@ -985,6 +1095,10 @@ main() {
             shift 2
             pacaur -Q -u -a $@
         ;;
+        -r | --repo)
+            shift 2
+            pacaur -Q -u -r $@
+        ;;
         *)
             shift
             pacaur -Q -u $@
@@ -994,6 +1108,10 @@ main() {
     -Qua)
         shift
         pacaur -Q -u -a $@
+    ;;
+    -Qur)
+        shift
+        pacaur -Q -u -r $@
     ;;
     -D* | --database)
         sudo $pacmanBin $@
