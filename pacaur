@@ -580,15 +580,15 @@ main() {
         shift
         pacaur -i -i $@
     ;;
-    -ae)
+    -abse)
         shift
-        pacaur -a -e $@
+        pacaur -abs -e $@
     ;;
-    -af)
+    -absf)
         shift
-        pacaur -a -f $@
+        pacaur -abs -f $@
     ;;
-    -afe | -aef)
+    -absfe | -absef)
         shift
         pacaur -a -f -e $@
     ;;
