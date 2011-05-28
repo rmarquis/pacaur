@@ -15,7 +15,7 @@ date="28/05/2011"
 #
 
 pacmanBin="pacman"              # pacman binary
-editor=$EDITOR                  # PKBUILD editor
+editor=$EDITOR                  # PKGBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
@@ -168,7 +168,7 @@ CopyAbs() {
     for i in "$@"
     do
         if [[ -e $buildDir/$i/PKGBUILD && $force != true ]]; then
-            failed "${colorW}$i${reset} PKBUILD already exists in $buildDir. Use -f to overwrite."
+            failed "${colorW}$i${reset} PKGBUILD already exists in $buildDir. Use -f to overwrite."
         else
             cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
             success "${colorW}$i${reset} copied in $buildDir"
@@ -181,7 +181,7 @@ EditPkgs() {
     do
         if [ -e $buildDir/$i/PKGBUILD ]; then
             $editor $buildDir/$i/PKGBUILD
-            success "${colorW}$i${reset} PKBUILD edited"
+            success "${colorW}$i${reset} PKGBUILD edited"
         else
             error "Could not open ${colorW}$i${reset} PKGBUILD"
         fi
