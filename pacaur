@@ -126,7 +126,7 @@ FindDepsAur() {
 }
 
 CheckAur() {
-    notice "${colorW}Checking AUR for package updates...${reset}"
+    #notice "${colorW}Checking AUR for package updates...${reset}"
     $pacaur -u $@
 }
 
