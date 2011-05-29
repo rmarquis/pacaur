@@ -1,5 +1,5 @@
 pkgname=pacaur
-pkgver=0.9.10
+pkgver=1.0.0
 pkgrel=1
 pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 arch=('any')
@@ -9,7 +9,7 @@ depends=('cower' 'sudo' 'expac-git')
 optdepends=('pacman-color: matches output if color is used')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf)
-md5sums=('4d82a710f88321988e903b409b835258'
+md5sums=('989ca45d174b5e0b1aaee2531e33fbbc'
          '2ca5ab1a245f54c7915ef614b9224074')
 build() {
   mkdir -p "$pkgdir/etc/"
