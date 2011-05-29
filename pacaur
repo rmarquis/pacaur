@@ -130,6 +130,21 @@ CheckAur() {
     $pacaur -u $@
 }
 
+CheckRepo() {
+    #notice "${colorW}Checking repositories for package updates...${reset}"
+    outofdate=($($pacmanBin -Quq $@))
+    if [[ ${outofdate[@]} != "" ]]; then
+        Qversion=($(expac -Q %v ${outofdate[@]}))
+        Sversion=($(expac -S -1 %v ${outofdate[@]}))
+
+        local i=0
+        for package in ${outofdate[@]}; do
+            notice "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}"
+            ((i++))
+        done
+    fi
+}
+
 UpgradeAur() {
     notice "${colorW}Starting AUR upgrade...${reset}"
     CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
@@ -1067,17 +1082,17 @@ main() {
             case $3 in
             -a | --aur)
                 shift 3
-                pacaur -q $@
+                CheckAur $@
             ;;
             -r | --repo)
                 shift 3
-                $pacmanBin -Qu $@
+                CheckRepo $@
             ;;
             *)
                 shift 2
-                $pacmanBin -Qu $@
+                CheckRepo $@
                 if $fallback;then
-                    pacaur -q $@
+                    CheckAur $@
                 fi
             ;;
             esac
