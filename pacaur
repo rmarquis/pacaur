@@ -132,15 +132,14 @@ CheckAur() {
 
 CheckRepo() {
     #notice "${colorW}Checking repositories for package updates...${reset}"
-
-    repoupdate=($($pacmanBin -Quq $@))
-    if [[ ${repoupdate[@]} != "" ]]; then
-        Qversion=($(expac -Q %v ${repoupdate[@]}))
-        Sversion=($(expac -S %v ${repoupdate[@]}))
+    outofdate=($($pacmanBin -Quq $@))
+    if [[ ${outofdate[@]} != "" ]]; then
+        Qversion=($(expac -Q %v ${outofdate[@]}))
+        Sversion=($(expac -S -1 %v ${outofdate[@]}))
 
         local i=0
-        for package in ${repoupdate[@]}; do
-            notice "${colorW}${repoupdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}"
+        for package in ${outofdate[@]}; do
+            notice "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}"
             ((i++))
         done
     fi
