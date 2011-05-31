@@ -243,21 +243,17 @@ MakePkgs() {
                 else
                     makepkg -si
                 fi
-                # set AUR pkg status
-                # if upgrade, do no change status
+                # If AUR dep, install as --asdeps
+                # If upgrade, do no change status
                 if [[ ! $upgrade ]]; then
                     isexpl=false
-                    sudo $pacmanBin -D --asdeps $j &>/dev/null
                     for k in ${expl[@]}; do
-                        if [[ $k != $j ]]; then
-                            continue
-                        else
+                        if [[ $k == $j ]]; then
                             isexpl=true
                         fi
                     done
-                    wait
-                    if [[ $isexpl == true ]]; then
-                        sudo $pacmanBin -D --asexplicit $j &>/dev/null
+                    if [[ $isexpl != true ]]; then
+                        sudo $pacmanBin -D --asdeps $j &>/dev/null
                     fi
                 fi
             elif $force; then
