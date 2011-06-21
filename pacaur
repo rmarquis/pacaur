@@ -109,7 +109,7 @@ FindDepsAur() {
         adeps[$i]=${adeps[$i]%%>*}
         adeps[$i]=${adeps[$i]%%<*}
         # Remove packages found in repo
-        if [[ $(pacman -Sql | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
+        if [[ $(expac -S %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
             unset adeps[$i]
         fi
         ((i++))
