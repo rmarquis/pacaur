@@ -126,6 +126,9 @@ FindDepsAur() {
         if [[ $(expac -Q %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
             unset adeps[$i]
         fi
+        # TBD: use local PKGBUILD first
+        # TBD: check provides
+        # TBD: install available repo package if necessary
         ((i++))
     done
 
