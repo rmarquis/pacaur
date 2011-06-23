@@ -251,6 +251,8 @@ CleanUp() {
         for i in $@
         do
             notice "Cleaning up ${colorW}$i${reset}... "
+            # hack for cvs protected files
+            chmod -R 755 $i
             rm -r $i && success "${colorW}$i${reset} cleaned" || failed "Could not clean ${colorW}$i${reset}"
         done
     fi
