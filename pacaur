@@ -2,13 +2,12 @@
 
 #
 # pacaur: A simple cower and burp wrapper to fetch PKGBUILDS from aur & abs
+# by Remy Marquis (Spyhawk)
 #
 
 name="pacaur"
 version="1.1.1"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
-author="Remy Marquis"
-date="23/06/2011"
 
 #
 # Default config
@@ -88,14 +87,14 @@ DownloadAur() {
 }
 
 DownloadDepsAur() {
-    # Download dependencies recursively and return AUR deps only
+    # download dependencies recursively and return AUR deps only
     deps=$($pacaur -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     ErrorExit $deps
 }
 
 FindDepsAur() {
-    # Find dependencies
+    # find dependencies
     adeps=($($pacaur -ii $@ --format '%D%M' | awk -F "\n" '{print}' | awk -F " " '{print}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     ErrorExit $adeps
@@ -107,11 +106,11 @@ FindDepsAur() {
 
     local i=0
     for package in ${adeps[@]}; do
-        # Remove versioning from package names
+        # remove versioning from package names
         adeps[$i]=${package%%=*}
         adeps[$i]=${adeps[$i]%%>*}
         adeps[$i]=${adeps[$i]%%<*}
-        # Remove packages found in repo
+        # remove packages found in repo
         if [[ $(expac -S %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
             unset adeps[$i]
         fi
@@ -122,19 +121,17 @@ FindDepsAur() {
     adeps=( $adeps );
 
     if [[ ${#adeps[*]} -gt 0 ]]; then
-        # Save AUR dependencies then continue"
+        # save AUR dependencies then continue"
         deps=("$@" "${deps[@]}" "${adeps[@]}")
         FindDepsAur ${adeps[@]} 
     fi
 }
 
 CheckAur() {
-    #notice "${colorW}Checking AUR for package updates...${reset}"
     $pacaur -u $@
 }
 
 CheckRepo() {
-    #notice "${colorW}Checking repositories for package updates...${reset}"
     outofdate=($($pacmanBin -Quq $@))
     if [[ ${outofdate[@]} != "" ]]; then
         Qversion=($(expac -Q %v ${outofdate[@]}))
@@ -145,12 +142,6 @@ CheckRepo() {
             notice "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}"
             ((i++))
         done
-    fi
-}
-
-DownloadPkgbuild() {
-    if ! [[ -f "$tmpdir/$package.PKGBUILD" ]]; then
-        curl -Lfs "https://aur.archlinux.org/packages/$package/PKGBUILD" > "$tmpdir/$package.PKGBUILD"
     fi
 }
 
@@ -169,7 +160,7 @@ UpgradeAur() {
         local i=0
         for package in ${aurpkgs[@]}; do
             DownloadPkgbuild ${aurpkgs[$i]} &
-            nap
+            ParaExec
             ((i++))
         done
         wait
@@ -259,16 +250,16 @@ CleanUp() {
 }
 
 MakePkgs() {
-    # Reverse deps order
+    # reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
     notice "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
 
-    # Remember explicitly installed packages
+    # remember explicitly installed packages
     if [[ $expl == "" ]]; then
       read -ra expl <<< ${@}
     fi
 
-    # Set architecture variables
+    # set architecture variables
     if ! $confSourced; then
         source /etc/makepkg.conf
         source /etc/abs.conf
@@ -287,8 +278,8 @@ MakePkgs() {
                 else
                     makepkg -si
                 fi
-                # If AUR dep, install as --asdeps
-                # If upgrade, do no change status
+                # if AUR dep, install as --asdeps
+                # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
                     isexpl=false
                     for k in ${expl[@]}; do
@@ -313,7 +304,14 @@ MakePkgs() {
     done
 }
 
-nap() {
+DownloadPkgbuild() {
+    if ! [[ -f "$tmpdir/$package.PKGBUILD" ]]; then
+        curl -Lfs "https://aur.archlinux.org/packages/$package/PKGBUILD" > "$tmpdir/$package.PKGBUILD"
+    fi
+}
+
+ParaExec() {
+    # parallel execution
     while (( $(jobs | wc -l) >= 10 )); do
         sleep 0.1
         jobs > /dev/null
@@ -321,7 +319,7 @@ nap() {
 }
 
 ErrorExit(){
-    # Exit if curl or package name error
+    # exit if curl or package name error
     if [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
         exit
     fi
@@ -366,7 +364,7 @@ usage() {
     echo -e " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Syu operations"
     echo -e "   -r, --repo      only search or install packages from the repositories"
     echo -e "   -a, --aur       only search or install packages from the AUR"
-    echo -e "   --devel         update devel packages -- can be combined with the -Su flag"
+    echo -e "   --devel         update AUR devel packages -- can be combined with the -Sua flag"
     echo -e ""
     echo -e "general options:"
     echo -e "   -v, --version   display version information"
@@ -376,8 +374,7 @@ usage() {
 
 version() {
     echo -e "\n    ${colorW}$name ${colorG}$version${reset}"
-    echo -e "    $description"
-    echo -e "    -${colorW}$author ${colorG}($date)\n"
+    echo -e "    $description\n"
 }
 
 
