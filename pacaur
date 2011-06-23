@@ -105,6 +105,40 @@ DownloadDepsAur() {
     ErrorExit $deps
 }
 
+FindDepsAur() {
+    # find dependencies
+    adeps=($($pacaur -ii $@ --format '%D%M' | awk -F "\n" '{print}' | awk -F " " '{print}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    ErrorExit $adeps
+
+    # if no dependency, no need to continue
+    if [[ ${#adeps[*]} -eq 0 ]]; then
+        return
+    fi
+
+    local i=0
+    for package in ${adeps[@]}; do
+        # remove versioning from package names
+        adeps[$i]=${package%%=*}
+        adeps[$i]=${adeps[$i]%%>*}
+        adeps[$i]=${adeps[$i]%%<*}
+        # remove installed repo and aur packages
+        if [[ $(expac -Q %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
+            unset adeps[$i]
+        fi
+        ((i++))
+    done
+
+    adeps=$(echo ${adeps[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
+    adeps=( $adeps );
+
+    if [[ ${#adeps[*]} -gt 0 ]]; then
+        # save AUR dependencies then continue"
+        deps=("$@" "${deps[@]}" "${adeps[@]}")
+        FindDepsAur ${adeps[@]} 
+    fi
+}
+
 CheckAur() {
     $pacaur -u $@
 }
@@ -326,6 +360,7 @@ usage() {
     echo -e "   -s, --search    search AUR repository for matching strings"
     echo -e "   -i, --info      view package information -- pass twice for details"
     echo -e "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
+    echo -e "   -b, --build     use existing PKGBUILD and make target(s)"
     echo -e "   -m, --makepkg   download and make target(s)"
     echo -e "   -y, --sync      download, make and install target(s)"
     echo -e "   -q, --check     check for AUR update(s)"
@@ -428,6 +463,49 @@ main() {
         ;;
         *)  shift
             DownloadAur $@
+        ;;
+        esac
+    ;;
+    # build
+    -b | --build)
+        case $2 in
+        -f | --force)
+            force=true
+            case $3 in
+            -e | --edit)
+                shift 3
+                FindDepsAur $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
+            ;;
+            *)
+                shift 2
+                FindDepsAur $@
+                MakePkgs ${deps[@]}
+            ;;
+            esac
+        ;;
+        -e | --edit)
+            case $3 in
+            -f | --force)
+                force=true
+                shift 3
+                FindDepsAur $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
+            ;;
+            *)
+                shift 2
+                FindDepsAur $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            FindDepsAur $@
+            MakePkgs ${deps[@]}
         ;;
         esac
     ;;
@@ -668,6 +746,18 @@ main() {
     -ddfe | -ddef)
         shift
         pacaur -d -d -f -e $@
+    ;;
+    -be)
+        shift
+        pacaur -b -e $@
+    ;;
+    -bf)
+        shift
+        pacaur -b -f $@
+    ;;
+    -bef | -bfe)
+        shift
+        pacaur -b -e -f $@
     ;;
     -me)
         shift
