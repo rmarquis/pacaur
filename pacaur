@@ -936,6 +936,15 @@ main() {
                     shift 4
                     sudo $pacmanBin -Syu
                 ;;
+                --devel)
+                    if $fallback; then
+                        shift 4
+                        sudo $pacmanBin -Syu $@
+                        pacaur -u -e --devel $@
+                    else
+                        sudo $pacmanBin -Syu $@
+                    fi
+                ;;
                 *)
                     shift 3
                     sudo $pacmanBin -Syu $@
