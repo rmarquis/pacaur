@@ -572,6 +572,31 @@ main() {
             ;;
             esac
         ;;
+        --devel)
+            case $3 in
+            -e | --edit)
+                shift 3
+                devel=true
+                UpgradeAur
+                DownloadDepsAur $u -f
+                EditPkgs $u
+                force=true
+                installPkg=true
+                MakePkgs $u 
+                CleanUp $u
+            ;;
+            *)
+                shift 2
+                devel=true
+                UpgradeAur
+                DownloadDepsAur $u -f
+                force=true
+                installPkg=true
+                MakePkgs $u 
+                CleanUp $u
+            ;;
+            esac
+        ;;
         *)
             shift
             UpgradeAur
@@ -833,8 +858,9 @@ main() {
                 sudo $pacmanBin -Su $@
             ;;
             --devel)
-                shift 3
-                if $fallback;then
+                if $fallback; then
+                    shift 5
+                    sudo $pacmanBin -Su $@
                     pacaur -S -u -a --devel $@
                 else
                     echo "$pacmanBin: unrecognized option '--devel'"
@@ -1018,7 +1044,7 @@ main() {
         ;;
         --devel)
             if $fallback;then
-                pacaur -S -u -a --devel $@
+                pacaur -S -u --devel $@
             else
                 echo "$pacmanBin: unrecognized option '--devel'"
             fi
