@@ -122,8 +122,8 @@ FindDepsAur() {
         adeps[$i]=${package%%=*}
         adeps[$i]=${adeps[$i]%%>*}
         adeps[$i]=${adeps[$i]%%<*}
-        # remove packages found in repo
-        if [[ $(expac -S %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
+        # remove installed repo and aur packages
+        if [[ $(expac -Q %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
             unset adeps[$i]
         fi
         ((i++))
