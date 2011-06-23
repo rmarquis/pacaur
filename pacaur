@@ -63,6 +63,7 @@ fi
 confSourced=false
 installPkg=false
 force=false
+devel=false
 
 #
 # Functions
@@ -148,7 +149,26 @@ CheckRepo() {
 UpgradeAur() {
     notice "${colorW}Starting AUR upgrade...${reset}"
     CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    
+
+    # add devel packages
+    if $devel; then
+        aurpkgs=( $($pacmanBin -Qmq) )
+        Qversion=($(expac -Q %v ${aurpkgs[@]}))
+        Qname=($(expac -Q %n ${aurpkgs[@]}))
+
+        local i=0
+        for package in ${aurpkgs[@]}; do
+            if [[ ${Qversion[$i]} =~ [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9] ]]; then
+                aurdevel=("${aurdevel[@]}" "${Qname[$i]}")
+                notice "${colorW}${Qname[$i]} ${colorY}${Qversion[$i]} ${reset}"
+            fi
+            ((i++))
+        done
+
+        CheckUpdatesAur=("${CheckUpdatesAur[@]}" "${aurdevel[@]}")
+        CheckUpdatesAur=$(echo ${CheckUpdatesAur[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
+    fi
+
     if [[ $CheckUpdatesAur == "" ]]; then
         echo -e " there is nothing to do"
         exit   
@@ -314,6 +334,7 @@ usage() {
     echo -e "pacman options:"
     echo -e "   -r, --repo      only search or install packages from the repositories"
     echo -e "   -a, --aur       only search or install packages from the AUR"
+    echo -e "   --devel         update devel packages -- can be combined with the -Su flag"
     echo -e ""
     echo -e "general options:"
     echo -e "   -v, --version   display version information"
@@ -526,14 +547,29 @@ main() {
     -u | --update)
         case $2 in
         -e | --edit)
-            shift 2
-            UpgradeAur
-            DownloadDepsAur $u -f
-            EditPkgs $u
-            force=true
-            installPkg=true
-            MakePkgs $u 
-            CleanUp $u
+            case $3 in
+            --devel)
+                shift 3
+                devel=true
+                UpgradeAur
+                DownloadDepsAur $u -f
+                EditPkgs $u
+                force=true
+                installPkg=true
+                MakePkgs $u 
+                CleanUp $u
+            ;;
+            *)
+                shift 2
+                UpgradeAur
+                DownloadDepsAur $u -f
+                EditPkgs $u
+                force=true
+                installPkg=true
+                MakePkgs $u 
+                CleanUp $u
+            ;;
+            esac
         ;;
         *)
             shift
@@ -780,12 +816,28 @@ main() {
         -u | --upgrades)
             case $3 in
             -a | --aur)
-                shift 3
-                pacaur -u -e $@
+                case $4 in
+                --devel)
+                    shift 4
+                    pacaur -u -e --devel $@
+                ;;
+                *)
+                    shift 3
+                    pacaur -u -e $@
+                ;;
+                esac
             ;;
             -r | --repo)
                 shift 3
                 sudo $pacmanBin -Su $@
+            ;;
+            --devel)
+                shift 3
+                if $fallback;then
+                    pacaur -S -u -a --devel $@
+                else
+                    echo "$pacmanBin: unrecognized option '--devel'"
+                fi
             ;;
             *)
                 shift 2
@@ -948,12 +1000,27 @@ main() {
     -Su)
         case $2 in
         -a | --aur)
-            shift 2
-            pacaur -S -u -a $@
+            case $3 in
+            --devel)
+                shift 3
+                pacaur -S -u -a --devel $@
+            ;;
+            *)
+                shift 2
+                pacaur -S -u -a $@
+            ;;
+            esac
         ;;
         -r | --repo)
             shift 2
             pacaur -S -u -r $@
+        ;;
+        --devel)
+            if $fallback;then
+                pacaur -S -u -a --devel $@
+            else
+                echo "$pacmanBin: unrecognized option '--devel'"
+            fi
         ;;
         *)
             shift
@@ -1041,8 +1108,16 @@ main() {
         pacaur -S -w -a $@
     ;;
     -Sua)
-        shift
-        pacaur -S -u -a $@
+        case $2 in
+        --devel)
+            shift 2
+            pacaur -S -u -a --devel $@
+        ;;
+        *)
+            shift
+            pacaur -S -u -a $@
+        ;;
+        esac
     ;;
     -Sya)
         shift
