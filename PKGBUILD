@@ -5,8 +5,9 @@ pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 arch=('any')
 url="https://github.com/Spyhawk/pacaur"
 license=('GPL')
-depends=('cower' 'sudo' 'expac-git')
-optdepends=('pacman-color: matches output if color is used')
+depends=('cower' 'expac-git')
+optdepends=('pacman-color: colorized output'
+            'sudo: install and update packages as non-root')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf)
 md5sums=('5c96f435b6a2a21e2a1b9c0712821259'
