@@ -70,6 +70,18 @@ devel=false
 # Functions
 #
 
+runasroot() {
+    if [[ $UID -eq 0 ]]; then
+        "$@"
+    elif sudo -v &>/dev/null && sudo -l "$@" &>/dev/null; then
+        sudo "$@"
+    else
+        echo -n "root "
+        # Hack: need to echo to make sure all of the args get in the single set of quotes
+        su root -c "$(echo $@)"
+    fi
+}
+
 SearchAur() {
     $pacaur -s $@
 }
@@ -288,7 +300,7 @@ MakePkgs() {
                         fi
                     done
                     if [[ $isexpl != true ]]; then
-                        sudo $pacmanBin -D --asdeps $j &>/dev/null
+                        runasroot $pacmanBin -D --asdeps $j &>/dev/null
                     fi
                 fi
             elif $force; then
@@ -849,7 +861,7 @@ main() {
             ;;
             -r | --repo)
                 shift 3
-                sudo $pacmanBin -Sw $@
+                runasroot $pacmanBin -Sw $@
             ;;
             *)
                 shift 2
@@ -859,10 +871,10 @@ main() {
                         failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
                         pacaur -S -w -a $@
                     else
-                        sudo $pacmanBin -Sw $@
+                        runasroot $pacmanBin -Sw $@
                     fi
                 else
-                    sudo $pacmanBin -Sw $@
+                    runasroot $pacmanBin -Sw $@
                 fi
             ;;
             esac
@@ -883,12 +895,12 @@ main() {
             ;;
             -r | --repo)
                 shift 3
-                sudo $pacmanBin -Su $@
+                runasroot $pacmanBin -Su $@
             ;;
             --devel)
                 if $fallback; then
                     shift 5
-                    sudo $pacmanBin -Su $@
+                    runasroot $pacmanBin -Su $@
                     pacaur -S -u -a --devel $@
                 else
                     echo "$pacmanBin: unrecognized option '--devel'"
@@ -899,16 +911,16 @@ main() {
                 if $fallback; then
                     result=$($pacmanBin -Su --print $@ 2>&1)
                     if [[ ! $@ ]]; then
-                        sudo $pacmanBin -Su
+                        runasroot $pacmanBin -Su
                         pacaur -S -u -a
                     elif [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
                         failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
                         pacaur -S -u -a $@
                     else
-                        sudo $pacmanBin -Su $@
+                        runasroot $pacmanBin -Su $@
                     fi
                 else
-                    sudo $pacmanBin -Su $@
+                    runasroot $pacmanBin -Su $@
                 fi
             ;;
             esac
@@ -917,36 +929,36 @@ main() {
             case $3 in
             -a | --aur)
                 shift 3
-                sudo $pacmanBin -Sy
+                runasroot $pacmanBin -Sy
                 pacaur -y -e $@
             ;;
             -r | --repo)
                 shift 3
-                sudo $pacmanBin -Sy $@
+                runasroot $pacmanBin -Sy $@
             ;;
             -u | --sysupgrade)
                 case $4 in
                 -a | --aur)
                     shift 4
-                    sudo $pacmanBin -Syu # fallback here
+                    runasroot $pacmanBin -Syu # fallback here
                     pacaur -u -e $@
                 ;;
                 -r | --repo)
                     shift 4
-                    sudo $pacmanBin -Syu
+                    runasroot $pacmanBin -Syu
                 ;;
                 --devel)
                     if $fallback; then
                         shift 4
-                        sudo $pacmanBin -Syu $@
+                        runasroot $pacmanBin -Syu $@
                         pacaur -u -e --devel $@
                     else
-                        sudo $pacmanBin -Syu $@
+                        runasroot $pacmanBin -Syu $@
                     fi
                 ;;
                 *)
                     shift 3
-                    sudo $pacmanBin -Syu $@
+                    runasroot $pacmanBin -Syu $@
                     if $fallback; then
                         pacaur -S -u -a $@
                     fi
@@ -955,7 +967,7 @@ main() {
             ;;
             *)
                 shift 2
-                sudo $pacmanBin -Sy $@ # no fallback here
+                runasroot $pacmanBin -Sy $@ # no fallback here
             esac
         ;;
         -a | --aur)
@@ -964,7 +976,7 @@ main() {
         ;;
         -r | --repo)
             shift 2
-            sudo $pacmanBin -S $@
+            runasroot $pacmanBin -S $@
         ;;
         *)
             shift
@@ -974,10 +986,10 @@ main() {
                     failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
                     pacaur -S -a $@
                 else
-                    sudo $pacmanBin -S $@
+                    runasroot $pacmanBin -S $@
                 fi
             else
-                sudo $pacmanBin -S $@
+                runasroot $pacmanBin -S $@
             fi
         esac
     ;;
@@ -1278,22 +1290,22 @@ main() {
         pacaur -Q -u -r $@
     ;;
     -D* | --database)
-        sudo $pacmanBin $@
+        runasroot $pacmanBin $@
     ;;
     -Q* | --query)
         $pacmanBin $@
     ;;
     -R* | --remove)
-        sudo $pacmanBin $@
+        runasroot $pacmanBin $@
     ;;
     -S* | --sync)
-        sudo $pacmanBin $@
+        runasroot $pacmanBin $@
     ;;
     -T* | --deptest)
-        sudo $pacmanBin $@
+        runasroot $pacmanBin $@
     ;;
     -U* | --upgrade)
-        sudo $pacmanBin $@
+        runasroot $pacmanBin $@
     ;;
     -V | --Version)
         $pacmanBin $@
@@ -1303,7 +1315,7 @@ main() {
         $pacmanBin $@
     ;;
     --*)
-        sudo $pacmanBin $@
+        runasroot $pacmanBin $@
     ;;
     *)
         usage
