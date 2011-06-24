@@ -257,6 +257,13 @@ MakePkgs() {
         confSourced=true
     fi
 
+    # allow root
+    if [[ $UID -eq 0 ]]; then
+        makepkg='makepkg --asroot'
+    else
+        makepkg='makepkg'
+    fi
+
     local j
     for j in "${deps[@]}"
     do
@@ -265,9 +272,9 @@ MakePkgs() {
             cd $buildDir/$j
             if $installPkg; then
                 if $force; then
-                    makepkg -sfi
+                    $makepkg -sfi
                 else
-                    makepkg -si
+                    $makepkg -si
                 fi
                 # if AUR dep, install as --asdeps
                 # if upgrade, do no change status
@@ -283,11 +290,11 @@ MakePkgs() {
                     fi
                 fi
             elif $force; then
-                makepkg -sf
-                #makepkg -df
+                $makepkg -sf
+                #$makepkg -df
             else
-                makepkg -s
-                #makepkg -d
+                $makepkg -s
+                #$makepkg -d
             fi
         else
             error "Could not open ${colorW}$j${reset} PKGBUILD"
