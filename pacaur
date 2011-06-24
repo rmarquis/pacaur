@@ -106,40 +106,16 @@ DownloadDepsAur() {
 }
 
 FindDepsAur() {
-    # find dependencies
-    adeps=($($pacaur -ii $@ --format '%D%M' | awk -F "\n" '{print}' | awk -F " " '{print}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    # set tmpdir
+    mkdir -p "$tmpdir"
 
-    ErrorExit $adeps
+    # download dependencies recursively and return AUR deps only
+    deps=$($pacaur -dd $@ -t $tmpdir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
-    # if no dependency, no need to continue
-    if [[ ${#adeps[*]} -eq 0 ]]; then
-        return
-    fi
+    ErrorExit $deps
 
-    local i=0
-    for package in ${adeps[@]}; do
-        # remove versioning from package names
-        adeps[$i]=${package%%=*}
-        adeps[$i]=${adeps[$i]%%>*}
-        adeps[$i]=${adeps[$i]%%<*}
-        # remove installed repo and aur packages
-        if [[ $(expac -Q %n | grep -x ${adeps[$i]}) == ${adeps[$i]} ]]; then
-            unset adeps[$i]
-        fi
-        # TBD: use local PKGBUILD first
-        # TBD: check provides
-        # TBD: install available repo package if necessary
-        ((i++))
-    done
-
-    adeps=$(echo ${adeps[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
-    adeps=( $adeps );
-
-    if [[ ${#adeps[*]} -gt 0 ]]; then
-        # save AUR dependencies then continue"
-        deps=("$@" "${deps[@]}" "${adeps[@]}")
-        FindDepsAur ${adeps[@]} 
-    fi
+    # clean tmpdir
+    rm -rf "$tmpdir" &>/dev/null
 }
 
 CheckAur() {
