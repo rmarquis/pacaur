@@ -1136,22 +1136,7 @@ main() {
         ;;
         esac
     ;;
-    -S)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -r $@
-        ;;
-        *)
-            shift
-            pacaur -S $@
-        ;;
-        esac
-    ;;
+    # pacman shortcuts
     -Ssa)
         shift
         pacaur -S -s -a $@
@@ -1224,7 +1209,7 @@ main() {
         shift
         pacaur -S -r $@
     ;;
-    -Q)
+    -Q | --query)
         case $2 in
         -u | --upgrades)
             case $3 in
