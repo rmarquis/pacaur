@@ -6,7 +6,7 @@
 #
 
 name="pacaur"
-version="1.2.1"
+version="1.2.2"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 
 #
