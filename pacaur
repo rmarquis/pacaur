@@ -28,7 +28,7 @@ colorM="\e[1;35m"
 colorC="\e[1;36m"
 colorW="\e[1;37m"
 
-tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$UID"
+tmpDir="${TMPDIR:-/tmp}/${name}tmp-$UID"
 
 #
 # Source user config
@@ -105,6 +105,19 @@ DownloadDepsAur() {
     ErrorExit $deps
 }
 
+FindDepsAur() {
+    # set tmpdir
+    mkdir -p "$tmpDir"
+
+    # download dependencies recursively and return AUR deps only
+    deps=$($pacaur -dd $@ -t $tmpDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    ErrorExit $deps
+
+    # clean tmpdir
+    rm -rf "$tmpDir" &>/dev/null
+}
+
 CheckAur() {
     $pacaur -u $@
 }
@@ -133,7 +146,7 @@ UpgradeAur() {
         Qversion=($(expac -Q %v ${aurpkgs[@]}))
 
         # set tmpdir
-        mkdir -p "$tmpdir"
+        mkdir -p "$tmpDir"
 
         local i=0
         for package in ${aurpkgs[@]}; do
@@ -145,7 +158,7 @@ UpgradeAur() {
         local j=0
         for package in ${aurpkgs[@]}; do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            . "$tmpdir/$package.PKGBUILD"
+            . "$tmpDir/$package.PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
                 aurdevel=("${aurdevel[@]}" "${aurpkgs[$j]}")
                 notice "${colorW}${aurpkgs[$j]} ${colorY}${Qversion[$j]} ${reset}"
@@ -154,7 +167,7 @@ UpgradeAur() {
         done
 
         # clean tmpdir
-        rm -rf "$tmpdir" &>/dev/null
+        rm -rf "$tmpDir" &>/dev/null
 
         CheckUpdatesAur=("${CheckUpdatesAur[@]}" "${aurdevel[@]}")
         CheckUpdatesAur=$(echo ${CheckUpdatesAur[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
@@ -283,8 +296,8 @@ MakePkgs() {
 }
 
 DownloadPkgbuild() {
-    if ! [[ -f "$tmpdir/$package.PKGBUILD" ]]; then
-        curl -Lfs "https://aur.archlinux.org/packages/$package/PKGBUILD" > "$tmpdir/$package.PKGBUILD"
+    if ! [[ -f "$tmpDir/$package.PKGBUILD" ]]; then
+        curl -Lfs "https://aur.archlinux.org/packages/$package/PKGBUILD" > "$tmpDir/$package.PKGBUILD"
     fi
 }
 
@@ -326,6 +339,7 @@ usage() {
     echo -e "   -s, --search    search AUR repository for matching strings"
     echo -e "   -i, --info      view package information -- pass twice for details"
     echo -e "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
+    echo -e "   -b, --build     use existing PKGBUILD and make target(s)"
     echo -e "   -m, --makepkg   download and make target(s)"
     echo -e "   -y, --sync      download, make and install target(s)"
     echo -e "   -q, --check     check for AUR update(s)"
@@ -428,6 +442,49 @@ main() {
         ;;
         *)  shift
             DownloadAur $@
+        ;;
+        esac
+    ;;
+    # build
+    -b | --build)
+        case $2 in
+        -f | --force)
+            force=true
+            case $3 in
+            -e | --edit)
+                shift 3
+                FindDepsAur $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
+            ;;
+            *)
+                shift 2
+                FindDepsAur $@
+                MakePkgs ${deps[@]}
+            ;;
+            esac
+        ;;
+        -e | --edit)
+            case $3 in
+            -f | --force)
+                force=true
+                shift 3
+                FindDepsAur $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
+            ;;
+            *)
+                shift 2
+                FindDepsAur $@
+                EditPkgs ${deps[@]}
+                MakePkgs ${deps[@]}
+            ;;
+            esac
+        ;;
+        *)
+            shift
+            FindDepsAur $@
+            MakePkgs ${deps[@]}
         ;;
         esac
     ;;
@@ -668,6 +725,18 @@ main() {
     -ddfe | -ddef)
         shift
         pacaur -d -d -f -e $@
+    ;;
+    -be)
+        shift
+        pacaur -b -e $@
+    ;;
+    -bf)
+        shift
+        pacaur -b -f $@
+    ;;
+    -bef | -bfe)
+        shift
+        pacaur -b -e -f $@
     ;;
     -me)
         shift
