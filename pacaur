@@ -283,11 +283,11 @@ MakePkgs() {
                     fi
                 fi
             elif $force; then
-                #makepkg -sf
-                makepkg -df
+                makepkg -sf
+                #makepkg -df
             else
-                #makepkg -s
-                makepkg -d
+                makepkg -s
+                #makepkg -d
             fi
         else
             error "Could not open ${colorW}$j${reset} PKGBUILD"
