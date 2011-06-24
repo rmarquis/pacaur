@@ -28,7 +28,7 @@ colorM="\e[1;35m"
 colorC="\e[1;36m"
 colorW="\e[1;37m"
 
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$UID"
+tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
 
 #
 # Source user config
