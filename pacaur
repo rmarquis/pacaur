@@ -77,7 +77,7 @@ runasroot() {
         sudo "$@"
     else
         echo -n "root "
-        # Hack: need to echo to make sure all of the args get in the single set of quotes
+        # echo hack to ensure all of the args get taken into account
         su root -c "$(echo $@)"
     fi
 }
@@ -174,14 +174,13 @@ UpgradeAur() {
     fi
 
     if [[ $CheckUpdatesAur == "" ]]; then
-        echo -e " there is nothing to do"
+        echo " there is nothing to do"
         exit   
     fi
 
     ErrorExit $CheckUpdatesAur
 
-    echo -e ""
-    notice "Proceed with installation? [Y/n]"
+    echo -e "\nProceed with installation? [Y/n]"
     
     while true; do
         read yn
@@ -334,33 +333,33 @@ notice() {
 }
 
 usage() {
-    echo -e "usage:  ${name} <operation> [options] [package(s)]"
-    echo -e "operations:"
-    echo -e "   -s, --search    search AUR repository for matching strings"
-    echo -e "   -i, --info      view package information -- pass twice for details"
-    echo -e "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
-    echo -e "   -b, --build     use existing PKGBUILD and make target(s)"
-    echo -e "   -m, --makepkg   download and make target(s)"
-    echo -e "   -y, --sync      download, make and install target(s)"
-    echo -e "   -q, --check     check for AUR update(s)"
-    echo -e "   -u, --update    update AUR package(s)"
-    echo -e "   -abs, --abs     copy target(s) from ABS directory to build directory"
-    echo -e "   -c, --clean     clean existing target(s) PKGBUILD"
-    echo -e ""
-    echo -e "options:"
-    echo -e "   -f, --force     force operation -- can be combined with the -d, -m flags"
-    echo -e "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u, -abs flags"
-    echo -e ""
-    echo -e "pacman options:"
-    echo -e " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Syu operations"
-    echo -e "   -r, --repo      only search or install packages from the repositories"
-    echo -e "   -a, --aur       only search or install packages from the AUR"
-    echo -e "   --devel         update AUR devel packages -- can be combined with the -Sua flag"
-    echo -e ""
-    echo -e "general options:"
-    echo -e "   -v, --version   display version information"
-    echo -e "   -h, --help      display help information"
-    echo -e ""
+    echo "usage:  ${name} <operation> [options] [package(s)]"
+    echo "operations:"
+    echo "   -s, --search    search AUR repository for matching strings"
+    echo "   -i, --info      view package information -- pass twice for details"
+    echo "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
+    echo "   -b, --build     use existing PKGBUILD and make target(s)"
+    echo "   -m, --makepkg   download and make target(s)"
+    echo "   -y, --sync      download, make and install target(s)"
+    echo "   -q, --check     check for AUR update(s)"
+    echo "   -u, --update    update AUR package(s)"
+    echo "   -abs, --abs     copy target(s) from ABS directory to build directory"
+    echo "   -c, --clean     clean existing target(s) PKGBUILD"
+    echo ""
+    echo "options:"
+    echo "   -f, --force     force operation -- can be combined with the -d, -m flags"
+    echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u, -abs flags"
+    echo ""
+    echo "pacman options:"
+    echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Syu operations"
+    echo "   -r, --repo      only search or install packages from the repositories"
+    echo "   -a, --aur       only search or install packages from the AUR"
+    echo "   --devel         update AUR devel packages -- can be combined with the -Sua flag"
+    echo ""
+    echo "general options:"
+    echo "   -v, --version   display version information"
+    echo "   -h, --help      display help information"
+    echo ""
 }
 
 version() {
