@@ -6,7 +6,7 @@
 #
 
 name="pacaur"
-version="1.2.3"
+version="2.0.0"
 description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 
 #
@@ -58,15 +58,6 @@ else
 fi
 
 #
-# Working global variables
-#
-
-confSourced=false
-installPkg=false
-force=false
-devel=false
-
-#
 # Functions
 #
 
@@ -95,12 +86,20 @@ InfoDetailsAur() {
 }
 
 DownloadAur() {
-    $pacaur -d $@ -t $buildDir
+    if [[ ! $force ]]; then
+        $pacaur -d $@ -t $buildDir
+    else
+        $pacaur -d -f $@ -t $buildDir
+    fi
 }
 
 DownloadDepsAur() {
     # download dependencies recursively and return AUR deps only
-    deps=$($pacaur -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    if [[ ! $force ]]; then
+        deps=$($pacaur -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    else
+        deps=$($pacaur -dd -f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    fi
 
     ErrorExit $deps
 }
@@ -138,10 +137,10 @@ CheckRepo() {
 
 UpgradeAur() {
     notice "${colorW}Starting AUR upgrade...${reset}"
-    CheckUpdatesAur=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    pkgs=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # add devel packages
-    if $devel; then
+    if [[ $devel ]]; then
         aurpkgs=( $($pacmanBin -Qmq) )
         Qversion=($(expac -Q %v ${aurpkgs[@]}))
 
@@ -169,16 +168,16 @@ UpgradeAur() {
         # clean tmpdir
         rm -rf "$tmpDir" &>/dev/null
 
-        CheckUpdatesAur=("${CheckUpdatesAur[@]}" "${aurdevel[@]}")
-        CheckUpdatesAur=$(echo ${CheckUpdatesAur[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
+        pkgs=("${pkgs[@]}" "${aurdevel[@]}")
+        pkgs=$(echo ${pkgs[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
     fi
 
-    if [[ $CheckUpdatesAur == "" ]]; then
+    if [[ $pkgs == "" ]]; then
         echo " there is nothing to do"
         exit   
     fi
 
-    ErrorExit $CheckUpdatesAur
+    ErrorExit $pkgs
 
     echo -e "\nProceed with installation? [Y/n]"
     
@@ -186,8 +185,7 @@ UpgradeAur() {
         read yn
         case $yn in
         [Yy]* | Yes | yes)
-            u=${CheckUpdatesAur}
-            upgrade=true
+            pkgs=${pkgs}
             break
         ;;
         [Nn]* | No | no)
@@ -205,7 +203,7 @@ UpgradeAur() {
 CopyAbs() {
     for i in "$@"
     do
-        if [[ -e $buildDir/$i/PKGBUILD && $force != true ]]; then
+        if [[ -e $buildDir/$i/PKGBUILD && ! $force ]]; then
             failed "${colorW}$i${reset} PKGBUILD already exists in $buildDir. Use -f to overwrite."
         else
             cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
@@ -215,6 +213,7 @@ CopyAbs() {
 }
 
 EditPkgs() {
+    if [[ $edit ]]; then
     for i in "$@"
     do
         if [ -e $buildDir/$i/PKGBUILD ]; then
@@ -224,10 +223,11 @@ EditPkgs() {
             error "Could not open ${colorW}$i${reset} PKGBUILD"
         fi
     done
+    fi
 }
 
 CleanUp() {
-    if $clean; then
+    if [[ $clean == true ]]; then
         cd $buildDir
         for i in $@
         do
@@ -246,18 +246,18 @@ MakePkgs() {
 
     # remember explicitly installed packages
     if [[ $expl == "" ]]; then
-      read -ra expl <<< ${@}
+      read -ra expl <<< ${pkgs[@]}
     fi
 
     # set architecture variables
-    if ! $confSourced; then
+    if [[ ! $confSourced ]]; then
         source /etc/makepkg.conf
         source /etc/abs.conf
         confSourced=true
     fi
 
-    # allow root
-    if [[ $UID -eq 0 ]]; then
+    # allow build as root
+    if [[ $asroot ]]; then
         makepkg='makepkg --asroot'
     else
         makepkg='makepkg'
@@ -269,12 +269,8 @@ MakePkgs() {
         if [ -e $buildDir/$j/PKGBUILD ]; then
             notice "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
-            if $installPkg; then
-                if $force; then
-                    $makepkg -sfi
-                else
-                    $makepkg -si
-                fi
+            if [[ $install ]]; then
+                $makepkg -sfi
                 # if AUR dep, install as --asdeps
                 # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
@@ -288,12 +284,8 @@ MakePkgs() {
                         runasroot $pacmanBin -D --asdeps $j &>/dev/null
                     fi
                 fi
-            elif $force; then
-                $makepkg -sf
-                #$makepkg -df
             else
-                $makepkg -s
-                #$makepkg -d
+                $makepkg -sf
             fi
         else
             error "Could not open ${colorW}$j${reset} PKGBUILD"
@@ -351,22 +343,24 @@ usage() {
     echo "   -q, --check     check for AUR update(s)"
     echo "   -u, --update    update AUR package(s)"
     echo "   -abs, --abs     copy target(s) from ABS directory to build directory"
-    echo "   -c, --clean     clean existing target(s) PKGBUILD"
     echo ""
     echo "options:"
-    echo "   -f, --force     force operation -- can be combined with the -d, -m flags"
-    echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u, -abs flags"
+    echo "   -f, --force     force operation -- can be combined with the -d, -m, -y, -abs flags"
+    echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -b, -m, -y, -u, -abs flags"
+    echo "   -c, --clean     clean existing target(s) PKGBUILD -- can be combined with the -b, -m, -y, -abs flags"
     echo ""
     echo "pacman options:"
     echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Syu operations"
     echo "   -r, --repo      only search or install packages from the repositories"
     echo "   -a, --aur       only search or install packages from the AUR"
-    echo "   --devel         update AUR devel packages -- can be combined with the -Sua flag"
+    echo "   --devel         update AUR devel packages -- can be combined with the -Su flag"
+    echo "   --asroot        allow makepkg to run as root user"
     echo ""
     echo "general options:"
     echo "   -v, --version   display version information"
     echo "   -h, --help      display help information"
     echo ""
+    exit
 }
 
 version() {
@@ -376,927 +370,286 @@ version() {
 
 
 #
+# Argument parsing
+#
+
+[[ $1 ]] || usage
+pkgs=()
+count=0
+while [[ $1 ]]; do
+    case "$1" in
+        '-s'|'--sync') operation=search ;;
+        '-i'|'--info') operation=info; count=$[$count+1] ;;
+        '-d'|'--download') operation=download; count=$[$count+1] ;;
+        '-b'|'--build') operation=build ;;
+        '-m'|'--makepkg') operation=makepkg ;;
+        '-y'|'--sync') operation=makepkg ; install=true ;;
+        '-q'|'--check') operation=check ;;
+        '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true ;;
+        '-abs'|'--abs') operation=abs ;;
+        '-c'|'--clean') clean=true ;;
+        '-f'|'--force') force=true ;;
+        '-e'|'--edit') edit=true ;;
+        # shortcuts
+        '-ii') operation=info; count='2' ;;
+        '-dd') operation=download; count='2' ;;
+        '-df') operation=download; count=$[$count+1]; force=true ;;
+        '-de') operation=download; count=$[$count+1]; edit=true ;;
+        '-def'|'-dfe') operation=download; count=$[$count+1]; edit=true; force=true ;;
+        '-ddf') operation=download; count='2'; force=true ;;
+        '-dde') operation=download; count='2'; edit=true ;;
+        '-ddef'|'-ddfe') operation=download; count='2'; edit=true; force=true ;;
+        '-be') operation=build; edit=true ;;
+        '-me') operation=makepkg; edit=true ;;
+        '-mf') operation=makepkg; force=true ;;
+        '-mef'|'-mfe') operation=makepkg; force=true; edit=true ;;
+        '-ye') operation=makepkg; edit=true; install=true ;;
+        '-yf') operation=makepkg; force=true; install=true ;;
+        '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true ;;
+        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true ;;
+        '-abse') operation=abs; edit=true ;;
+        '-absf') operation=abs; force=true ;;
+        '-absef'|'-absfe') operation=abs; force=true; edit=true ;;
+        # pacman
+        '-S'|'--sync') option=sync; install=true; force=true; edit=true ;;
+        '-Ss'|'--search') option=search ;;
+        '-Si'|'--info') option=info; count=$[$count+1] ;;
+        '-Sii'|'--info') option=info; count='2' ;;
+        '-Sw'|'--downloadonly') option=downloadonly; force=true; edit=true ;;
+        #'-Su'|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true ;;
+        '-Qu'|'--upgrades') option=upgrades ;;
+        '-Su'|'--sysupgrade'|'-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
+              option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
+        '-r'|'--repo') repo='1' ;;
+        '-a'|'--aur') aur='1' ;;
+        # pacman shortcuts
+        '-Sa') option=sync; install=true; force=true; edit=true; aur='1' ;;
+        '-Sr') option=sync; install=true; force=true; edit=true; repo='1' ;;
+        '-Ssa') option=search; aur='1' ;;
+        '-Ssr') option=search; repo='1' ;;
+        '-Sia') option=info; count=$[$count+1]; aur='1' ;;
+        '-Sir') option=info; count=$[$count+1]; repo='1' ;;
+        '-Siia') option=info; count='2'; aur='1' ;;
+        '-Siir') option=info; count='2'; repo='1' ;;
+        '-Swa') option=downloadonly; force=true; edit=true; aur='1' ;;
+        '-Swr') option=downloadonly; force=true; edit=true; repo='1' ;;
+        #'-Sua') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; aur='1' ;;
+        #'-Sur') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; repo='1' ;;
+        '-Qua') option=upgrades; aur='1' ;;
+        '-Qur') option=upgrades; repo='1' ;;
+        '-Sua'|'-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
+              option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
+        '-Sur'|'-Syur'|'-Suyr'|'-Syyur'|'-Suyyr'|'-Syuyr'|'-Syuur'|'-Suuyr'|'-Suur'|'-Syyuur'|'-Suuyyr'|'-Syuyr'|'-Syuyur'|'-Syuuyr'|'-Suyuyr')
+              option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
+        # others
+        '--devel') devel=true ;;
+        '--asroot') asroot=true ;;
+        -D* | '--database') runasroot $pacmanBin $@; exit ;;
+        -Q* | '--query') $pacmanBin $@; exit ;;
+        -R* | '--remove') runasroot $pacmanBin $@; exit ;;
+        -S* | '--sync') runasroot $pacmanBin $@; exit ;;
+        -T* | '--deptest') runasroot $pacmanBin $@; exit ;;
+        -U* | '--upgrade') runasroot $pacmanBin $@; exit ;;
+        --*) runasroot $pacmanBin $@; exit ;;
+        '-h'|'--help') usage; exit ;;
+        '-v'|'--version') version; exit ;;
+        #'--') shift ; pkgs+=("$@") ; break ;;
+        -*) echo "$name: invalid option -- '$1'" ; exit 5 ;;
+        *) pkgs+=("$1") ;;
+    esac
+    shift
+done
+
+#
 # Main
 #
 
-main() {
-    case $1 in
-    # search
-    -s | --search)
-        shift
-        SearchAur $@
-    ;;
-    # info
-    -i | --info)
-        case $2 in
-        -i | --info)
-            shift 2
-            InfoDetailsAur $@
-        ;;
-        *)
-            shift
-            InfoAur $@
-        ;;
-        esac
-    ;;
-    # download
-    -d | --download)
-        case $2 in
-        -d | --download)
-            case $3 in
-            -f | --force)
-                case $4 in
-                -e | --edit)
-                    shift 4
-                    DownloadDepsAur $@ -f
-                    EditPkgs $deps
-                ;;
-                *)
-                    shift 3
-                    DownloadDepsAur $@ -f
-                ;;
-                esac
-            ;;
-            -e | --edit)
-                shift 3
-                DownloadDepsAur $@
-                EditPkgs $deps
-            ;;
-            *)
-                shift 2
-                DownloadDepsAur $@
-            ;;
-            esac
-        ;;
-        -f | --force)
-            case $3 in
-            -e | --edit)
-                shift 3
-                DownloadAur $@ -f
-                EditPkgs $@
-            ;;
-            *)
-                shift 2
-                DownloadAur $@ -f
-            ;;
-            esac
-        ;;
-        -e | --edit)
-            shift 2
-            DownloadAur $@
-            EditPkgs $@
-        ;;
-        *)  shift
-            DownloadAur $@
-        ;;
-        esac
-    ;;
-    # build
-    -b | --build)
-        case $2 in
-        -f | --force)
-            force=true
-            case $3 in
-            -e | --edit)
-                shift 3
-                FindDepsAur $@
-                EditPkgs ${deps[@]}
-                MakePkgs ${deps[@]}
-            ;;
-            *)
-                shift 2
-                FindDepsAur $@
-                MakePkgs ${deps[@]}
-            ;;
-            esac
-        ;;
-        -e | --edit)
-            case $3 in
-            -f | --force)
-                force=true
-                shift 3
-                FindDepsAur $@
-                EditPkgs ${deps[@]}
-                MakePkgs ${deps[@]}
-            ;;
-            *)
-                shift 2
-                FindDepsAur $@
-                EditPkgs ${deps[@]}
-                MakePkgs ${deps[@]}
-            ;;
-            esac
-        ;;
-        *)
-            shift
-            FindDepsAur $@
-            MakePkgs ${deps[@]}
-        ;;
-        esac
-    ;;
-    # makepkg
-    -m | --makepkg)
-        case $2 in
-        -f | --force)
-            force=true
-            case $3 in
-            -e | --edit)
-                shift 3
-                DownloadDepsAur $@ -f
-                EditPkgs $deps
-                MakePkgs $@
-                CleanUp ${deps[@]}
-            ;;
-            *)
-                shift 2
-                DownloadDepsAur $@ -f
-                MakePkgs $@
-                CleanUp ${deps[@]}
-            ;;
-            esac
-        ;;
-        -e | --edit)
-            case $3 in
-            -f | --force)
-                force=true
-                shift 3
-                DownloadDepsAur $@ -f
-                EditPkgs $deps
-                MakePkgs $@
-                CleanUp ${deps[@]}
-            ;;
-            *)
-                shift 2
-                DownloadDepsAur $@ -f
-                EditPkgs $deps
-                MakePkgs $@
-                CleanUp ${deps[@]}
-            ;;
-            esac
-        ;;
-        *)
-            shift
-            DownloadDepsAur $@ -f
-            MakePkgs $@
-            CleanUp ${deps[@]}
-        ;;
-        esac
-    ;;
-    # install
-    -y | --sync)
-    case $2 in
-        -e | --edit)
-            shift 2
-            DownloadDepsAur $@ -f
-            EditPkgs $deps
-            force=true
-            installPkg=true
-            MakePkgs $@
-            CleanUp ${deps[@]}
-        ;;
-        *)
-            shift
-            DownloadDepsAur $@ -f
-            force=true
-            installPkg=true
-            MakePkgs $@
-            CleanUp ${deps[@]}
-        ;;
-        esac
-    ;;
-    # check update
-    -q | --check)
-        shift
-        CheckAur $@
-    ;;
-    # update
-    -u | --update)
-        case $2 in
-        -e | --edit)
-            case $3 in
-            --devel)
-                shift 3
-                devel=true
-                UpgradeAur
-                DownloadDepsAur $u -f
-                EditPkgs $u
-                force=true
-                installPkg=true
-                MakePkgs $u 
-                CleanUp $u
-            ;;
-            *)
-                shift 2
-                UpgradeAur
-                DownloadDepsAur $u -f
-                EditPkgs $u
-                force=true
-                installPkg=true
-                MakePkgs $u 
-                CleanUp $u
-            ;;
-            esac
-        ;;
-        --devel)
-            case $3 in
-            -e | --edit)
-                shift 3
-                devel=true
-                UpgradeAur
-                DownloadDepsAur $u -f
-                EditPkgs $u
-                force=true
-                installPkg=true
-                MakePkgs $u 
-                CleanUp $u
-            ;;
-            *)
-                shift 2
-                devel=true
-                UpgradeAur
-                DownloadDepsAur $u -f
-                force=true
-                installPkg=true
-                MakePkgs $u 
-                CleanUp $u
-            ;;
-            esac
-        ;;
-        *)
-            shift
-            UpgradeAur
-            DownloadDepsAur $u -f
-            force=true
-            installPkg=true
-            MakePkgs $u 
-            CleanUp $u
-        ;;
-        esac
-    ;;
-    # edit
-    -e | --edit)
-        shift
-        EditPkgs $@
-    ;;
-    # clean
-    -c | --clean)
-        shift
-        clean=true
-        CleanUp $@
-    ;;
-    # abs
-    -abs | --abs)
-        case $2 in
-        -e | --edit)
-            case $3 in
-            -f | --force)
-                shift 3 
-                force=true
-                CopyAbs $@
-                EditPkgs $@
-            ;;
-            *)
-                shift 2
-                CopyAbs $@
-                EditPkgs $@
-            ;;
-            esac
-        ;;
-        -f | --force)
-            case $3 in
-            -e | --edit)
-                shift 3 
-                force=true
-                CopyAbs $@
-                EditPkgs $@
-            ;;
-            *)
-                shift 2
-                force=true
-                CopyAbs $@
-            ;;
-            esac
-        ;;
-        *)  shift
-            CopyAbs $@
-        ;;
-        esac
-    ;;
-    # version
-    -v | --version)
-        shift
-        version
-    ;;
-    # shortcuts
-    -ii)
-        shift
-        pacaur -i -i $@
-    ;;
-    -abse)
-        shift
-        pacaur -abs -e $@
-    ;;
-    -absf)
-        shift
-        pacaur -abs -f $@
-    ;;
-    -absfe | -absef)
-        shift
-        pacaur -a -f -e $@
-    ;;
-    -df)
-        shift
-        pacaur -d -f $@
-    ;;
-    -de)
-        shift
-        pacaur -d -e $@
-    ;;
-    -dfe)
-        shift
-        pacaur -d -f -e $@
-    ;;
-    -dd)
-        shift
-        pacaur -d -d $@
-    ;;
-    -ddf)
-        shift
-        pacaur -d -d -f $@
-    ;;
-    -dde)
-        shift
-        pacaur -d -d -e $@
-    ;;
-    -ddfe | -ddef)
-        shift
-        pacaur -d -d -f -e $@
-    ;;
-    -be)
-        shift
-        pacaur -b -e $@
-    ;;
-    -bf)
-        shift
-        pacaur -b -f $@
-    ;;
-    -bef | -bfe)
-        shift
-        pacaur -b -e -f $@
-    ;;
-    -me)
-        shift
-        pacaur -m -e $@
-    ;;
-    -mf)
-        shift
-        pacaur -m -f $@
-    ;;
-    -mef | -mfe)
-        shift
-        pacaur -m -e -f $@
-    ;;
-    -ue)
-        shift
-        pacaur -u -e $@
-    ;;
-    -ye)
-        shift
-        pacaur -y -e $@
-    ;;
-    # pacman extension
-    -S | --sync)
-        case $2 in
-        -s | --search)
-            case $3 in
-            -a | --aur)
-                shift 3
-                pacaur -s $@
-            ;;
-            -r | --repo)
-                shift 3
-                $pacmanBin -Ss $@
-            ;;
-            *)
-                shift 2
-                $pacmanBin -Ss $@
-                if $fallback; then
-                    pacaur -s $@
-                fi
-            ;;
-            esac
-        ;;
-        -i | --info)
-            case $3 in
-            -a | --aur)
-                shift 3
-                pacaur -i $@
-            ;;
-            -r | --repo)
-                shift 3
-                $pacmanBin -Si $@
-            ;;
-            -i | --info)
-                case $4 in
-                -a | --aur)
-                    shift 4
-                    pacaur -i -i $@
-                ;;
-                -r | --repo)
-                    shift 4
-                    $pacmanBin -Sii $@
-                ;;
-                *)
-                    shift 3
-                    if $fallback; then
-                        result=$($pacmanBin -Sii $@ 2>&1)
-                        if [[ $(echo $result | grep -v "error: package") == "" ]]; then
-                            failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
-                            pacaur -S -i -i -a $@
-                        else
-                            $pacmanBin -Sii $@
-                        fi
-                    else
-                        $pacmanBin -Sii $@
-                    fi
-                ;;
-                esac
-            ;;
-            *)
-                shift 2
-                if $fallback; then
-                    result=$($pacmanBin -Si $@ 2>&1)
-                    if [[ $(echo $result | grep -v "error: package") == "" ]]; then
-                        failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
-                        pacaur -S -i -a $@
-                    else
-                        $pacmanBin -Si $@
-                    fi
-                else
-                    $pacmanBin -Si $@
-                fi
-            ;;
-            esac
-        ;;
-        -w | --downloadonly)
-            case $3 in
-            -a | --aur)
-                shift 3
-                pacaur -m -e -f $@
-            ;;
-            -r | --repo)
-                shift 3
-                runasroot $pacmanBin -Sw $@
-            ;;
-            *)
-                shift 2
-                if $fallback; then
-                    result=$($pacmanBin -Sw --print $@ 2>&1)
-                    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
-                        failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
-                        pacaur -S -w -a $@
-                    else
-                        runasroot $pacmanBin -Sw $@
-                    fi
-                else
-                    runasroot $pacmanBin -Sw $@
-                fi
-            ;;
-            esac
-        ;;
-        -u | --upgrades)
-            case $3 in
-            -a | --aur)
-                case $4 in
-                --devel)
-                    shift 4
-                    pacaur -u -e --devel $@
-                ;;
-                *)
-                    shift 3
-                    pacaur -u -e $@
-                ;;
-                esac
-            ;;
-            -r | --repo)
-                shift 3
-                runasroot $pacmanBin -Su $@
-            ;;
-            --devel)
-                if $fallback; then
-                    shift 5
-                    runasroot $pacmanBin -Su $@
-                    pacaur -S -u -a --devel $@
-                else
-                    echo "$pacmanBin: unrecognized option '--devel'"
-                fi
-            ;;
-            *)
-                shift 2
-                if $fallback; then
-                    result=$($pacmanBin -Su --print $@ 2>&1)
-                    if [[ ! $@ ]]; then
-                        runasroot $pacmanBin -Su
-                        pacaur -S -u -a
-                    elif [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
-                        failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
-                        pacaur -S -u -a $@
-                    else
-                        runasroot $pacmanBin -Su $@
-                    fi
-                else
-                    runasroot $pacmanBin -Su $@
-                fi
-            ;;
-            esac
-        ;;
-        -y | --refresh)
-            case $3 in
-            -a | --aur)
-                shift 3
-                runasroot $pacmanBin -Sy
-                pacaur -y -e $@
-            ;;
-            -r | --repo)
-                shift 3
-                runasroot $pacmanBin -Sy $@
-            ;;
-            -u | --sysupgrade)
-                case $4 in
-                -a | --aur)
-                    shift 4
-                    runasroot $pacmanBin -Syu # fallback here
-                    pacaur -u -e $@
-                ;;
-                -r | --repo)
-                    shift 4
-                    runasroot $pacmanBin -Syu
-                ;;
-                --devel)
-                    if $fallback; then
-                        shift 4
-                        runasroot $pacmanBin -Syu $@
-                        pacaur -u -e --devel $@
-                    else
-                        runasroot $pacmanBin -Syu $@
-                    fi
-                ;;
-                *)
-                    shift 3
-                    runasroot $pacmanBin -Syu $@
-                    if $fallback; then
-                        pacaur -S -u -a $@
-                    fi
-                ;;
-                esac
-            ;;
-            *)
-                shift 2
-                runasroot $pacmanBin -Sy $@ # no fallback here
-            esac
-        ;;
-        -a | --aur)
-            shift 2
-            pacaur -y -e $@
-        ;;
-        -r | --repo)
-            shift 2
-            runasroot $pacmanBin -S $@
-        ;;
-        *)
-            shift
-            if $fallback; then
-                result=$($pacmanBin -S --print $@ 2>&1)
-                if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
-                    failed "Package(s) ${colorW}$@${reset} not found in repositories, trying ${colorM}aur${reset}..."
-                    pacaur -S -a $@
-                else
-                    runasroot $pacmanBin -S $@
-                fi
-            else
-                runasroot $pacmanBin -S $@
-            fi
-        esac
-    ;;
-    -Ss)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -s -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -s -r $@
-        ;;
-        *)
-            shift
-            pacaur -S -s $@
-        ;;
-        esac
-    ;;
-    -Si)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -i -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -i -r $@
-        ;;
-        -i | --info)
-            case $3 in
-            -a | --aur)
-                shift 3
-                pacaur -S -i -i -a $@
-            ;;
-            -r | --repo)
-                shift 3
-                pacaur -S -i -i -r $@
-            ;;
-            *)
-                shift 2
-                pacaur -S -i -i $@
-            ;;
-            esac
-        ;;
-        *)
-            shift
-            pacaur -S -i $@
-        ;;
-        esac
-    ;;
-    -Sii)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -i -i -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -i -i -r $@
-        ;;
-        *)
-            shift
-            pacaur -S -i -i $@
-        ;;
-        esac
-    ;;
-    -Sw)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -w -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -w -r $@
-        ;;
-        *)
-            shift
-            pacaur -S -w $@
-        ;;
-        esac
-    ;;
-    -Su)
-        case $2 in
-        -a | --aur)
-            case $3 in
-            --devel)
-                shift 3
-                pacaur -S -u -a --devel $@
-            ;;
-            *)
-                shift 2
-                pacaur -S -u -a $@
-            ;;
-            esac
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -u -r $@
-        ;;
-        --devel)
-            if $fallback;then
-                pacaur -S -u --devel $@
-            else
-                echo "$pacmanBin: unrecognized option '--devel'"
-            fi
-        ;;
-        *)
-            shift
-            pacaur -S -u $@
-        ;;
-        esac
-    ;;
-    -Sy)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -y -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -y -r $@
-        ;;
-        -u | --sysupgrade)
-            case $3 in
-            -a | --aur)
-                shift 3
-                pacaur -S -y -u -a $@
-            ;;
-            -r | --repo)
-                shift 3
-                pacaur -S -y -u -r $@
-            ;;
-            *)
-                shift 2
-                pacaur -S -y -u $@
-            ;;
-            esac
-        ;;
-        *)
-            shift
-            pacaur -S -y $@
-        esac
-    ;;
-    -Syu)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -S -y -u -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -S -y -u -r $@
-        ;;
-        *)
-            shift
-            pacaur -S -y -u $@
-        ;;
-        esac
-    ;;
-    # pacman shortcuts
-    -Ssa)
-        shift
-        pacaur -S -s -a $@
-    ;;
-    -Sia)
-        shift
-        pacaur -S -i -a $@
-    ;;
-    -Siia)
-        shift
-        pacaur -S -i -i -a $@
-    ;;
-    -Swa)
-        shift
-        pacaur -S -w -a $@
-    ;;
-    -Sua)
-        case $2 in
-        --devel)
-            shift 2
-            pacaur -S -u -a --devel $@
-        ;;
-        *)
-            shift
-            pacaur -S -u -a $@
-        ;;
-        esac
-    ;;
-    -Sya)
-        shift
-        pacaur -S -y -a $@
-    ;;
-    -Syua)
-        shift
-        pacaur -S -y -u -a $@
-    ;;
-    -Sa)
-        shift
-        pacaur -S -a $@
-    ;;
-    -Ssr)
-        shift
-        pacaur -S -s -r $@
-    ;;
-    -Sir)
-        shift
-        pacaur -S -i -r $@
-    ;;
-    -Siir)
-        shift
-        pacaur -S -i -i -r $@
-    ;;
-    -Swr)
-        shift
-        pacaur -S -w -r $@
-    ;;
-    -Sur)
-        shift
-        pacaur -S -u -r $@
-    ;;
-    -Syr)
-        shift
-        pacaur -S -y -r $@
-    ;;
-    -Syur)
-        shift
-        pacaur -S -y -u -r $@
-    ;;
-    -Sr)
-        shift
-        pacaur -S -r $@
-    ;;
-    -Q | --query)
-        case $2 in
-        -u | --upgrades)
-            case $3 in
-            -a | --aur)
-                shift 3
-                CheckAur $@
-            ;;
-            -r | --repo)
-                shift 3
-                CheckRepo $@
-            ;;
-            *)
-                shift 2
-                CheckRepo $@
-                if $fallback;then
-                    CheckAur $@
-                fi
-            ;;
-            esac
-        ;;
-        *)
-            shift
-            $pacmanBin -Q $@
-        esac
-    ;;
-    -Qu)
-        case $2 in
-        -a | --aur)
-            shift 2
-            pacaur -Q -u -a $@
-        ;;
-        -r | --repo)
-            shift 2
-            pacaur -Q -u -r $@
-        ;;
-        *)
-            shift
-            pacaur -Q -u $@
-        ;;
-        esac
-    ;;
-    -Qua)
-        shift
-        pacaur -Q -u -a $@
-    ;;
-    -Qur)
-        shift
-        pacaur -Q -u -r $@
-    ;;
-    -D* | --database)
-        runasroot $pacmanBin $@
-    ;;
-    -Q* | --query)
-        $pacmanBin $@
-    ;;
-    -R* | --remove)
-        runasroot $pacmanBin $@
-    ;;
-    -S* | --sync)
-        runasroot $pacmanBin $@
-    ;;
-    -T* | --deptest)
-        runasroot $pacmanBin $@
-    ;;
-    -U* | --upgrade)
-        runasroot $pacmanBin $@
-    ;;
-    -V | --Version)
-        $pacmanBin $@
-    ;;
-    -h | --help)
-        usage
-        $pacmanBin $@
-    ;;
-    --*)
-        runasroot $pacmanBin $@
-    ;;
-    *)
-        usage
-    ;;
-    esac
+Core() {
+    DownloadDepsAur ${pkgs[@]}
+    EditPkgs ${deps[@]}
+    MakePkgs ${deps[@]}
+    CleanUp ${deps[@]}
 }
+
+main() {
+
+# search (-s) handling
+if [[ $operation = search ]]; then
+    for package in "${pkgs[@]}"; do
+        SearchAur $package
+    done
+    exit
+fi
+
+# info (-i) handling
+if [[ $operation = info ]]; then
+    [[ $count -eq 1 ]] && InfoAur ${pkgs[@]} || InfoDetailsAur ${pkgs[@]}
+    exit
+fi
+
+# download (-d) handling
+if [[ $operation = download ]]; then
+    [[ $count -eq 1 ]] && DownloadAur ${pkgs[@]} || DownloadDepsAur ${pkgs[@]}
+    [[ ! $deps ]] && deps=("${pkgs[@]}")
+    EditPkgs ${deps[@]}
+    exit
+fi
+
+# build (-b) handling
+if [[ $operation = build ]]; then
+    FindDepsAur ${pkgs[@]}
+    [[ ! $deps ]] && deps=("${pkgs[@]}")
+    EditPkgs ${deps[@]}
+    MakePkgs ${deps[@]}
+    CleanUp ${deps[@]}
+    exit
+fi
+
+# makepkg (-m) handling
+# sync (-y) handling
+# update (-u) handling
+if [[ $operation = makepkg ]]; then
+    [[ $upgrade ]] && UpgradeAur
+    Core ${pkgs[@]}
+    exit
+fi
+
+# check (-q) handling
+if [[ $operation = check ]]; then
+    CheckAur ${pkgs[@]}
+    exit
+fi
+
+# abs (-abs) handling
+if [[ $operation = abs ]]; then
+    CopyAbs ${pkgs[@]}
+    EditPkgs ${pkgs[@]}
+    exit
+fi
+
+# edit (-e) handling
+if [[ $edit && ! $option ]]; then
+    EditPkgs ${pkgs[@]}
+    exit
+fi
+
+# clean (-c) handling
+if [[ $clean && ! $option ]]; then
+    CleanUp ${pkgs[@]}
+    exit
+fi
+
+# Pacman handling
+
+# sync (-S) handling
+if [[ $option = sync ]]; then
+    [[ ! $aur ]] && result=$($pacmanBin -S --print ${pkgs[@]} 2>&1)
+    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+        if [[ $fallback = true ]]; then
+            [[ ! $aur ]] && [[ ! $repo ]] && failed "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+            [[ ! $repo ]] && Core ${pkgs[@]}
+            [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
+        else
+            [[ $aur ]] && Core ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
+        fi
+    else
+        [[ ! $aur ]] && runasroot $pacmanBin -S ${pkgs[@]}
+    fi
+    exit
+fi
+
+# search (-Ss) handling
+if [[ $option = search ]]; then
+    for package in "${pkgs[@]}"
+    do
+        [[ ! $aur ]] && $pacmanBin -Ss $package
+        if [[ $fallback = true ]]; then
+            [[ ! $repo ]] && SearchAur $package
+        else
+            [[ $aur ]] && SearchAur $package
+        fi
+    done
+    exit
+fi
+
+# info (-Si) handling
+if [[ $option = info ]]; then
+    [[ ! $aur ]] && result=$($pacmanBin -Si --print ${pkgs[@]} 2>&1)
+    if [[ $(echo $result | grep -v "error: package") == "" ]]; then
+        if [[ $fallback = true ]]; then
+            [[ ! $aur ]] && [[ ! $repo ]] && failed "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+            [[ ! $repo ]] && InfoAur ${pkgs[@]}
+            [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
+        else
+            [[ $aur ]] && InfoAur ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
+        fi
+    else
+        [[ ! $aur ]] && $pacmanBin -Si ${pkgs[@]}
+    fi
+    exit
+fi
+
+# downloadonly (-Sw) handling
+if [[ $option = downloadonly ]]; then
+    [[ ! $aur ]] && result=$($pacmanBin -Sw --print ${pkgs[@]} 2>&1)
+    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
+        if [[ $fallback = true ]]; then
+            [[ ! $aur ]] && [[ ! $repo ]] && failed "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+            [[ ! $repo ]] && Core ${pkgs[@]}
+            [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
+        else
+            [[ $aur ]] && Core ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
+        fi
+    else
+        [[ ! $aur ]] && runasroot $pacmanBin -Sw ${pkgs[@]}
+    fi
+    exit
+fi
+
+# sysupgrade (-Su) handling
+#if [[ $option = sysupgrade ]]; then
+#    [[ ! $aur ]] && runasroot $pacmanBin -Su ${pkgs[@]}
+#    if [[ $fallback = true ]]; then
+#        [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
+#        [[ ! $repo ]] && Core ${pkgs[@]}
+#    else
+#        [[ $aur ]] && [[ $upgrade ]] && UpgradeAur
+#        [[ $aur ]] && Core ${pkgs[@]}
+#    fi
+#    exit
+#fi
+
+# sysupgrade (-Su) handling
+# refresh (-Sy) handling
+if [[ $option = sysupgrade ]]; then
+    [[ ! $aur ]] && runasroot $pacmanBin "$pacmanarg"
+    if [[ $fallback = true ]]; then
+        [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
+        [[ ! $repo ]] && Core ${pkgs[@]}
+    else
+        [[ $aur ]] && [[ $upgrade ]] && UpgradeAur
+        [[ $aur ]] && Core ${pkgs[@]}
+    fi
+    exit
+fi
+
+# upgrades (-Qu) handling
+if [[ $option = upgrades ]]; then
+    [[ ! $aur ]] && CheckRepo ${pkgs[@]}
+    if [[ $fallback = true ]]; then
+        [[ ! $repo ]] && CheckAur ${pkgs[@]}
+    else
+        [[ $aur ]] && CheckAur ${pkgs[@]}
+    fi
+    exit
+fi
+
+}
+
+main "${pkgs[@]}"
 
 if [[ ! -d $buildDir ]]; then
   error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
 fi
-
-main "$@"
 
 # vim:set ts=2 sw=2 et:
