@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# pacaur: A simple cower and burp wrapper to fetch PKGBUILDS from aur & abs
+# pacaur: A simple cower wrapper to fetch PKGBUILDS from aur & abs
 # by Remy Marquis (Spyhawk)
 #
 
@@ -20,6 +20,8 @@ clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
 color=true                      # enable color
 
+tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+
 colorR="\e[1;31m"
 colorG="\e[1;32m"
 colorY="\e[1;33m"
@@ -28,24 +30,22 @@ colorM="\e[1;35m"
 colorC="\e[1;36m"
 colorW="\e[1;37m"
 
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-
 #
 # Source user config
 #
 
-source /etc/pacaur.conf
+source /etc/${name}.conf
 
 #
 # Color
 #
 
 if $color; then
-    pacaur='cower --color=always'
+    cower='cower --color=always'
     bold=$(tput bold)
     reset=$(tput sgr0)
 else
-    pacaur='cower'
+    cower='cower'
     bold=''
     reset=''
     colorR=''
@@ -74,31 +74,31 @@ runasroot() {
 }
 
 SearchAur() {
-    $pacaur -s $@
+    $cower -s $@
 }
 
 InfoAur() {
-    $pacaur -i $@
+    $cower -i $@
 }
 
 InfoDetailsAur() {
-    $pacaur -ii $@
+    $cower -ii $@
 }
 
 DownloadAur() {
     if [[ ! $force ]]; then
-        $pacaur -d $@ -t $buildDir
+        $cower -d $@ -t $buildDir
     else
-        $pacaur -d -f $@ -t $buildDir
+        $cower -d -f $@ -t $buildDir
     fi
 }
 
 DownloadDepsAur() {
     # download dependencies recursively and return AUR deps only
     if [[ ! $force ]]; then
-        deps=$($pacaur -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        deps=$($cower -dd $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     else
-        deps=$($pacaur -dd -f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        deps=$($cower -dd -f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     fi
 
     ErrorExit $deps
@@ -109,7 +109,7 @@ FindDepsAur() {
     mkdir -p "$tmpDir"
 
     # check dependencies recursively and return AUR deps only
-    deps=$($pacaur -dd $@ -t $tmpDir | tee 1>/dev/null >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    deps=$($cower -dd $@ -t $tmpDir | tee 1>/dev/null >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     ErrorExit $deps
 
@@ -118,7 +118,7 @@ FindDepsAur() {
 }
 
 CheckAur() {
-    $pacaur -u $@
+    $cower -u $@
 }
 
 CheckRepo() {
@@ -137,7 +137,7 @@ CheckRepo() {
 
 UpgradeAur() {
     notice "${colorW}Starting AUR upgrade...${reset}"
-    pkgs=$($pacaur -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    pkgs=$($cower -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # add devel packages
     if [[ $devel ]]; then
@@ -352,7 +352,6 @@ usage() {
     echo "   -r, --repo      only search or install packages from the repositories"
     echo "   -a, --aur       only search or install packages from the AUR"
     echo "   --devel         update AUR devel packages -- can be combined with the -Su flag"
-    echo "   --asroot        allow makepkg to run as root user"
     echo ""
     echo "general options:"
     echo "   -v, --version   display version information"
@@ -413,7 +412,7 @@ while [[ $1 ]]; do
         '-Ss'|'--search') option=search ;;
         '-Si'|'--info') option=info; count=$[$count+1] ;;
         '-Sii'|'--info') option=info; count='2' ;;
-        '-Sw'|'--downloadonly') option=downloadonly; force=true; edit=true ;;
+        '-Sw'|'--downloadonly') option=sync; force=true; edit=true ;;
         '-Qu'|'--upgrades') option=upgrades ;;
         '-Su'|'--sysupgrade'|'-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
@@ -428,8 +427,8 @@ while [[ $1 ]]; do
         '-Sir') option=info; count=$[$count+1]; repo='1' ;;
         '-Siia') option=info; count='2'; aur='1' ;;
         '-Siir') option=info; count='2'; repo='1' ;;
-        '-Swa') option=downloadonly; force=true; edit=true; aur='1' ;;
-        '-Swr') option=downloadonly; force=true; edit=true; repo='1' ;;
+        '-Swa') option=sync; force=true; edit=true; aur='1' ;;
+        '-Swr') option=sync; force=true; edit=true; repo='1' ;;
         '-Qua') option=upgrades; aur='1' ;;
         '-Qur') option=upgrades; repo='1' ;;
         '-Sua'|'-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
@@ -449,11 +448,12 @@ while [[ $1 ]]; do
         '-h'|'--help') usage; exit ;;
         '-v'|'--version') version; exit ;;
         #'--') shift ; pkgs+=("$@") ; break ;;
-        -*) echo "$name: invalid option -- '$1'" ; exit 5 ;;
+        -*) echo "$name: invalid option -- '$1'" ; exit ;;
         *) pkgs+=("$1") ;;
     esac
     shift
 done
+
 
 #
 # Main
@@ -466,7 +466,10 @@ Core() {
     CleanUp ${deps[@]}
 }
 
-main() {
+# sanity check
+if [[ ! -d $buildDir ]]; then
+  error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
+fi
 
 # search (-s) handling
 if [[ $operation = search ]]; then
@@ -535,6 +538,7 @@ if [[ $clean && ! $option ]]; then
 fi
 
 # pacman sync (-S) handling
+# pacman downloadonly (-Sw) handling
 if [[ $option = sync ]]; then
     [[ ! $aur ]] && result=$($pacmanBin -S --print ${pkgs[@]} 2>&1)
     if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
@@ -546,7 +550,7 @@ if [[ $option = sync ]]; then
             [[ $aur ]] && Core ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
         fi
     else
-        [[ ! $aur ]] && runasroot $pacmanBin -S ${pkgs[@]}
+        [[ ! $aur ]] && [[ $install ]] && runasroot $pacmanBin -S ${pkgs[@]} || [[ ! $aur ]] && [[ ! $install ]] && runasroot $pacmanBin -Sw ${pkgs[@]}
     fi
     exit
 fi
@@ -582,23 +586,6 @@ if [[ $option = info ]]; then
     exit
 fi
 
-# pacman downloadonly (-Sw) handling
-if [[ $option = downloadonly ]]; then
-    [[ ! $aur ]] && result=$($pacmanBin -Sw --print ${pkgs[@]} 2>&1)
-    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
-        if [[ $fallback = true ]]; then
-            [[ ! $aur ]] && [[ ! $repo ]] && failed "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
-            [[ ! $repo ]] && Core ${pkgs[@]}
-            [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
-        else
-            [[ $aur ]] && Core ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
-        fi
-    else
-        [[ ! $aur ]] && runasroot $pacmanBin -Sw ${pkgs[@]}
-    fi
-    exit
-fi
-
 # pacman sysupgrade (-Su) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sysupgrade ]]; then
@@ -624,12 +611,4 @@ if [[ $option = upgrades ]]; then
     exit
 fi
 
-}
-
-main "${pkgs[@]}"
-
-if [[ ! -d $buildDir ]]; then
-  error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
-fi
-
-# vim:set ts=2 sw=2 et:
+# vim:set ts=4 sw=2 et:
