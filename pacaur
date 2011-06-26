@@ -300,7 +300,6 @@ DownloadPkgbuild() {
 }
 
 ParaExec() {
-    # parallel execution
     while (( $(jobs | wc -l) >= 10 )); do
         sleep 0.1
         jobs > /dev/null
@@ -308,7 +307,6 @@ ParaExec() {
 }
 
 ErrorExit(){
-    # exit if curl or package name error
     if [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
         exit
     fi
@@ -416,7 +414,6 @@ while [[ $1 ]]; do
         '-Si'|'--info') option=info; count=$[$count+1] ;;
         '-Sii'|'--info') option=info; count='2' ;;
         '-Sw'|'--downloadonly') option=downloadonly; force=true; edit=true ;;
-        #'-Su'|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true ;;
         '-Qu'|'--upgrades') option=upgrades ;;
         '-Su'|'--sysupgrade'|'-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
@@ -433,8 +430,6 @@ while [[ $1 ]]; do
         '-Siir') option=info; count='2'; repo='1' ;;
         '-Swa') option=downloadonly; force=true; edit=true; aur='1' ;;
         '-Swr') option=downloadonly; force=true; edit=true; repo='1' ;;
-        #'-Sua') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; aur='1' ;;
-        #'-Sur') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; repo='1' ;;
         '-Qua') option=upgrades; aur='1' ;;
         '-Qur') option=upgrades; repo='1' ;;
         '-Sua'|'-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
@@ -539,9 +534,7 @@ if [[ $clean && ! $option ]]; then
     exit
 fi
 
-# Pacman handling
-
-# sync (-S) handling
+# pacman sync (-S) handling
 if [[ $option = sync ]]; then
     [[ ! $aur ]] && result=$($pacmanBin -S --print ${pkgs[@]} 2>&1)
     if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
@@ -558,7 +551,7 @@ if [[ $option = sync ]]; then
     exit
 fi
 
-# search (-Ss) handling
+# pacman search (-Ss) handling
 if [[ $option = search ]]; then
     for package in "${pkgs[@]}"
     do
@@ -572,7 +565,7 @@ if [[ $option = search ]]; then
     exit
 fi
 
-# info (-Si) handling
+# pacman info (-Si) handling
 if [[ $option = info ]]; then
     [[ ! $aur ]] && result=$($pacmanBin -Si --print ${pkgs[@]} 2>&1)
     if [[ $(echo $result | grep -v "error: package") == "" ]]; then
@@ -589,7 +582,7 @@ if [[ $option = info ]]; then
     exit
 fi
 
-# downloadonly (-Sw) handling
+# pacman downloadonly (-Sw) handling
 if [[ $option = downloadonly ]]; then
     [[ ! $aur ]] && result=$($pacmanBin -Sw --print ${pkgs[@]} 2>&1)
     if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
@@ -606,21 +599,8 @@ if [[ $option = downloadonly ]]; then
     exit
 fi
 
-# sysupgrade (-Su) handling
-#if [[ $option = sysupgrade ]]; then
-#    [[ ! $aur ]] && runasroot $pacmanBin -Su ${pkgs[@]}
-#    if [[ $fallback = true ]]; then
-#        [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
-#        [[ ! $repo ]] && Core ${pkgs[@]}
-#    else
-#        [[ $aur ]] && [[ $upgrade ]] && UpgradeAur
-#        [[ $aur ]] && Core ${pkgs[@]}
-#    fi
-#    exit
-#fi
-
-# sysupgrade (-Su) handling
-# refresh (-Sy) handling
+# pacman sysupgrade (-Su) handling
+# pacman refresh (-Sy) handling
 if [[ $option = sysupgrade ]]; then
     [[ ! $aur ]] && runasroot $pacmanBin "$pacmanarg"
     if [[ $fallback = true ]]; then
@@ -633,7 +613,7 @@ if [[ $option = sysupgrade ]]; then
     exit
 fi
 
-# upgrades (-Qu) handling
+# pacman upgrades (-Qu) handling
 if [[ $option = upgrades ]]; then
     [[ ! $aur ]] && CheckRepo ${pkgs[@]}
     if [[ $fallback = true ]]; then
