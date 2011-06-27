@@ -470,7 +470,7 @@ Core() {
 if [[ ! -d $buildDir ]]; then
   error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
 fi
-if [[ ! -f $pacmanBin ]]; then
+if [[ ! -f /usr/bin/$pacmanBin ]]; then
   error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
 fi
 
