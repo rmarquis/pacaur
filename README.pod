@@ -10,7 +10,7 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
 
 pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
 designed to allow a fast workflow and to use an uncluttered interface.
-It is build upon the well designed cower and expac backends.
+It is build upon the well designed cower and expac C backends.
 Invoking pacaur consists of supplying an operation, any applicable options, and
 usually one or more targets.
 
@@ -137,9 +137,10 @@ Display the help message and quit.
 
 =head1 CONFIG FILE
 
-=over 4
+pacaur honors a config file at I</etc/pacaur.conf>.
+The available options are: 
 
-pacaur honors a config file at I</etc/pacaur.conf>
+=over 4
 
 =item B<buildDir>
 
@@ -147,7 +148,7 @@ Define the build directory. Default is B</home/aur/build>.
 
 =item B<pacmanBin>
 
-Define the pacman binary. Default is B<pacman>.
+Define the pacman binary. Default is B<pacman-color>.
 
 =item B<editor>
 
@@ -155,8 +156,8 @@ Define the editor. Default is B<$EDITOR>.
 
 =item B<color>
 
-Use color. It is recommended to use the pacman binary I<pacman-color> when
-enabling this option. Default is B<true>.
+Enable color output. It is recommended to use the pacman binary I<pacman-color>
+when using this option. Default is B<true>.
 
 =item B<clean>
 

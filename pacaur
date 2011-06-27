@@ -13,7 +13,7 @@ description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 # Default config
 #
 
-pacmanBin="pacman"              # pacman binary
+pacmanBin="pacman-color"        # pacman binary
 editor=${EDITOR:-vi}            # PKGBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
@@ -469,6 +469,9 @@ Core() {
 # sanity check
 if [[ ! -d $buildDir ]]; then
   error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
+fi
+if [[ ! -f $pacmanBin ]]; then
+  error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
 fi
 
 # search (-s) handling
