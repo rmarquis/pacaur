@@ -1,5 +1,5 @@
 pkgname=pacaur
-pkgver=1.2.3
+pkgver=2.0.0
 pkgrel=1
 pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 arch=('any')
