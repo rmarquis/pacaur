@@ -1,5 +1,0 @@
-Pacaur is a simple wrapper to fetch PKGBUILDS from aur & abs, using cower as backend.
-
-- Website: https://github.com/Spyhawk/pacaur
-- Forum: https://bbs.archlinux.org/viewtopic.php?pid=937423
-- Package: https://aur.archlinux.org/packages.php?ID=49145

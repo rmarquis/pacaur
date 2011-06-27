@@ -1,0 +1,186 @@
+=head1 NAME
+
+pacaur - A simple cower wrapper to fetch PKGBUILDS from aur & abs.
+
+=head1 SYNOPSIS
+
+Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
+
+=head1 DESCRIPTION
+
+pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
+designed to allow a fast workflow and to use an uncluttered interface.
+It is build upon the well designed cower and expac backends.
+Invoking pacaur consists of supplying an operation, any applicable options, and
+usually one or more targets.
+
+=head1 OPERATIONS
+
+=over 4
+
+=item B<-s, --search>
+
+Search for packages with the I<target>(s) as the search term(s). Queries with
+multiple targets will return the result of the intersection of all query
+results. Extended regex patterns as defined by POSIX are allowed.
+
+=item B<-i, --info>
+
+Show info for I<target>. Pass this option twice to fetch more detailed info.
+
+=item B<-d, --download>
+
+Download I<target> PKGBUILD. Pass this option twice to fetch dependencies (done
+recursively).
+
+=item B<-b, --build>
+
+Use locally available I<target> PKGBUILD and build target. Missing dependencies
+will B<not> be installed as required, thus needing need manual intervention if
+any problem occurs.
+
+=item B<-m, --makepkg>
+
+Download I<target> PKGBUILD and build target. Missing dependencies will B<not>
+be installed as required, thus needing need manual intervention if any problem
+occurs.
+
+=item B<-y, --sync>
+
+Download I<target> PKGBUILD, build and install target. Missing dependencies
+will be automatically installed as required.
+
+=item B<-q, --check>
+
+Check foreign packages for updates in the AUR. Without any arguments, all
+manually installed packages will be checked. If targets are supplied, only
+those targets will be checked.
+
+=item B<-u, --update>
+
+Update foreign packages in the AUR. Without any arguments, all manually
+installed packages will be updated. If targets are supplied, only those
+targets will be updated.
+
+=item B<-abs, --abs>
+
+Copy I<target> PKGBUILD from ABS tree to build directory. It is recommended to
+update the ABS tree prior to this operation.
+
+=item B<-S, -Ss, -Si, -Sii, -Sw. -Su, -Qu>
+
+Additionally, pacaur wraps B<pacman operations> and extends its search,
+retrieve info, download, check updates and install functions to the AUR.
+This behavior can be disabled with the I<fallback> variable in the config file. 
+
+=back
+
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<-f, --force>
+
+Overwrite existing files when downloading.
+
+=item B<-e, --edit>
+
+Edit I<target> PKGBUILD when downloading or building target. Can also be used
+as a standalone command.
+
+=item B<-c, --clean>
+
+Remove I<target> building directory after building target. Can also be used as
+a standalone command.
+
+=item B<-a, --aur>
+
+When used with pacman extended operations, only search or install packages from
+the repositories.
+
+=item B<-r, --repo>
+
+When used with pacman extended operations, only search or install packages from
+the AUR.
+
+=item B<--devel>
+
+When used with --update (-s) or --sysupgrade (-Su) operations, also update AUR
+developement packages (cvs, svn, git, hg, bzr, darcs).
+
+=for comment
+=item B<--ignore=>I<package(s)>
+Ignore a package upgrade. Can be used more than once. Also accepts a comma
+delimited list as a single argument. Packages listed in pacman's IgnorePkg
+directive are honored.
+=item B<--noedit>
+Perform commands without editing any installation files.
+=item B<--noconfirm>
+Perform commands without confirmation from the user.
+
+=item B<--asroot>
+
+When building AUR package(s) as root, allow makepkg to run as root user.
+
+=item B<-v, --version>
+
+Display version and exit.
+
+=item B<-h, --help>
+
+Display the help message and quit.
+
+
+=back
+
+
+=head1 CONFIG FILE
+
+=over 4
+
+pacaur honors a config file at I</etc/pacaur.conf>
+
+=item B<buildDir>
+
+Define the build directory. Default is B</home/aur/build>.
+
+=item B<pacmanBin>
+
+Define the pacman binary. Default is B<pacman>.
+
+=item B<editor>
+
+Define the editor. Default is B<$EDITOR>. 
+
+=item B<color>
+
+Use color. It is recommended to use the pacman binary I<pacman-color> when
+enabling this option. Default is B<true>.
+
+=item B<clean>
+
+Clean build directory after operation. Default is B<true>.
+
+=item B<fallback>
+
+Extend pacman commands to the AUR. Default is B<true>.
+
+=back
+
+In addition, pacaur fully honors cower config file. See B<cower>(1).
+
+
+=head1 SEE ALSO
+
+=over 4
+
+B<cower>(1), B<pacman>(8)
+
+=back
+
+
+=head1 AUTHOR
+
+Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
+
