@@ -14,7 +14,7 @@ description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 #
 
 pacmanBin="pacman"              # pacman binary
-editor=$EDITOR                  # PKGBUILD editor
+editor=${EDITOR:-vi}            # PKGBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
