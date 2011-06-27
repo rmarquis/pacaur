@@ -473,9 +473,7 @@ fi
 
 # search (-s) handling
 if [[ $operation = search ]]; then
-    for package in "${pkgs[@]}"; do
-        SearchAur $package
-    done
+    SearchAur ${pkgs[@]}
     exit
 fi
 
@@ -557,15 +555,12 @@ fi
 
 # pacman search (-Ss) handling
 if [[ $option = search ]]; then
-    for package in "${pkgs[@]}"
-    do
-        [[ ! $aur ]] && $pacmanBin -Ss $package
+        [[ ! $aur ]] && $pacmanBin -Ss ${pkgs[@]}
         if [[ $fallback = true ]]; then
-            [[ ! $repo ]] && SearchAur $package
+            [[ ! $repo ]] && SearchAur ${pkgs[@]}
         else
-            [[ $aur ]] && SearchAur $package
+            [[ $aur ]] && SearchAur ${pkgs[@]}
         fi
-    done
     exit
 fi
 
