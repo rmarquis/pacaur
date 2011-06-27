@@ -383,7 +383,7 @@ while [[ $1 ]]; do
         '-q'|'--check') operation=check ;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true ;;
         '-abs'|'--abs') operation=abs ;;
-        '-c'|'--clean') clean=true ;;
+        '-c'|'--clean') clean=true; cleanpkg=true ;;
         '-f'|'--force') force=true ;;
         '-e'|'--edit') edit=true ;;
         # shortcuts
@@ -443,9 +443,9 @@ while [[ $1 ]]; do
         -S* | '--sync') runasroot $pacmanBin $@; exit ;;
         -T* | '--deptest') runasroot $pacmanBin $@; exit ;;
         -U* | '--upgrade') runasroot $pacmanBin $@; exit ;;
-        --*) runasroot $pacmanBin $@; exit ;;
         '-h'|'--help') usage; exit ;;
         '-v'|'--version') version; exit ;;
+        --*) runasroot $pacmanBin $@; exit ;;
         -*) echo "$name: invalid option -- '$1'" ; exit ;;
         *) pkgs+=("$1") ;;
     esac
@@ -524,18 +524,6 @@ if [[ $operation = abs ]]; then
     exit
 fi
 
-# edit (-e) handling
-if [[ $edit && ! $option ]]; then
-    EditPkgs ${pkgs[@]}
-    exit
-fi
-
-# clean (-c) handling
-if [[ $clean && ! $option ]]; then
-    CleanUp ${pkgs[@]}
-    exit
-fi
-
 # pacman sync (-S) handling
 # pacman downloadonly (-Sw) handling
 if [[ $option = sync ]]; then
@@ -604,6 +592,18 @@ if [[ $option = upgrades ]]; then
     else
         [[ $aur ]] && CheckAur ${pkgs[@]}
     fi
+    exit
+fi
+
+# edit (-e) handling
+if [[ $edit ]]; then
+    EditPkgs ${pkgs[@]}
+    exit
+fi
+
+# clean (-c) handling
+if [[ $cleanpkg ]]; then
+    CleanUp ${pkgs[@]}
     exit
 fi
 
