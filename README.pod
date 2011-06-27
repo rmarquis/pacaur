@@ -71,6 +71,7 @@ update the ABS tree prior to this operation.
 
 Additionally, pacaur wraps B<pacman operations> and extends its search,
 retrieve info, download, check updates and install functions to the AUR.
+Pacaur will also pass any pacman related options to the pacman binary specifed.
 This behavior can be disabled with the I<fallback> variable in the config file. 
 
 =back
