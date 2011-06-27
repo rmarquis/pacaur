@@ -10,9 +10,9 @@ optdepends=('pacman-color: colorized output'
             'sudo: install and update packages as non-root')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf README.pod)
-md5sums=('e8351498be007727cf3714d5ee571531'
+md5sums=('746f63fb2c6542f302d355c0ee906e7c'
          '0cdd92d8e4c459d324989d9e87fc42cd'
-         '9a9fd55f206935995f2829843677a4cb')
+         '8385743db92224ff9e86bcdac8fd7301')
 build() {
   mkdir -p "$pkgdir/etc/"
   install -D -m644 ./$pkgname.conf $pkgdir/etc/$pkgname.conf || return 1
