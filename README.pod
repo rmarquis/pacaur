@@ -1,6 +1,6 @@
 =head1 NAME
 
-pacaur - A simple cower wrapper to fetch PKGBUILDS from aur & abs.
+pacaur - A fast workflow AUR helper using cower
 
 =head1 SYNOPSIS
 

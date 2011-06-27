@@ -1,13 +1,12 @@
 #!/bin/bash
 
 #
-# pacaur: A simple cower wrapper to fetch PKGBUILDS from aur & abs
-# by Remy Marquis (Spyhawk)
+# pacaur: A fast workflow AUR helper using cower
 #
 
 name="pacaur"
 version="2.0.0"
-description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
+description="A fast workflow AUR helper using cower"
 
 #
 # Default config
