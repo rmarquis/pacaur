@@ -137,7 +137,10 @@ Display the help message and quit.
 
 =head1 CONFIG FILE
 
-pacaur honors a config file at I</etc/pacaur.conf>.
+pacaur honors a config file at
+
+  /etc/pacaur.conf
+
 The available options are: 
 
 =over 4
@@ -174,11 +177,7 @@ In addition, pacaur fully honors cower config file. See B<cower>(1).
 
 =head1 SEE ALSO
 
-=over 4
-
 B<cower>(1), B<pacman>(8)
-
-=back
 
 
 =head1 AUTHOR

@@ -447,7 +447,6 @@ while [[ $1 ]]; do
         --*) runasroot $pacmanBin $@; exit ;;
         '-h'|'--help') usage; exit ;;
         '-v'|'--version') version; exit ;;
-        #'--') shift ; pkgs+=("$@") ; break ;;
         -*) echo "$name: invalid option -- '$1'" ; exit ;;
         *) pkgs+=("$1") ;;
     esac
