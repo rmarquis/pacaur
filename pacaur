@@ -135,7 +135,7 @@ CheckRepo() {
 
 UpgradeAur() {
     notice "${colorW}Starting AUR upgrade...${reset}"
-    pkgs=$($cower -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    pkgs=$($cower -u ${ignorepkgs[@]} $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # add devel packages
     if [[ $devel ]]; then
@@ -347,6 +347,7 @@ usage() {
     echo "   -a, --aur       only search or install packages from the AUR"
     echo "   -q, --quiet     show less information for query and search"
     echo "   --devel         update AUR devel packages -- can be combined with the -Su flag"
+    echo "   --ignore        ignore a comma-separated list of packages upgrade"
     echo "   --noconfirm     do not prompt for any confirmation"
     echo "   --noedit        do not prompt to edit files"
     echo ""
@@ -439,6 +440,7 @@ while [[ $1 ]]; do
         # others
         '--devel') devel=true ;;
         '--asroot') asroot=true ;;
+        '--ignore') ignorepkgs+=("--ignore" "$2") ; shift ;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm") ;;
         '--noedit') noedit=true ;;
         -D* | '--database') runasroot $pacmanBin $@; exit ;;
@@ -573,7 +575,7 @@ fi
 # pacman sysupgrade (-Su) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sysupgrade ]]; then
-    [[ ! $aur ]] && runasroot $pacmanBin "$pacmanarg" "${pacopts[@]}"
+    [[ ! $aur ]] && runasroot $pacmanBin "$pacmanarg" "${pacopts[@]}" "${ignorepkgs[@]}"
     if [[ $fallback = true ]]; then
         [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
         [[ ! $repo ]] && Core ${pkgs[@]}
