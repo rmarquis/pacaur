@@ -331,7 +331,7 @@ usage() {
     echo "   -b, --build     use existing PKGBUILD and make target(s)"
     echo "   -m, --makepkg   download and make target(s)"
     echo "   -y, --sync      download, make and install target(s)"
-    echo "   -q, --check     check for AUR update(s)"
+    echo "   -k, --check     check for AUR update(s)"
     echo "   -u, --update    update AUR package(s)"
     echo "   -abs, --abs     copy target(s) from ABS directory to build directory"
     echo ""
@@ -374,7 +374,7 @@ while [[ $1 ]]; do
         '-b'|'--build') operation=build ;;
         '-m'|'--makepkg') operation=makepkg ;;
         '-y'|'--sync') operation=makepkg ; install=true ;;
-        '-q'|'--check') operation=check ;;
+        '-k'|'--check') operation=check ;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true ;;
         '-abs'|'--abs') operation=abs ;;
         '-c'|'--clean') clean=true; cleanpkg=true ;;
@@ -506,7 +506,7 @@ if [[ $operation = makepkg ]]; then
     exit
 fi
 
-# check (-q) handling
+# check (-k) handling
 if [[ $operation = check ]]; then
     CheckAur ${pkgs[@]}
     exit

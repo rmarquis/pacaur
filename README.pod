@@ -50,7 +50,7 @@ occurs.
 Download I<target> PKGBUILD, build and install target. Missing dependencies
 will be automatically installed as required.
 
-=item B<-q, --check>
+=item B<-k, --check>
 
 Check foreign packages for updates in the AUR. Without any arguments, all
 manually installed packages will be checked. If targets are supplied, only
