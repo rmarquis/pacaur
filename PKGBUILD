@@ -18,6 +18,6 @@ build() {
   install -D -m644 ./$pkgname.conf $pkgdir/etc/$pkgname.conf || return 1
   install -D -m755 ./$pkgname $pkgdir/usr/bin/$pkgname || return 1
   mkdir -p "$pkgdir/usr/share/man/man8/"
-  pod2man --section=1 --center="Pacaur Manual" --name="PACAUR" --release="$pkgname $pkgver" ./README.pod > pacaur.8
+  pod2man --section=8 --center="Pacaur Manual" --name="PACAUR" --release="$pkgname $pkgver" ./README.pod > pacaur.8
   install -m 644 ./pacaur.8 $pkgdir/usr/share/man/man8/pacaur.8 
 }
