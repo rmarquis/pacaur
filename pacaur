@@ -72,7 +72,7 @@ runasroot() {
 }
 
 SearchAur() {
-    $cower -s $@
+    [[ $quiet ]] && $cower -sq --color=never $@ || $cower -s $@
 }
 
 InfoAur() {
@@ -344,6 +344,7 @@ usage() {
     echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Syu operations"
     echo "   -r, --repo      only search or install packages from the repositories"
     echo "   -a, --aur       only search or install packages from the AUR"
+    echo "   -q, --quiet     show less information for query and search"
     echo "   --devel         update AUR devel packages -- can be combined with the -Su flag"
     echo ""
     echo "general options:"
@@ -379,7 +380,9 @@ while [[ $1 ]]; do
         '-c'|'--clean') clean=true; cleanpkg=true ;;
         '-f'|'--force') force=true ;;
         '-e'|'--edit') edit=true ;;
+        '-q'|'--quiet') quiet=true ;;
         # shortcuts
+        '-sq') operation=search; quiet=true ;;
         '-ii') operation=info; count='2' ;;
         '-dd') operation=download; count='2' ;;
         '-df') operation=download; count=$[$count+1]; force=true ;;
@@ -415,6 +418,9 @@ while [[ $1 ]]; do
         '-Sr') option=sync; install=true; force=true; edit=true; repo='1' ;;
         '-Ssa') option=search; aur='1' ;;
         '-Ssr') option=search; repo='1' ;;
+        '-Ssq') option=search; quiet=true ;;
+        '-Ssqa'|'-Ssaq') option=search; quiet=true; aur='1' ;;
+        '-Ssqr'|'-Ssrq') option=search; quiet=true; repo='1' ;;
         '-Sia') option=info; count=$[$count+1]; aur='1' ;;
         '-Sir') option=info; count=$[$count+1]; repo='1' ;;
         '-Siia') option=info; count='2'; aur='1' ;;
@@ -533,7 +539,7 @@ fi
 
 # pacman search (-Ss) handling
 if [[ $option = search ]]; then
-        [[ ! $aur ]] && $pacmanBin -Ss ${pkgs[@]}
+        [[ ! $aur ]] && [[ ! $quiet ]] && $pacmanBin -Ss ${pkgs[@]} || [[ ! $aur ]] && [[ $quiet ]] && $pacmanBin -Ssq ${pkgs[@]}
         if [[ $fallback = true ]]; then
             [[ ! $repo ]] && SearchAur ${pkgs[@]}
         else

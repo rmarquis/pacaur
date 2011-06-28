@@ -105,6 +105,11 @@ the repositories.
 When used with pacman extended operations, only search or install packages from
 the AUR.
 
+=item B<-q, --quiet>
+
+Show less information for search and query operations. Search will only show
+package names and not version, group, and description information.
+
 =item B<--devel>
 
 When used with --update (-s) or --sysupgrade (-Su) operations, also update AUR
