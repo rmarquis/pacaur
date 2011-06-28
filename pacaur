@@ -179,18 +179,19 @@ UpgradeAur() {
 
     echo -ne "\nProceed with installation? [Y/n] "
     
-    while true; do
+    if ! [[ $noconfirm ]]; then
         read yn
         case $yn in
         [Yy]|[Yy]es|'')
-            break
+            return
         ;;
         *)
             exit
-            break
         ;;
         esac
-    done
+    else
+        echo ""
+    fi
 }
 
 CopyAbs() {
@@ -263,7 +264,7 @@ MakePkgs() {
             notice "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
             if [[ $install ]]; then
-                $makepkg -sfi
+                $makepkg -sfi "${pacopts[@]}"
                 # if AUR dep, install as --asdeps
                 # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
@@ -274,11 +275,11 @@ MakePkgs() {
                         fi
                     done
                     if [[ $isexpl != true ]]; then
-                        runasroot $pacmanBin -D --asdeps $j &>/dev/null
+                        runasroot $pacmanBin -D --asdeps $j "${pacopts[@]}" &>/dev/null
                     fi
                 fi
             else
-                $makepkg -sf
+                $makepkg -sf "${pacopts[@]}"
             fi
         else
             error "Could not open ${colorW}$j${reset} PKGBUILD"
@@ -346,6 +347,7 @@ usage() {
     echo "   -a, --aur       only search or install packages from the AUR"
     echo "   -q, --quiet     show less information for query and search"
     echo "   --devel         update AUR devel packages -- can be combined with the -Su flag"
+    echo "   --noconfirm     do not prompt for any confirmation"
     echo ""
     echo "general options:"
     echo "   -v, --version   display version information"
@@ -436,6 +438,7 @@ while [[ $1 ]]; do
         # others
         '--devel') devel=true ;;
         '--asroot') asroot=true ;;
+        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm") ;;
         -D* | '--database') runasroot $pacmanBin $@; exit ;;
         -Q* | '--query') $pacmanBin $@; exit ;;
         -R* | '--remove') runasroot $pacmanBin $@; exit ;;
@@ -532,7 +535,7 @@ if [[ $option = sync ]]; then
             [[ $aur ]] && Core ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
         fi
     else
-        [[ ! $aur ]] && [[ $install ]] && runasroot $pacmanBin -S ${pkgs[@]} || [[ ! $aur ]] && [[ ! $install ]] && runasroot $pacmanBin -Sw ${pkgs[@]}
+        [[ ! $aur ]] && [[ $install ]] && runasroot $pacmanBin -S "${pacopts[@]}" ${pkgs[@]} || [[ ! $aur ]] && [[ ! $install ]] && runasroot $pacmanBin -Sw "${pacopts[@]}" ${pkgs[@]}
     fi
     exit
 fi
@@ -568,7 +571,7 @@ fi
 # pacman sysupgrade (-Su) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sysupgrade ]]; then
-    [[ ! $aur ]] && runasroot $pacmanBin "$pacmanarg"
+    [[ ! $aur ]] && runasroot $pacmanBin "$pacmanarg" "${pacopts[@]}"
     if [[ $fallback = true ]]; then
         [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
         [[ ! $repo ]] && Core ${pkgs[@]}

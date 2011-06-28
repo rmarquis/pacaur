@@ -115,6 +115,10 @@ package names and not version, group, and description information.
 When used with --update (-s) or --sysupgrade (-Su) operations, also update AUR
 developement packages (cvs, svn, git, hg, bzr, darcs).
 
+=item B<--noconfirm>
+
+Perform commands without confirmation from the user.
+
 =for comment
 =item B<--ignore=>I<package(s)>
 Ignore a package upgrade. Can be used more than once. Also accepts a comma
@@ -122,8 +126,6 @@ delimited list as a single argument. Packages listed in pacman's IgnorePkg
 directive are honored.
 =item B<--noedit>
 Perform commands without editing any installation files.
-=item B<--noconfirm>
-Perform commands without confirmation from the user.
 
 =item B<--asroot>
 
