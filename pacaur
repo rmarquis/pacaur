@@ -207,7 +207,7 @@ CopyAbs() {
 }
 
 EditPkgs() {
-    if [[ $edit ]]; then
+    if [[ $edit && ! $noedit ]]; then
     for i in "$@"
     do
         if [ -e $buildDir/$i/PKGBUILD ]; then
@@ -348,6 +348,7 @@ usage() {
     echo "   -q, --quiet     show less information for query and search"
     echo "   --devel         update AUR devel packages -- can be combined with the -Su flag"
     echo "   --noconfirm     do not prompt for any confirmation"
+    echo "   --noedit        do not prompt to edit files"
     echo ""
     echo "general options:"
     echo "   -v, --version   display version information"
@@ -439,6 +440,7 @@ while [[ $1 ]]; do
         '--devel') devel=true ;;
         '--asroot') asroot=true ;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm") ;;
+        '--noedit') noedit=true ;;
         -D* | '--database') runasroot $pacmanBin $@; exit ;;
         -Q* | '--query') $pacmanBin $@; exit ;;
         -R* | '--remove') runasroot $pacmanBin $@; exit ;;
@@ -594,7 +596,7 @@ if [[ $option = upgrades ]]; then
 fi
 
 # edit (-e) handling
-if [[ $edit ]]; then
+if [[ $edit && ! $noedit ]]; then
     EditPkgs ${pkgs[@]}
     exit
 fi

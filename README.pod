@@ -119,13 +119,15 @@ developement packages (cvs, svn, git, hg, bzr, darcs).
 
 Perform commands without confirmation from the user.
 
+=item B<--noedit>
+
+Perform commands without editing any installation files. Bypass --edit option.
+
 =for comment
 =item B<--ignore=>I<package(s)>
 Ignore a package upgrade. Can be used more than once. Also accepts a comma
 delimited list as a single argument. Packages listed in pacman's IgnorePkg
 directive are honored.
-=item B<--noedit>
-Perform commands without editing any installation files.
 
 =item B<--asroot>
 
