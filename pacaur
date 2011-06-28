@@ -458,12 +458,8 @@ Core() {
 }
 
 # sanity check
-if [[ ! -d $buildDir ]]; then
-  error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
-fi
-if [[ ! -f /usr/bin/$pacmanBin ]]; then
-  error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
-fi
+[[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
+[[ ! -f /usr/bin/$pacmanBin ]] && error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
 
 # search (-s) handling
 if [[ $operation = search ]]; then
