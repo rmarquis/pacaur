@@ -6,7 +6,6 @@
 
 name="pacaur"
 version="2.0.0"
-description="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 
 #
 # Default config
@@ -355,8 +354,7 @@ usage() {
 }
 
 version() {
-    echo -e "\n    ${colorW}$name ${colorG}$version${reset}"
-    echo -e "    $description\n"
+    echo "$name $version"
 }
 
 
