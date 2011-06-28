@@ -184,7 +184,6 @@ UpgradeAur() {
         read yn
         case $yn in
         [Yy]|[Yy]es|'')
-            pkgs=${pkgs}
             break
         ;;
         *)
