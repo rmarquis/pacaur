@@ -178,17 +178,13 @@ UpgradeAur() {
 
     ErrorExit $pkgs
 
-    echo -e "\nProceed with installation? [Y/n]"
+    echo -ne "\nProceed with installation? [Y/n] "
     
     while true; do
         read yn
         case $yn in
-        [Yy]* | Yes | yes)
+        [Yy]|[Yy]es|'')
             pkgs=${pkgs}
-            break
-        ;;
-        [Nn]* | No | no)
-            exit
             break
         ;;
         *)
