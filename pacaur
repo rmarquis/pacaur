@@ -346,7 +346,7 @@ usage() {
     echo "   -r, --repo      only search or install packages from the repositories"
     echo "   -a, --aur       only search or install packages from the AUR"
     echo "   -q, --quiet     show less information for query and search"
-    echo "   --devel         consider AUR developement packages upgrade"
+    echo "   --devel         consider AUR development packages upgrade"
     echo "   --ignore        ignore a package upgrade (can be used more than once)"
     echo "   --noconfirm     do not prompt for any confirmation"
     echo "   --noedit        do not prompt to edit files"
