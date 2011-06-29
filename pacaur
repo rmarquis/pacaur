@@ -383,7 +383,7 @@ while [[ $1 ]]; do
         '-abs'|'--abs') operation=abs ;;
         '-c'|'--clean') clean=true; cleanpkg=true ;;
         '-f'|'--force') force=true ;;
-        '-e'|'--edit') edit=true ;;
+        '-e'|'--edit') edit=true; editpkg=true ;;
         '-q'|'--quiet') quiet=true ;;
         # shortcuts
         '-sq') operation=search; quiet=true ;;
@@ -473,6 +473,7 @@ Core() {
 # sanity check
 [[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
+[[ ! $operation && ! $option && ! $cleanpkg && ! $editpkg ]] && error "no operation specified (use -h for help)"
 
 # search (-s) handling
 if [[ $operation = search ]]; then
@@ -598,7 +599,7 @@ if [[ $option = upgrades ]]; then
 fi
 
 # edit (-e) handling
-if [[ $edit && ! $noedit ]]; then
+if [[ $editpkg && ! $noedit ]]; then
     EditPkgs ${pkgs[@]}
     exit
 fi
