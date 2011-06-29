@@ -372,7 +372,7 @@ pkgs=()
 count=0
 while [[ $1 ]]; do
     case "$1" in
-        '-s'|'--sync') operation=search ;;
+        '-s'|'--search') operation=search ;;
         '-i'|'--info') operation=info; count=$[$count+1] ;;
         '-d'|'--download') operation=download; count=$[$count+1] ;;
         '-b'|'--build') operation=build ;;
