@@ -454,10 +454,8 @@ while [[ $1 ]]; do
     shift
 done
 
-# hack for -S -s, -S -i
+# ensure only one operation or option is enabled (ie, -S -s, -S -i, -S -u)
 [[ $operation ]] && [[ $option ]] && unset operation
-echo operation: $operation
-echo option: $option
 
 #
 # Main
