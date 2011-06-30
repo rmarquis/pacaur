@@ -1,5 +1,5 @@
 pkgname=pacaur
-pkgver=2.1.0
+pkgver=2.1.1
 pkgrel=1
 pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
 arch=('any')
@@ -10,9 +10,9 @@ optdepends=('pacman-color: colorized output'
             'sudo: install and update packages as non-root')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf README.pod)
-md5sums=('3c33ed6c20c352f6df5aed7096f9891b'
+md5sums=('7f0bc79e7bf4a0342c24335d63319ba7'
          '0cdd92d8e4c459d324989d9e87fc42cd'
-         'f8435726e8ef316307948478d876748b')
+         'ea4d6b5ea9f822c1e554f906ecf58fd5')
 build() {
   mkdir -p "$pkgdir/etc/"
   install -D -m644 ./$pkgname.conf $pkgdir/etc/$pkgname.conf || return 1
