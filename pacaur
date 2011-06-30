@@ -246,13 +246,6 @@ MakePkgs() {
         confSourced=true
     fi
 
-    # allow build as root
-    if [[ $asroot ]]; then
-        makepkg='makepkg --asroot'
-    else
-        makepkg='makepkg'
-    fi
-
     local j
     for j in "${deps[@]}"
     do
@@ -260,7 +253,7 @@ MakePkgs() {
             notice "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
             if [[ $install ]]; then
-                $makepkg -sfi ${pacopts[@]}
+                makepkg -sfi ${makeopts[@]}
                 # if AUR dep, install as --asdeps
                 # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
@@ -275,7 +268,7 @@ MakePkgs() {
                     fi
                 fi
             else
-                $makepkg -sf ${pacopts[@]}
+                makepkg -sf ${makeopts[@]}
             fi
         else
             error "Could not open ${colorW}$j${reset} PKGBUILD"
@@ -435,9 +428,9 @@ while [[ $1 ]]; do
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
         # others
         '--devel') devel=true ;;
-        '--asroot') asroot=true ;;
+        '--asroot') makeopts+=("--asroot") ;;
         '--ignore') ignorepkgs+=("--ignore" "$2") ; shift ;;
-        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm") ;;
+        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm"); makeopts+=("--noconfirm") ;;
         '--noedit') noedit=true ;;
         -D* | '--database') runasroot $pacmanBin $@; exit ;;
         -Q* | '--query') $pacmanBin $@; exit ;;
