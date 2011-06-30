@@ -76,11 +76,7 @@ SearchAur() {
 }
 
 InfoAur() {
-    $cower -i $@
-}
-
-InfoDetailsAur() {
-    $cower -ii $@
+    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
 }
 
 DownloadAur() {
@@ -373,7 +369,7 @@ count=0
 while [[ $1 ]]; do
     case "$1" in
         '-s'|'--search') operation=search ;;
-        '-i'|'--info') operation=info; count=$[$count+1] ;;
+        '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; count=$[$count+1] ;;
         '-b'|'--build') operation=build ;;
         '-m'|'--makepkg') operation=makepkg ;;
@@ -387,7 +383,7 @@ while [[ $1 ]]; do
         '-q'|'--quiet') quiet=true ;;
         # shortcuts
         '-sq') operation=search; quiet=true ;;
-        '-ii') operation=info; count='2' ;;
+        '-ii') operation=info; count=2 ;;
         '-dd') operation=download; count='2' ;;
         '-df') operation=download; count=$[$count+1]; force=true ;;
         '-de') operation=download; count=$[$count+1]; edit=true ;;
@@ -409,8 +405,8 @@ while [[ $1 ]]; do
         # pacman
         '-S'|'--sync') option=sync; install=true; force=true; edit=true ;;
         '-Ss'|'--search') option=search ;;
-        '-Si'|'--info') option=info; count=$[$count+1] ;;
-        '-Sii'|'--info') option=info; count='2' ;;
+        '-Si'|'--info') option=info; ((count++)) ;;
+        '-Sii'|'--info') option=info; count=2 ;;
         '-Sw'|'--downloadonly') option=sync; force=true; edit=true ;;
         '-Qu'|'--upgrades') option=upgrades ;;
         '-Su'|'--sysupgrade'|'-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
@@ -483,7 +479,7 @@ fi
 
 # info (-i) handling
 if [[ $operation = info ]]; then
-    [[ $count -eq 1 ]] && InfoAur ${pkgs[@]} || InfoDetailsAur ${pkgs[@]}
+    InfoAur ${pkgs[@]}
     exit
 fi
 
@@ -568,7 +564,7 @@ if [[ $option = info ]]; then
             [[ $aur ]] && InfoAur ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
         fi
     else
-        [[ ! $aur ]] && $pacmanBin -Si ${pkgs[@]}
+        [[ ! $aur ]] && [[ $count -eq 1 ]] && $pacmanBin -Si ${pkgs[@]} || [[ ! $aur ]] && [[ $count -ne 1 ]] && $pacmanBin -Sii ${pkgs[@]}
     fi
     exit
 fi
