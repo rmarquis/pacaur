@@ -373,7 +373,7 @@ while [[ $1 ]]; do
         '-d'|'--download') operation=download; count=$[$count+1] ;;
         '-b'|'--build') operation=build ;;
         '-m'|'--makepkg') operation=makepkg ;;
-        '-y'|'--sync') operation=makepkg; option=refresh; install=true ;;
+        '-y'|'--sync') operation=makepkg; install=true ;;
         '-k'|'--check') operation=check ;;
         '-u'|'--update') operation=makepkg; option=sysupgrade; upgrade=true; force=true; install=true ;;
         '-abs'|'--abs') operation=abs ;;
@@ -409,9 +409,8 @@ while [[ $1 ]]; do
         '-Sii'|'--info') option=info; count='2' ;;
         '-Sw'|'--downloadonly') option=sync; force=true; edit=true ;;
         '-Qu'|'--upgrades') option=upgrades ;;
-        '-Su'|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true ;;
-        '-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
-              option=refsysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
+        '-Su'|'--sysupgrade'|'-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
+              option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
         '-r'|'--repo') repo='1' ;;
         '-a'|'--aur') aur='1' ;;
         # pacman shortcuts
@@ -430,12 +429,10 @@ while [[ $1 ]]; do
         '-Swr') option=sync; force=true; edit=true; repo='1' ;;
         '-Qua') option=upgrades; aur='1' ;;
         '-Qur') option=upgrades; repo='1' ;;
-        '-Sua') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; aur='1' ;;
-        '-Sur') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; repo='1' ;;
-        '-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
-              option=refsysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
-        '-Syur'|'-Suyr'|'-Syyur'|'-Suyyr'|'-Syuyr'|'-Syuur'|'-Suuyr'|'-Suur'|'-Syyuur'|'-Suuyyr'|'-Syuyr'|'-Syuyur'|'-Syuuyr'|'-Suyuyr')
-              option=refsysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
+        '-Sua'|'-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
+              option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
+        '-Sur'|'-Syur'|'-Suyr'|'-Syyur'|'-Suyyr'|'-Syuyr'|'-Syuur'|'-Suuyr'|'-Suur'|'-Syyuur'|'-Suuyyr'|'-Syuyr'|'-Syuyur'|'-Syuuyr'|'-Suyuyr')
+              option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
         # others
         '--devel') devel=true ;;
         '--asroot') asroot=true ;;
@@ -457,7 +454,7 @@ while [[ $1 ]]; do
     shift
 done
 
-# ensure only one operation or option is enabled (ie, -S -s, -S -i, -S -u, -S -y)
+# ensure only one operation or option is enabled (ie, -S -s, -S -i, -S -u)
 [[ $operation ]] && [[ $option ]] && unset operation
 
 #
@@ -575,25 +572,8 @@ if [[ $option = info ]]; then
 fi
 
 # pacman sysupgrade (-Su) handling
-if [[ $option = sysupgrade ]]; then
-    [[ ! $aur ]] && runasroot $pacmanBin -Su ${pacopts[@]} ${ignorepkgs[@]}
-    if [[ $fallback = true ]]; then
-        [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
-        [[ ! $repo ]] && Core ${pkgs[@]}
-    else
-        [[ $aur ]] && [[ $upgrade ]] && UpgradeAur
-        [[ $aur ]] && Core ${pkgs[@]}
-    fi
-    exit
-fi
-
 # pacman refresh (-Sy) handling
-if [[ $option = refresh ]]; then
-    [[ ! $aur ]] && runasroot $pacmanBin -Sy
-fi
-
-# pacman sysupgrade/refresh (-Syu) handling
-if [[ $option = refsysupgrade ]]; then
+if [[ $option = sysupgrade ]]; then
     [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignorepkgs[@]}
     if [[ $fallback = true ]]; then
         [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
