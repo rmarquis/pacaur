@@ -421,8 +421,8 @@ while [[ $1 ]]; do
         '-Ssq') option=search; quiet=true ;;
         '-Ssqa'|'-Ssaq') option=search; quiet=true; aur='1' ;;
         '-Ssqr'|'-Ssrq') option=search; quiet=true; repo='1' ;;
-        '-Sia') option=info; count=$[$count+1]; aur='1' ;;
-        '-Sir') option=info; count=$[$count+1]; repo='1' ;;
+        '-Sia') option=info; ((count++)); aur='1' ;;
+        '-Sir') option=info; ((count++)); repo='1' ;;
         '-Siia') option=info; count='2'; aur='1' ;;
         '-Siir') option=info; count='2'; repo='1' ;;
         '-Swa') option=sync; force=true; edit=true; aur='1' ;;
