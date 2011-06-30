@@ -369,8 +369,8 @@ count=0
 while [[ $1 ]]; do
     case "$1" in
         '-s'|'--search') operation=search ;;
-        '-i'|'--info') operation=info; ((count++));;
-        '-d'|'--download') operation=download; count=$[$count+1] ;;
+        '-i'|'--info') operation=info; ((count++)) ;;
+        '-d'|'--download') operation=download; ((count++)) ;;
         '-b'|'--build') operation=build ;;
         '-m'|'--makepkg') operation=makepkg ;;
         '-y'|'--sync') operation=makepkg ; install=true ;;
@@ -384,13 +384,13 @@ while [[ $1 ]]; do
         # shortcuts
         '-sq') operation=search; quiet=true ;;
         '-ii') operation=info; count=2 ;;
-        '-dd') operation=download; count='2' ;;
-        '-df') operation=download; count=$[$count+1]; force=true ;;
-        '-de') operation=download; count=$[$count+1]; edit=true ;;
-        '-def'|'-dfe') operation=download; count=$[$count+1]; edit=true; force=true ;;
-        '-ddf') operation=download; count='2'; force=true ;;
-        '-dde') operation=download; count='2'; edit=true ;;
-        '-ddef'|'-ddfe') operation=download; count='2'; edit=true; force=true ;;
+        '-dd') operation=download; count=2 ;;
+        '-df') operation=download; ((count++)); force=true ;;
+        '-de') operation=download; ((count++)); edit=true ;;
+        '-def'|'-dfe') operation=download; ((count++)); edit=true; force=true ;;
+        '-ddf') operation=download; count=2; force=true ;;
+        '-dde') operation=download; count=2; edit=true ;;
+        '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true ;;
         '-be') operation=build; edit=true ;;
         '-me') operation=makepkg; edit=true ;;
         '-mf') operation=makepkg; force=true ;;
