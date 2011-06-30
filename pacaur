@@ -76,11 +76,7 @@ SearchAur() {
 }
 
 InfoAur() {
-    $cower -i $@
-}
-
-InfoDetailsAur() {
-    $cower -ii $@
+    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
 }
 
 DownloadAur() {
@@ -372,14 +368,14 @@ pkgs=()
 count=0
 while [[ $1 ]]; do
     case "$1" in
-        '-s'|'--search') operation=search ;;
-        '-i'|'--info') operation=info; count=$[$count+1] ;;
+        '-s'|'--search') operation=search; option=search ;;
+        '-i'|'--info') operation=info; option=info; count=$[$count+1] ;;
         '-d'|'--download') operation=download; count=$[$count+1] ;;
         '-b'|'--build') operation=build ;;
         '-m'|'--makepkg') operation=makepkg ;;
-        '-y'|'--sync') operation=makepkg ; install=true ;;
+        '-y'|'--sync') operation=makepkg; install=true ;;
         '-k'|'--check') operation=check ;;
-        '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true ;;
+        '-u'|'--update') operation=makepkg; option=sysupgrade; upgrade=true; force=true; install=true ;;
         '-abs'|'--abs') operation=abs ;;
         '-c'|'--clean') clean=true; cleanpkg=true ;;
         '-f'|'--force') force=true ;;
@@ -387,7 +383,7 @@ while [[ $1 ]]; do
         '-q'|'--quiet') quiet=true ;;
         # shortcuts
         '-sq') operation=search; quiet=true ;;
-        '-ii') operation=info; count='2' ;;
+        '-ii') operation=info; option=info; count='2' ;;
         '-dd') operation=download; count='2' ;;
         '-df') operation=download; count=$[$count+1]; force=true ;;
         '-de') operation=download; count=$[$count+1]; edit=true ;;
@@ -458,6 +454,10 @@ while [[ $1 ]]; do
     shift
 done
 
+# hack for -S -s, -S -i
+[[ $operation ]] && [[ $option ]] && unset operation
+echo operation: $operation
+echo option: $option
 
 #
 # Main
@@ -483,7 +483,7 @@ fi
 
 # info (-i) handling
 if [[ $operation = info ]]; then
-    [[ $count -eq 1 ]] && InfoAur ${pkgs[@]} || InfoDetailsAur ${pkgs[@]}
+    InfoAur ${pkgs[@]}
     exit
 fi
 
@@ -568,7 +568,7 @@ if [[ $option = info ]]; then
             [[ $aur ]] && InfoAur ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
         fi
     else
-        [[ ! $aur ]] && $pacmanBin -Si ${pkgs[@]}
+        [[ ! $aur ]] && [[ $count -eq 1 ]] && $pacmanBin -Si ${pkgs[@]} || [[ ! $aur ]] && [[ $count -ne 1 ]] && $pacmanBin -Sii ${pkgs[@]}
     fi
     exit
 fi
