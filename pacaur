@@ -112,7 +112,7 @@ FindDepsAur() {
 }
 
 CheckAur() {
-    $cower -u $@
+    [[ $quiet ]] && $cower -uq --color=never $@ || [[ ! $quiet ]] && $cower -u $@
 }
 
 CheckRepo() {
@@ -123,7 +123,7 @@ CheckRepo() {
 
         local i=0
         for package in ${outofdate[@]}; do
-            notice "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}"
+            [[ ! $quiet ]] && notice "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}" || echo ${outofdate[$i]}
             ((i++))
         done
     fi
@@ -392,6 +392,7 @@ while [[ $1 ]]; do
         '-yf') operation=makepkg; force=true; install=true ;;
         '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true ;;
         '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true ;;
+        '-kq') operation=check; quiet=true ;;
         '-abse') operation=abs; edit=true ;;
         '-absf') operation=abs; force=true ;;
         '-absef'|'-absfe') operation=abs; force=true; edit=true ;;
@@ -422,6 +423,9 @@ while [[ $1 ]]; do
         '-Swr') option=sync; force=true; edit=true; repo='1' ;;
         '-Qua') option=upgrades; aur='1' ;;
         '-Qur') option=upgrades; repo='1' ;;
+        '-Quq') option=upgrades; quiet=true ;;
+        '-Quqa') option=upgrades; quiet=true; aur='1' ;;
+        '-Quqr') option=upgrades; quiet=true; repo='1' ;;
         '-Sua'|'-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
         '-Sur'|'-Syur'|'-Suyr'|'-Syyur'|'-Suyyr'|'-Syuyr'|'-Syuur'|'-Suuyr'|'-Suur'|'-Syyuur'|'-Suuyyr'|'-Syuyr'|'-Syuyur'|'-Syuuyr'|'-Suyuyr')
