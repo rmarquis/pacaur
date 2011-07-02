@@ -69,8 +69,8 @@ update the ABS tree prior to this operation.
 
 =item B<-S, -Ss, -Si, -Sii, -Sw. -Su, -Qu>
 
-Additionally, pacaur wraps B<pacman operations> and extends its search,
-retrieve info, download, check updates and install functions to the AUR.
+Additionally, pacaur wraps B<pacman operations> and extends respectively its
+install, search, info, download, update and check updates functions to the AUR.
 Pacaur will also pass any pacman related options to the pacman binary specifed.
 This behavior can be disabled with the I<fallback> variable in the config file. 
 
@@ -112,8 +112,8 @@ package names and not version, group, and description information.
 
 =item B<--devel>
 
-When used with --update (-s) or --sysupgrade (-Su) operations, also upgrade AUR
-development packages (cvs, svn, git, hg, bzr, darcs).
+When used with update operations, also upgrade AUR development packages
+(supported are cvs, svn, git, hg, bzr and darcs development packages).
 
 =item B<--noconfirm>
 
@@ -187,7 +187,7 @@ In addition, pacaur fully honors cower config file. See B<cower>(1).
 
 =head1 SEE ALSO
 
-B<cower>(1), B<pacman>(8)
+B<cower>(1), B<pacman>(8), B<makepkg>(8)
 
 
 =head1 AUTHOR
