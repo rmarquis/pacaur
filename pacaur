@@ -403,7 +403,7 @@ while [[ $1 ]]; do
         '-Sii'|'--info') option=info; count=2 ;;
         '-Sw'|'--downloadonly') option=sync; force=true; edit=true ;;
         '-Qu'|'--upgrades') option=upgrades ;;
-        '-Su'|'--sysupgrade'|'-Syu'|'-Suy'|'-Syyu'|'-Suyy'|'-Syuy'|'-Syuu'|'-Suuy'|'-Suu'|'-Syyuu'|'-Suuyy'|'-Syuy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
+        '-Su'|'--sysupgrade'|'-Suu'|'-Syu'|'-Syyu'|'-Syuu'|'-Syyuu'|'-Suy'|'-Suyy'|'-Syuy'|'-Suuy'|'-Suyu'|'-Suuyy'|'-Syuyu'|'-Syuuy'|'-Suyuy')
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
         '-r'|'--repo') repo='1' ;;
         '-a'|'--aur') aur='1' ;;
@@ -426,9 +426,9 @@ while [[ $1 ]]; do
         '-Quq') option=upgrades; quiet=true ;;
         '-Quqa') option=upgrades; quiet=true; aur='1' ;;
         '-Quqr') option=upgrades; quiet=true; repo='1' ;;
-        '-Sua'|'-Syua'|'-Suya'|'-Syyua'|'-Suyya'|'-Syuya'|'-Syuua'|'-Suuya'|'-Suua'|'-Syyuua'|'-Suuyya'|'-Syuya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
+        '-Sua'|'-Suua'|'-Syua'|'-Syyua'|'-Syuua'|'-Syyuua'|'-Suya'|'-Suyya'|'-Syuya'|'-Suuya'|'-Suyua'|'-Suuyya'|'-Syuyua'|'-Syuuya'|'-Suyuya')
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
-        '-Sur'|'-Syur'|'-Suyr'|'-Syyur'|'-Suyyr'|'-Syuyr'|'-Syuur'|'-Suuyr'|'-Suur'|'-Syyuur'|'-Suuyyr'|'-Syuyr'|'-Syuyur'|'-Syuuyr'|'-Suyuyr')
+        '-Sur'|'-Suur'|'-Syur'|'-Syyur'|'-Syuur'|'-Syyuur'|'-Suyr'|'-Suyyr'|'-Syuyr'|'-Suuyr'|'-Suyur'|'-Suuyyr'|'-Syuyur'|'-Syuuyr'|'-Suyuyr')
               option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
         # others
         '--devel') devel=true ;;
