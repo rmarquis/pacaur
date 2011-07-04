@@ -191,8 +191,7 @@ UpgradeAur() {
 }
 
 CopyAbs() {
-    for i in "$@"
-    do
+    for i in "$@"; do
         if [[ -e $buildDir/$i/PKGBUILD && ! $force ]]; then
             failed "${colorW}$i${reset} PKGBUILD already exists in $buildDir. Use -f to overwrite."
         else
@@ -204,8 +203,7 @@ CopyAbs() {
 
 EditPkgs() {
     if [[ $edit && ! $noedit ]]; then
-    for i in "$@"
-    do
+    for i in "$@"; do
         if [ -e $buildDir/$i/PKGBUILD ]; then
             $editor $buildDir/$i/PKGBUILD
             success "${colorW}$i${reset} PKGBUILD edited"
@@ -219,8 +217,7 @@ EditPkgs() {
 CleanUp() {
     if [[ $clean == true ]]; then
         cd $buildDir
-        for i in $@
-        do
+        for i in $@; do
             notice "Cleaning up ${colorW}$i${reset}... "
             # hack for cvs protected files
             chmod -R 755 $i &>/dev/null
@@ -247,8 +244,7 @@ MakePkgs() {
     fi
 
     local j
-    for j in "${deps[@]}"
-    do
+    for j in "${deps[@]}"; do
         if [ -e $buildDir/$j/PKGBUILD ]; then
             notice "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
