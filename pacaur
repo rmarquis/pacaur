@@ -138,6 +138,11 @@ UpgradeAur() {
         aurpkgs=( $($pacmanBin -Qmq) )
         Qversion=($(expac -Q %v ${aurpkgs[@]}))
 
+        # ignored packages
+        ignoredpkgs+=( $(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2-) )
+        ignoredpkgs+=( $(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2-) )
+        ignoredpkgs=(${ignoredpkgs[@]//,/ })
+
         # set tmpdir
         mkdir -p "$tmpDir"
 
@@ -148,22 +153,23 @@ UpgradeAur() {
             ((i++))
         done
         wait
-        local j=0
-        for package in ${aurpkgs[@]}; do
+        for (( j=0; j<${#aurpkgs[@]}; j++)); do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            . "$tmpDir/$package.PKGBUILD"
+            . "$tmpDir/${aurpkgs[$j]}.PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
-                aurdevel=("${aurdevel[@]}" "${aurpkgs[$j]}")
+                if [[ "${ignoredpkgs[@]}" =~ "${aurpkgs[$j]}" ]]; then
+                    continue
+                fi
                 notice "${colorW}${aurpkgs[$j]} ${colorY}${Qversion[$j]} ${reset}"
+                aurdevel=("${aurdevel[@]}" "${aurpkgs[$j]}")
             fi
-            ((j++))
         done
 
         # clean tmpdir
         rm -rf "$tmpDir" &>/dev/null
 
         pkgs=("${pkgs[@]}" "${aurdevel[@]}")
-        pkgs=$(echo ${pkgs[@]} | awk -F "\n" '{print}' | awk -F " " '{print}')
+        pkgs=($(echo ${pkgs[@]} | awk -F "\n" '{print}' | awk -F " " '{print}'))
     fi
 
     if [[ $pkgs == "" ]]; then
@@ -430,7 +436,7 @@ while [[ $1 ]]; do
         # others
         '--devel') devel=true ;;
         '--asroot') makeopts+=("--asroot") ;;
-        '--ignore') ignorepkgs+=("--ignore" "$2") ; shift ;;
+        '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2") ; shift ;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm"); makeopts+=("--noconfirm") ;;
         '--noedit') noedit=true ;;
         -D* | '--database') runasroot $pacmanBin $@; exit ;;
