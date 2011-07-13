@@ -123,14 +123,14 @@ CheckRepo() {
 
         local i=0
         for package in ${outofdate[@]}; do
-            [[ ! $quiet ]] && notice "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}" || echo ${outofdate[$i]}
+            [[ ! $quiet ]] && info "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}" || echo ${outofdate[$i]}
             ((i++))
         done
     fi
 }
 
 UpgradeAur() {
-    notice "${colorW}Starting AUR upgrade...${reset}"
+    info "${colorW}Starting AUR upgrade...${reset}"
     pkgs=$($cower -u ${ignorepkgs[@]} $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # add devel packages
@@ -160,7 +160,7 @@ UpgradeAur() {
                 if [[ "${ignoredpkgs[@]}" =~ "${aurpkgs[$j]}" ]]; then
                     continue
                 fi
-                notice "${colorW}${aurpkgs[$j]} ${colorY}${Qversion[$j]} ${reset}"
+                info "${colorW}${aurpkgs[$j]} ${colorY}${Qversion[$j]} ${reset}"
                 aurdevel=("${aurdevel[@]}" "${aurpkgs[$j]}")
             fi
         done
@@ -199,7 +199,7 @@ UpgradeAur() {
 CopyAbs() {
     for i in "$@"; do
         if [[ -e $buildDir/$i/PKGBUILD && ! $force ]]; then
-            failed "${colorW}$i${reset} PKGBUILD already exists in $buildDir. Use -f to overwrite."
+            warn "${colorW}$i${reset} PKGBUILD already exists in $buildDir. Use -f to overwrite."
         else
             cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
             success "${colorW}$i${reset} copied in $buildDir"
@@ -224,10 +224,10 @@ CleanUp() {
     if [[ $clean == true ]]; then
         cd $buildDir
         for i in $@; do
-            notice "Cleaning up ${colorW}$i${reset}... "
+            info "Cleaning up ${colorW}$i${reset}... "
             # hack for cvs protected files
             chmod -R 755 $i &>/dev/null
-            rm -r $i && success "${colorW}$i${reset} cleaned" || failed "Could not clean ${colorW}$i${reset}"
+            rm -r $i && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
         done
     fi
 }
@@ -235,7 +235,7 @@ CleanUp() {
 MakePkgs() {
     # reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
-    notice "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
+    info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
 
     # remember explicitly installed packages
     if [[ $expl == "" ]]; then
@@ -253,7 +253,7 @@ MakePkgs() {
     local j
     for j in "${deps[@]}"; do
         if [ -e $buildDir/$j/PKGBUILD ]; then
-            notice "Building ${colorW}$j${reset} package..."
+            info "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
             if [[ $install ]]; then
                 makepkg -sfi ${makeopts[@]}
@@ -307,11 +307,11 @@ success() {
     echo -e "${colorG}::${reset} $1"
 }
 
-failed() {
+warn() {
     echo -e "${colorY}::${reset} $1"
 }
 
-notice() {
+info() {
     echo -e "${colorB}::${reset} $1"
 }
 
@@ -529,7 +529,7 @@ if [[ $option = sync ]]; then
     [[ ! $aur ]] && result=$($pacmanBin -S --print ${pkgs[@]} 2>&1)
     if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
         if [[ $fallback = true ]]; then
-            [[ ! $aur ]] && [[ ! $repo ]] && failed "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+            [[ ! $aur ]] && [[ ! $repo ]] && warn "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
             [[ ! $repo ]] && Core ${pkgs[@]}
             [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
         else
@@ -557,7 +557,7 @@ if [[ $option = info ]]; then
     [[ ! $aur ]] && result=$($pacmanBin -Si --print ${pkgs[@]} 2>&1)
     if [[ $(echo $result | grep -v "error: package") == "" ]]; then
         if [[ $fallback = true ]]; then
-            [[ ! $aur ]] && [[ ! $repo ]] && failed "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+            [[ ! $aur ]] && [[ ! $repo ]] && warn "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
             [[ ! $repo ]] && InfoAur ${pkgs[@]}
             [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
         else
