@@ -202,14 +202,10 @@ CopyAbs() {
 
 EditPkgs() {
     if [[ $edit && ! $noedit ]]; then
-    for i in "$@"; do
-        if [ -e $buildDir/$i/PKGBUILD ]; then
-            $editor $buildDir/$i/PKGBUILD
-            success "${colorW}$i${reset} PKGBUILD edited"
-        else
-            error "Could not open ${colorW}$i${reset} PKGBUILD"
-        fi
-    done
+        info "Editing ${colorW}$@${reset}... "
+        for i in "$@"; do
+            [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+        done
     fi
 }
 
