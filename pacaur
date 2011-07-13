@@ -216,7 +216,7 @@ EditPkgs() {
 CleanUp() {
     if [[ $clean == true ]]; then
         cd $buildDir
-        for i in $@; do
+        for i in "$@"; do
             info "Cleaning up ${colorW}$i${reset}... "
             # hack for cvs protected files
             chmod -R 755 $i &>/dev/null
