@@ -80,11 +80,7 @@ InfoAur() {
 }
 
 DownloadAur() {
-    if [[ ! $force ]]; then
-        $cower -d $@ -t $buildDir
-    else
-        $cower -d -f $@ -t $buildDir
-    fi
+    [[ ! $force ]] && $cower -d $@ -t $buildDir || $cower -d -f $@ -t $buildDir
 }
 
 DownloadDepsAur() {
