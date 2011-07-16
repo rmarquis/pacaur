@@ -268,6 +268,56 @@ MakePkgs() {
     done
 }
 
+CleanCache() {
+    # set cache variables
+    source /etc/makepkg.conf
+    export PACMAN=$pacmanBin
+
+    if [[ $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
+
+        echo -e "\n${colorW}AUR cache directory:${reset} $PKGDEST"
+
+        if [[ $count != 2 ]]; then
+
+            echo -e "${colorW}Packages to keep:${reset}\n  All locally installed packages"
+            echo -ne "Do you want to remove all other packages from AUR cache? [Y/n] "
+
+            read yn
+            case $yn in
+            [Yy]|[Yy]es|'')
+                echo "removing old packages from cache..."
+                for package in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
+                    pkgname=$(echo $package | sed "s#\(.*\)-.*-.*#\1#g")
+                    if [[ $package != $(expac -Q '%n-%v' $pkgname) ]]; then
+                        rm $PKGDEST/$package-*
+                    fi
+                done
+            ;;
+            *)
+                exit
+            ;;
+            esac
+
+        else
+
+            echo -ne "Do you want to remove ALL files from AUR cache? [y/N] "
+
+            read yn
+            case $yn in
+            [Yy]|[Yy]es)
+                echo "removing all files from AUR cache..."
+                rm $PKGDEST/* &>/dev/null
+            ;;
+            *)
+                exit
+            ;;
+            esac
+
+        fi
+
+    fi
+}
+
 DownloadPkgbuild() {
     if ! [[ -f "$tmpDir/$package.PKGBUILD" ]]; then
         curl -Lfs "https://aur.archlinux.org/packages/$package/PKGBUILD" > "$tmpDir/$package.PKGBUILD"
@@ -395,6 +445,8 @@ while [[ $1 ]]; do
         '-Sii'|'--info') option=info; count=2 ;;
         '-Sw'|'--downloadonly') option=sync; force=true; edit=true ;;
         '-Qu'|'--upgrades') option=upgrades ;;
+        '-Sc'|'--clean') option=cleancache; ((count++)); pacmanarg="$1" ;;
+        '-Scc'|'--clean') option=cleancache; count=2; pacmanarg="$1" ;;
         '-r'|'--repo') repo='1' ;;
         '-a'|'--aur') aur='1' ;;
         # pacman shortcuts
@@ -419,6 +471,10 @@ while [[ $1 ]]; do
         -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
         -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
         -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
+        '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1' ;;
+        '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1' ;;
+        '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1' ;;
+        '-Sccr') option=cleancache; count=2; pacmanarg="$1"; repo='1' ;;
         # others
         '--devel') devel=true ;;
         '--asroot') makeopts+=("--asroot") ;;
@@ -577,6 +633,18 @@ if [[ $option = upgrades ]]; then
         [[ ! $repo ]] && CheckAur ${pkgs[@]}
     else
         [[ $aur ]] && CheckAur ${pkgs[@]}
+    fi
+    exit
+fi
+
+# pacman clean (-Sc) handling
+if [[ $option = cleancache ]]; then
+    [[ $(echo $pacmanarg | grep -v "r$") == "" ]] && pacmanarg=${pacmanarg%?}
+    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg
+    if [[ $fallback = true ]]; then
+        [[ ! $repo ]] && CleanCache ${pkgs[@]}
+    else
+        [[ $aur ]] && CleanCache ${pkgs[@]}
     fi
     exit
 fi
