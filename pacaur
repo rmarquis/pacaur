@@ -273,7 +273,7 @@ CleanCache() {
     source /etc/makepkg.conf
     export PACMAN=$pacmanBin
 
-    if [[ $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
+    if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
 
         echo -e "\n${colorW}AUR cache directory:${reset} $PKGDEST"
 
