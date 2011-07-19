@@ -42,7 +42,7 @@ any problem occurs.
 =item B<-m, --makepkg>
 
 Download I<target> PKGBUILD and build target. Missing dependencies will be
-installed as required.
+automatically installed as required.
 
 =item B<-y, --sync>
 
