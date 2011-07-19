@@ -161,7 +161,7 @@ UpgradeAur() {
         # clean tmpdir
         rm -rf "$tmpDir" &>/dev/null
 
-        pkgs=("${pkgs[@]}" "${aurdevel[@]}")
+        [[ ! ${pkgs[@]} ]] && pkgs=("${aurdevel[@]}") || pkgs=("${pkgs[@]}" "${aurdevel[@]}")
         pkgs=($(echo ${pkgs[@]} | awk -F "\n" '{print}' | awk -F " " '{print}'))
     fi
 
@@ -171,7 +171,9 @@ UpgradeAur() {
     fi
 
     ErrorExit ${pkgs[@]}
+}
 
+Proceed() {
     echo -ne "\nProceed with installation? [Y/n] "
     
     if ! [[ $noconfirm ]]; then
@@ -181,6 +183,7 @@ UpgradeAur() {
             return
         ;;
         *)
+            CleanUp ${deps[@]} &>/dev/null
             exit
         ;;
         esac
@@ -224,7 +227,13 @@ CleanUp() {
 MakePkgs() {
     # reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
-    info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
+
+    #info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
+    echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
+
+    Proceed
+
+    EditPkgs ${deps[@]}
 
     # remember explicitly installed packages
     if [[ $expl == "" ]]; then
@@ -503,7 +512,6 @@ done
 
 Core() {
     DownloadDepsAur ${pkgs[@]}
-    EditPkgs ${deps[@]}
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
 }
@@ -537,7 +545,6 @@ fi
 if [[ $operation = build ]]; then
     FindDepsAur ${pkgs[@]}
     [[ ! $deps ]] && deps=("${pkgs[@]}")
-    EditPkgs ${deps[@]}
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
     exit
