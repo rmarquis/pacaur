@@ -86,9 +86,9 @@ DownloadAur() {
 DownloadDepsAur() {
     # download dependencies recursively and return AUR deps only
     [[ $force ]] && f="-f"
-    deps=$($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    deps=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
-    ErrorExit $deps
+    ErrorExit ${deps[@]}
 }
 
 FindDepsAur() {
@@ -96,9 +96,9 @@ FindDepsAur() {
     mkdir -p "$tmpDir"
 
     # check dependencies recursively and return AUR deps only
-    deps=$($cower -dd $@ -t $tmpDir | tee 1>/dev/null >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    deps=($($cower -dd $@ -t $tmpDir | tee 1>/dev/null >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
-    ErrorExit $deps
+    ErrorExit ${deps[@]}
 
     # clean tmpdir
     rm -rf "$tmpDir" &>/dev/null
@@ -170,7 +170,7 @@ UpgradeAur() {
         exit   
     fi
 
-    ErrorExit $pkgs
+    ErrorExit ${pkgs[@]}
 
     echo -ne "\nProceed with installation? [Y/n] "
     
