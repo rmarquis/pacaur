@@ -67,7 +67,7 @@ targets will be updated.
 Copy I<target> PKGBUILD from ABS tree to build directory. It is recommended to
 update the ABS tree prior to this operation.
 
-=item B<-S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc>
+=item B<-S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc>
 
 Additionally, pacaur wraps B<pacman operations> and extends respectively its
 install, search, info, download, update, check updates and clean functions to

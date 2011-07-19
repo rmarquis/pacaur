@@ -382,7 +382,7 @@ usage() {
     echo "   -c, --clean     clean existing target(s) PKGBUILD -- can be combined with the -b, -m, -y, -abs flags"
     echo ""
     echo "pacman options:"
-    echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc operations"
+    echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
     echo "   -r, --repo      only search or install packages from the repositories"
     echo "   -a, --aur       only search or install packages from the AUR"
     echo "   -q, --quiet     show less information for query and search"
