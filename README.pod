@@ -41,9 +41,8 @@ any problem occurs.
 
 =item B<-m, --makepkg>
 
-Download I<target> PKGBUILD and build target. Missing dependencies will B<not>
-be installed as required, thus needing need manual intervention if any problem
-occurs.
+Download I<target> PKGBUILD and build target. Missing dependencies will be
+installed as required.
 
 =item B<-y, --sync>
 
