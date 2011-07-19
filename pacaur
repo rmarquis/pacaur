@@ -225,15 +225,15 @@ CleanUp() {
 }
 
 MakePkgs() {
-    # reverse deps order
-    deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
-
     #info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
 
     Proceed
 
     EditPkgs ${deps[@]}
+
+    # reverse deps order
+    deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
     # remember explicitly installed packages
     if [[ $expl == "" ]]; then
