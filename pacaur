@@ -254,7 +254,7 @@ MakePkgs() {
             info "Building ${colorW}$j${reset} package..."
             cd $buildDir/$j
             if [[ $install ]]; then
-                makepkg -sfi ${makeopts[@]}
+                makepkg -sfi ${makeopts[@]} --noconfirm
                 # if AUR dep, install as --asdeps
                 # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
@@ -269,7 +269,7 @@ MakePkgs() {
                     fi
                 fi
             else
-                makepkg -sf ${makeopts[@]}
+                makepkg -sf ${makeopts[@]} --noconfirm
             fi
         else
             error "Could not open ${colorW}$j${reset} PKGBUILD"
@@ -488,7 +488,7 @@ while [[ $1 ]]; do
         '--devel') devel=true ;;
         '--asroot') makeopts+=("--asroot") ;;
         '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2") ; shift ;;
-        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm"); makeopts+=("--noconfirm") ;;
+        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm") ;;
         '--noedit') noedit=true ;;
         -D* | '--database') runasroot $pacmanBin $@; exit ;;
         -Q* | '--query') $pacmanBin $@; exit ;;
