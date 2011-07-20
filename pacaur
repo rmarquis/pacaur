@@ -516,6 +516,20 @@ Core() {
     CleanUp ${deps[@]}
 }
 
+ClassifyPkgs() {
+if [[ $fallback = true ]]; then
+    [[ $repo ]] && repopkgs=${pkgs[@]}
+    [[ $aur ]] && aurpkgs=${pkgs[@]}
+    if [[ ! $repo && ! $aur ]]; then
+        for package in ${pkgs[@]}; do
+            [[ $($pacmanBin -S --print $package 2>&1 | grep -v "error:") == "" ]] && aurpkgs+=("$package") || repopkgs+=("$package")
+        done
+    fi
+else
+   [[ ! $aur ]] && repopkgs=${pkgs[@]} || aurpkgs=${pkgs[@]}
+fi
+}
+
 # sanity check
 [[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
