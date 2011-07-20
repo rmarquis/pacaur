@@ -72,11 +72,13 @@ runasroot() {
 }
 
 SearchAur() {
-    [[ $quiet ]] && $cower -sq --color=never $@ || $cower -s $@
+    [[ ! $quiet ]] && $cower -s $@
+    [[ $quiet ]] && $cower -sq --color=never $@
 }
 
 InfoAur() {
-    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
+    [[ $count -eq 1 ]] && $cower -i $@
+    [[ $count -ne 1 ]] && $cower -ii $@
 }
 
 DownloadAur() {
