@@ -519,17 +519,17 @@ Core() {
 }
 
 ClassifyPkgs() {
-if [[ $fallback = true ]]; then
-    [[ $repo ]] && repopkgs=${pkgs[@]}
-    [[ $aur ]] && aurpkgs=${pkgs[@]}
-    if [[ ! $repo && ! $aur ]]; then
-        for package in ${pkgs[@]}; do
-            [[ $($pacmanBin -S --print $package 2>&1 | grep -v "error:") == "" ]] && aurpkgs+=("$package") || repopkgs+=("$package")
-        done
+    if [[ $fallback = true ]]; then
+        [[ $repo ]] && repopkgs=${pkgs[@]}
+        [[ $aur ]] && aurpkgs=${pkgs[@]}
+        if [[ ! $repo && ! $aur ]]; then
+            for package in ${pkgs[@]}; do
+                [[ $($pacmanBin -S --print $package 2>&1 | grep -v "error:") == "" ]] && aurpkgs+=("$package") || repopkgs+=("$package")
+            done
+        fi
+    else
+        [[ ! $aur ]] && repopkgs=${pkgs[@]} || aurpkgs=${pkgs[@]}
     fi
-else
-   [[ ! $aur ]] && repopkgs=${pkgs[@]} || aurpkgs=${pkgs[@]}
-fi
 }
 
 # sanity check
