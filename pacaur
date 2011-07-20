@@ -587,6 +587,14 @@ if [[ $operation = abs ]]; then
     exit
 fi
 
+# pacman search (-Ss) handling
+if [[ $option = search ]]; then
+    [[ ! $aur ]] && [[ ! $quiet ]] && $pacmanBin -Ss ${pkgs[@]}
+    [[ ! $aur ]] && [[ $quiet ]] && $pacmanBin -Ssq ${pkgs[@]}
+    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
+    exit
+fi
+
 # pacman sync (-S) handling
 # pacman downloadonly (-Sw) handling
 if [[ $option = sync ]]; then
@@ -599,17 +607,6 @@ if [[ $option = sync ]]; then
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
         Core ${aurpkgs[@]}
     fi
-    exit
-fi
-
-# pacman search (-Ss) handling
-if [[ $option = search ]]; then
-        [[ ! $aur ]] && [[ ! $quiet ]] && $pacmanBin -Ss ${pkgs[@]} || [[ ! $aur ]] && [[ $quiet ]] && $pacmanBin -Ssq ${pkgs[@]}
-        if [[ $fallback = true ]]; then
-            [[ ! $repo ]] && SearchAur ${pkgs[@]}
-        else
-            [[ $aur ]] && SearchAur ${pkgs[@]}
-        fi
     exit
 fi
 
