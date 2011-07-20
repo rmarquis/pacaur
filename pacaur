@@ -336,7 +336,9 @@ paraexec() {
 }
 
 timeout(){
-    [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]] && exit 
+    if [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then
+        exit
+    fi
 }
 
 error() {
