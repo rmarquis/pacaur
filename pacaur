@@ -285,11 +285,8 @@ CleanCache() {
     export PACMAN=$pacmanBin
 
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
-
         echo -e "\n${colorW}AUR cache directory:${reset} $PKGDEST"
-
-        if [[ $count != 2 ]]; then
-
+        if [[ $count -eq 1 ]]; then
             echo -e "${colorW}Packages to keep:${reset}\n  All locally installed packages"
             echo -ne "Do you want to remove all other packages from AUR cache? [Y/n] "
 
@@ -308,9 +305,7 @@ CleanCache() {
                 exit
             ;;
             esac
-
         else
-
             echo -ne "Do you want to remove ALL files from AUR cache? [y/N] "
 
             read yn
@@ -323,9 +318,7 @@ CleanCache() {
                 exit
             ;;
             esac
-
         fi
-
     fi
 }
 
@@ -343,14 +336,11 @@ paraexec() {
 }
 
 timeout(){
-    if [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then 
-        exit
-    fi
+    [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]] && exit 
 }
 
 error() {
-    echo -e "${colorR}::${reset} $1"
-    exit
+    echo -e "${colorR}::${reset} $1" && exit
 }
 
 success() {
