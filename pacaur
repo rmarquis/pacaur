@@ -112,7 +112,7 @@ CheckAur() {
 
 CheckRepo() {
     outofdate=($($pacmanBin -Quq $@))
-    if [[ ${outofdate[@]} != "" ]]; then
+    if [[ -n "${outofdate[@]}" ]]; then
         Qversion=($(expac -Q %v ${outofdate[@]}))
         Sversion=($(expac -S -1 %v ${outofdate[@]}))
 
@@ -167,7 +167,7 @@ UpgradeAur() {
         pkgs=($(echo ${pkgs[@]} | awk -F "\n" '{print}' | awk -F " " '{print}'))
     fi
 
-    if [[ $pkgs == "" ]]; then
+    if [[ -z "$pkgs" ]]; then
         echo " there is nothing to do"
         exit   
     fi
@@ -238,7 +238,7 @@ MakePkgs() {
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
     # remember explicitly installed packages
-    if [[ $expl == "" ]]; then
+    if [[ -z "$expl" ]]; then
       read -ra expl <<< ${pkgs[@]}
     fi
 
@@ -336,7 +336,7 @@ paraexec() {
 }
 
 timeout(){
-    if [[ $(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for") == "" ]]; then
+    if [[ -z "$(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for")" ]]; then
         exit
     fi
 }
@@ -516,7 +516,7 @@ ClassifyPkgs() {
         [[ $aur ]] && aurpkgs=${pkgs[@]}
         if [[ ! $repo && ! $aur ]]; then
             for package in ${pkgs[@]}; do
-                [[ $($pacmanBin -S --print $package 2>&1 | grep -v "error:") == "" ]] && aurpkgs+=("$package") || repopkgs+=("$package")
+                [[ -z "$($pacmanBin -S --print $package 2>&1 | grep -v "error:")" ]] && aurpkgs+=("$package") || repopkgs+=("$package")
             done
         fi
     else
@@ -620,7 +620,7 @@ fi
 
 # pacman sysupgrade (-Su) handling
 if [[ $option = sysupgrade ]]; then
-    [[ $(echo $pacmanarg | grep -v "r$") == "" ]] && pacmanarg=${pacmanarg%?}
+    [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
     [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignorepkgs[@]}
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${pkgs[@]}
     exit
@@ -635,7 +635,7 @@ fi
 
 # pacman clean (-Sc) handling
 if [[ $option = cleancache ]]; then
-    [[ $(echo $pacmanarg | grep -v "r$") == "" ]] && pacmanarg=${pacmanarg%?}
+    [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
     [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
     exit
