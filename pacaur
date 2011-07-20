@@ -635,11 +635,7 @@ fi
 # pacman upgrades (-Qu) handling
 if [[ $option = upgrades ]]; then
     [[ ! $aur ]] && CheckRepo ${pkgs[@]}
-    if [[ $fallback = true ]]; then
-        [[ ! $repo ]] && CheckAur ${pkgs[@]}
-    else
-        [[ $aur ]] && CheckAur ${pkgs[@]}
-    fi
+    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CheckAur ${pkgs[@]}
     exit
 fi
 
