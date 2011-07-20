@@ -505,7 +505,7 @@ done
 #
 
 Core() {
-    DownloadDepsAur ${pkgs[@]}
+    DownloadDepsAur $@
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
 }
