@@ -615,17 +615,14 @@ fi
 
 # pacman info (-Si) handling
 if [[ $option = info ]]; then
-    [[ ! $aur ]] && result=$($pacmanBin -Si --print ${pkgs[@]} 2>&1)
-    if [[ $(echo $result | grep -v "error: package") == "" ]]; then
-        if [[ $fallback = true ]]; then
-            [[ ! $aur ]] && [[ ! $repo ]] && warn "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
-            [[ ! $repo ]] && InfoAur ${pkgs[@]}
-            [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
-        else
-            [[ $aur ]] && InfoAur ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
-        fi
-    else
-        [[ ! $aur ]] && [[ $count -eq 1 ]] && $pacmanBin -Si ${pkgs[@]} || [[ ! $aur ]] && [[ $count -ne 1 ]] && $pacmanBin -Sii ${pkgs[@]}
+    ClassifyPkgs ${pkgs[@]}
+    if [[ ${repopkgs[@]} ]]; then
+        [[ $count -eq 1 ]] && $pacmanBin -Si ${repopkgs[@]}
+        [[ $count -ne 1 ]] && $pacmanBin -Sii ${repopkgs[@]}
+    fi
+    if [[ ${aurpkgs[@]} ]]; then
+        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+        InfoAur ${aurpkgs[@]}
     fi
     exit
 fi
