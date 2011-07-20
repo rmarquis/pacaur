@@ -468,8 +468,8 @@ while [[ $1 ]]; do
         '-Ssqr'|'-Ssrq') option=search; quiet=true; repo='1' ;;
         '-Sia') option=info; ((count++)); aur='1' ;;
         '-Sir') option=info; ((count++)); repo='1' ;;
-        '-Siia') option=info; count='2'; aur='1' ;;
-        '-Siir') option=info; count='2'; repo='1' ;;
+        '-Siia') option=info; count=2; aur='1' ;;
+        '-Siir') option=info; count=2; repo='1' ;;
         '-Swa') option=sync; force=true; edit=true; aur='1' ;;
         '-Swr') option=sync; force=true; edit=true; repo='1' ;;
         '-Qua') option=upgrades; aur='1' ;;
