@@ -144,7 +144,7 @@ UpgradeAur() {
         local i=0
         for package in ${aurpkgs[@]}; do
             DownloadPkgbuild ${aurpkgs[$i]} &
-            ParaExec
+            paraexec
             ((i++))
         done
         wait
@@ -335,7 +335,7 @@ DownloadPkgbuild() {
     fi
 }
 
-ParaExec() {
+paraexec() {
     while (( $(jobs | wc -l) >= 10 )); do
         sleep 0.1
         jobs > /dev/null
