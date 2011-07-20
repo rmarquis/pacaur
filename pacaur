@@ -590,17 +590,14 @@ fi
 # pacman sync (-S) handling
 # pacman downloadonly (-Sw) handling
 if [[ $option = sync ]]; then
-    [[ ! $aur ]] && result=$($pacmanBin -S --print ${pkgs[@]} 2>&1)
-    if [[ $(echo $result | grep -v "error: target not found") == "" ]]; then
-        if [[ $fallback = true ]]; then
-            [[ ! $aur ]] && [[ ! $repo ]] && warn "Package(s) ${colorW}${pkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
-            [[ ! $repo ]] && Core ${pkgs[@]}
-            [[ $repo ]] && error "no results found for ${colorW}${pkgs[@]}${reset}"
-        else
-            [[ $aur ]] && Core ${pkgs[@]} || error "no results found for ${colorW}${pkgs[@]}${reset}"
-        fi
-    else
-        [[ ! $aur ]] && [[ $install ]] && runasroot $pacmanBin -S ${pacopts[@]} ${pkgs[@]} || [[ ! $aur ]] && [[ ! $install ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${pkgs[@]}
+    ClassifyPkgs ${pkgs[@]}
+    if [[ ${repopkgs[@]} ]]; then
+        [[ $install ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
+        [[ ! $install ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
+    fi
+    if [[ ${aurpkgs[@]} ]]; then
+        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+        Core ${aurpkgs[@]}
     fi
     exit
 fi
