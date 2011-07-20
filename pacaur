@@ -477,9 +477,9 @@ while [[ $1 ]]; do
         '-Quq') option=upgrades; quiet=true ;;
         '-Quqa') option=upgrades; quiet=true; aur='1' ;;
         '-Quqr') option=upgrades; quiet=true; repo='1' ;;
-        -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
-        -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
-        -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1" ;;
+        -S*u*a) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
+        -S*u*r) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
+        -S*u*|'--sysupgrade') option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1" ;;
         '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1' ;;
         '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1' ;;
         '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1' ;;
@@ -625,17 +625,10 @@ if [[ $option = info ]]; then
 fi
 
 # pacman sysupgrade (-Su) handling
-# pacman refresh (-Sy) handling
 if [[ $option = sysupgrade ]]; then
     [[ $(echo $pacmanarg | grep -v "r$") == "" ]] && pacmanarg=${pacmanarg%?}
     [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignorepkgs[@]}
-    if [[ $fallback = true ]]; then
-        [[ ! $repo ]] && [[ $upgrade ]] && UpgradeAur
-        [[ ! $repo ]] && Core ${pkgs[@]}
-    else
-        [[ $aur ]] && [[ $upgrade ]] && UpgradeAur
-        [[ $aur ]] && Core ${pkgs[@]}
-    fi
+    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${pkgs[@]}
     exit
 fi
 
