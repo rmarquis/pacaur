@@ -38,7 +38,7 @@ source /etc/${name}.conf
 # Color
 #
 
-if $color; then
+if [[ $color ]]; then
     cower='cower --color=always'
     bold=$(tput bold)
     reset=$(tput sgr0)
@@ -58,18 +58,6 @@ fi
 #
 # Functions
 #
-
-runasroot() {
-    if [[ $UID -eq 0 ]]; then
-        "$@"
-    elif sudo -v &>/dev/null && sudo -l "$@" &>/dev/null; then
-        sudo "$@"
-    else
-        echo -n "root "
-        # echo hack to ensure all of the args get taken into account
-        su root -c "$(echo $@)"
-    fi
-}
 
 SearchAur() {
     [[ ! $quiet ]] && $cower -s $@
@@ -117,8 +105,8 @@ CheckRepo() {
         Sversion=($(expac -S -1 %v ${outofdate[@]}))
 
         local i=0
-        for package in ${outofdate[@]}; do
-            [[ ! $quiet ]] && info "${colorW}${outofdate[$i]} ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}" || echo ${outofdate[$i]}
+        for j in ${outofdate[@]}; do
+            [[ ! $quiet ]] && info "${colorW}$j ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset}" || echo $j
             ((i++))
         done
     fi
@@ -130,7 +118,7 @@ UpgradeAur() {
 
     # add devel packages
     if [[ $devel ]]; then
-        aurpkgs=( $($pacmanBin -Qmq) )
+        aurpkgs=($($pacmanBin -Qmq))
         Qversion=($(expac -Q %v ${aurpkgs[@]}))
 
         # ignored packages
@@ -141,22 +129,20 @@ UpgradeAur() {
         # set tmpdir
         mkdir -p "$tmpDir"
 
-        local i=0
-        for package in ${aurpkgs[@]}; do
-            DownloadPkgbuild ${aurpkgs[$i]} &
+        for i in ${aurpkgs[@]}; do
+            DownloadPkgbuild $i &
             paraexec
-            ((i++))
         done
         wait
-        for (( j=0; j<${#aurpkgs[@]}; j++)); do
+        for ((i=0; i<${#aurpkgs[@]}; i++)); do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            . "$tmpDir/${aurpkgs[$j]}.PKGBUILD"
+            . "$tmpDir/${aurpkgs[$i]}.PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
-                if [[ "${ignoredpkgs[@]}" =~ "${aurpkgs[$j]}" ]]; then
+                if [[ "${ignoredpkgs[@]}" =~ "${aurpkgs[$i]}" ]]; then
                     continue
                 fi
-                info "${colorW}${aurpkgs[$j]} ${colorY}${Qversion[$j]} ${reset}"
-                aurdevel=("${aurdevel[@]}" "${aurpkgs[$j]}")
+                info "${colorW}${aurpkgs[$i]} ${colorY}${Qversion[$i]} ${reset}"
+                aurdevel=("${aurdevel[@]}" "${aurpkgs[$i]}")
             fi
         done
 
@@ -178,7 +164,7 @@ UpgradeAur() {
 Proceed() {
     echo -ne "\nProceed with installation? [Y/n] "
     
-    if ! [[ $noconfirm ]]; then
+    if [[ ! $noconfirm ]]; then
         read yn
         case $yn in
         [Yy]|[Yy]es|'')
@@ -215,7 +201,7 @@ EditPkgs() {
 }
 
 CleanUp() {
-    if [[ $clean == true ]]; then
+    if [[ $clean = true ]]; then
         info "Cleaning up ${colorW}$@${reset}... "
         cd $buildDir
         for i in "$@"; do
@@ -238,9 +224,7 @@ MakePkgs() {
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
     # remember explicitly installed packages
-    if [[ -z "$expl" ]]; then
-      read -ra expl <<< ${pkgs[@]}
-    fi
+    [[ -z "$expl" ]] && read -ra expl <<< ${pkgs[@]}
 
     # set architecture variables
     if [[ ! $confSourced ]]; then
@@ -250,31 +234,26 @@ MakePkgs() {
         confSourced=true
     fi
 
-    local j
-    for j in "${deps[@]}"; do
-        if [ -e $buildDir/$j/PKGBUILD ]; then
-            info "Building ${colorW}$j${reset} package..."
-            cd $buildDir/$j
+    for i in "${deps[@]}"; do
+        if [ -e $buildDir/$i/PKGBUILD ]; then
+            info "Building ${colorW}$i${reset} package..."
+            cd $buildDir/$i
             if [[ $install ]]; then
                 makepkg -sfi ${makeopts[@]} --noconfirm
                 # if AUR dep, install as --asdeps
                 # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
                     isexpl=false
-                    for k in ${expl[@]}; do
-                        if [[ $k == $j ]]; then
-                            isexpl=true
-                        fi
+                    for j in ${expl[@]}; do
+                        [[ $j = $i ]] && isexpl=true
                     done
-                    if [[ $isexpl != true ]]; then
-                        runasroot $pacmanBin -D --asdeps $j ${pacopts[@]} &>/dev/null
-                    fi
+                    [[ $isexpl != true ]] && runasroot $pacmanBin -D --asdeps $i ${pacopts[@]} &>/dev/null
                 fi
             else
                 makepkg -sf ${makeopts[@]} --noconfirm
             fi
         else
-            error "Could not open ${colorW}$j${reset} PKGBUILD"
+            error "Could not open ${colorW}$i${reset} PKGBUILD"
         fi
     done
 }
@@ -294,11 +273,9 @@ CleanCache() {
             case $yn in
             [Yy]|[Yy]es|'')
                 echo "removing old packages from cache..."
-                for package in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
-                    pkgname=$(echo $package | sed "s#\(.*\)-.*-.*#\1#g")
-                    if [[ $package != $(expac -Q '%n-%v' $pkgname) ]]; then
-                        rm $PKGDEST/$package-*
-                    fi
+                for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
+                    pkgname=$(echo $i | sed "s#\(.*\)-.*-.*#\1#g")
+                    [[ $i != $(expac -Q '%n-%v' $pkgname) ]] && rm $PKGDEST/$i-*
                 done
             ;;
             *)
@@ -323,8 +300,20 @@ CleanCache() {
 }
 
 DownloadPkgbuild() {
-    if ! [[ -f "$tmpDir/$package.PKGBUILD" ]]; then
-        curl -Lfs "https://aur.archlinux.org/packages/$package/PKGBUILD" > "$tmpDir/$package.PKGBUILD"
+    if [[ ! -f "$tmpDir/$i.PKGBUILD" ]]; then
+        curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD"
+    fi
+}
+
+runasroot() {
+    if [[ $UID -eq 0 ]]; then
+        "$@"
+    elif sudo -v &>/dev/null && sudo -l "$@" &>/dev/null; then
+        sudo "$@"
+    else
+        echo -n "root "
+        # echo hack to ensure all of the args get taken into account
+        su root -c "$(echo $@)"
     fi
 }
 
@@ -406,95 +395,95 @@ pkgs=()
 count=0
 while [[ $1 ]]; do
     case "$1" in
-        '-s'|'--search') operation=search ;;
-        '-i'|'--info') operation=info; ((count++)) ;;
-        '-d'|'--download') operation=download; ((count++)) ;;
-        '-b'|'--build') operation=build ;;
-        '-m'|'--makepkg') operation=makepkg ;;
-        '-y'|'--sync') operation=makepkg ; install=true ;;
-        '-k'|'--check') operation=check ;;
-        '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true ;;
-        '-abs'|'--abs') operation=abs ;;
-        '-c'|'--clean') clean=true; cleanpkg=true ;;
-        '-f'|'--force') force=true ;;
-        '-e'|'--edit') edit=true; editpkg=true ;;
-        '-q'|'--quiet') quiet=true ;;
+        '-s'|'--search') operation=search;;
+        '-i'|'--info') operation=info; ((count++));;
+        '-d'|'--download') operation=download; ((count++));;
+        '-b'|'--build') operation=build;;
+        '-m'|'--makepkg') operation=makepkg;;
+        '-y'|'--sync') operation=makepkg ; install=true;;
+        '-k'|'--check') operation=check;;
+        '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true;;
+        '-abs'|'--abs') operation=abs;;
+        '-c'|'--clean') clean=true; cleanpkg=true;;
+        '-f'|'--force') force=true;;
+        '-e'|'--edit') edit=true; editpkg=true;;
+        '-q'|'--quiet') quiet=true;;
         # shortcuts
-        '-sq') operation=search; quiet=true ;;
-        '-ii') operation=info; count=2 ;;
-        '-dd') operation=download; count=2 ;;
-        '-df') operation=download; ((count++)); force=true ;;
-        '-de') operation=download; ((count++)); edit=true ;;
-        '-def'|'-dfe') operation=download; ((count++)); edit=true; force=true ;;
-        '-ddf') operation=download; count=2; force=true ;;
-        '-dde') operation=download; count=2; edit=true ;;
-        '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true ;;
-        '-be') operation=build; edit=true ;;
-        '-me') operation=makepkg; edit=true ;;
-        '-mf') operation=makepkg; force=true ;;
-        '-mef'|'-mfe') operation=makepkg; force=true; edit=true ;;
-        '-ye') operation=makepkg; edit=true; install=true ;;
-        '-yf') operation=makepkg; force=true; install=true ;;
-        '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true ;;
-        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true ;;
-        '-kq') operation=check; quiet=true ;;
-        '-abse') operation=abs; edit=true ;;
-        '-absf') operation=abs; force=true ;;
-        '-absef'|'-absfe') operation=abs; force=true; edit=true ;;
+        '-sq') operation=search; quiet=true;;
+        '-ii') operation=info; count=2;;
+        '-dd') operation=download; count=2;;
+        '-df') operation=download; ((count++)); force=true;;
+        '-de') operation=download; ((count++)); edit=true;;
+        '-def'|'-dfe') operation=download; ((count++)); edit=true; force=true;;
+        '-ddf') operation=download; count=2; force=true;;
+        '-dde') operation=download; count=2; edit=true;;
+        '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
+        '-be') operation=build; edit=true;;
+        '-me') operation=makepkg; edit=true;;
+        '-mf') operation=makepkg; force=true;;
+        '-mef'|'-mfe') operation=makepkg; force=true; edit=true;;
+        '-ye') operation=makepkg; edit=true; install=true;;
+        '-yf') operation=makepkg; force=true; install=true;;
+        '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true;;
+        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true;;
+        '-kq') operation=check; quiet=true;;
+        '-abse') operation=abs; edit=true;;
+        '-absf') operation=abs; force=true;;
+        '-absef'|'-absfe') operation=abs; force=true; edit=true;;
         # pacman
-        '-S'|'--sync') option=sync; install=true; force=true; edit=true ;;
-        '-Ss'|'--search') option=search ;;
-        '-Si'|'--info') option=info; ((count++)) ;;
-        '-Sii'|'--info') option=info; count=2 ;;
-        '-Sw'|'--downloadonly') option=sync; force=true; edit=true ;;
-        '-Qu'|'--upgrades') option=upgrades ;;
-        '-Sc'|'--clean') option=cleancache; ((count++)); pacmanarg="$1" ;;
-        '-Scc'|'--clean') option=cleancache; count=2; pacmanarg="$1" ;;
-        '-r'|'--repo') repo='1' ;;
-        '-a'|'--aur') aur='1' ;;
+        '-S'|'--sync') option=sync; install=true; force=true; edit=true;;
+        '-Ss'|'--search') option=search;;
+        '-Si'|'--info') option=info; ((count++));;
+        '-Sii'|'--info') option=info; count=2;;
+        '-Sw'|'--downloadonly') option=sync; force=true; edit=true;;
+        '-Qu'|'--upgrades') option=upgrades;;
+        '-Sc'|'--clean') option=cleancache; ((count++)); pacmanarg="$1";;
+        '-Scc'|'--clean') option=cleancache; count=2; pacmanarg="$1";;
+        '-r'|'--repo') repo='1';;
+        '-a'|'--aur') aur='1';;
         # pacman shortcuts
-        '-Sa') option=sync; install=true; force=true; edit=true; aur='1' ;;
-        '-Sr') option=sync; install=true; force=true; edit=true; repo='1' ;;
-        '-Ssa') option=search; aur='1' ;;
-        '-Ssr') option=search; repo='1' ;;
-        '-Ssq') option=search; quiet=true ;;
-        '-Ssqa'|'-Ssaq') option=search; quiet=true; aur='1' ;;
-        '-Ssqr'|'-Ssrq') option=search; quiet=true; repo='1' ;;
-        '-Sia') option=info; ((count++)); aur='1' ;;
-        '-Sir') option=info; ((count++)); repo='1' ;;
-        '-Siia') option=info; count=2; aur='1' ;;
-        '-Siir') option=info; count=2; repo='1' ;;
-        '-Swa') option=sync; force=true; edit=true; aur='1' ;;
-        '-Swr') option=sync; force=true; edit=true; repo='1' ;;
-        '-Qua') option=upgrades; aur='1' ;;
-        '-Qur') option=upgrades; repo='1' ;;
-        '-Quq') option=upgrades; quiet=true ;;
-        '-Quqa') option=upgrades; quiet=true; aur='1' ;;
-        '-Quqr') option=upgrades; quiet=true; repo='1' ;;
-        -S*u*a) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; aur='1' ;;
-        -S*u*r) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; repo='1' ;;
-        -S*u*|'--sysupgrade') option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1" ;;
-        '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1' ;;
-        '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1' ;;
-        '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1' ;;
-        '-Sccr') option=cleancache; count=2; pacmanarg="$1"; repo='1' ;;
+        '-Sa') option=sync; install=true; force=true; edit=true; aur='1';;
+        '-Sr') option=sync; install=true; force=true; edit=true; repo='1';;
+        '-Ssa') option=search; aur='1';;
+        '-Ssr') option=search; repo='1';;
+        '-Ssq') option=search; quiet=true;;
+        '-Ssqa'|'-Ssaq') option=search; quiet=true; aur='1';;
+        '-Ssqr'|'-Ssrq') option=search; quiet=true; repo='1';;
+        '-Sia') option=info; ((count++)); aur='1';;
+        '-Sir') option=info; ((count++)); repo='1';;
+        '-Siia') option=info; count=2; aur='1';;
+        '-Siir') option=info; count=2; repo='1';;
+        '-Swa') option=sync; force=true; edit=true; aur='1';;
+        '-Swr') option=sync; force=true; edit=true; repo='1';;
+        '-Qua') option=upgrades; aur='1';;
+        '-Qur') option=upgrades; repo='1';;
+        '-Quq') option=upgrades; quiet=true;;
+        '-Quqa') option=upgrades; quiet=true; aur='1';;
+        '-Quqr') option=upgrades; quiet=true; repo='1';;
+        -S*u*a) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; aur='1';;
+        -S*u*r) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; repo='1';;
+        -S*u*|'--sysupgrade') option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1";;
+        '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1';;
+        '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1';;
+        '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1';;
+        '-Sccr') option=cleancache; count=2; pacmanarg="$1"; repo='1';;
         # others
-        '--devel') devel=true ;;
-        '--asroot') makeopts+=("--asroot") ;;
-        '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2") ; shift ;;
-        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm") ;;
-        '--noedit') noedit=true ;;
-        -D* | '--database') runasroot $pacmanBin $@; exit ;;
-        -Q* | '--query') $pacmanBin $@; exit ;;
-        -R* | '--remove') runasroot $pacmanBin $@; exit ;;
-        -S* | '--sync') runasroot $pacmanBin $@; exit ;;
-        -T* | '--deptest') runasroot $pacmanBin $@; exit ;;
-        -U* | '--upgrade') runasroot $pacmanBin $@; exit ;;
-        '-h'|'--help') usage; exit ;;
-        '-v'|'--version') version; exit ;;
-        --*) runasroot $pacmanBin $@; exit ;;
-        -*) echo "$name: invalid option -- '$1'" ; exit ;;
-        *) pkgs+=("$1") ;;
+        '--devel') devel=true;;
+        '--asroot') makeopts+=("--asroot");;
+        '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2") ; shift;;
+        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
+        '--noedit') noedit=true;;
+        -D* | '--database') runasroot $pacmanBin $@; exit;;
+        -Q* | '--query') $pacmanBin $@; exit;;
+        -R* | '--remove') runasroot $pacmanBin $@; exit;;
+        -S* | '--sync') runasroot $pacmanBin $@; exit;;
+        -T* | '--deptest') runasroot $pacmanBin $@; exit;;
+        -U* | '--upgrade') runasroot $pacmanBin $@; exit;;
+        '-h'|'--help') usage; exit;;
+        '-v'|'--version') version; exit;;
+        --*) runasroot $pacmanBin $@; exit;;
+        -*) echo "$name: invalid option -- '$1'" ; exit;;
+        *) pkgs+=("$1");;
     esac
     shift
 done
@@ -515,8 +504,8 @@ ClassifyPkgs() {
         [[ $repo ]] && repopkgs=${pkgs[@]}
         [[ $aur ]] && aurpkgs=${pkgs[@]}
         if [[ ! $repo && ! $aur ]]; then
-            for package in ${pkgs[@]}; do
-                [[ -z "$($pacmanBin -S --print $package 2>&1 | grep -v "error:")" ]] && aurpkgs+=("$package") || repopkgs+=("$package")
+            for i in ${pkgs[@]}; do
+                [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v "error:")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
     else
