@@ -257,25 +257,20 @@ CleanCache() {
     export PACMAN=$pacmanBin
 
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
-        echo -e "\n${colorW}AUR cache directory:${reset} $PKGDEST"
+        [[ ! $aur ]] && echo ""
+        echo -e "${colorW}AUR cache directory:${reset} $PKGDEST"
         if [[ $count -eq 1 ]]; then
             echo -e "${colorW}Packages to keep:${reset}\n  All locally installed packages"
             echo -ne "Do you want to remove all other packages from AUR cache? [Y/n] "
-
-            read -n 1 yn
-            echo ""
-            case $yn in
-            [Yy]|[Yy]es|'')
-                echo "removing old packages from cache..."
-                for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
-                    pkgname=$(echo $i | sed "s#\(.*\)-.*-.*#\1#g")
-                    [[ $i != $(expac -Q '%n-%v' $pkgname) ]] && rm $PKGDEST/$i-*
-                done
-            ;;
-            *)
+            if ! proceed; then
                 exit
-            ;;
-            esac
+            fi
+
+            echo "removing old packages from cache..."
+            for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
+                pkgname=$(echo $i | sed "s#\(.*\)-.*-.*#\1#g")
+                [[ $i != $(expac -Q '%n-%v' $pkgname) ]] && rm $PKGDEST/$i-*
+            done
         else
             echo -ne "Do you want to remove ALL files from AUR cache? [y/N] "
 
