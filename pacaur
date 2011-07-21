@@ -194,9 +194,24 @@ CopyAbs() {
 
 EditPkgs() {
     if [[ $edit && ! $noedit ]]; then
-        info "Editing ${colorW}$@${reset}... "
         for i in "$@"; do
-            [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+
+            if [[ ! $edit || $option ]]; then
+                echo -ne "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD? [Y/n] "
+
+                read -n 1 yn
+                echo ""
+                case $yn in
+                [Yy]|[Yy]es|'')
+                    [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+                ;;
+                *)
+                    continue
+                esac
+
+            else
+                [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+            fi
         done
     fi
 }
