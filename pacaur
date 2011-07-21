@@ -161,26 +161,6 @@ UpgradeAur() {
     timeout ${pkgs[@]}
 }
 
-Proceed() {
-    if [[ ! $noconfirm ]]; then
-        echo -ne "\nProceed with installation? [Y/n] "
-
-        read -n 1 yn
-        echo ""
-        case $yn in
-        [Yy]|[Yy]es|'')
-            return
-        ;;
-        *)
-            CleanUp ${deps[@]} &>/dev/null
-            exit
-        ;;
-        esac
-    else
-        echo ""
-    fi
-}
-
 CopyAbs() {
     for i in "$@"; do
         if [[ -e $buildDir/$i/PKGBUILD && ! $force ]]; then
@@ -194,8 +174,13 @@ CopyAbs() {
 
 EditPkgs() {
     if [[ $edit && ! $noedit ]]; then
-        info "Editing ${colorW}$@${reset}... "
         for i in "$@"; do
+            if [[ $option ]]; then
+                echo -ne "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD? [Y/n] "
+                if ! proceed; then
+                    continue
+                fi
+            fi
             [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
         done
     fi
@@ -214,11 +199,18 @@ CleanUp() {
 }
 
 MakePkgs() {
-    #info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
+    echo ""
 
-    Proceed
+    if [[ ! $noconfirm ]]; then
+        echo -n "Proceed with installation? [Y/n] "
+        if ! proceed; then
+            CleanUp ${deps[@]} &>/dev/null
+            exit
+        fi
+    fi
 
+    #info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     EditPkgs ${deps[@]}
 
     # reverse deps order
@@ -318,6 +310,15 @@ runasroot() {
         # echo hack to ensure all of the args get taken into account
         su root -c "$(echo $@)"
     fi
+}
+
+proceed() {
+    read -n 1 yn
+    echo ""
+    case $yn in
+        [Yy]|[Yy]es|'') return 0;;
+        *) return 1;;
+    esac
 }
 
 paraexec() {
