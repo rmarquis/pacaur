@@ -1,6 +1,6 @@
 =head1 NAME
 
-pacaur - A simple cower wrapper to fetch PKGBUILDS from aur & abs
+pacaur - A fast workflow AUR wrapper using cower as backend
 
 =head1 SYNOPSIS
 
@@ -9,10 +9,10 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
 =head1 DESCRIPTION
 
 pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
-designed to allow a fast workflow and to use an uncluttered interface.
-It is build upon the well designed cower and expac C backends.
-Invoking pacaur consists of supplying an operation, any applicable options, and
-usually one or more targets.
+designed to allow a fast workflow and to use an uncluttered interface. It is
+build upon the well designed cower and expac C backends. Invoking pacaur
+consists of supplying an operation, any applicable options, and usually one or
+more targets.
 
 =head1 OPERATIONS
 

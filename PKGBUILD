@@ -3,7 +3,7 @@
 pkgname=pacaur
 pkgver=2.1.7
 pkgrel=2
-pkgdesc="A simple cower wrapper to fetch PKGBUILDS from aur & abs"
+pkgdesc="A fast workflow AUR wrapper using cower as backend"
 arch=('any')
 url="https://github.com/Spyhawk/pacaur"
 license=('GPL')
