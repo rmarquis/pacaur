@@ -162,10 +162,11 @@ UpgradeAur() {
 }
 
 Proceed() {
-    echo -ne "\nProceed with installation? [Y/n] "
-    
     if [[ ! $noconfirm ]]; then
-        read yn
+        echo -ne "\nProceed with installation? [Y/n] "
+
+        read -n 1 yn
+        echo ""
         case $yn in
         [Yy]|[Yy]es|'')
             return
@@ -269,7 +270,8 @@ CleanCache() {
             echo -e "${colorW}Packages to keep:${reset}\n  All locally installed packages"
             echo -ne "Do you want to remove all other packages from AUR cache? [Y/n] "
 
-            read yn
+            read -n 1 yn
+            echo ""
             case $yn in
             [Yy]|[Yy]es|'')
                 echo "removing old packages from cache..."
@@ -285,7 +287,8 @@ CleanCache() {
         else
             echo -ne "Do you want to remove ALL files from AUR cache? [y/N] "
 
-            read yn
+            read -n 1 yn
+            echo ""
             case $yn in
             [Yy]|[Yy]es)
                 echo "removing all files from AUR cache..."
