@@ -1,6 +1,6 @@
 =head1 NAME
 
-pacaur - A fast workflow AUR wrapper using cower as backend
+pacaur - a fast workflow AUR wrapper using cower as backend
 
 =head1 SYNOPSIS
 
