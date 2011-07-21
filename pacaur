@@ -463,6 +463,9 @@ while [[ $1 ]]; do
         '-Quq') option=upgrades; quiet=true;;
         '-Quqa') option=upgrades; quiet=true; aur='1';;
         '-Quqr') option=upgrades; quiet=true; repo='1';;
+        -S*u*w*a|-S*w*u*a) option=sysupgrade; force=true; edit=true; pacmanarg="$1"; aur='1' ;;
+        -S*u*w*r|-S*w*u*r) option=sysupgrade; force=true; edit=true; pacmanarg="$1"; repo='1' ;;
+        -S*u*w*|-S*w*u*) option=sysupgrade; force=true; edit=true; pacmanarg="$1" ;;
         -S*u*a) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; aur='1';;
         -S*u*r) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; repo='1';;
         -S*u*|'--sysupgrade') option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1";;
