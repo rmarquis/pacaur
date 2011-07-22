@@ -70,7 +70,8 @@ InfoAur() {
 }
 
 DownloadAur() {
-    [[ ! $force ]] && $cower -d $@ -t $buildDir || $cower -d -f $@ -t $buildDir
+    [[ ! $force ]] && $cower -d $@ -t $buildDir
+    [[ $force ]] && $cower -d -f $@ -t $buildDir
 }
 
 DownloadDepsAur() {
@@ -535,7 +536,8 @@ fi
 
 # download (-d) handling
 if [[ $operation = download ]]; then
-    [[ $count -eq 1 ]] && DownloadAur ${pkgs[@]} || DownloadDepsAur ${pkgs[@]}
+    [[ $count -eq 1 ]] && DownloadAur ${pkgs[@]}
+    [[ $count -ne 1 ]] && DownloadDepsAur ${pkgs[@]}
     [[ ! $deps ]] && deps=("${pkgs[@]}")
     EditPkgs ${deps[@]}
     exit
