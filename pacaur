@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# pacaur: A fast workflow AUR wrapper using cower as backend
+# pacaur: a fast workflow AUR wrapper using cower as backend
 #
 
 name="pacaur"
@@ -70,29 +70,23 @@ InfoAur() {
 }
 
 DownloadAur() {
-    [[ ! $force ]] && $cower -d $@ -t $buildDir
-    [[ $force ]] && $cower -d -f $@ -t $buildDir
+    [[ $force ]] && f="-f"
+    deps=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 }
 
 DownloadDepsAur() {
-    # download dependencies recursively and return AUR deps only
-    [[ $force ]] && f="-f"
-    deps=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    # return AUR deps only
+    if [[ ! $build ]]; then
+        [[ $force ]] && f="-f"
+        [[ ! $option ]] && deps=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+        [[ $option ]] && deps=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    else
+        mkdir -p "$tmpDir"
+        deps=($($cower -dd $@ -t $tmpDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        rm -rf "$tmpDir" &>/dev/null
+    fi
 
     timeout ${deps[@]}
-}
-
-FindDepsAur() {
-    # set tmpdir
-    mkdir -p "$tmpDir"
-
-    # check dependencies recursively and return AUR deps only
-    deps=($($cower -dd $@ -t $tmpDir | tee 1>/dev/null >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-
-    timeout ${deps[@]}
-
-    # clean tmpdir
-    rm -rf "$tmpDir" &>/dev/null
 }
 
 CheckAur() {
@@ -189,18 +183,18 @@ EditPkgs() {
 
 CleanUp() {
     if [[ $clean = true ]]; then
-        info "Cleaning up ${colorW}$@${reset}... "
         cd $buildDir
         for i in "$@"; do
             # hack for cvs protected files
             chmod -R 755 $i &>/dev/null
-            rm -r $i && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+            rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
         done
     fi
 }
 
 MakePkgs() {
-    echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
+    [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
+    [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo ""
 
     if [[ ! $noconfirm ]]; then
@@ -211,7 +205,6 @@ MakePkgs() {
         fi
     fi
 
-    #info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     EditPkgs ${deps[@]}
 
     # reverse deps order
@@ -398,15 +391,15 @@ while [[ $1 ]]; do
         '-s'|'--search') operation=search;;
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
-        '-b'|'--build') operation=build;;
+        '-b'|'--build') operation=makepkg; build=true;;
         '-m'|'--makepkg') operation=makepkg;;
         '-y'|'--sync') operation=makepkg ; install=true;;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true;;
         '-abs'|'--abs') operation=abs;;
-        '-c'|'--clean') clean=true; cleanpkg=true;;
         '-f'|'--force') force=true;;
         '-e'|'--edit') edit=true; editpkg=true;;
+        '-c'|'--clean') clean=true; cleanpkg=true;;
         '-q'|'--quiet') quiet=true;;
         # shortcuts
         '-sq') operation=search; quiet=true;;
@@ -418,15 +411,15 @@ while [[ $1 ]]; do
         '-ddf') operation=download; count=2; force=true;;
         '-dde') operation=download; count=2; edit=true;;
         '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
-        '-be') operation=build; edit=true;;
+        '-be') operation=makepkg; build=true; edit=true;;
         '-me') operation=makepkg; edit=true;;
         '-mf') operation=makepkg; force=true;;
         '-mef'|'-mfe') operation=makepkg; force=true; edit=true;;
         '-ye') operation=makepkg; edit=true; install=true;;
         '-yf') operation=makepkg; force=true; install=true;;
         '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true;;
-        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true;;
         '-kq') operation=check; quiet=true;;
+        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true;;
         '-abse') operation=abs; edit=true;;
         '-absf') operation=abs; force=true;;
         '-absef'|'-absfe') operation=abs; force=true; edit=true;;
@@ -473,7 +466,7 @@ while [[ $1 ]]; do
         # others
         '--devel') devel=true;;
         '--asroot') makeopts+=("--asroot");;
-        '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2") ; shift;;
+        '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2"); shift;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
         '--noedit') noedit=true;;
         -D* | '--database') runasroot $pacmanBin $@; exit;;
@@ -485,7 +478,7 @@ while [[ $1 ]]; do
         '-h'|'--help') usage; exit;;
         '-v'|'--version') version; exit;;
         --*) runasroot $pacmanBin $@; exit;;
-        -*) echo "$name: invalid option -- '$1'" ; exit;;
+        -*) echo "$name: invalid option -- '$1'"; exit;;
         *) pkgs+=("$1");;
     esac
     shift
@@ -538,20 +531,11 @@ fi
 if [[ $operation = download ]]; then
     [[ $count -eq 1 ]] && DownloadAur ${pkgs[@]}
     [[ $count -ne 1 ]] && DownloadDepsAur ${pkgs[@]}
-    [[ ! $deps ]] && deps=("${pkgs[@]}")
     EditPkgs ${deps[@]}
     exit
 fi
 
 # build (-b) handling
-if [[ $operation = build ]]; then
-    FindDepsAur ${pkgs[@]}
-    [[ ! $deps ]] && deps=("${pkgs[@]}")
-    MakePkgs ${deps[@]}
-    CleanUp ${deps[@]}
-    exit
-fi
-
 # makepkg (-m) handling
 # sync (-y) handling
 # update (-u) handling
