@@ -468,6 +468,7 @@ while [[ $1 ]]; do
         '--asroot') makeopts+=("--asroot");;
         '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2"); shift;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
+        '--noprogress') pacopts+=("--noprogress");;
         '--noedit') noedit=true;;
         -D* | '--database') runasroot $pacmanBin $@; exit;;
         -Q* | '--query') $pacmanBin $@; exit;;
