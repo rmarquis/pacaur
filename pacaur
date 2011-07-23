@@ -477,7 +477,7 @@ while [[ $1 ]]; do
         -U* | '--upgrade') runasroot $pacmanBin $@; exit;;
         '-h'|'--help') usage; exit;;
         '-v'|'--version') version; exit;;
-        --*) runasroot $pacmanBin $@; exit;;
+        --*) pacopts+=("$1");;
         -*) echo "$name: invalid option -- '$1'"; exit;;
         *) pkgs+=("$1");;
     esac
