@@ -116,7 +116,7 @@ CheckRepo() {
 
 UpgradeAur() {
     info "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs=$($cower -u ${ignorepkgs[@]} $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    aurpkgs=($($cower -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
     # add devel packages
     if [[ $devel ]]; then
@@ -135,9 +135,6 @@ UpgradeAur() {
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
             . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
-                if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
-                    [[ "${ignoredpkgs[@]}" =~ "${allaurpkgs[$i]}" ]] && continue
-                fi
                 info "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]} ${reset}"
                 aurdevel=("${aurdevel[@]}" "${allaurpkgs[$i]}")
             fi
@@ -147,7 +144,6 @@ UpgradeAur() {
         rm -rf "$tmpDir" &>/dev/null
 
         [[ ! ${aurpkgs[@]} ]] && aurpkgs=("${aurdevel[@]}") || aurpkgs=("${aurpkgs[@]}" "${aurdevel[@]}")
-        aurpkgs=($(echo ${aurpkgs[@]} | awk -F "\n" '{print}' | awk -F " " '{print}'))
     fi
 
     if [[ -z "$aurpkgs" ]]; then
@@ -290,26 +286,37 @@ CleanCache() {
 
 IgnoreChecks() {
     unset deps
-    # check targets
-    for i in "${aurpkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            echo -ne "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway? [Y/n] "
-            if ! proceed; then
+    if [[ ! $upgrade ]]; then
+        # check targets
+        for i in "${aurpkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                echo -ne "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway? [Y/n] "
+                if ! proceed; then
+                    continue
+                fi
+            fi
+            deps+=("$i")
+        done
+        # check depends
+        for i in "${aurdepspkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                echo -ne "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway? [Y/n] "
+                if ! proceed; then
+                    error "Unresolved dependency '${colorW}$i${reset}'"
+                fi
+            fi
+            deps+=("$i")
+        done
+    else
+        # ignore upgrades
+        for i in "${aurpkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                warn "${colorW}$i${reset}: ignoring package upgrade"
                 continue
             fi
-        fi
-        deps+=("$i")
-    done
-    # check depends
-    for i in "${aurdepspkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            echo -ne "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway? [Y/n] "
-            if ! proceed; then
-                error "Unresolved dependency \`$i'"
-            fi
-        fi
-        deps+=("$i")
-    done
+            deps+=("$i")
+        done
+    fi
 }
 
 GetIgnoredPkgs() {
@@ -488,12 +495,12 @@ while [[ $1 ]]; do
         '-Quq') option=upgrades; quiet=true;;
         '-Quqa') option=upgrades; quiet=true; aur='1';;
         '-Quqr') option=upgrades; quiet=true; repo='1';;
-        -S*u*w*a|-S*w*u*a) option=sysupgrade; force=true; edit=true; pacmanarg="$1"; aur='1' ;;
-        -S*u*w*r|-S*w*u*r) option=sysupgrade; force=true; edit=true; pacmanarg="$1"; repo='1' ;;
-        -S*u*w*|-S*w*u*) option=sysupgrade; force=true; edit=true; pacmanarg="$1" ;;
-        -S*u*a) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; aur='1';;
-        -S*u*r) option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1"; repo='1';;
-        -S*u*|'--sysupgrade') option=sysupgrade; force=true; edit=true; install=true; pacmanarg="$1";;
+        -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; aur='1' ;;
+        -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; repo='1' ;;
+        -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1" ;;
+        -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1';;
+        -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1';;
+        -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1";;
         '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1';;
         '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1';;
         '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1';;
