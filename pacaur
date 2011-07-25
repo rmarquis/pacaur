@@ -211,9 +211,6 @@ MakePkgs() {
     # reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
-    # remember explicitly installed packages
-    [[ -z "$expl" ]] && read -ra expl <<< ${pkgs[@]}
-
     # set architecture variables
     if [[ ! $confSourced ]]; then
         source /etc/makepkg.conf
@@ -232,7 +229,7 @@ MakePkgs() {
                 # if upgrade, do no change status
                 if [[ ! $upgrade ]]; then
                     isexpl=false
-                    for j in ${expl[@]}; do
+                    for j in ${pkgs[@]}; do
                         [[ $j = $i ]] && isexpl=true
                     done
                     [[ $isexpl != true ]] && runasroot $pacmanBin -D --asdeps $i ${pacopts[@]} &>/dev/null
