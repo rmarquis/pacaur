@@ -192,7 +192,7 @@ CleanUp() {
 
 MakePkgs() {
     # warning checks
-    [[ ! $noconfirm ]] && [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
+    [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
 
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
     [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
@@ -286,7 +286,7 @@ CleanCache() {
 
 IgnoreChecks() {
     unset deps
-    if [[ ! $upgrade ]]; then
+    if [[ ! $upgrade && ! $noconfirm ]]; then
         # check targets
         for i in "${aurpkgs[@]}"; do
             if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
