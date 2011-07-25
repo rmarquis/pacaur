@@ -36,13 +36,13 @@ recursively).
 =item B<-b, --build>
 
 Use locally available I<target> PKGBUILD and build target. Missing dependencies
-will B<not> be installed as required, thus needing need manual intervention if
-any problem occurs.
+will B<not> be installed as required, thus needing manual intervention if any
+problem occurs.
 
 =item B<-m, --makepkg>
 
 Download I<target> PKGBUILD and build target. Missing dependencies will B<not>
-be installed as required, thus needing need manual intervention if any problem
+be installed as required, thus needing manual intervention if any problem
 occurs.
 
 =item B<-y, --sync>
@@ -59,8 +59,8 @@ those targets will be checked.
 =item B<-u, --update>
 
 Update foreign packages in the AUR. Without any arguments, all manually
-installed packages will be updated. If targets are supplied, only those
-targets will be updated.
+installed packages will be updated. If targets are supplied, only those targets
+will be updated.
 
 =item B<-abs, --abs>
 
