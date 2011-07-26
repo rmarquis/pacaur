@@ -193,10 +193,13 @@ CleanUp() {
 MakePkgs() {
     # warning checks
     [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
+    ReinstallChecks ${deps[@]}
 
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
     [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo ""
+
+    exit
 
     if [[ ! $noconfirm ]]; then
         echo -n "Proceed with installation? [Y/n] "
@@ -278,6 +281,23 @@ CleanCache() {
             ;;
             esac
         fi
+    fi
+}
+
+ReinstallChecks() {
+    for i in "${deps[@]}"; do
+        if [[ -n $(expac -Q %n $i) ]]; then
+            exist+=("$i")
+        fi
+    done
+    if [[ ${exist[@]} ]]; then
+        Qversion=($(expac -Q %v ${exist[@]}))
+        for ((i=0; i<${#exist[@]}; i++)); do
+            Apkgver[$i]=$(grep '^pkgver' "$buildDir/${exist[$i]}/PKGBUILD" | cut -d '=' -f 2-)
+            Apkgrel[$i]=$(grep '^pkgrel' "$buildDir/${exist[$i]}/PKGBUILD" | cut -d '=' -f 2-)
+            Aversion[$i]=${Apkgver[$i]}-${Apkgrel[$i]}
+            [[ $(vercmp "${Aversion[$i]}" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
+        done
     fi
 }
 
