@@ -194,12 +194,13 @@ MakePkgs() {
     # warning checks
     [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
     ReinstallChecks ${deps[@]}
+    mkdir -p "$tmpDir"
+    OutofdateChecks ${deps[@]}
+    rm -rf "$tmpDir" &>/dev/null
 
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
     [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo ""
-
-    exit
 
     if [[ ! $noconfirm ]]; then
         echo -n "Proceed with installation? [Y/n] "
@@ -284,6 +285,17 @@ CleanCache() {
     fi
 }
 
+OutofdateChecks() {
+    for i in ${deps[@]}; do
+        DownloadJson $i &
+        paraexec
+    done
+    wait
+    for i in ${deps[@]}; do
+        [[ -n $(grep '"OutOfDate":"1"}}' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
+    done
+}
+
 ReinstallChecks() {
     for i in "${deps[@]}"; do
         if [[ -n $(expac -Q %n $i) ]]; then
@@ -345,6 +357,12 @@ GetIgnoredPkgs() {
 DownloadPkgbuild() {
     if [[ ! -f "$tmpDir/$i.PKGBUILD" ]]; then
         curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD"
+    fi
+}
+
+DownloadJson() {
+    if [[ ! -f "$tmpDir/$i.PKGBUILD" ]]; then
+        curl -Lfs "http://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json"
     fi
 }
 
