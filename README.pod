@@ -160,18 +160,14 @@ The available options are:
 
 Define the build directory. Default is B</home/aur/build>.
 
-=item B<pacmanBin>
-
-Define the pacman binary. Default is B<pacman-color>.
-
 =item B<editor>
 
 Define the editor. Default is B<$EDITOR>. 
 
 =item B<color>
 
-Enable color output. It is recommended to use the pacman binary I<pacman-color>
-when using this option. Default is B<true>.
+Enable color output. This option requires the pacman binary I<pacman-color> to
+be installed. Default is B<true>.
 
 =item B<clean>
 
