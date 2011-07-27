@@ -38,7 +38,7 @@ source /etc/${name}.conf
 # Color
 #
 
-if [[ $color ]]; then
+if $color; then
     cower='cower --color=always'
     bold=$(tput bold)
     reset=$(tput sgr0)
