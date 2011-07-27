@@ -576,8 +576,10 @@ ClassifyPkgs() {
     if [[ $fallback = true ]]; then
         [[ $repo ]] && repopkgs=(${pkgs[@]})
         [[ $aur ]] && aurpkgs=(${pkgs[@]})
+        ignoredgrps+=( $(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2-) )
         if [[ ! $repo && ! $aur ]]; then
             for i in ${pkgs[@]}; do
+                [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
                 [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v "error:")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
