@@ -11,7 +11,6 @@ version="2.1.10"
 # Default config
 #
 
-pacmanBin="pacman-color"        # pacman binary
 editor=${EDITOR:-vi}            # PKGBUILD editor
 buildDir=/home/aur/build        # build directory
 clean=true                      # cleanup after install
@@ -39,10 +38,12 @@ source /etc/${name}.conf
 #
 
 if $color; then
+    pacmanBin="pacman-color"
     cower='cower --color=always'
     bold=$(tput bold)
     reset=$(tput sgr0)
 else
+    pacmanBin="pacman"
     cower='cower'
     bold=''
     reset=''
@@ -222,6 +223,9 @@ MakePkgs() {
         export PACMAN=$pacmanBin
         confSourced=true
     fi
+
+    # makepkg options
+    [[ $color != true ]] && makeopts+=("--nocolor")
 
     for i in "${deps[@]}"; do
         if [ -e $buildDir/$i/PKGBUILD ]; then
@@ -596,7 +600,7 @@ ClassifyPkgs() {
 
 # sanity check
 [[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
-[[ ! -f /usr/bin/$pacmanBin ]] && error "Pacman binary does not exist!\nCheck configuration in /etc/${name}.conf"
+[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in /etc/${name}.conf"
 [[ ! $operation && ! $option && ! $cleanpkg && ! $editpkg ]] && error "no operation specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
