@@ -249,8 +249,10 @@ MakePkgs() {
 
 CleanCache() {
     # set cache variables
-    source /etc/makepkg.conf
-    export PACMAN=$pacmanBin
+    if [[ ! $confSourced ]]; then
+        source /etc/makepkg.conf
+        confSourced=true
+    fi
 
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
         [[ ! $aur ]] && echo ""
