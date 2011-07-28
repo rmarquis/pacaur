@@ -11,21 +11,15 @@ version="2.1.10"
 # Default config
 #
 
+# set tmpdir
+tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpDir"
+
+buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
-buildDir=/home/aur/build        # build directory
+color=true                      # enable color
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
-color=true                      # enable color
-
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-
-colorR="\e[1;31m"
-colorG="\e[1;32m"
-colorY="\e[1;33m"
-colorB="\e[1;34m"
-colorM="\e[1;35m"
-colorC="\e[1;36m"
-colorW="\e[1;37m"
 
 #
 # Source user config
@@ -42,6 +36,13 @@ if $color; then
     cower='cower --color=always'
     bold=$(tput bold)
     reset=$(tput sgr0)
+    colorR="\e[1;31m"
+    colorG="\e[1;32m"
+    colorY="\e[1;33m"
+    colorB="\e[1;34m"
+    colorM="\e[1;35m"
+    colorC="\e[1;36m"
+    colorW="\e[1;37m"
 else
     pacmanBin="pacman"
     cower='cower'
@@ -89,9 +90,7 @@ DownloadDepsAur() {
             done
         fi
     else
-        mkdir -p "$tmpDir"
         deps=($($cower -dd $@ -t $tmpDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        rm -rf "$tmpDir" &>/dev/null
     fi
 
     timeout ${deps[@]}
@@ -124,9 +123,6 @@ UpgradeAur() {
         allaurpkgs=($($pacmanBin -Qmq))
         Qversion=($(expac -Q %v ${allaurpkgs[@]}))
 
-        # set tmpdir
-        mkdir -p "$tmpDir"
-
         for i in ${allaurpkgs[@]}; do
             DownloadPkgbuild $i &
             paraexec
@@ -140,9 +136,6 @@ UpgradeAur() {
                 aurdevel=("${aurdevel[@]}" "${allaurpkgs[$i]}")
             fi
         done
-
-        # clean tmpdir
-        rm -rf "$tmpDir" &>/dev/null
 
         [[ ! ${aurpkgs[@]} ]] && aurpkgs=("${aurdevel[@]}") || aurpkgs=("${aurpkgs[@]}" "${aurdevel[@]}")
     fi
@@ -196,15 +189,15 @@ CleanUp() {
             rm -r $buildDir &>/dev/null && mkdir -p $buildDir && success "Build directory ${colorW}$buildDir${reset} cleaned" || warn "Could not clean build directory ${colorW}$buildDir${reset}"
         fi
     fi
+    # clean tmpdir
+    [[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null
 }
 
 MakePkgs() {
     # warning checks
     [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
     ReinstallChecks ${deps[@]}
-    mkdir -p "$tmpDir"
     OutofdateChecks ${deps[@]}
-    rm -rf "$tmpDir" &>/dev/null
 
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
     [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
