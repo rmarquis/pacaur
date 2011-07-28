@@ -631,7 +631,7 @@ fi
 # update (-u) handling
 if [[ $operation = makepkg ]]; then
     [[ $upgrade ]] && UpgradeAur
-    GetIgnoredPkgs && Core ${aurpkgs[@]}
+    GetIgnoredPkgs && Core ${pkgs[@]}
     exit
 fi
 
