@@ -442,7 +442,7 @@ usage() {
     echo "options:"
     echo "   -f, --force     force operation -- can be combined with the -d, -m, -y, -abs flags"
     echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -b, -m, -y, -u, -abs flags"
-    echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire building directory"
+    echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire build directory"
     echo ""
     echo "pacman options:"
     echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"

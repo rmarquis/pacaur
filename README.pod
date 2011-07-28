@@ -93,8 +93,8 @@ as a standalone command.
 
 =item B<-c, --clean>
 
-Remove I<target> building directory. Pass this option twice to clean the entire
-building directory.
+Remove I<target> build directory. Pass this option twice to clean the entire
+build directory.
 
 =item B<-a, --aur>
 
@@ -158,7 +158,7 @@ The available options are:
 
 =item B<buildDir>
 
-Define the build directory. Default is B</home/aur/build>.
+Define the build directory. Default is B</tmp/pacaurtmp-$USER>.
 
 =item B<editor>
 
