@@ -182,12 +182,19 @@ EditPkgs() {
 
 CleanUp() {
     if [[ $clean = true ]]; then
-        cd $buildDir
-        for i in "$@"; do
+        if [[ $count -eq 1 ]]; then
+            cd $buildDir
+            for i in "$@"; do
+                # hack for cvs protected files
+                chmod -R 755 $i &>/dev/null
+                rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+            done
+        fi
+        if [[ $count -ne 1 ]]; then
             # hack for cvs protected files
-            chmod -R 755 $i &>/dev/null
-            rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
-        done
+            chmod -R 755 $buildDir &>/dev/null
+            rm -r $buildDir &>/dev/null && mkdir -p $buildDir && success "Build directory ${colorW}$buildDir${reset} cleaned" || warn "Could not clean build directory ${colorW}$buildDir${reset}"
+        fi
     fi
 }
 
@@ -442,7 +449,7 @@ usage() {
     echo "options:"
     echo "   -f, --force     force operation -- can be combined with the -d, -m, -y, -abs flags"
     echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -b, -m, -y, -u, -abs flags"
-    echo "   -c, --clean     clean existing target(s) PKGBUILD -- can be combined with the -b, -m, -y, -abs flags"
+    echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire building directory"
     echo ""
     echo "pacman options:"
     echo " can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
@@ -486,7 +493,7 @@ while [[ $1 ]]; do
         '-abs'|'--abs') operation=abs;;
         '-f'|'--force') force=true;;
         '-e'|'--edit') edit=true; editpkg=true;;
-        '-c'|'--clean') clean=true; cleanpkg=true;;
+        '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
         '-q'|'--quiet') quiet=true;;
         # shortcuts
         '-sq') operation=search; quiet=true;;
@@ -510,6 +517,7 @@ while [[ $1 ]]; do
         '-abse') operation=abs; edit=true;;
         '-absf') operation=abs; force=true;;
         '-absef'|'-absfe') operation=abs; force=true; edit=true;;
+        '-cc') clean=true; cleanpkg=true; count=2;;
         # pacman
         '-S'|'--sync') option=sync; install=true; force=true; edit=true;;
         '-Ss'|'--search') option=search;;

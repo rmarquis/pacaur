@@ -93,8 +93,8 @@ as a standalone command.
 
 =item B<-c, --clean>
 
-Remove I<target> building directory after building target. Can also be used as
-a standalone command.
+Remove I<target> building directory. Pass this option twice to clean the entire
+building directory.
 
 =item B<-a, --aur>
 
