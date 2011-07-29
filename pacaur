@@ -22,10 +22,11 @@ clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
 
 #
-# Source user config
+# Source config
 #
 
 source /etc/${name}.conf
+[[ -r "$HOME/.config/${name}/config" ]] && source "$HOME/.config/${name}/config"
 
 #
 # Color

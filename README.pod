@@ -137,7 +137,11 @@ Display the help message and quit.
 
 =head1 CONFIG FILE
 
-pacaur honors a config file at
+pacaur honors a config file which will be looked for first at
+
+  $HOME/.config/pacaur/config
+
+and falling back to
 
   /etc/pacaur.conf
 
