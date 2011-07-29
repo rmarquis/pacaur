@@ -11,9 +11,9 @@ version="2.1.10"
 # Default config
 #
 
-# set tmpdir
+# tmpdir
 tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpDir"
+[[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null && mkdir -p "$tmpDir"
 
 buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
@@ -185,12 +185,10 @@ CleanUp() {
         fi
         if [[ $count -ne 1 ]]; then
             # hack for cvs protected files
-            chmod -R 755 $buildDir &>/dev/null
-            rm -r $buildDir &>/dev/null && mkdir -p $buildDir && success "Build directory ${colorW}$buildDir${reset} cleaned" || warn "Could not clean build directory ${colorW}$buildDir${reset}"
+            chmod -R 755 $buildDir/* &>/dev/null
+            rm -r $buildDir/* &>/dev/null && success "Build directory ${colorW}$buildDir${reset} cleaned" || warn "Could not clean build directory ${colorW}$buildDir${reset}"
         fi
     fi
-    # clean tmpdir
-    [[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null
 }
 
 MakePkgs() {
