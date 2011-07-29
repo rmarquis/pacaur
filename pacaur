@@ -329,7 +329,7 @@ IgnoreChecks() {
 
 GetIgnoredPkgs() {
     ignoredpkgs+=( $(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2-) )
-    ignoredpkgs+=( $(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2-) )
+    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=( $(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2-) )
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
