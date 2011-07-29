@@ -33,12 +33,6 @@ Show info for I<target>. Pass this option twice to fetch more detailed info.
 Download I<target> PKGBUILD. Pass this option twice to fetch dependencies (done
 recursively).
 
-=item B<-b, --build>
-
-Use locally available I<target> PKGBUILD and build target. Missing dependencies
-will B<not> be installed as required, thus needing manual intervention if any
-problem occurs.
-
 =item B<-m, --makepkg>
 
 Download I<target> PKGBUILD and build target. Missing dependencies will B<not>

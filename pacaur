@@ -77,20 +77,16 @@ DownloadAur() {
 }
 
 DownloadDepsAur() {
-    if [[ ! $build ]]; then
-        [[ $force ]] && f="-f"
-        # return AUR pkgs only
-        [[ ! $option ]] && deps=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-        [[ $option ]] && deps=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        # return AUR depends pkgs only
-        if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
-            aurdepspkgs=(${deps[@]})
-            for ((i=0; i<${#@}; i++)); do
-                unset aurdepspkgs[$i]
-            done
-        fi
-    else
-        deps=($($cower -dd $@ -t $tmpDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $force ]] && f="-f"
+    # return AUR pkgs only
+    [[ ! $option ]] && deps=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ $option ]] && deps=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    # return AUR depends pkgs only
+    if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+        aurdepspkgs=(${deps[@]})
+        for ((i=0; i<${#@}; i++)); do
+            unset aurdepspkgs[$i]
+        done
     fi
 
     timeout ${deps[@]}
@@ -427,7 +423,6 @@ usage() {
     echo "   -s, --search    search AUR repository for matching strings"
     echo "   -i, --info      view package information -- pass twice for details"
     echo "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
-    echo "   -b, --build     use existing PKGBUILD and make target(s)"
     echo "   -m, --makepkg   download and make target(s)"
     echo "   -y, --sync      download, make and install target(s)"
     echo "   -k, --check     check for AUR update(s)"
@@ -473,7 +468,6 @@ while [[ $1 ]]; do
         '-s'|'--search') operation=search;;
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
-        '-b'|'--build') operation=makepkg; build=true;;
         '-m'|'--makepkg') operation=makepkg;;
         '-y'|'--sync') operation=makepkg ; install=true;;
         '-k'|'--check') operation=check;;
@@ -493,7 +487,6 @@ while [[ $1 ]]; do
         '-ddf') operation=download; count=2; force=true;;
         '-dde') operation=download; count=2; edit=true;;
         '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
-        '-be') operation=makepkg; build=true; edit=true;;
         '-me') operation=makepkg; edit=true;;
         '-mf') operation=makepkg; force=true;;
         '-mef'|'-mfe') operation=makepkg; force=true; edit=true;;
@@ -620,7 +613,6 @@ if [[ $operation = download ]]; then
     exit
 fi
 
-# build (-b) handling
 # makepkg (-m) handling
 # sync (-y) handling
 # update (-u) handling
