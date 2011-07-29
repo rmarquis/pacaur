@@ -144,17 +144,6 @@ UpgradeAur() {
     timeout ${aurpkgs[@]}
 }
 
-CopyAbs() {
-    for i in "$@"; do
-        if [[ -e $buildDir/$i/PKGBUILD && ! $force ]]; then
-            warn "${colorW}$i${reset} PKGBUILD already exists in $buildDir. Use -f to overwrite."
-        else
-            cp -r `find /var/abs -name "$i"` $buildDir || error "${colorW}$i${reset} not found"
-            success "${colorW}$i${reset} copied in $buildDir"
-        fi
-    done
-}
-
 EditPkgs() {
     if [[ $edit && ! $noedit ]]; then
         for i in "$@"; do
@@ -427,7 +416,6 @@ usage() {
     echo "   -y, --sync      download, make and install target(s)"
     echo "   -k, --check     check for AUR update(s)"
     echo "   -u, --update    update AUR package(s)"
-    echo "   -abs, --abs     copy target(s) from ABS directory to build directory"
     echo ""
     echo "options:"
     echo "   -f, --force     force operation -- can be combined with the -d, -m, -y, -abs flags"
@@ -472,7 +460,6 @@ while [[ $1 ]]; do
         '-y'|'--sync') operation=makepkg ; install=true;;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true;;
-        '-abs'|'--abs') operation=abs;;
         '-f'|'--force') force=true;;
         '-e'|'--edit') edit=true; editpkg=true;;
         '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
@@ -495,9 +482,6 @@ while [[ $1 ]]; do
         '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true;;
         '-kq') operation=check; quiet=true;;
         '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true;;
-        '-abse') operation=abs; edit=true;;
-        '-absf') operation=abs; force=true;;
-        '-absef'|'-absfe') operation=abs; force=true; edit=true;;
         '-cc') clean=true; cleanpkg=true; count=2;;
         # pacman
         '-S'|'--sync') option=sync; install=true; force=true; edit=true;;
@@ -625,13 +609,6 @@ fi
 # check (-k) handling
 if [[ $operation = check ]]; then
     CheckAur ${pkgs[@]}
-    exit
-fi
-
-# abs (-abs) handling
-if [[ $operation = abs ]]; then
-    CopyAbs ${pkgs[@]}
-    EditPkgs ${pkgs[@]}
     exit
 fi
 

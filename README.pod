@@ -56,11 +56,6 @@ Update foreign packages in the AUR. Without any arguments, all manually
 installed packages will be updated. If targets are supplied, only those targets
 will be updated.
 
-=item B<-abs, --abs>
-
-Copy I<target> PKGBUILD from ABS tree to build directory. It is recommended to
-update the ABS tree prior to this operation.
-
 =item B<-S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc>
 
 Additionally, pacaur wraps B<pacman operations> and extends respectively its
