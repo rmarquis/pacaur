@@ -205,7 +205,6 @@ MakePkgs() {
     # set architecture variables
     if [[ ! $confSourced ]]; then
         source /etc/makepkg.conf
-        source /etc/abs.conf
         export PACMAN=$pacmanBin
         confSourced=true
     fi
