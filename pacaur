@@ -146,6 +146,8 @@ UpgradeAur() {
         exit   
     fi
 
+    [[ $operation ]] && pkgs=(${aurpkgs[@]})
+
     timeout ${aurpkgs[@]}
 }
 
