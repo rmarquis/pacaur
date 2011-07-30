@@ -13,7 +13,8 @@ version="2.2.0"
 
 # tmpdir
 tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-[[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null && mkdir -p "$tmpDir"
+[[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null
+mkdir -p "$tmpDir"
 
 buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
