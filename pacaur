@@ -104,7 +104,7 @@ CheckRepo() {
         Qversion=($(expac -Q %v ${outofdate[@]}))
         Sversion=($(expac -S -1 %v ${outofdate[@]}))
         for ((i=0; i<${#outofdate[@]}; i++)); do
-            Qgroup[$i]=$(expac -Q '%G' ${outofdate[$i]})
+            Qgroup[$i]=$(expac -Q -l " " '%G' ${outofdate[$i]})
         done
         local i=0
         for j in ${outofdate[@]}; do
