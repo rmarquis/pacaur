@@ -215,28 +215,25 @@ MakePkgs() {
     [[ $color != true ]] && makeopts+=("--nocolor")
 
     for i in "${deps[@]}"; do
+        # build and install
         if [ -e $buildDir/$i/PKGBUILD ]; then
             info "Building ${colorW}$i${reset} package..."
             cd $buildDir/$i
-            if [[ $install ]]; then
-                makepkg -sfi ${makeopts[@]} --noconfirm
-                # if AUR dep, install as --asdeps
-                # if upgrade, do no change status
-                if [[ ! $upgrade ]]; then
-                    isexpl=false
-                    for j in ${pkgs[@]}; do
-                        [[ $j = $i ]] && isexpl=true
-                    done
-                    [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-                fi
-                [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-                [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
-            else
-                makepkg -sf ${makeopts[@]} --noconfirm
-            fi
+            [[ $install ]] && makepkg -sfi ${makeopts[@]} --noconfirm || makepkg -sf ${makeopts[@]} --noconfirm
         else
             error "Could not open ${colorW}$i${reset} PKGBUILD"
         fi
+
+        # set dep status
+        if [[ $install && ! $upgrade ]]; then
+            isexpl=false
+            for j in ${pkgs[@]}; do
+                [[ $j = $i ]] && isexpl=true
+            done
+            [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+        fi
+        [[ $install ]] && [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+        [[ $install ]] && [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
     done
 }
 
