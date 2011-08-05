@@ -119,6 +119,10 @@ Perform commands without confirmation from the user.
 
 Perform commands without editing any installation files. Bypass --edit option.
 
+=item B<--rebuild>
+
+Always rebuild packages regardless of any existing file in PKGDEST directory.
+
 =item B<--asroot>
 
 When building AUR package(s) as root, allow makepkg to run as root user.
