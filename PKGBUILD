@@ -11,7 +11,7 @@ depends=('cower' 'expac')
 optdepends=('pacman-color: colorized output'
             'sudo: install and update packages as non-root')
 backup=('etc/pacaur.conf')
-source=($pkgname $pkgname.conf README.pod $pkgname.autocomplete)
+source=($pkgname $pkgname.conf README.pod $pkgname.bash.complete)
 md5sums=('f816c34399301c3381393d22621d5e75'
          '291424f94262bc5105a34f06a3992012'
          '4866ecac66c999ba2b9a850f3bb1406e'
@@ -20,7 +20,7 @@ build() {
   mkdir -p "$pkgdir/etc/"
   install -D -m644 ./$pkgname.conf $pkgdir/etc/$pkgname.conf || return 1
   install -D -m755 ./$pkgname $pkgdir/usr/bin/$pkgname || return 1
-  install -D -m755 ./$pkgname.autocomplete \
+  install -D -m755 ./$pkgname.bash.complete\
         $pkgdir/etc/bash_completion.d/$pkgname || return 1
   mkdir -p "$pkgdir/usr/share/man/man8/"
   pod2man --section=8 --center="Pacaur Manual" --name="PACAUR" --release="$pkgname $pkgver" ./README.pod > pacaur.8
