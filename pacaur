@@ -227,7 +227,7 @@ MakePkgs() {
         else
 
             # build and install
-            if [ -e $buildDir/$i/PKGBUILD ]; then
+            if [[ -e $buildDir/$i/PKGBUILD ]]; then
                 info "Building ${colorW}$i${reset} package..."
                 cd $buildDir/$i
                 [[ $install ]] && makepkg -sfi ${makeopts[@]} --noconfirm || makepkg -sf ${makeopts[@]} --noconfirm
@@ -352,13 +352,13 @@ IgnoreChecks() {
 }
 
 GetIgnoredPkgs() {
-    ignoredpkgs+=( $(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2-) )
-    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=( $(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2-) )
+    ignoredpkgs+=($(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2-))
+    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2-))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
 GetIgnoredGrps() {
-    ignoredgrps+=( $(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2-) )
+    ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2-))
 }
 
 DownloadPkgbuild() {
@@ -486,7 +486,7 @@ while [[ $1 ]]; do
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
         '-m'|'--makepkg') operation=makepkg;;
-        '-y'|'--sync') operation=makepkg ; install=true;;
+        '-y'|'--sync') operation=makepkg; install=true;;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true;;
         '-f'|'--force') force=true;;
