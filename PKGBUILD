@@ -1,7 +1,7 @@
 # Maintainer: Remy Marquis <remy.marquis at gmail dot com>
 
 pkgname=pacaur
-pkgver=2.2.2
+pkgver=2.2.3
 pkgrel=1
 pkgdesc="A fast workflow AUR wrapper using cower as backend"
 arch=('any')
@@ -12,7 +12,7 @@ optdepends=('pacman-color: colorized output'
             'sudo: install and update packages as non-root')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf README.pod $pkgname.bash.complete)
-md5sums=('f816c34399301c3381393d22621d5e75'
+md5sums=('a9455a2435b8436808d563d89baa3c67'
          '291424f94262bc5105a34f06a3992012'
          '4866ecac66c999ba2b9a850f3bb1406e'
          'ad45561278a28c8ff69890f2c23eacd1')
