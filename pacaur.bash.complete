@@ -1,0 +1,30 @@
+#!/bin/bash
+
+_pacaur() 
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="--search --info --download --makepkg --sync --check --update
+        --version --help"
+
+    shortopts="-s -i -d -m -y -k -u -v -h"
+    
+    if [[ ${cur} == - ]] ; then
+        COMPREPLY=( $(compgen -W "${shortopts}" -- ${cur}) )
+        return 0
+
+    elif [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    fi
+
+    case $prev in
+        --info|--download|--makepkg|--sync)
+            COMPREPLY=( $(pacaur -sq $cur|tr '\n' ' ' ) ) ;;
+    esac
+}
+complete -F _pacaur pacaur
+
+# vim:set ts=4 sw=2 et: 
