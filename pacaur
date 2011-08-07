@@ -83,15 +83,15 @@ DownloadAurPkgs() {
 
 DownloadAur() {
     [[ $force ]] && f="-f"
-    [[ ! $option ]] && deps+=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ $option ]] && deps+=($($cower -d $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 }
 
 DownloadDepsAur() {
     [[ $force ]] && f="-f"
     # return AUR pkgs only
-    [[ ! $option ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ $option ]] && deps+=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     # return AUR depends pkgs only
     if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
         aurdepspkgs=(${deps[@]})
@@ -202,8 +202,8 @@ SourcePkgs() {
         [[ -z $(expac -Q %n $i) ]] && pkgsdeps[$j]="$i"
         ((j++))
     done
+    DownloadAur ${pkgs[@]}
     [[ ${pkgsdeps[@]} ]] && DownloadDepsAur ${pkgsdeps[@]}
-    deps+=(${pkgs[@]})
 }
 
 MakePkgs() {
@@ -479,7 +479,7 @@ usage() {
     echo "   -u, --update    update AUR package(s)"
     echo ""
     echo "options:"
-    echo "   -f, --force     force operation -- can be combined with the -d, -m, -y flags"
+    echo "   -f, --force     force operation -- can be combined with the -d flags"
     echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u flags"
     echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire build directory"
     echo ""
@@ -518,8 +518,8 @@ while [[ $1 ]]; do
         '-s'|'--search') operation=search;;
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
-        '-m'|'--makepkg') operation=makepkg;;
-        '-y'|'--sync') operation=makepkg; install=true;;
+        '-m'|'--makepkg') operation=makepkg; force=true;;
+        '-y'|'--sync') operation=makepkg; install=true; force=true;;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true;;
         '-f'|'--force') force=true;;
@@ -536,12 +536,8 @@ while [[ $1 ]]; do
         '-ddf') operation=download; count=2; force=true;;
         '-dde') operation=download; count=2; edit=true;;
         '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
-        '-me') operation=makepkg; edit=true;;
-        '-mf') operation=makepkg; force=true;;
-        '-mef'|'-mfe') operation=makepkg; force=true; edit=true;;
-        '-ye') operation=makepkg; edit=true; install=true;;
-        '-yf') operation=makepkg; force=true; install=true;;
-        '-yfe'|'-yef') operation=makepkg; force=true; edit=true; install=true;;
+        '-me') operation=makepkg; force=true; edit=true;;
+        '-ye') operation=makepkg; force=true; edit=true; install=true;;
         '-kq') operation=check; quiet=true;;
         '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true;;
         '-cc') clean=true; cleanpkg=true; count=2;;

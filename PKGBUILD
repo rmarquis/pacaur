@@ -2,7 +2,7 @@
 
 pkgname=pacaur
 pkgver=2.2.3
-pkgrel=1
+pkgrel=2
 pkgdesc="A fast workflow AUR wrapper using cower as backend"
 arch=('any')
 url="https://github.com/Spyhawk/pacaur"
@@ -12,7 +12,7 @@ optdepends=('pacman-color: colorized output'
             'sudo: install and update packages as non-root')
 backup=('etc/pacaur.conf')
 source=($pkgname $pkgname.conf README.pod $pkgname.bash.complete)
-md5sums=('a9455a2435b8436808d563d89baa3c67'
+md5sums=('1ec7139dd755adbc3f8e0c6f3ad133ba'
          '291424f94262bc5105a34f06a3992012'
          '4866ecac66c999ba2b9a850f3bb1406e'
          'ad45561278a28c8ff69890f2c23eacd1')
