@@ -242,35 +242,33 @@ MakePkgs() {
         # check package cache
         [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
         if [[ $cachedpkg ]]; then
-            if [[ $install ]]; then
+            if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
                 runasroot $pacmanBin -U $cachedpkg ${pacopts[@]} --noconfirm
             else
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
         else
-
             # build and install
             if [[ -e $buildDir/$i/PKGBUILD ]]; then
                 info "Building ${colorW}$i${reset} package..."
                 cd $buildDir/$i
-                [[ $install ]] && makepkg -sfi ${makeopts[@]} --noconfirm || makepkg -sf ${makeopts[@]} --noconfirm
+                [[ $installpkg ]] && makepkg -sfi ${makeopts[@]} --noconfirm || makepkg -sf ${makeopts[@]} --noconfirm
             else
                 error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
-
         fi
 
         # set dep status
-        if [[ $install && ! $upgrade ]]; then
+        if [[ $installpkg && ! $upgrade ]]; then
             isexpl=false
             for j in ${pkgs[@]}; do
                 [[ $j = $i ]] && isexpl=true
             done
             [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
-        [[ $install ]] && [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-        [[ $install ]] && [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+        [[ $installpkg ]] && [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+        [[ $installpkg ]] && [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
     done
 }
 
@@ -517,9 +515,9 @@ while [[ $1 ]]; do
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
         '-m'|'--makepkg') operation=makepkg; force=true;;
-        '-y'|'--sync') operation=makepkg; install=true; force=true;;
+        '-y'|'--sync') operation=makepkg; installpkg=true; force=true;;
         '-k'|'--check') operation=check;;
-        '-u'|'--update') operation=makepkg; upgrade=true; force=true; install=true;;
+        '-u'|'--update') operation=makepkg; upgrade=true; force=true; installpkg=true;;
         '-f'|'--force') force=true;;
         '-e'|'--edit') edit=true; editpkg=true;;
         '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
@@ -535,12 +533,12 @@ while [[ $1 ]]; do
         '-dde') operation=download; count=2; edit=true;;
         '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
         '-me') operation=makepkg; force=true; edit=true;;
-        '-ye') operation=makepkg; force=true; edit=true; install=true;;
+        '-ye') operation=makepkg; force=true; edit=true; installpkg=true;;
         '-kq') operation=check; quiet=true;;
-        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; install=true;;
+        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; installpkg=true;;
         '-cc') clean=true; cleanpkg=true; count=2;;
         # pacman
-        '-S'|'--sync') option=sync; install=true; force=true; edit=true;;
+        '-S'|'--sync') option=sync; installpkg=true; force=true; edit=true;;
         '-Ss'|'--search') option=search;;
         '-Si'|'--info') option=info; ((count++));;
         '-Sii'|'--info') option=info; count=2;;
@@ -551,8 +549,8 @@ while [[ $1 ]]; do
         '-r'|'--repo') repo='1';;
         '-a'|'--aur') aur='1';;
         # pacman shortcuts
-        '-Sa') option=sync; install=true; force=true; edit=true; aur='1';;
-        '-Sr') option=sync; install=true; force=true; edit=true; repo='1';;
+        '-Sa') option=sync; installpkg=true; force=true; edit=true; aur='1';;
+        '-Sr') option=sync; installpkg=true; force=true; edit=true; repo='1';;
         '-Ssa') option=search; aur='1';;
         '-Ssr') option=search; repo='1';;
         '-Ssq') option=search; quiet=true;;
@@ -572,9 +570,9 @@ while [[ $1 ]]; do
         -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; aur='1' ;;
         -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; repo='1' ;;
         -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1" ;;
-        -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; aur='1';;
-        -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1"; repo='1';;
-        -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; install=true; pacmanarg="$1";;
+        -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1"; aur='1';;
+        -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1"; repo='1';;
+        -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1";;
         '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1';;
         '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1';;
         '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1';;
@@ -682,8 +680,8 @@ fi
 if [[ $option = sync ]]; then
     ClassifyPkgs ${pkgs[@]}
     if [[ ${repopkgs[@]} ]]; then
-        [[ $install ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
-        [[ ! $install ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
+        [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
+        [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
     fi
     if [[ ${aurpkgs[@]} ]]; then
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
