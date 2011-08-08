@@ -126,7 +126,7 @@ CheckRepo() {
 
 UpgradeAur() {
     info "${colorW}Starting AUR upgrade...${reset}"
-    pkgs=($($cower -u $@ | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    pkgs=($($cower -u ${pkgs[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
     # add devel packages
     if [[ $devel ]]; then
