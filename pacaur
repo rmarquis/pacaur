@@ -479,7 +479,7 @@ usage() {
     echo "   -u, --update    update AUR package(s)"
     echo ""
     echo "options:"
-    echo "   -f, --force     force operation -- can be combined with the -d flags"
+    echo "   -f, --force     force operation -- can be combined with the -d flag"
     echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u flags"
     echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire build directory"
     echo ""
