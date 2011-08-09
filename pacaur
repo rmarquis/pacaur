@@ -79,11 +79,7 @@ DownloadPkgs() {
 
     [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
 
-    for i in ${aurpkgs[@]}; do
-        DownloadPkgbuild $i &
-        paraexec
-    done
-    wait
+    DownloadAur ${aurpkgs[@]}
     # source pkgs
     for i in ${aurpkgs[@]}; do
         . "$buildDir/$i/PKGBUILD"
@@ -96,7 +92,6 @@ DownloadPkgs() {
         ((j++))
     done
     # download pkgs
-    DownloadAur ${aurpkgs[@]}
     [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
 }
 
@@ -147,7 +142,7 @@ UpgradeAur() {
         Qversion=($(expac -Q %v ${allaurpkgs[@]}))
 
         for i in ${allaurpkgs[@]}; do
-            DownloadPkgbuildTmp $i &
+            DownloadPkgbuild $i &
             paraexec
         done
         wait
@@ -378,13 +373,6 @@ GetIgnoredGrps() {
 }
 
 DownloadPkgbuild() {
-    mkdir -p "$buildDir/$i"
-    if [[ ! -f "$buildDir/$i/PKGBUILD" ]]; then
-        curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$buildDir/$i/PKGBUILD"
-    fi
-}
-
-DownloadPkgbuildTmp() {
     if [[ ! -f "$tmpDir/$i.PKGBUILD" ]]; then
         curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD"
     fi
