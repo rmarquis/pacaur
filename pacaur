@@ -85,6 +85,8 @@ DownloadAur() {
     [[ $force ]] && f="-f"
     [[ $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
     [[ ! $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    timeout ${deps[@]}
 }
 
 DownloadDepsAur() {
@@ -150,10 +152,7 @@ UpgradeAur() {
         [[ ! ${pkgs[@]} ]] && pkgs=("${aurdevel[@]}") || pkgs=("${pkgs[@]}" "${aurdevel[@]}")
     fi
 
-    if [[ -z "$pkgs" ]]; then
-        echo " there is nothing to do"
-        exit   
-    fi
+    nothingtodo ${pkgs[@]}
 
     timeout ${pkgs[@]}
 }
@@ -206,16 +205,13 @@ SourcePkgs() {
 
 MakePkgs() {
     # set architecture variables
-    if [[ ! $confSourced ]]; then
-        source /etc/makepkg.conf
-        export PACMAN=$pacmanBin
-        confSourced=true
-    fi
+    source /etc/makepkg.conf
 
     SourcePkgs ${pkgs[@]}
 
     # warning checks
     [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
+    nothingtodo ${deps[@]}
     ReinstallChecks ${deps[@]}
     OutofdateChecks ${deps[@]}
 
@@ -237,6 +233,7 @@ MakePkgs() {
 
     # makepkg options
     [[ $color != true ]] && makeopts+=("--nocolor")
+    export PACMAN=$pacmanBin
 
     for i in "${deps[@]}"; do
         # check package cache
@@ -274,10 +271,7 @@ MakePkgs() {
 
 CleanCache() {
     # set cache variables
-    if [[ ! $confSourced ]]; then
-        source /etc/makepkg.conf
-        confSourced=true
-    fi
+    source /etc/makepkg.conf
 
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
         [[ ! $aur ]] && echo ""
@@ -439,6 +433,13 @@ paraexec() {
         sleep 0.1
         jobs > /dev/null
     done
+}
+
+nothingtodo() {
+    if [[ -z "$@" ]]; then
+        echo " there is nothing to do"
+        exit
+    fi
 }
 
 timeout(){
