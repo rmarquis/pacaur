@@ -73,12 +73,31 @@ InfoAur() {
     [[ $count -ne 1 ]] && $cower -ii $@
 }
 
-DownloadAurPkgs() {
-    for i in ${pkgs[@]}; do
+DownloadPkgs() {
+    # set architecture variables
+    source /etc/makepkg.conf
+
+    [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
+
+    for i in ${aurpkgs[@]}; do
         DownloadPkgbuild $i &
         paraexec
     done
     wait
+    # source pkgs
+    for i in ${aurpkgs[@]}; do
+        . "$buildDir/$i/PKGBUILD"
+        sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}" | sed -e 's/=.*//' -e 's/>.*//' -e 's/<.*//'| sort -u))
+    done
+    # remove installed deps
+    local j=0
+    for i in ${sourcedpkgs[@]}; do
+        [[ -z $(expac -Q %n $i) ]] && depspkgs[$j]="$i"
+        ((j++))
+    done
+    # download pkgs
+    DownloadAur ${aurpkgs[@]}
+    [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
 }
 
 DownloadAur() {
@@ -91,16 +110,8 @@ DownloadAur() {
 
 DownloadDepsAur() {
     [[ $force ]] && f="-f"
-    # return AUR pkgs only
     [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
     [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    # return AUR depends pkgs only
-    if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
-        aurdepspkgs=(${deps[@]})
-        for ((i=0; i<${#@}; i++)); do
-            unset aurdepspkgs[$i]
-        done
-    fi
 
     timeout ${deps[@]}
 }
@@ -128,7 +139,7 @@ CheckRepo() {
 
 UpgradeAur() {
     info "${colorW}Starting AUR upgrade...${reset}"
-    pkgs=($($cower -u ${pkgs[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    aurpkgs=($($cower -u ${pkgs[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
     # add devel packages
     if [[ $devel ]]; then
@@ -149,12 +160,12 @@ UpgradeAur() {
             fi
         done
 
-        [[ ! ${pkgs[@]} ]] && pkgs=("${aurdevel[@]}") || pkgs=("${pkgs[@]}" "${aurdevel[@]}")
+        [[ ! ${aurpkgs[@]} ]] && aurpkgs=("${aurdevel[@]}") || aurpkgs=("${aurpkgs[@]}" "${aurdevel[@]}")
     fi
 
-    nothingtodo ${pkgs[@]}
+    nothingtodo ${aurpkgs[@]}
 
-    timeout ${pkgs[@]}
+    timeout ${aurpkgs[@]}
 }
 
 EditPkgs() {
@@ -188,27 +199,7 @@ CleanUp() {
     fi
 }
 
-SourcePkgs() {
-    for i in ${pkgs[@]}; do
-        . "$buildDir/$i/PKGBUILD"
-        sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}" | sed -e 's/=.*//' -e 's/>.*//' -e 's/<.*//'| sort -u))
-    done
-    # remove installed deps
-    local j=0
-    for i in ${sourcedpkgs[@]}; do
-        [[ -z $(expac -Q %n $i) ]] && pkgsdeps[$j]="$i"
-        ((j++))
-    done
-    DownloadAur ${pkgs[@]}
-    [[ ${pkgsdeps[@]} ]] && DownloadDepsAur ${pkgsdeps[@]}
-}
-
 MakePkgs() {
-    # set architecture variables
-    source /etc/makepkg.conf
-
-    SourcePkgs ${pkgs[@]}
-
     # warning checks
     [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
     nothingtodo ${deps[@]}
@@ -347,14 +338,23 @@ IgnoreChecks() {
             deps+=("$i")
         done
         # check depends
-        for i in "${aurdepspkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    error "Unresolved dependency '${colorW}$i${reset}'"
+        if [[ ${depspkgs[@]} ]]; then
+            # return AUR depends pkgs only
+            local j=0
+            for i in ${depspkgs[@]}; do
+                [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
+                ((j++))
+            done
+            for i in "${aurdepspkgs[@]}"; do
+                if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                    if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                        CleanUp ${deps[@]} &>/dev/null
+                        error "Unresolved dependency '${colorW}$i${reset}'"
+                    fi
                 fi
-            fi
-            deps+=("$i")
-        done
+                deps+=("$i")
+            done
+        fi
     else
         # ignore upgrades
         for i in "${aurpkgs[@]}"; do
@@ -516,7 +516,7 @@ while [[ $1 ]]; do
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
         '-m'|'--makepkg') operation=makepkg; force=true;;
-        '-y'|'--sync') operation=makepkg; installpkg=true; force=true;;
+        '-y'|'--sync') operation=makepkg; force=true; installpkg=true;;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; force=true; installpkg=true;;
         '-f'|'--force') force=true;;
@@ -533,8 +533,8 @@ while [[ $1 ]]; do
         '-ddf') operation=download; count=2; force=true;;
         '-dde') operation=download; count=2; edit=true;;
         '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
-        '-me') operation=makepkg; force=true; edit=true;;
-        '-ye') operation=makepkg; force=true; edit=true; installpkg=true;;
+        '-me') operation=makepkg; edit=true; force=true;;
+        '-ye') operation=makepkg; edit=true; force=true; installpkg=true;;
         '-kq') operation=check; quiet=true;;
         '-ue') operation=makepkg; upgrade=true; force=true; edit=true; installpkg=true;;
         '-cc') clean=true; cleanpkg=true; count=2;;
@@ -606,7 +606,7 @@ done
 #
 
 Core() {
-    DownloadAurPkgs $@
+    DownloadPkgs $@
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
 }
