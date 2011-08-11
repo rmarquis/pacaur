@@ -83,7 +83,15 @@ DownloadPkgs() {
     # source pkgs
     for i in ${aurpkgs[@]}; do
         . "$buildDir/$i/PKGBUILD"
-        sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}" | sed -e 's/=.*//' -e 's/>.*//' -e 's/<.*//'| sort -u))
+        sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
+    done
+    # remove versioning
+    local j=0
+    for i in ${sourcedpkgs[@]}; do
+        sourcedpkgs[$j]=${i%%=*}
+        sourcedpkgs[$j]=${sourcedpkgs[$j]%%>*}
+        sourcedpkgs[$j]=${sourcedpkgs[$j]%%<*}
+        ((j++))
     done
     # remove installed deps
     local j=0
