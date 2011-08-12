@@ -101,6 +101,14 @@ DownloadPkgs() {
     done
     # download pkgs
     [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
+    # return AUR depends pkgs only
+    if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+        local j=0
+        for i in ${depspkgs[@]}; do
+            [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
+            ((j++))
+        done
+    fi
 }
 
 DownloadAur() {
@@ -341,23 +349,15 @@ IgnoreChecks() {
             deps+=("$i")
         done
         # check depends
-        if [[ ${depspkgs[@]} ]]; then
-            # return AUR depends pkgs only
-            local j=0
-            for i in ${depspkgs[@]}; do
-                [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
-                ((j++))
-            done
-            for i in "${aurdepspkgs[@]}"; do
-                if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-                    if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                        CleanUp ${deps[@]} &>/dev/null
-                        error "Unresolved dependency '${colorW}$i${reset}'"
-                    fi
+        for i in "${aurdepspkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    CleanUp ${deps[@]} &>/dev/null
+                    error "Unresolved dependency '${colorW}$i${reset}'"
                 fi
-                deps+=("$i")
-            done
-        fi
+            fi
+            deps+=("$i")
+        done
     else
         # ignore upgrades
         for i in "${aurpkgs[@]}"; do
