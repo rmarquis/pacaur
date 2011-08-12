@@ -151,6 +151,8 @@ and falling back to
 
 The available options are: 
 
+=head2 GENERAL OPTIONS
+
 =over 4
 
 =item B<buildDir>
@@ -173,6 +175,20 @@ Clean build directory after operation. Default is B<true>.
 =item B<fallback>
 
 Extend pacman commands to the AUR. Default is B<true>.
+
+=back
+
+=head2 ADVANCED OPTIONS
+
+=over 4
+
+=item B<carchmagic>
+
+Enable compatibility with I<$CARCH> bash magic. When enabled, compatibility
+with PKGBUILDs that use differents dependencies and makedependencies for
+differents architectures in a single PKGBUILD through the $CARCH makepkg
+variable is ensured, at the cost of dependencies solving speed.
+Default is B<false>.
 
 =back
 

@@ -5,7 +5,7 @@
 #
 
 name="pacaur"
-version="2.2.10"
+version="2.3.0"
 
 #
 # Default config
@@ -16,11 +16,15 @@ tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
 [[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null
 mkdir -p "$tmpDir"
 
+# general options
 buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
 color=true                      # enable color
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
+
+# advanced options
+carchmagic=false                # CARCH compatibility
 
 #
 # Source config
@@ -79,36 +83,49 @@ DownloadPkgs() {
 
     [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
 
-    DownloadAur ${aurpkgs[@]}
-    # source pkgs
-    for i in ${aurpkgs[@]}; do
-        . "$buildDir/$i/PKGBUILD"
-        sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
-    done
-    # remove versioning
-    local j=0
-    for i in ${sourcedpkgs[@]}; do
-        sourcedpkgs[$j]=${i%%=*}
-        sourcedpkgs[$j]=${sourcedpkgs[$j]%%>*}
-        sourcedpkgs[$j]=${sourcedpkgs[$j]%%<*}
-        ((j++))
-    done
-    # remove installed deps
-    local j=0
-    for i in ${sourcedpkgs[@]}; do
-        [[ -z $(expac -Q %n $i) ]] && depspkgs[$j]="$i"
-        ((j++))
-    done
-    # download pkgs
-    [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
-    # return deps pkgs
-    if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+    if [[ $carchmagic = false ]]; then
+        DownloadDepsAur ${aurpkgs[@]}
+        # return AUR depends pkgs only
+        if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+            aurdepspkgs=(${deps[@]:${#@}:${#deps[@]}})
+            repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
+        fi
+        # check for CARCH 32/64bits bash magic
+        for i in ${deps[@]}; do
+            [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}carchmagic${reset} variable is disabled.\nCheck configuration in /etc/${name}.conf"
+        done
+    else
+        DownloadAur ${aurpkgs[@]}
+        # source pkgs
+        for i in ${aurpkgs[@]}; do
+            . "$buildDir/$i/PKGBUILD"
+            sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
+        done
+        # remove versioning
         local j=0
-        for i in ${depspkgs[@]}; do
-            [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
+        for i in ${sourcedpkgs[@]}; do
+            sourcedpkgs[$j]=${i%%=*}
+            sourcedpkgs[$j]=${sourcedpkgs[$j]%%>*}
+            sourcedpkgs[$j]=${sourcedpkgs[$j]%%<*}
             ((j++))
         done
-        repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
+        # remove installed deps
+        local j=0
+        for i in ${sourcedpkgs[@]}; do
+            [[ -z $(expac -Q %n $i) ]] && depspkgs[$j]="$i"
+            ((j++))
+        done
+        # download pkgs
+        [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
+        # return deps pkgs
+        if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+            local j=0
+            for i in ${depspkgs[@]}; do
+                [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
+                ((j++))
+            done
+            repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
+        fi
     fi
 }
 
