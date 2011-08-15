@@ -101,13 +101,14 @@ DownloadPkgs() {
     done
     # download pkgs
     [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
-    # return AUR depends pkgs only
+    # return deps pkgs
     if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
         local j=0
         for i in ${depspkgs[@]}; do
             [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
             ((j++))
         done
+        repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
     fi
 }
 
@@ -122,7 +123,8 @@ DownloadAur() {
 DownloadDepsAur() {
     [[ $force ]] && f="-f"
     [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ ! $operation = download ]] && deps+=($($cower -dd $f -b $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
+    [[ ! $operation = download ]] && cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $3}'
 
     timeout ${deps[@]}
 }
@@ -349,6 +351,14 @@ IgnoreChecks() {
             deps+=("$i")
         done
         # check depends
+        for i in "${repodepspkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    CleanUp ${deps[@]} &>/dev/null
+                    error "Unresolved dependency '${colorW}$i${reset}'"
+                fi
+            fi
+        done
         for i in "${aurdepspkgs[@]}"; do
             if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
                 if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
