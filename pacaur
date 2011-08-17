@@ -231,6 +231,7 @@ CleanUp() {
 MakePkgs() {
     # warning checks
     [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
+    ConflictChecks ${deps[@]}
     nothingtodo ${deps[@]}
     ReinstallChecks ${deps[@]}
     OutofdateChecks ${deps[@]}
@@ -261,7 +262,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
-                runasroot $pacmanBin -U $cachedpkg ${pacopts[@]} --noconfirm
+                runasroot "yes | $pacmanBin -U $cachedpkg ${pacopts[@]}"
             else
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
@@ -270,7 +271,7 @@ MakePkgs() {
             if [[ -e $buildDir/$i/PKGBUILD ]]; then
                 info "Building ${colorW}$i${reset} package..."
                 cd $buildDir/$i
-                [[ $installpkg ]] && makepkg -sfi ${makeopts[@]} --noconfirm || makepkg -sf ${makeopts[@]} --noconfirm
+                [[ $installpkg ]] && yes | makepkg -sfi ${makeopts[@]} || yes | makepkg -sf ${makeopts[@]}
             else
                 error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
@@ -344,6 +345,38 @@ FindCachedPkg() {
     [[ ! -f "$cachedpkg" ]] && cachedpkg=""
 }
 
+ConflictChecks() {
+    if [[ ! $noconfirm ]]; then
+        local k=0
+        for i in ${deps[@]}; do
+            [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$buildDir/$i/PKGBUILD") ]] && . "$buildDir/$i/PKGBUILD"
+            [[ ! ${conflicts[@]} ]] && conflicts=($(expac -Q %n $i))
+            # return when no conflict
+            [[ " ${conflicts[@]} " =~ " $i " ]] && continue
+
+            if [[ ${conflicts[@]} ]]; then
+                [[ $(expac -Q %n ${conflicts[@]}) != $i ]] && conflictspkgs=("${conflicts[@]}") || continue  # cower-git
+            else
+                conflicts=($(expac -Q %n $i))
+                [[ ${conflicts[@]} != $i ]] && conflictspkgs=("${conflicts[@]}") || continue  # cower
+            fi
+
+            for j in ${conflictspkgs[@]}; do
+                if [[ $j = $i ]]; then
+                    continue
+                else
+                    if ! proceedN "${colorB}::${reset} ${colorW}$i and $j are in conflict. Remove $j?${reset}"; then
+                        break
+                    else
+                        [[ " ${pkgs[@]} " =~ " $i " ]] && unset deps[$k] || error "failed to prepare transaction (conflicting dependencies)"
+                    fi
+                fi
+            done
+            ((k++))
+        done
+    fi
+}
+
 OutofdateChecks() {
     for i in ${deps[@]}; do
         DownloadJson $i &
@@ -359,7 +392,7 @@ ReinstallChecks() {
     exist=($(expac -Q %n ${deps[@]}))
     Qversion=($(expac -Q %v ${deps[@]}))
     for ((i=0; i<${#exist[@]}; i++)); do
-        GetAurVersion ${exist[$i]}
+        [[ " ${deps[@]} " =~ " ${exist[$i]} " ]] && GetAurVersion ${exist[$i]} || continue
         [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
     done
 }
