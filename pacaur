@@ -415,7 +415,7 @@ DownloadPkgbuild() {
 
 DownloadJson() {
     if [[ ! -f "$tmpDir/$i.json" ]]; then
-        curl -Lfs "http://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json"
+        curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json"
     fi
 }
 
