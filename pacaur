@@ -77,6 +77,19 @@ InfoAur() {
     [[ $count -ne 1 ]] && $cower -ii $@
 }
 
+CheckBinary() {
+    [[ ! ${binarydepspkgs[@]} ]] && binarydepspkgs=(${repodepspkgs[@]})
+    binarydeps=($(expac -S %E ${binarydepspkgs[@]}))
+    binarydeps=(${binarydeps[@]//\'/}) && binarydeps=(${binarydeps[@]//\`/})
+    # remove duplicates and installed deps
+    binarydepspkgs=(`for i in "${binarydeps[@]}" ; do [[ ! "${binarydepspkgs[@]}" =~ " $i " ]] && echo "$i" ; done | sort -du`)
+    binarydepspkgs=($(expac -Q -v %n ${binarydepspkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
+    binarydepspkgs=(${binarydepspkgs[@]//\'/}) && binarydepspkgs=(${binarydepspkgs[@]//\`/})
+    repodepsdepspkgs+=(${binarydepspkgs[@]})
+    [[ ${binarydeps[@]} ]] && CheckBinary ${binarydepspkgs[@]} && return
+    [[ ${repodepsdepspkgs[@]} ]] && expac -S "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorC}%r${reset}" ${repodepsdepspkgs[@]}
+}
+
 DownloadPkgs() {
     # set architecture variables
     source /etc/makepkg.conf
@@ -85,10 +98,12 @@ DownloadPkgs() {
 
     if [[ $carchmagic = false ]]; then
         DownloadDepsAur ${aurpkgs[@]}
+        # check binary depends pkgs
+        repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
+        [[ ${repodepspkgs[@]} ]] && CheckBinary ${repodepspkgs[@]}
         # return AUR depends pkgs only
         if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
             aurdepspkgs=(${deps[@]:${#@}:${#deps[@]}})
-            repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
         fi
         # check for CARCH 32/64bits bash magic
         for i in ${deps[@]}; do
@@ -117,6 +132,9 @@ DownloadPkgs() {
         done
         # download pkgs
         [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
+        # check binary depends pkgs
+        repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
+        [[ ${repodepspkgs[@]} ]] && CheckBinary ${repodepspkgs[@]}
         # return deps pkgs
         if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
             local j=0
@@ -124,7 +142,6 @@ DownloadPkgs() {
                 [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
                 ((j++))
             done
-            repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F "\t" '{print $2}'))
         fi
     fi
 }
