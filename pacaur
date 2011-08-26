@@ -330,7 +330,7 @@ CheckBinaryDeps() {
     binarydepspkgs=($(expac -Q -v %n ${binarydepspkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
     binarydepspkgs=(${binarydepspkgs[@]//\'/}) && binarydepspkgs=(${binarydepspkgs[@]//\`/})
     repodepsdepspkgs+=(${binarydepspkgs[@]})
-    [[ ${binarydeps[@]} ]] && CheckBinaryDeps ${binarydepspkgs[@]} && return
+    [[ ${binarydepspkgs[@]} ]] && CheckBinaryDeps ${binarydepspkgs[@]} && return
     [[ ${repodepsdepspkgs[@]} ]] && expac -S "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
 }
 
