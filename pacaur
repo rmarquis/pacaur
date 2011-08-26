@@ -439,7 +439,7 @@ DownloadJson() {
 runasroot() {
     if [[ $UID -eq 0 ]]; then
         "$@"
-    elif sudo -v &>/dev/null && sudo -l "$@" &>/dev/null; then
+    elif sudo -l "$@" &>/dev/null; then
         sudo "$@"
     else
         echo -n "root "
