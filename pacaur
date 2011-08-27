@@ -356,7 +356,7 @@ OutofdateChecks() {
     done
     wait
     for i in ${deps[@]}; do
-        [[ -n $(grep '"OutOfDate":"1"}}' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
+        [[ -n $(grep '"OutOfDate":"1"' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
     done
 }
 
