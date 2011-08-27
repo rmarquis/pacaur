@@ -361,18 +361,12 @@ OutofdateChecks() {
 }
 
 ReinstallChecks() {
-    for i in "${deps[@]}"; do
-        if [[ -n $(expac -Q %n $i) ]]; then
-            exist+=("$i")
-        fi
+    exist=($(expac -Q %n ${deps[@]}))
+    Qversion=($(expac -Q %v ${deps[@]}))
+    for ((i=0; i<${#exist[@]}; i++)); do
+        GetAurVersion ${exist[$i]}
+        [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
     done
-    if [[ ${exist[@]} ]]; then
-        Qversion=($(expac -Q %v ${exist[@]}))
-        for ((i=0; i<${#exist[@]}; i++)); do
-            GetAurVersion ${exist[$i]}
-            [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
-        done
-    fi
 }
 
 IgnoreChecks() {
