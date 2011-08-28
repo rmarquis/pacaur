@@ -616,7 +616,7 @@ while [[ $1 ]]; do
         # others
         '--devel') devel=true;;
         '--asroot') makeopts+=("--asroot");;
-        '--ignore') ignoredpkgs+=("$2"); ignorepkgs+=("--ignore" "$2"); shift;;
+        '--ignore') ignoredpkgs+=("$2"); ignoreopts+=("--ignore" "$2"); shift;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
         '--noedit') noedit=true;;
         '--rebuild') rebuild=true;;
@@ -743,7 +743,7 @@ fi
 # pacman sysupgrade (-Su) handling
 if [[ $option = sysupgrade ]]; then
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
-    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignorepkgs[@]}
+    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]}
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && GetIgnoredPkgs && UpgradeAur && Core ${pkgs[@]}
     exit
 fi
