@@ -87,7 +87,7 @@ DownloadPkgs() {
         repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ ${repodepspkgs[@]} ]] && CheckBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
-        if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+        if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
             aurdepspkgs=(${deps[@]:${#@}:${#deps[@]}})
         fi
         # check for CARCH 32/64bits bash magic
@@ -121,7 +121,7 @@ DownloadPkgs() {
         repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ ${repodepspkgs[@]} ]] && CheckBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
-        if [[ ! $noconfirm && ${ignorepkgs[@]} ]]; then
+        if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
             local j=0
             for i in ${depspkgs[@]}; do
                 [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
