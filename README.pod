@@ -149,6 +149,8 @@ and falling back to
 
   /etc/pacaur.conf
 
+In addition, pacaur fully honors cower config file. See B<cower>(1).
+
 The available options are: 
 
 =head2 GENERAL OPTIONS
@@ -191,9 +193,6 @@ variable is ensured, at the cost of dependencies solving speed.
 Default is B<false>.
 
 =back
-
-In addition, pacaur fully honors cower config file. See B<cower>(1).
-
 
 =head1 SEE ALSO
 
