@@ -379,7 +379,7 @@ IgnoreChecks() {
             fi
             deps+=("$i")
         done
-        # check depends
+        # check dependencies
         for i in "${repodepspkgs[@]}"; do
             if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
                 if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
@@ -400,6 +400,14 @@ IgnoreChecks() {
     else
         # ignore upgrades
         for i in "${aurpkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                warn "${colorW}$i${reset}: ignoring package upgrade"
+                continue
+            fi
+            deps+=("$i")
+        done
+        # check upgrades dependencies
+        for i in "${aurdepspkgs[@]}"; do
             if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
                 warn "${colorW}$i${reset}: ignoring package upgrade"
                 continue
