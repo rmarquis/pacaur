@@ -84,7 +84,7 @@ DownloadPkgs() {
     if [[ $carchmagic = false ]]; then
         DownloadDepsAur ${aurpkgs[@]}
         # check binary depends pkgs
-        repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ ${repodepspkgs[@]} ]] && CheckBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
         if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
@@ -118,7 +118,7 @@ DownloadPkgs() {
         # download pkgs
         [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
         # check binary depends pkgs
-        repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ ${repodepspkgs[@]} ]] && CheckBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
         if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
