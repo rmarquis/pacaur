@@ -124,7 +124,7 @@ DownloadPkgs() {
         if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
             local j=0
             for i in ${depspkgs[@]}; do
-                [[ -z $(expac -S %n $i) ]] && aurdepspkgs[$j]="$i"
+                [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
                 ((j++))
             done
         fi
@@ -321,7 +321,7 @@ CleanCache() {
 
 CheckBinaryDeps() {
     [[ ! ${binarydepspkgs[@]} ]] && binarydepspkgs=(${repodepspkgs[@]})
-    binarydeps=($(expac -S %E ${binarydepspkgs[@]}))
+    binarydeps=($(expac -S -1 %E ${binarydepspkgs[@]}))
     binarydeps=(${binarydeps[@]//\'/}) && binarydeps=(${binarydeps[@]//\`/})
 
     # remove duplicates and installed deps
@@ -332,7 +332,7 @@ CheckBinaryDeps() {
     [[ ${binarydepspkgs[@]} ]] && CheckBinaryDeps ${binarydepspkgs[@]} && return
 
     repodepsdepspkgs=(`for i in "${repodepsdepspkgs[@]}" ; do echo "$i" ; done | sort -du`)
-    [[ ${repodepsdepspkgs[@]} ]] && expac -S "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
+    [[ ${repodepsdepspkgs[@]} ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
 }
 
 GetAurVersion() {
