@@ -110,11 +110,8 @@ DownloadPkgs() {
             ((j++))
         done
         # remove installed deps
-        local j=0
-        for i in ${sourcedpkgs[@]}; do
-            [[ -z $(expac -Q %n $i) ]] && depspkgs[$j]="$i"
-            ((j++))
-        done
+        depspkgs=($(expac -Q -v %n ${sourcedpkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
+        depspkgs=(${depspkgs[@]//\'/}) && depspkgs=(${depspkgs[@]//\`/})
         # download pkgs
         [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
         # check binary depends pkgs
