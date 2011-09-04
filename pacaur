@@ -404,6 +404,11 @@ IgnoreChecks() {
             deps+=("$i")
         done
         # check upgrades dependencies
+        for i in "${repodepspkgs[@]}"; do
+            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+                warn "${colorW}$i${reset}: ignoring package upgrade"
+            fi
+        done
         for i in "${aurdepspkgs[@]}"; do
             if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
                 warn "${colorW}$i${reset}: ignoring package upgrade"
