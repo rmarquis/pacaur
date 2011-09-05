@@ -350,16 +350,10 @@ ConflictChecks() {
         local k=0
         for i in ${deps[@]}; do
             [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$buildDir/$i/PKGBUILD") ]] && . "$buildDir/$i/PKGBUILD"
-            [[ ! ${conflicts[@]} ]] && conflicts=($(expac -Q %n $i))
+            [[ ! ${conflicts[@]} ]] && conflicts=($(expac -Q %n $i)) || conflicts=($(expac -Q %n ${conflicts[@]}))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue
-
-            if [[ ${conflicts[@]} ]]; then
-                [[ $(expac -Q %n ${conflicts[@]}) != $i ]] && conflictspkgs=("${conflicts[@]}") || continue  # cower-git
-            else
-                conflicts=($(expac -Q %n $i))
-                [[ ${conflicts[@]} != $i ]] && conflictspkgs=("${conflicts[@]}") || continue  # cower
-            fi
+            [[ ${conflicts[@]} != $i ]] && conflictspkgs=("${conflicts[@]}") || continue
 
             for j in ${conflictspkgs[@]}; do
                 if [[ $j = $i ]]; then
