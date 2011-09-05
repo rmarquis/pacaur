@@ -168,7 +168,7 @@ Define the editor. Default is B<$EDITOR>.
 =item B<color>
 
 Enable color output. This option requires the pacman binary I<pacman-color> to
-be installed. Default is B<true>.
+be installed. Default is B<false>.
 
 =item B<clean>
 

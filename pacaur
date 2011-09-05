@@ -19,7 +19,7 @@ mkdir -p "$tmpDir"
 # general options
 buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
-color=true                      # enable color
+color=false                     # enable color
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
 
