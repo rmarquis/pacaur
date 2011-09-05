@@ -262,7 +262,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
-                runasroot "yes | $pacmanBin -U $cachedpkg ${pacopts[@]}"
+                yes | runasroot $pacmanBin -U $cachedpkg ${pacopts[@]}
             else
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
