@@ -47,7 +47,7 @@ if $color; then
     colorB="\e[1;34m"
     colorM="\e[1;35m"
     colorC="\e[1;36m"
-    colorW="\e[1;37m"
+    colorW="\e[1;39m"
 else
     pacmanBin="pacman"
     cower='cower'
