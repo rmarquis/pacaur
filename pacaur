@@ -349,6 +349,7 @@ ConflictChecks() {
     if [[ ! $noconfirm ]]; then
         local k=0
         for i in ${deps[@]}; do
+            unset conflicts
             [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$buildDir/$i/PKGBUILD") ]] && . "$buildDir/$i/PKGBUILD"
             [[ ! ${conflicts[@]} ]] && conflicts=($(expac -Q %n "$i")) || [[ ${conflicts[@]} ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
             # return when no conflict
