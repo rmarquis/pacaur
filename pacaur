@@ -85,7 +85,7 @@ DownloadPkgs() {
         DownloadDepsAur ${aurpkgs[@]}
         # check binary depends pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ ${repodepspkgs[@]} ]] && CheckBinaryDeps ${repodepspkgs[@]}
+        [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
         if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
             aurdepspkgs=(${deps[@]:${#@}:${#deps[@]}})
@@ -116,7 +116,7 @@ DownloadPkgs() {
         [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
         # check binary depends pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ ${repodepspkgs[@]} ]] && CheckBinaryDeps ${repodepspkgs[@]}
+        [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
         if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
             local j=0
@@ -317,7 +317,7 @@ CleanCache() {
     fi
 }
 
-CheckBinaryDeps() {
+ShowBinaryDeps() {
     [[ ! ${binarydepspkgs[@]} ]] && binarydepspkgs=(${repodepspkgs[@]})
     binarydeps=($(expac -S -1 %E ${binarydepspkgs[@]}))
     binarydeps=(${binarydeps[@]//\'/}) && binarydeps=(${binarydeps[@]//\`/})
@@ -327,7 +327,7 @@ CheckBinaryDeps() {
     binarydepspkgs=($(expac -Q -v %n ${binarydepspkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
     binarydepspkgs=(${binarydepspkgs[@]//\'/}) && binarydepspkgs=(${binarydepspkgs[@]//\`/})
     repodepsdepspkgs+=(${binarydepspkgs[@]})
-    [[ ${binarydepspkgs[@]} ]] && CheckBinaryDeps ${binarydepspkgs[@]} && return
+    [[ ${binarydepspkgs[@]} ]] && ShowBinaryDeps ${binarydepspkgs[@]} && return
 
     repodepsdepspkgs=(`for i in "${repodepsdepspkgs[@]}" ; do echo "$i" ; done | sort -du`)
     [[ ${repodepsdepspkgs[@]} ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
