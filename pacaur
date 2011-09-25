@@ -415,6 +415,9 @@ IgnoreDepsChecks() {
     # add checked targets
     deps+=("${aurpkgs[@]}")
 
+    # also check recursive binary deps
+    repodepspkgs=("${repodepspkgs[@]}" "${repodepsdepspkgs[@]}")
+
     # check dependencies
     # check upgrades dependencies
     for i in "${repodepspkgs[@]}"; do
