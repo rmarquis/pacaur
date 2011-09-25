@@ -79,8 +79,6 @@ DownloadPkgs() {
     # set architecture variables
     source /etc/makepkg.conf
 
-    [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
-
     if [[ $carchmagic = false ]]; then
         DownloadDepsAur ${aurpkgs[@]}
         # check binary depends pkgs
@@ -88,7 +86,7 @@ DownloadPkgs() {
         [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
         if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
-            aurdepspkgs=(${deps[@]:${#@}:${#deps[@]}})
+            aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         fi
         # check for CARCH 32/64bits bash magic
         for i in ${deps[@]}; do
@@ -229,13 +227,6 @@ CleanUp() {
 }
 
 MakePkgs() {
-    # warning checks
-    [[ ${ignoredpkgs[@]} ]] && IgnoreChecks ${deps[@]}
-    ConflictChecks ${deps[@]}
-    nothingtodo ${deps[@]}
-    ReinstallChecks ${deps[@]}
-    OutofdateChecks ${deps[@]}
-
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
     [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo ""
@@ -392,58 +383,66 @@ ReinstallChecks() {
 }
 
 IgnoreChecks() {
-    unset deps
-    if [[ ! $upgrade && ! $noconfirm ]]; then
-        # check targets
-        for i in "${aurpkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+    GetIgnoredPkgs
+    [[ ! ${ignoredpkgs[@]} ]] && return
+
+    # selective upgrade compatibility
+    [[ $operation && ! $upgrade ]] && checkaurpkgs=(${pkgs[@]}) || checkaurpkgs=(${aurpkgs[@]})
+    unset aurpkgs
+
+    # check targets
+    for i in "${checkaurpkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            if [[ ! $upgrade && ! $noconfirm ]]; then
                 if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    #warn "skipping target: ${colorW}$i${reset}"
                     continue
                 fi
-            fi
-            deps+=("$i")
-        done
-        # check dependencies
-        for i in "${repodepspkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    CleanUp ${deps[@]} &>/dev/null
-                    error "Unresolved dependency '${colorW}$i${reset}'"
-                fi
-            fi
-        done
-        for i in "${aurdepspkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    CleanUp ${deps[@]} &>/dev/null
-                    error "Unresolved dependency '${colorW}$i${reset}'"
-                fi
-            fi
-            deps+=("$i")
-        done
-    else
-        # ignore upgrades
-        for i in "${aurpkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            else
                 warn "${colorW}$i${reset}: ignoring package upgrade"
                 continue
             fi
-            deps+=("$i")
-        done
-        # check upgrades dependencies
-        for i in "${repodepspkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+        fi
+        aurpkgs+=("$i")
+    done
+
+    nothingtodo ${aurpkgs[@]}
+}
+
+IgnoreDepsChecks() {
+    unset deps
+
+    # add checked targets
+    deps+=("${aurpkgs[@]}")
+
+    # check dependencies
+    # check upgrades dependencies
+    for i in "${repodepspkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            if [[ ! $upgrade && ! $noconfirm ]]; then
+                if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    CleanUp ${deps[@]} &>/dev/null
+                    error "Unresolved dependency '${colorW}$i${reset}'"
+                fi
+            else
                 warn "${colorW}$i${reset}: ignoring package upgrade"
             fi
-        done
-        for i in "${aurdepspkgs[@]}"; do
-            if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+        fi
+    done
+    for i in "${aurdepspkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            if [[ ! $upgrade && ! $noconfirm ]]; then
+                if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    CleanUp ${deps[@]} &>/dev/null
+                    error "Unresolved dependency '${colorW}$i${reset}'"
+                fi
+            else
                 warn "${colorW}$i${reset}: ignoring package upgrade"
                 continue
             fi
-            deps+=("$i")
-        done
-    fi
+        fi
+        deps+=("$i")
+    done
 }
 
 GetIgnoredPkgs() {
@@ -678,7 +677,12 @@ done
 #
 
 Core() {
-    DownloadPkgs $@
+    IgnoreChecks
+    DownloadPkgs ${aurpkgs[@]}
+    [[ ${ignoredpkgs[@]} ]] && IgnoreDepsChecks ${deps[@]}
+    ConflictChecks ${deps[@]}
+    ReinstallChecks ${deps[@]}
+    OutofdateChecks ${deps[@]}
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
 }
@@ -730,7 +734,7 @@ fi
 # update (-u) handling
 if [[ $operation = makepkg ]]; then
     [[ $upgrade ]] && UpgradeAur
-    GetIgnoredPkgs && Core ${pkgs[@]}
+    Core ${pkgs[@]}
     exit
 fi
 
@@ -758,7 +762,7 @@ if [[ $option = sync ]]; then
     fi
     if [[ ${aurpkgs[@]} ]]; then
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
-        GetIgnoredPkgs && Core ${aurpkgs[@]}
+        Core ${aurpkgs[@]}
     fi
     exit
 fi
@@ -781,7 +785,7 @@ fi
 if [[ $option = sysupgrade ]]; then
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
     [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]}
-    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && GetIgnoredPkgs && UpgradeAur && Core ${pkgs[@]}
+    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${pkgs[@]}
     exit
 fi
 
