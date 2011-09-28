@@ -85,7 +85,7 @@ DownloadPkgs() {
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
-        if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
+        if [[ ${ignoredpkgs[@]} ]]; then
             aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         fi
         # check for CARCH 32/64bits bash magic
@@ -116,7 +116,7 @@ DownloadPkgs() {
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
-        if [[ ! $noconfirm && ${ignoredpkgs[@]} ]]; then
+        if [[ ${ignoredpkgs[@]} ]]; then
             local j=0
             for i in ${depspkgs[@]}; do
                 [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
@@ -419,29 +419,27 @@ IgnoreDepsChecks() {
     repodepspkgs=("${repodepspkgs[@]}" "${repodepsdepspkgs[@]}")
 
     # check dependencies
-    # check upgrades dependencies
     for i in "${repodepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            if [[ ! $upgrade && ! $noconfirm ]]; then
-                if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    CleanUp ${deps[@]} &>/dev/null
-                    error "Unresolved dependency '${colorW}$i${reset}'"
-                fi
-            else
-                warn "${colorW}$i${reset}: ignoring package upgrade"
-            fi
+            warn "${colorW}$i${reset}: ignoring package upgrade"
+            CleanUp ${aurpkgs[@]} &>/dev/null
+            CleanUp ${aurdepspkgs[@]} &>/dev/null
+            error "Unresolved dependency '${colorW}$i${reset}'"
         fi
     done
     for i in "${aurdepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            if [[ ! $upgrade && ! $noconfirm ]]; then
+            if [[ ! $noconfirm ]]; then
                 if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    CleanUp ${deps[@]} &>/dev/null
+                    CleanUp ${aurpkgs[@]} &>/dev/null
+                    CleanUp ${aurdepspkgs[@]} &>/dev/null
                     error "Unresolved dependency '${colorW}$i${reset}'"
                 fi
             else
                 warn "${colorW}$i${reset}: ignoring package upgrade"
-                continue
+                CleanUp ${aurpkgs[@]} &>/dev/null
+                CleanUp ${aurdepspkgs[@]} &>/dev/null
+                error "Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
         deps+=("$i")
