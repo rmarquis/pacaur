@@ -386,8 +386,7 @@ IgnoreChecks() {
     GetIgnoredPkgs
     [[ ! ${ignoredpkgs[@]} ]] && return
 
-    # selective upgrade compatibility
-    [[ $operation && ! $upgrade ]] && checkaurpkgs=(${pkgs[@]}) || checkaurpkgs=(${aurpkgs[@]})
+    checkaurpkgs=(${aurpkgs[@]})
     unset aurpkgs
 
     # check targets
@@ -678,6 +677,9 @@ done
 #
 
 Core() {
+    # selective upgrade compatibility
+    [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
+    # core functions
     IgnoreChecks
     DownloadPkgs ${aurpkgs[@]}
     [[ ${ignoredpkgs[@]} ]] && IgnoreDepsChecks ${deps[@]}
