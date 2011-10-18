@@ -14,6 +14,17 @@ build upon the well designed cower and expac C backends. Invoking pacaur
 consists of supplying an operation, any applicable options, and usually one or
 more targets.
 
+=head1 USERBASE TARGET
+
+pacaur provides two sets of command line options: commands which are AUR
+specific, and commands that call the pacman binary and extend for AUR functions.
+As such, pacaur can be used by users who prefer to keep their AUR frontend
+separated from pacman, or by users who prefer to have a single tool to manage
+officials and AUR repositories.
+
+Fundamental knowledge of the AUR manual build process with makepkg is assumed to
+be known.
+
 =head1 OPERATIONS
 
 =over 4
@@ -163,7 +174,7 @@ Define the build directory. Default is B</tmp/pacaurtmp-$USER>.
 
 =item B<editor>
 
-Define the editor. Default is B<$EDITOR>, with a fallback on B<vi>.
+Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
 
 =item B<color>
 
