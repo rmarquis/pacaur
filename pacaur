@@ -226,7 +226,7 @@ CleanUp() {
     fi
 }
 
-MakePkgs() {
+Prompt() {
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
     [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo ""
@@ -239,7 +239,9 @@ MakePkgs() {
     fi
 
     EditPkgs ${deps[@]}
+}
 
+MakePkgs() {
     # reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
@@ -683,9 +685,10 @@ Core() {
     IgnoreChecks
     DownloadPkgs ${aurpkgs[@]}
     [[ ${ignoredpkgs[@]} ]] && IgnoreDepsChecks ${deps[@]}
-    ConflictChecks ${deps[@]}
     ReinstallChecks ${deps[@]}
     OutofdateChecks ${deps[@]}
+    Prompt ${deps[@]}
+    ConflictChecks ${deps[@]}
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
 }
