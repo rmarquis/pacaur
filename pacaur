@@ -83,9 +83,9 @@ DownloadPkgs() {
         DownloadDepsAur ${aurpkgs[@]}
         # check binary depends pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
+        [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
-        if [[ ${ignoredpkgs[@]} ]]; then
+        if [[ -n ${ignoredpkgs[@]} ]]; then
             aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         fi
         # check for CARCH 32/64bits bash magic
@@ -111,12 +111,12 @@ DownloadPkgs() {
         depspkgs=($(expac -Q -v %n ${sourcedpkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
         depspkgs=(${depspkgs[@]//\'/}) && depspkgs=(${depspkgs[@]//\`/})
         # download pkgs
-        [[ ${depspkgs[@]} ]] && DownloadDepsAur ${depspkgs[@]}
+        [[ -n "${depspkgs[@]}" ]] && DownloadDepsAur ${depspkgs[@]}
         # check binary depends pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ ${repodepspkgs[@]} ]] && ShowBinaryDeps ${repodepspkgs[@]}
+        [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
-        if [[ ${ignoredpkgs[@]} ]]; then
+        if [[ -n "${ignoredpkgs[@]}" ]]; then
             local j=0
             for i in ${depspkgs[@]}; do
                 [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
@@ -187,7 +187,7 @@ UpgradeAur() {
             fi
         done
 
-        [[ ! ${aurpkgs[@]} ]] && aurpkgs=("${aurdevel[@]}") || aurpkgs=("${aurpkgs[@]}" "${aurdevel[@]}")
+        [[ -z "${aurpkgs[@]}" ]] && aurpkgs=("${aurdevel[@]}") || aurpkgs=("${aurpkgs[@]}" "${aurdevel[@]}")
     fi
 
     nothingtodo ${aurpkgs[@]}
@@ -311,7 +311,7 @@ CleanCache() {
 }
 
 ShowBinaryDeps() {
-    [[ ! ${binarydepspkgs[@]} ]] && binarydepspkgs=(${repodepspkgs[@]})
+    [[ -z "${binarydepspkgs[@]}" ]] && binarydepspkgs=(${repodepspkgs[@]})
     binarydeps=($(expac -S -1 %E ${binarydepspkgs[@]}))
     binarydeps=(${binarydeps[@]//\'/}) && binarydeps=(${binarydeps[@]//\`/})
 
@@ -320,10 +320,10 @@ ShowBinaryDeps() {
     binarydepspkgs=($(expac -Q -v %n ${binarydepspkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
     binarydepspkgs=(${binarydepspkgs[@]//\'/}) && binarydepspkgs=(${binarydepspkgs[@]//\`/})
     repodepsdepspkgs+=(${binarydepspkgs[@]})
-    [[ ${binarydepspkgs[@]} ]] && ShowBinaryDeps ${binarydepspkgs[@]} && return
+    [[ -n "${binarydepspkgs[@]}" ]] && ShowBinaryDeps ${binarydepspkgs[@]} && return
 
     repodepsdepspkgs=(`for i in "${repodepsdepspkgs[@]}" ; do echo "$i" ; done | sort -du`)
-    [[ ${repodepsdepspkgs[@]} ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
+    [[ -n "${repodepsdepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
 }
 
 GetAurVersion() {
@@ -344,7 +344,7 @@ ConflictChecks() {
         for i in ${deps[@]}; do
             unset conflicts
             [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$buildDir/$i/PKGBUILD") ]] && . "$buildDir/$i/PKGBUILD"
-            [[ ! ${conflicts[@]} ]] && conflicts=($(expac -Q %n "$i")) || [[ ${conflicts[@]} ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
+            [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
 
@@ -386,7 +386,7 @@ ReinstallChecks() {
 
 IgnoreChecks() {
     GetIgnoredPkgs
-    [[ ! ${ignoredpkgs[@]} ]] && return
+    [[ -z "${ignoredpkgs[@]}" ]] && return
 
     checkaurpkgs=(${aurpkgs[@]})
     unset aurpkgs
@@ -641,9 +641,9 @@ while [[ $1 ]]; do
         '-Quq') option=upgrades; quiet=true;;
         '-Quqa') option=upgrades; quiet=true; aur='1';;
         '-Quqr') option=upgrades; quiet=true; repo='1';;
-        -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; aur='1' ;;
-        -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; repo='1' ;;
-        -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1" ;;
+        -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; aur='1';;
+        -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1"; repo='1';;
+        -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; force=true; edit=true; pacmanarg="$1";;
         -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1"; aur='1';;
         -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1"; repo='1';;
         -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1";;
@@ -684,7 +684,7 @@ Core() {
     # core functions
     IgnoreChecks
     DownloadPkgs ${aurpkgs[@]}
-    [[ ${ignoredpkgs[@]} ]] && IgnoreDepsChecks ${deps[@]}
+    [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks ${deps[@]}
     ReinstallChecks ${deps[@]}
     OutofdateChecks ${deps[@]}
     Prompt ${deps[@]}
@@ -763,7 +763,7 @@ fi
 # pacman downloadonly (-Sw) handling
 if [[ $option = sync ]]; then
     ClassifyPkgs ${pkgs[@]}
-    if [[ ${repopkgs[@]} ]]; then
+    if [[ -n "${repopkgs[@]}" ]]; then
         [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
         [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
     fi
@@ -777,11 +777,11 @@ fi
 # pacman info (-Si) handling
 if [[ $option = info ]]; then
     ClassifyPkgs ${pkgs[@]}
-    if [[ ${repopkgs[@]} ]]; then
+    if [[ -n "${repopkgs[@]}" ]]; then
         [[ $count -eq 1 ]] && $pacmanBin -Si ${repopkgs[@]}
         [[ $count -ne 1 ]] && $pacmanBin -Sii ${repopkgs[@]}
     fi
-    if [[ ${aurpkgs[@]} ]]; then
+    if [[ -n "${aurpkgs[@]}" ]]; then
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
         InfoAur ${aurpkgs[@]}
     fi
