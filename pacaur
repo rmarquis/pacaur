@@ -85,9 +85,9 @@ DownloadPkgs() {
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
-        if [[ -n ${ignoredpkgs[@]} ]]; then
+        ##if [[ -n ${ignoredpkgs[@]} ]]; then
             aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
-        fi
+        ##fi
         # check for CARCH 32/64bits bash magic
         for i in ${deps[@]}; do
             [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}carchmagic${reset} variable is disabled.\nCheck configuration in /etc/${name}.conf"
@@ -116,13 +116,13 @@ DownloadPkgs() {
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
-        if [[ -n "${ignoredpkgs[@]}" ]]; then
+        ##if [[ -n "${ignoredpkgs[@]}" ]]; then
             local j=0
             for i in ${depspkgs[@]}; do
                 [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
                 ((j++))
             done
-        fi
+        ##fi
     fi
 }
 
@@ -264,7 +264,18 @@ MakePkgs() {
             if [[ -e $buildDir/$i/PKGBUILD ]]; then
                 info "Building ${colorW}$i${reset} package..."
                 cd $buildDir/$i
-                [[ $installpkg ]] && yes | makepkg -sfi ${makeopts[@]} || yes | LC_COLLATE=C makepkg -sfr ${makeopts[@]}
+                if [[ $installpkg ]]; then
+                    yes | makepkg -sfi ${makeopts[@]}
+                else
+                    # install aur deps
+                    # install binary deps then remove them
+                    if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
+                        info "Installing ${colorW}$i${reset} dependency..."
+                        yes | makepkg -sfi ${makeopts[@]}
+                    else
+                        yes | LC_COLLATE=C makepkg -sfr ${makeopts[@]}
+                    fi
+                fi
             else
                 error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
@@ -278,9 +289,19 @@ MakePkgs() {
             done
             [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
-        [[ $installpkg ]] && [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-        [[ $installpkg ]] && [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+        if [[ $installpkg ]]; then
+            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+        else
+            runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+        fi
     done
+
+    # remove aur deps
+    if [[ ! $installpkg ]]; then
+        info "Removing installed aur dependencies..."
+        runasroot $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
+    fi
 }
 
 CleanCache() {
