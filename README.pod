@@ -46,9 +46,9 @@ recursively).
 
 =item B<-m, --makepkg>
 
-Download I<target> PKGBUILD and build target. Missing dependencies will B<not>
-be installed as required, thus needing manual intervention if any problem
-occurs.
+Download I<target> PKGBUILD and build target. Missing dependencies will be
+installed as required to ensure the build to succeed, before being automatically
+uninstalled.
 
 =item B<-y, --sync>
 

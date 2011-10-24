@@ -264,7 +264,7 @@ MakePkgs() {
             if [[ -e $buildDir/$i/PKGBUILD ]]; then
                 info "Building ${colorW}$i${reset} package..."
                 cd $buildDir/$i
-                [[ $installpkg ]] && yes | makepkg -sfi ${makeopts[@]} || yes | makepkg -sf ${makeopts[@]}
+                [[ $installpkg ]] && yes | makepkg -sfi ${makeopts[@]} || yes | LC_COLLATE=C makepkg -sfr ${makeopts[@]}
             else
                 error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
