@@ -85,9 +85,7 @@ DownloadPkgs() {
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
-        ##if [[ -n ${ignoredpkgs[@]} ]]; then
-            aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
-        ##fi
+        aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         # check for CARCH 32/64bits bash magic
         for i in ${deps[@]}; do
             [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}carchmagic${reset} variable is disabled.\nCheck configuration in /etc/${name}.conf"
@@ -116,13 +114,11 @@ DownloadPkgs() {
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
-        ##if [[ -n "${ignoredpkgs[@]}" ]]; then
-            local j=0
-            for i in ${depspkgs[@]}; do
-                [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
-                ((j++))
-            done
-        ##fi
+        local j=0
+        for i in ${depspkgs[@]}; do
+            [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
+            ((j++))
+        done
     fi
 }
 
@@ -249,58 +245,63 @@ MakePkgs() {
     [[ $color != true ]] && makeopts+=("--nocolor")
     export PACMAN=$pacmanBin
 
-    for i in "${deps[@]}"; do
-        # check package cache
-        [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
-        if [[ $cachedpkg ]]; then
-            if [[ $installpkg ]]; then
+    if [[ $installpkg ]]; then
+        for i in "${deps[@]}"; do
+            # check package cache
+            [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
+            if [[ $cachedpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
                 yes | runasroot $pacmanBin -U $cachedpkg ${pacopts[@]}
             else
-                info "Package ${colorW}$i${reset} already available in cache"
-            fi
-        else
-            # build and install
-            if [[ -e $buildDir/$i/PKGBUILD ]]; then
-                info "Building ${colorW}$i${reset} package..."
-                cd $buildDir/$i
-                if [[ $installpkg ]]; then
+                # build and install
+                if [[ -e $buildDir/$i/PKGBUILD ]]; then
+                    info "Building ${colorW}$i${reset} package..."
+                    cd $buildDir/$i
                     yes | makepkg -sfi ${makeopts[@]}
                 else
-                    # install aur deps
-                    # install binary deps then remove them
+                    error "Could not open ${colorW}$i${reset} PKGBUILD"
+                fi
+            fi
+            # set dep status
+            if [[ ! $upgrade ]]; then
+                isexpl=false
+                for j in ${pkgs[@]}; do
+                    [[ $j = $i ]] && isexpl=true
+                done
+                [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            fi
+            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+        done
+    else
+        for i in "${deps[@]}"; do
+            # check package cache
+            [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
+            if [[ $cachedpkg ]]; then
+                info "Package ${colorW}$i${reset} already available in cache"
+            else
+                # build
+                if [[ -e $buildDir/$i/PKGBUILD ]]; then
+                    info "Building ${colorW}$i${reset} package..."
+                    cd $buildDir/$i
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
+                        # install aur deps
                         info "Installing ${colorW}$i${reset} dependency..."
                         yes | makepkg -sfi ${makeopts[@]}
                     else
+                        # install then remove binary deps
                         yes | LC_COLLATE=C makepkg -sfr ${makeopts[@]}
                     fi
+                else
+                    error "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
-            else
-                error "Could not open ${colorW}$i${reset} PKGBUILD"
+                # set dep status
+                runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
             fi
-        fi
-
-        # set dep status
-        if [[ $installpkg && ! $upgrade ]]; then
-            isexpl=false
-            for j in ${pkgs[@]}; do
-                [[ $j = $i ]] && isexpl=true
-            done
-            [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-        fi
-        if [[ $installpkg ]]; then
-            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
-        else
-            runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-        fi
-    done
-
-    # remove aur deps
-    if [[ ! $installpkg ]]; then
-        info "Removing installed aur dependencies..."
-        runasroot $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
+        done
+        # remove aur deps
+        [[ -n ${aurdepspkgs[@]} ]] && info "Removing installed aur dependencies..."
+        [[ -n ${aurdepspkgs[@]} ]] && runasroot $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 }
 
