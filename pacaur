@@ -217,7 +217,7 @@ CleanUp() {
         if [[ $count -ne 1 ]]; then
             # hack for cvs protected files
             chmod -R 755 $buildDir/* &>/dev/null
-            rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Could not clean build directory"
+            rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
         fi
     fi
 }
