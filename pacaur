@@ -263,13 +263,7 @@ MakePkgs() {
                 fi
             fi
             # set dep status
-            if [[ ! $upgrade ]]; then
-                isexpl=false
-                for j in ${pkgs[@]}; do
-                    [[ $j = $i ]] && isexpl=true
-                done
-                [[ $isexpl != true ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            fi
+            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
             [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
             [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
         done
