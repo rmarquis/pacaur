@@ -195,6 +195,14 @@ Extend pacman commands to the AUR. Default is B<true>.
 
 =over 4
 
+=item B<editpkgbuild>
+
+Enable editing of PKGBUILD. Default is B<true>.
+
+=item B<editinstall>
+
+Enable editing of install script. Default is B<true>.
+
 =item B<carchmagic>
 
 Enable compatibility with I<$CARCH> bash magic. When enabled, compatibility
