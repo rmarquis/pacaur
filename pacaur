@@ -194,12 +194,27 @@ UpgradeAur() {
 EditPkgs() {
     if [[ $edit && ! $noedit ]]; then
         for i in "$@"; do
+            # edit pkgbuild
             if [[ $option ]]; then
-                if ! proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD?"; then
-                    continue
+                if proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD?"; then
+                    [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+                fi
+            else
+                [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+            fi
+
+            # edit install script
+            unset install
+            [[ -e $buildDir/$i/PKGBUILD ]] && source $buildDir/$i/PKGBUILD
+            if [[ $install ]]; then
+                if [[ $option ]]; then
+                    if proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} .install script?"; then
+                        [[ -e $buildDir/$i/$install ]] && $editor $buildDir/$i/$install && success "${colorW}$i${reset} install script edited" || error "Could not open ${colorW}$i${reset} install script"
+                    fi
+                else
+                    [[ -e $buildDir/$i/$install ]] && $editor $buildDir/$i/$install && success "${colorW}$i${reset} install script edited" || error "Could not open ${colorW}$i${reset} install script"
                 fi
             fi
-            [[ -e $buildDir/$i/PKGBUILD ]] && $editor $buildDir/$i/PKGBUILD && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
         done
     fi
 }
