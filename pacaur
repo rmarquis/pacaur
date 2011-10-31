@@ -640,6 +640,7 @@ while [[ $1 ]]; do
         '-Si'|'--info') option=info; ((count++));;
         '-Sii'|'--info') option=info; count=2;;
         '-Sw'|'--downloadonly') option=sync; force=true; edit=true;;
+        '-Sy'|'--refresh') option=sync; installpkg=true; force=true; edit=true; refresh=true;;
         '-Qu'|'--upgrades') option=upgrades;;
         '-Sc'|'--clean') option=cleancache; ((count++)); pacmanarg="$1";;
         '-Scc'|'--clean') option=cleancache; count=2; pacmanarg="$1";;
@@ -659,6 +660,8 @@ while [[ $1 ]]; do
         '-Siir') option=info; count=2; repo='1';;
         '-Swa') option=sync; force=true; edit=true; aur='1';;
         '-Swr') option=sync; force=true; edit=true; repo='1';;
+        '-Sya') option=sync; installpkg=true; force=true; edit=true; refresh=true; aur='1';;
+        '-Syr') option=sync; installpkg=true; force=true; edit=true; refresh=true; repo='1';;
         '-Qua') option=upgrades; aur='1';;
         '-Qur') option=upgrades; repo='1';;
         '-Quq') option=upgrades; quiet=true;;
@@ -670,6 +673,9 @@ while [[ $1 ]]; do
         -S*u*a) option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1"; aur='1';;
         -S*u*r) option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1"; repo='1';;
         -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; edit=true; installpkg=true; pacmanarg="$1";;
+        -Syw|-Swy) option=sync; force=true; edit=true; refresh=true;;
+        -Sywa|-Swya) option=sync; force=true; edit=true; refresh=true; aur='1';;
+        -Sywr|-Swyr) option=sync; force=true; edit=true; refresh=true; repo='1';;
         '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1';;
         '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1';;
         '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1';;
@@ -784,13 +790,20 @@ fi
 
 # pacman sync (-S) handling
 # pacman downloadonly (-Sw) handling
+# pacman refresh (-Sy) handling
 if [[ $option = sync ]]; then
     ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
-        [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
-        [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
+        if [[ $refresh ]]; then
+            [[ $installpkg ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${repopkgs[@]}
+            [[ ! $installpkg ]] && runasroot $pacmanBin -Syw ${pacopts[@]} ${repopkgs[@]}
+        else
+            [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
+            [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
+        fi
     fi
     if [[ ${aurpkgs[@]} ]]; then
+        [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]}
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
         Core ${aurpkgs[@]}
     fi
