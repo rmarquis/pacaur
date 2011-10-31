@@ -792,6 +792,7 @@ fi
 # pacman downloadonly (-Sw) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sync ]]; then
+    [[ ! ${pkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]}
     ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
         if [[ $refresh ]]; then
