@@ -237,7 +237,7 @@ CleanUp() {
         fi
         if [[ $count -ne 1 ]]; then
             # skip if devel package
-            if [[ $cleandevel = false ]]; then
+            if [[ $cleandevel = false && $count -ne 2 ]]; then
                 for i in "$@"; do
                     cd $buildDir
                     unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
