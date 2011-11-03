@@ -90,7 +90,7 @@ DownloadPkgs() {
         aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         # check for CARCH 32/64bits bash magic
         for i in ${deps[@]}; do
-            [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}carchmagic${reset} variable is disabled.\nCheck configuration in /etc/${name}.conf"
+            [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}carchmagic${reset} variable is disabled.\nCheck configuration in /etc/${name}.conf or use --carch flag."
         done
     else
         DownloadAur ${aurpkgs[@]}
@@ -703,6 +703,7 @@ while [[ $1 ]]; do
         # others
         '--devel') devel=true;;
         '--asroot') makeopts+=("--asroot");;
+        '--carch') carchmagic=true;;
         '--ignore') ignoredpkgs+=("$2"); ignoreopts+=("--ignore" "$2"); shift;;
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
         '--noedit') noedit=true;;
