@@ -26,6 +26,7 @@ fallback=true                   # pacman fallback
 # advanced options
 editpkgbuild=true               # edit PKGBUILD
 editinstall=true                # edit install script
+cleandevel=true                 # cleanup devel after install
 carchmagic=false                # CARCH compatibility
 
 #
@@ -235,9 +236,22 @@ CleanUp() {
             done
         fi
         if [[ $count -ne 1 ]]; then
-            # hack for cvs protected files
-            chmod -R 755 $buildDir/* &>/dev/null
-            rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
+            # skip if devel package
+            if [[ $cleandevel = false ]]; then
+                for i in "$@"; do
+                    cd $buildDir
+                    unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
+                    . "$i/PKGBUILD"
+                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
+                    # hack for cvs protected files
+                    chmod -R 755 $i/* &>/dev/null
+                    rm -r $i/* &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+                done
+            else
+                # hack for cvs protected files
+                chmod -R 755 $buildDir/* &>/dev/null
+                rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
+            fi
         fi
     fi
 }
