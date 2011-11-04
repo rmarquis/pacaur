@@ -244,8 +244,8 @@ CleanUp() {
                     . "$i/PKGBUILD"
                     [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
                     # hack for cvs protected files
-                    chmod -R 755 $i/* &>/dev/null
-                    rm -r $i/* &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+                    chmod -R 755 $i &>/dev/null
+                    rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
                 done
             else
                 # hack for cvs protected files
