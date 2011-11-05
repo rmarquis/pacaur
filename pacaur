@@ -16,6 +16,9 @@ tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
 [[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null
 mkdir -p "$tmpDir"
 
+# locale
+export LANG=C
+
 # general options
 buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
