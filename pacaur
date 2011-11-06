@@ -668,15 +668,15 @@ while [[ $1 ]]; do
         '-ue') operation=makepkg; upgrade=true; force=true; edit=true; installpkg=true;;
         '-cc') clean=true; cleanpkg=true; count=2;;
         # pacman
-        '-S'|'--sync') option=sync; installpkg=true; force=true;;
-        '-Ss'|'--search') option=search;;
-        '-Si'|'--info') option=info; ((count++));;
-        '-Sii'|'--info') option=info; count=2;;
-        '-Sw'|'--downloadonly') option=sync; force=true;;
-        '-Sy'|'--refresh') option=sync; installpkg=true; force=true; refresh=true;;
-        '-Qu'|'--upgrades') option=upgrades;;
-        '-Sc'|'--clean') option=cleancache; ((count++)); pacmanarg="$1";;
-        '-Scc'|'--clean') option=cleancache; count=2; pacmanarg="$1";;
+        '-S') option=sync; installpkg=true; force=true;;
+        '-Ss') option=search;;
+        '-Si') option=info; ((count++));;
+        '-Sii') option=info; count=2;;
+        '-Sw') option=sync; force=true;;
+        '-Sy') option=sync; installpkg=true; force=true; refresh=true;;
+        '-Qu') option=upgrades;;
+        '-Sc') option=cleancache; ((count++)); pacmanarg="$1";;
+        '-Scc') option=cleancache; count=2; pacmanarg="$1";;
         '-r'|'--repo') repo='1';;
         '-a'|'--aur') aur='1';;
         # pacman shortcuts
@@ -705,7 +705,7 @@ while [[ $1 ]]; do
         -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; force=true; pacmanarg="$1";;
         -S*u*a) option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1"; aur='1';;
         -S*u*r) option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1"; repo='1';;
-        -S*u*|'--sysupgrade') option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1";;
+        -S*u*) option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1";;
         -Syw|-Swy) option=sync; force=true; refresh=true;;
         -Sywa|-Swya) option=sync; force=true; refresh=true; aur='1';;
         -Sywr|-Swyr) option=sync; force=true; refresh=true; repo='1';;
