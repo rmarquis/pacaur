@@ -282,6 +282,9 @@ Prompt() {
 }
 
 MakePkgs() {
+    # initialize sudo
+    runasroot
+
     # reverse deps order
     deps=($(echo ${deps[@]} | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
@@ -530,10 +533,10 @@ DownloadJson() {
 }
 
 runasroot() {
-    if [[ $UID -eq 0 ]]; then
-        "$@"
+    if [[ ! $@ ]]; then
+        [[ $UID -ne 0 ]] && sudo -v
     else
-        sudo "$@"
+        [[ $UID -eq 0 ]] && "$@" || sudo "$@"
     fi
 }
 
