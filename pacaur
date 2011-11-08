@@ -7,6 +7,7 @@
 name="pacaur"
 version="2.4.0"
 
+
 #
 # Default config
 #
@@ -32,12 +33,14 @@ editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
 carchmagic=false                # CARCH compatibility
 
+
 #
 # Source config
 #
 
 source /etc/${name}.conf
 [[ -r "$HOME/.config/${name}/config" ]] && source "$HOME/.config/${name}/config"
+
 
 #
 # Color
@@ -66,6 +69,7 @@ else
     colorC=''
     colorW=''
 fi
+
 
 #
 # Functions
@@ -829,8 +833,7 @@ fi
 # pacman downloadonly (-Sw) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sync ]]; then
-    [[ ! ${pkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]}
-    ClassifyPkgs ${pkgs[@]}
+    [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && runasroot $pacmanBin -Sy ${pacopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
         if [[ $refresh ]]; then
             [[ $installpkg ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${repopkgs[@]}
