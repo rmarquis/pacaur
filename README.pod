@@ -140,7 +140,7 @@ When building AUR package(s) as root, allow makepkg to run as root user.
 
 =item B<--carch>
 
-Temporarily enable carchmagic option. Bypass carchmagic default config option.
+Temporarily enable $CARCH bash magic compatibility when I<carchmagic> option is disabled.
 
 =item B<-v, --version>
 
