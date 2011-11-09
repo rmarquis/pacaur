@@ -784,6 +784,7 @@ ClassifyPkgs() {
 [[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in /etc/${name}.conf"
 [[ ! $operation && ! $option && ! $cleanpkg && ! $editpkg ]] && error "no operation specified (use -h for help)"
+[[ $option = sync || $option = info || $option = search ]] && [[ ! $refresh ]] && [[ ! $pkgs ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
 # search (-s) handling
