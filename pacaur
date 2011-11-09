@@ -171,6 +171,9 @@ CheckRepo() {
 }
 
 UpgradeAur() {
+    # ignore check
+    GetIgnoredPkgs
+
     info "${colorW}Starting AUR upgrade...${reset}"
     aurpkgs=($($cower -u ${pkgs[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
@@ -188,8 +191,13 @@ UpgradeAur() {
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
             . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
-                info "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]} ${reset}"
-                aurdevel=("${aurdevel[@]}" "${allaurpkgs[$i]}")
+                if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
+                    warn "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
+                    continue
+                else
+                    info "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]} ${reset}"
+                    aurdevel=("${aurdevel[@]}" "${allaurpkgs[$i]}")
+                fi
             fi
         done
 
@@ -452,7 +460,7 @@ ReinstallChecks() {
 }
 
 IgnoreChecks() {
-    GetIgnoredPkgs
+    [[ ! $upgrade ]] && GetIgnoredPkgs
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     checkaurpkgs=(${aurpkgs[@]})
@@ -463,7 +471,6 @@ IgnoreChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
                 if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    #warn "skipping target: ${colorW}$i${reset}"
                     continue
                 fi
             else
