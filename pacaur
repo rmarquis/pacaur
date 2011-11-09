@@ -265,7 +265,7 @@ CleanUp() {
 
 Prompt() {
     [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
-    [[ ! $option ]] && echo "" && info "AUR package(s) to build: ${colorW}${deps[@]}${reset}"
+    [[ ! $option ]] && echo "" && info "${colorW}${#deps[@]}${reset} AUR package(s) to build: ${colorW}${deps[@]}${reset}"
     echo ""
 
     if [[ ! $noconfirm ]]; then
