@@ -175,7 +175,7 @@ UpgradeAur() {
     GetIgnoredPkgs
 
     info "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs=($($cower -u ${pkgs[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    aurpkgs=($($cower -u ${pkgs[@]} ${ignoreopts[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
     # add devel packages
     if [[ $devel ]]; then
