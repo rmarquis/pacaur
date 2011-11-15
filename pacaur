@@ -98,7 +98,7 @@ DownloadPkgs() {
         aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         # check for CARCH 32/64bits bash magic
         for i in ${deps[@]}; do
-            [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}carchmagic${reset} variable is disabled.\nCheck configuration in /etc/${name}.conf or use --carch option."
+            [[ -n $(grep '$CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in /etc/${name}.conf or use --carch option."
         done
     else
         DownloadAur ${aurpkgs[@]}
