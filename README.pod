@@ -91,6 +91,11 @@ Overwrite existing files when downloading.
 Edit I<target> PKGBUILD when downloading or building target. Can also be used
 as a standalone command.
 
+=item B<-q, --quiet>
+
+Show less information for search and query operations. Search will only show
+package names and not version, group, and description information.
+
 =item B<-c, --clean>
 
 Remove I<target> build directory. Pass this option twice to clean the entire
@@ -105,11 +110,6 @@ the AUR.
 
 When used with pacman extended operations, only search or install packages from
 the repositories.
-
-=item B<-q, --quiet>
-
-Show less information for search and query operations. Search will only show
-package names and not version, group, and description information.
 
 =item B<--devel>
 
@@ -140,7 +140,8 @@ When building AUR package(s) as root, allow makepkg to run as root user.
 
 =item B<--carch>
 
-Temporarily enable $CARCH bash magic compatibility when I<carchmagic> option is disabled.
+Temporarily enable $CARCH bash magic compatibility when I<carchmagic> option is
+disabled.
 
 =item B<-v, --version>
 
