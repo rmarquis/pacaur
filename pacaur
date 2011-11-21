@@ -144,7 +144,6 @@ DownloadDepsAur() {
     [[ $force ]] && f="-f"
     [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
     [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ ! $operation = download ]] && cat "$tmpDir/repodepspkgs"
 
     timeout ${deps[@]}
 }
@@ -397,7 +396,9 @@ ShowBinaryDeps() {
     repodepsdepspkgs+=(${binarydepspkgs[@]})
     [[ -n "${binarydepspkgs[@]}" ]] && ShowBinaryDeps ${binarydepspkgs[@]} && return
 
-    repodepsdepspkgs=(`for i in "${repodepsdepspkgs[@]}" ; do echo "$i" ; done | sort -du`)
+    # add cower primary binary deps and show provider packages only
+    repodepsdepspkgs+=(${repodepspkgs[@]})
+    repodepsdepspkgs=($(expac -S -1 "%n" ${repodepsdepspkgs[@]} | sort -du))
     [[ -n "${repodepsdepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
 }
 
