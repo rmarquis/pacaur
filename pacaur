@@ -9,7 +9,7 @@ version="2.4.1"
 
 
 #
-# Default config
+# Config
 #
 
 # tmpdir
@@ -33,11 +33,7 @@ editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
 carchmagic=false                # CARCH compatibility
 
-
-#
-# Source config
-#
-
+# source config
 source /etc/${name}.conf
 [[ -r "$HOME/.config/${name}/config" ]] && source "$HOME/.config/${name}/config"
 
@@ -60,14 +56,6 @@ if $color; then
 else
     pacmanBin='pacman'
     cower='cower'
-    reset=''
-    colorR=''
-    colorG=''
-    colorY=''
-    colorB=''
-    colorM=''
-    colorC=''
-    colorW=''
 fi
 
 
@@ -150,7 +138,8 @@ DownloadDepsAur() {
 }
 
 CheckAur() {
-    [[ $quiet ]] && $cower -uq --color=never $@ || [[ ! $quiet ]] && $cower -u $@
+    [[ $quiet ]] && $cower -uq --color=never $@
+    [[ ! $quiet ]] && $cower -u $@
 }
 
 CheckRepo() {
@@ -388,7 +377,6 @@ CleanCache() {
 ShowBinaryDeps() {
     [[ -z "${binarydepspkgs[@]}" ]] && binarydepspkgs=(${repodepspkgs[@]})
     binarydeps=($(expac -S -1 %E ${binarydepspkgs[@]}))
-    binarydeps=(${binarydeps[@]//\'/}) && binarydeps=(${binarydeps[@]//\`/})
 
     # remove duplicates and installed deps
     binarydepspkgs=(`for i in "${binarydeps[@]}" ; do [[ ! "${binarydepspkgs[@]}" =~ " $i " ]] && echo "$i" ; done | sort -du`)
@@ -588,7 +576,7 @@ nothingtodo() {
 }
 
 timeout(){
-    if [[ -z "$(echo $@ | grep -v "Couldn't resolve host name" | grep -v "no results found for")" ]]; then
+    if [[ -z "$(echo $@ | grep -v 'resolve host name' | grep -v 'no results found for')" ]]; then
         exit
     fi
 }
@@ -778,7 +766,7 @@ ClassifyPkgs() {
             GetIgnoredGrps
             for i in ${pkgs[@]}; do
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v "error:")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+                [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
     else
