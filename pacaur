@@ -73,6 +73,23 @@ InfoAur() {
     [[ $count -ne 1 ]] && $cower -ii $@
 }
 
+DownloadAur() {
+    [[ $force ]] && f="-f"
+    [[ $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    timeout ${deps[@]}
+}
+
+DownloadDepsAur() {
+    [[ $force ]] && f="-f"
+    [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
+
+    timeout ${deps[@]}
+}
+
 DownloadPkgs() {
     # set architecture variables
     source /etc/makepkg.conf
@@ -120,43 +137,21 @@ DownloadPkgs() {
     fi
 }
 
-DownloadAur() {
-    [[ $force ]] && f="-f"
-    [[ $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+ShowBinaryDeps() {
+    [[ -z "${binarydepspkgs[@]}" ]] && binarydepspkgs=(${repodepspkgs[@]})
+    binarydeps=($(expac -S -1 %E ${binarydepspkgs[@]}))
 
-    timeout ${deps[@]}
-}
+    # remove duplicates and installed deps
+    binarydepspkgs=(`for i in "${binarydeps[@]}" ; do [[ ! "${binarydepspkgs[@]}" =~ " $i " ]] && echo "$i" ; done | sort -du`)
+    binarydepspkgs=($(expac -Q -v %n ${binarydepspkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
+    binarydepspkgs=(${binarydepspkgs[@]//\'/}) && binarydepspkgs=(${binarydepspkgs[@]//\`/})
+    repodepsdepspkgs+=(${binarydepspkgs[@]})
+    [[ -n "${binarydepspkgs[@]}" ]] && ShowBinaryDeps ${binarydepspkgs[@]} && return
 
-DownloadDepsAur() {
-    [[ $force ]] && f="-f"
-    [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
-
-    timeout ${deps[@]}
-}
-
-CheckAur() {
-    [[ $quiet ]] && $cower -uq --color=never $@
-    [[ ! $quiet ]] && $cower -u $@
-}
-
-CheckRepo() {
-    outofdate=($($pacmanBin -Quq $@))
-    if [[ -n "${outofdate[@]}" ]]; then
-        Qversion=($(expac -Q %v ${outofdate[@]}))
-        Sversion=($(expac -S -1 %v ${outofdate[@]}))
-        for ((i=0; i<${#outofdate[@]}; i++)); do
-            Qgroup[$i]=$(expac -Q -l " " '%G' ${outofdate[$i]})
-        done
-        local i=0
-        for j in ${outofdate[@]}; do
-            [[ -n "${Qgroup[$i]}" ]] && Qgroup[$i]="(${Qgroup[$i]})"
-            [[ ! $quiet ]] && info "${colorW}$j ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset} ${colorB}${Qgroup[$i]}${reset}" || echo $j
-            ((i++))
-        done
-    fi
+    # add cower primary binary deps and show provider packages only
+    repodepsdepspkgs+=(${repodepspkgs[@]})
+    repodepsdepspkgs=($(expac -S -1 "%n" ${repodepsdepspkgs[@]} | sort -du))
+    [[ -n "${repodepsdepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
 }
 
 UpgradeAur() {
@@ -198,6 +193,28 @@ UpgradeAur() {
     timeout ${aurpkgs[@]}
 }
 
+Prompt() {
+    [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
+    [[ ! $option ]] && echo "" && info "${colorW}${#deps[@]}${reset} AUR package(s) to build: ${colorW}${deps[@]}${reset}"
+    echo ""
+
+    if [[ ! $noconfirm ]]; then
+        if [[ $installpkg ]]; then
+            if ! proceedY "Proceed with installation?"; then
+                CleanUp ${deps[@]} &>/dev/null
+                exit
+            fi
+        else
+            if ! proceedY "Proceed with download?"; then
+                CleanUp ${deps[@]} &>/dev/null
+                exit
+            fi
+        fi
+    fi
+
+    EditPkgs ${deps[@]}
+}
+
 EditPkgs() {
     [[ $noedit ]] && return
     [[ $operation ]] && [[ ! $edit ]] && return
@@ -227,59 +244,6 @@ EditPkgs() {
             fi
         fi
     done
-}
-
-CleanUp() {
-    if [[ $clean = true ]]; then
-        if [[ $count -eq 1 ]]; then
-            cd $buildDir
-            for i in "$@"; do
-                # hack for cvs protected files
-                chmod -R 755 $i &>/dev/null
-                rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
-            done
-        fi
-        if [[ $count -ne 1 ]]; then
-            # skip if devel package
-            if [[ $cleandevel = false && $count -ne 2 ]]; then
-                for i in "$@"; do
-                    cd $buildDir
-                    unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                    . "$i/PKGBUILD"
-                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
-                    # hack for cvs protected files
-                    chmod -R 755 $i &>/dev/null
-                    rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
-                done
-            else
-                # hack for cvs protected files
-                chmod -R 755 $buildDir/* &>/dev/null
-                rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
-            fi
-        fi
-    fi
-}
-
-Prompt() {
-    [[ $option ]] && echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}"
-    [[ ! $option ]] && echo "" && info "${colorW}${#deps[@]}${reset} AUR package(s) to build: ${colorW}${deps[@]}${reset}"
-    echo ""
-
-    if [[ ! $noconfirm ]]; then
-        if [[ $installpkg ]]; then
-            if ! proceedY "Proceed with installation?"; then
-                CleanUp ${deps[@]} &>/dev/null
-                exit
-            fi
-        else
-            if ! proceedY "Proceed with download?"; then
-                CleanUp ${deps[@]} &>/dev/null
-                exit
-            fi
-        fi
-    fi
-
-    EditPkgs ${deps[@]}
 }
 
 MakePkgs() {
@@ -347,6 +311,59 @@ MakePkgs() {
     fi
 }
 
+CleanUp() {
+    if [[ $clean = true ]]; then
+        if [[ $count -eq 1 ]]; then
+            cd $buildDir
+            for i in "$@"; do
+                # hack for cvs protected files
+                chmod -R 755 $i &>/dev/null
+                rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+            done
+        fi
+        if [[ $count -ne 1 ]]; then
+            # skip if devel package
+            if [[ $cleandevel = false && $count -ne 2 ]]; then
+                for i in "$@"; do
+                    cd $buildDir
+                    unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
+                    . "$i/PKGBUILD"
+                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
+                    # hack for cvs protected files
+                    chmod -R 755 $i &>/dev/null
+                    rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+                done
+            else
+                # hack for cvs protected files
+                chmod -R 755 $buildDir/* &>/dev/null
+                rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
+            fi
+        fi
+    fi
+}
+
+CheckAur() {
+    [[ $quiet ]] && $cower -uq --color=never $@
+    [[ ! $quiet ]] && $cower -u $@
+}
+
+CheckRepo() {
+    outofdate=($($pacmanBin -Quq $@))
+    if [[ -n "${outofdate[@]}" ]]; then
+        Qversion=($(expac -Q %v ${outofdate[@]}))
+        Sversion=($(expac -S -1 %v ${outofdate[@]}))
+        for ((i=0; i<${#outofdate[@]}; i++)); do
+            Qgroup[$i]=$(expac -Q -l " " '%G' ${outofdate[$i]})
+        done
+        local i=0
+        for j in ${outofdate[@]}; do
+            [[ -n "${Qgroup[$i]}" ]] && Qgroup[$i]="(${Qgroup[$i]})"
+            [[ ! $quiet ]] && info "${colorW}$j ${colorR}${Qversion[$i]} ${reset}-> ${colorG}${Sversion[$i]}${reset} ${colorB}${Qgroup[$i]}${reset}" || echo $j
+            ((i++))
+        done
+    fi
+}
+
 CleanCache() {
     # set cache variables
     source /etc/makepkg.conf
@@ -372,35 +389,6 @@ CleanCache() {
             fi
         fi
     fi
-}
-
-ShowBinaryDeps() {
-    [[ -z "${binarydepspkgs[@]}" ]] && binarydepspkgs=(${repodepspkgs[@]})
-    binarydeps=($(expac -S -1 %E ${binarydepspkgs[@]}))
-
-    # remove duplicates and installed deps
-    binarydepspkgs=(`for i in "${binarydeps[@]}" ; do [[ ! "${binarydepspkgs[@]}" =~ " $i " ]] && echo "$i" ; done | sort -du`)
-    binarydepspkgs=($(expac -Q -v %n ${binarydepspkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
-    binarydepspkgs=(${binarydepspkgs[@]//\'/}) && binarydepspkgs=(${binarydepspkgs[@]//\`/})
-    repodepsdepspkgs+=(${binarydepspkgs[@]})
-    [[ -n "${binarydepspkgs[@]}" ]] && ShowBinaryDeps ${binarydepspkgs[@]} && return
-
-    # add cower primary binary deps and show provider packages only
-    repodepsdepspkgs+=(${repodepspkgs[@]})
-    repodepsdepspkgs=($(expac -S -1 "%n" ${repodepsdepspkgs[@]} | sort -du))
-    [[ -n "${repodepsdepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepsdepspkgs[@]}
-}
-
-GetAurVersion() {
-    Apkgver=$(grep '^pkgver' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
-    Apkgrel=$(grep '^pkgrel' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
-    Aversion=$Apkgver-$Apkgrel
-}
-
-FindCachedPkg() {
-    cachedpkg="$PKGDEST/$@-${CARCH}${PKGEXT}"
-    [[ ! -f "$cachedpkg" ]] && cachedpkg="$PKGDEST/$@-any${PKGEXT}"
-    [[ ! -f "$cachedpkg" ]] && cachedpkg=""
 }
 
 ConflictChecks() {
@@ -429,6 +417,15 @@ ConflictChecks() {
     fi
 }
 
+ReinstallChecks() {
+    exist=($(expac -Q %n ${deps[@]}))
+    Qversion=($(expac -Q %v ${deps[@]}))
+    for ((i=0; i<${#exist[@]}; i++)); do
+        [[ " ${deps[@]} " =~ " ${exist[$i]} " ]] && GetAurVersion ${exist[$i]} || continue
+        [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
+    done
+}
+
 OutofdateChecks() {
     for i in ${deps[@]}; do
         DownloadJson $i &
@@ -437,15 +434,6 @@ OutofdateChecks() {
     wait
     for i in ${deps[@]}; do
         [[ -n $(grep '"OutOfDate":"1"' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
-    done
-}
-
-ReinstallChecks() {
-    exist=($(expac -Q %n ${deps[@]}))
-    Qversion=($(expac -Q %v ${deps[@]}))
-    for ((i=0; i<${#exist[@]}; i++)); do
-        [[ " ${deps[@]} " =~ " ${exist[$i]} " ]] && GetAurVersion ${exist[$i]} || continue
-        [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
     done
 }
 
@@ -521,6 +509,18 @@ GetIgnoredGrps() {
     ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2-))
 }
 
+GetAurVersion() {
+    Apkgver=$(grep '^pkgver' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    Apkgrel=$(grep '^pkgrel' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    Aversion=$Apkgver-$Apkgrel
+}
+
+FindCachedPkg() {
+    cachedpkg="$PKGDEST/$@-${CARCH}${PKGEXT}"
+    [[ ! -f "$cachedpkg" ]] && cachedpkg="$PKGDEST/$@-any${PKGEXT}"
+    [[ ! -f "$cachedpkg" ]] && cachedpkg=""
+}
+
 DownloadPkgbuild() {
     if [[ ! -f "$tmpDir/$i.PKGBUILD" ]]; then
         curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD"
@@ -530,6 +530,37 @@ DownloadPkgbuild() {
 DownloadJson() {
     if [[ ! -f "$tmpDir/$i.json" ]]; then
         curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json"
+    fi
+}
+
+Core() {
+    # selective upgrade compatibility
+    [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
+    # core functions
+    IgnoreChecks
+    DownloadPkgs ${aurpkgs[@]}
+    [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks ${deps[@]}
+    ReinstallChecks ${deps[@]}
+    OutofdateChecks ${deps[@]}
+    Prompt ${deps[@]}
+    ConflictChecks ${deps[@]}
+    MakePkgs ${deps[@]}
+    CleanUp ${deps[@]}
+}
+
+ClassifyPkgs() {
+    if [[ $fallback = true ]]; then
+        [[ $repo ]] && repopkgs=(${pkgs[@]})
+        [[ $aur ]] && aurpkgs=(${pkgs[@]})
+        if [[ ! $repo && ! $aur ]]; then
+            GetIgnoredGrps
+            for i in ${pkgs[@]}; do
+                [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
+                [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+            done
+        fi
+    else
+        [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
     fi
 }
 
@@ -742,37 +773,6 @@ done
 #
 # Main
 #
-
-Core() {
-    # selective upgrade compatibility
-    [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
-    # core functions
-    IgnoreChecks
-    DownloadPkgs ${aurpkgs[@]}
-    [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks ${deps[@]}
-    ReinstallChecks ${deps[@]}
-    OutofdateChecks ${deps[@]}
-    Prompt ${deps[@]}
-    ConflictChecks ${deps[@]}
-    MakePkgs ${deps[@]}
-    CleanUp ${deps[@]}
-}
-
-ClassifyPkgs() {
-    if [[ $fallback = true ]]; then
-        [[ $repo ]] && repopkgs=(${pkgs[@]})
-        [[ $aur ]] && aurpkgs=(${pkgs[@]})
-        if [[ ! $repo && ! $aur ]]; then
-            GetIgnoredGrps
-            for i in ${pkgs[@]}; do
-                [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
-            done
-        fi
-    else
-        [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
-    fi
-}
 
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in /etc/${name}.conf"
