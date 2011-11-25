@@ -608,12 +608,12 @@ nothingtodo() {
 
 timeout(){
     if [[ -z "$(echo $@ | grep -v 'resolve host name' | grep -v 'no results found for')" ]]; then
-        exit
+        exit 1
     fi
 }
 
 error() {
-    echo -e "${colorR}::${reset} $1" && exit
+    echo -e "${colorR}::${reset} $1" && exit 1
 }
 
 success() {
@@ -763,7 +763,7 @@ while [[ $1 ]]; do
         '-h'|'--help') usage; exit;;
         '-v'|'--version') version; exit;;
         --*) pacopts+=("$1");;
-        -*) echo "$name: invalid option -- '$1'"; exit;;
+        -*) echo "$name: invalid option -- '$1'"; exit 1;;
         *) pkgs+=("$1");;
     esac
     shift
