@@ -296,7 +296,7 @@ MakePkgs() {
                         yes | makepkg -sfi ${makeopts[@]}
                     else
                         # install then remove binary deps
-                        yes | LC_COLLATE=C makepkg -sfr ${makeopts[@]}
+                        yes | makepkg -sfr ${makeopts[@]}
                     fi
                 else
                     error "Could not open ${colorW}$i${reset} PKGBUILD"
