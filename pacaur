@@ -45,7 +45,7 @@ source /etc/${name}.conf
 if $color; then
     pacmanBin='pacman-color'
     cower='cower --color=always'
-    reset=$(tput sgr0)
+    reset="\e[0m"
     colorR="\e[1;31m"
     colorG="\e[1;32m"
     colorY="\e[1;33m"
