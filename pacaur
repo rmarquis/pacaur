@@ -291,7 +291,7 @@ MakePkgs() {
                     info "Building ${colorW}$i${reset} package..."
                     cd $buildDir/$i
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
-                        # install aur deps
+                        # install AUR deps
                         info "Installing ${colorW}$i${reset} dependency..."
                         yes | makepkg -sfi ${makeopts[@]}
                     else
@@ -305,8 +305,8 @@ MakePkgs() {
                 runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
             fi
         done
-        # remove aur deps
-        [[ -n ${aurdepspkgs[@]} ]] && info "Removing installed aur dependencies..."
+        # remove AUR deps
+        [[ -n ${aurdepspkgs[@]} ]] && info "Removing installed AUR dependencies..."
         [[ -n ${aurdepspkgs[@]} ]] && runasroot $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 }
@@ -841,7 +841,7 @@ if [[ $option = sync ]]; then
     fi
     if [[ ${aurpkgs[@]} ]]; then
         [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]}
-        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
         Core ${aurpkgs[@]}
     fi
     exit
@@ -855,7 +855,7 @@ if [[ $option = info ]]; then
         [[ $count -ne 1 ]] && $pacmanBin -Sii ${repopkgs[@]}
     fi
     if [[ -n "${aurpkgs[@]}" ]]; then
-        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}aur${reset}..."
+        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
         InfoAur ${aurpkgs[@]}
     fi
     exit
