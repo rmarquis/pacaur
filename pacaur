@@ -180,12 +180,10 @@ UpgradeAur() {
                     continue
                 else
                     info "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]} ${reset}"
-                    aurdevel=("${aurdevel[@]}" "${allaurpkgs[$i]}")
+                    aurpkgs+=("${allaurpkgs[$i]}")
                 fi
             fi
         done
-
-        [[ -z "${aurpkgs[@]}" ]] && aurpkgs=("${aurdevel[@]}") || aurpkgs=("${aurpkgs[@]}" "${aurdevel[@]}")
     fi
 
     nothingtodo ${aurpkgs[@]}
