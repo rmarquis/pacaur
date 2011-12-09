@@ -95,7 +95,7 @@ DownloadPkgs() {
     if [[ $carchmagic = false ]]; then
         DownloadDepsAur ${aurpkgs[@]}
         # check binary depends pkgs
-        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
         aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
@@ -124,7 +124,7 @@ DownloadPkgs() {
         # download pkgs
         [[ -n "${depspkgs[@]}" ]] && DownloadDepsAur ${depspkgs[@]}
         # check binary depends pkgs
-        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return deps pkgs
         local j=0
