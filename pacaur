@@ -74,17 +74,15 @@ InfoAur() {
 }
 
 DownloadAur() {
-    [[ $force ]] && f="-f"
-    [[ $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -d $f $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     timeout ${deps[@]}
 }
 
 DownloadDepsAur() {
-    [[ $force ]] && f="-f"
-    [[ $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -dd $f $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $operation = download ]] && deps+=($($cower -dd ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower -dd ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
 
     timeout ${deps[@]}
@@ -673,11 +671,11 @@ while [[ $1 ]]; do
         '-s'|'--search') operation=search;;
         '-i'|'--info') operation=info; ((count++));;
         '-d'|'--download') operation=download; ((count++));;
-        '-m'|'--makepkg') operation=makepkg; force=true;;
-        '-y'|'--sync') operation=makepkg; force=true; installpkg=true;;
+        '-m'|'--makepkg') operation=makepkg; coweropts+=("-f");;
+        '-y'|'--sync') operation=makepkg; installpkg=true; coweropts+=("-f");;
         '-k'|'--check') operation=check;;
-        '-u'|'--update') operation=makepkg; upgrade=true; force=true; installpkg=true;;
-        '-f'|'--force') force=true;;
+        '-u'|'--update') operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
+        '-f'|'--force') coweropts+=("-f");;
         '-e'|'--edit') edit=true; editpkg=true;;
         '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
         '-q'|'--quiet') quiet=true;;
@@ -685,32 +683,32 @@ while [[ $1 ]]; do
         '-sq') operation=search; quiet=true;;
         '-ii') operation=info; count=2;;
         '-dd') operation=download; count=2;;
-        '-df') operation=download; ((count++)); force=true;;
+        '-df') operation=download; ((count++)); coweropts+=("-f");;
         '-de') operation=download; ((count++)); edit=true;;
-        '-def'|'-dfe') operation=download; ((count++)); edit=true; force=true;;
-        '-ddf') operation=download; count=2; force=true;;
+        '-def'|'-dfe') operation=download; ((count++)); edit=true; coweropts+=("-f");;
+        '-ddf') operation=download; count=2; coweropts+=("-f");;
         '-dde') operation=download; count=2; edit=true;;
-        '-ddef'|'-ddfe') operation=download; count=2; edit=true; force=true;;
-        '-me') operation=makepkg; edit=true; force=true;;
-        '-ye') operation=makepkg; edit=true; force=true; installpkg=true;;
+        '-ddef'|'-ddfe') operation=download; count=2; edit=true; coweropts+=("-f");;
+        '-me') operation=makepkg; edit=true; coweropts+=("-f");;
+        '-ye') operation=makepkg; edit=true; installpkg=true; coweropts+=("-f");;
         '-kq') operation=check; quiet=true;;
-        '-ue') operation=makepkg; upgrade=true; force=true; edit=true; installpkg=true;;
+        '-ue') operation=makepkg; upgrade=true; edit=true; installpkg=true; coweropts+=("-f");;
         '-cc') clean=true; cleanpkg=true; count=2;;
         # pacman
-        '-S') option=sync; installpkg=true; force=true;;
+        '-S') option=sync; installpkg=true; coweropts+=("-f");;
         '-Ss') option=search;;
         '-Si') option=info; ((count++));;
         '-Sii') option=info; count=2;;
-        '-Sw') option=sync; force=true;;
-        '-Sy') option=sync; installpkg=true; force=true; refresh=true;;
+        '-Sw') option=sync; coweropts+=("-f");;
+        '-Sy') option=sync; installpkg=true; refresh=true; coweropts+=("-f");;
         '-Qu') option=upgrades;;
         '-Sc') option=cleancache; ((count++)); pacmanarg="$1";;
         '-Scc') option=cleancache; count=2; pacmanarg="$1";;
         '-r'|'--repo') repo='1';;
         '-a'|'--aur') aur='1';;
         # pacman shortcuts
-        '-Sa') option=sync; installpkg=true; force=true; aur='1';;
-        '-Sr') option=sync; installpkg=true; force=true; repo='1';;
+        '-Sa') option=sync; installpkg=true; coweropts+=("-f"); aur='1';;
+        '-Sr') option=sync; installpkg=true; coweropts+=("-f"); repo='1';;
         '-Ssa') option=search; aur='1';;
         '-Ssr') option=search; repo='1';;
         '-Ssq') option=search; quiet=true;;
@@ -720,24 +718,24 @@ while [[ $1 ]]; do
         '-Sir') option=info; ((count++)); repo='1';;
         '-Siia') option=info; count=2; aur='1';;
         '-Siir') option=info; count=2; repo='1';;
-        '-Swa') option=sync; force=true; aur='1';;
-        '-Swr') option=sync; force=true; repo='1';;
-        '-Sya') option=sync; installpkg=true; force=true; refresh=true; aur='1';;
-        '-Syr') option=sync; installpkg=true; force=true; refresh=true; repo='1';;
+        '-Swa') option=sync; coweropts+=("-f"); aur='1';;
+        '-Swr') option=sync; coweropts+=("-f"); repo='1';;
+        '-Sya') option=sync; installpkg=true; refresh=true; coweropts+=("-f"); aur='1';;
+        '-Syr') option=sync; installpkg=true; refresh=true; coweropts+=("-f"); repo='1';;
         '-Qua') option=upgrades; aur='1';;
         '-Qur') option=upgrades; repo='1';;
         '-Quq') option=upgrades; quiet=true;;
         '-Quqa') option=upgrades; quiet=true; aur='1';;
         '-Quqr') option=upgrades; quiet=true; repo='1';;
-        -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; force=true; pacmanarg="$1"; aur='1';;
-        -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; force=true; pacmanarg="$1"; repo='1';;
-        -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; force=true; pacmanarg="$1";;
-        -S*u*a) option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1"; aur='1';;
-        -S*u*r) option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1"; repo='1';;
-        -S*u*) option=sysupgrade; upgrade=true; force=true; installpkg=true; pacmanarg="$1";;
-        -Syw|-Swy) option=sync; force=true; refresh=true;;
-        -Sywa|-Swya) option=sync; force=true; refresh=true; aur='1';;
-        -Sywr|-Swyr) option=sync; force=true; refresh=true; repo='1';;
+        -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; pacmanarg="$1"; coweropts+=("-f"); aur='1';;
+        -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; pacmanarg="$1"; coweropts+=("-f"); repo='1';;
+        -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; pacmanarg="$1"; coweropts+=("-f");;
+        -S*u*a) option=sysupgrade; upgrade=true; installpkg=true; pacmanarg="$1"; coweropts+=("-f"); aur='1';;
+        -S*u*r) option=sysupgrade; upgrade=true; installpkg=true; pacmanarg="$1"; coweropts+=("-f"); repo='1';;
+        -S*u*) option=sysupgrade; upgrade=true; installpkg=true; pacmanarg="$1"; coweropts+=("-f");;
+        -Syw|-Swy) option=sync; refresh=true; coweropts+=("-f");;
+        -Sywa|-Swya) option=sync; refresh=true; coweropts+=("-f"); aur='1';;
+        -Sywr|-Swyr) option=sync; refresh=true; coweropts+=("-f"); repo='1';;
         '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1';;
         '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1';;
         '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1';;
