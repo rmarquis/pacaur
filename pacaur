@@ -140,7 +140,7 @@ DownloadPkgs() {
             done
         fi
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
-        # return deps pkgs
+        # return AUR depends pkgs only
         local j=0
         for i in ${depspkgs[@]}; do
             [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
