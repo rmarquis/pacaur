@@ -159,7 +159,8 @@ UpgradeAur() {
     GetIgnoredPkgs
 
     info "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs=($($cower -u ${pkgs[@]} ${ignoreopts[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+
+    aurpkgs+=($($cower -u ${pkgs[@]} ${ignoreopts[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
     # add devel packages
     if [[ $devel ]]; then
@@ -532,9 +533,6 @@ DownloadJson() {
 }
 
 Core() {
-    # selective upgrade compatibility
-    [[ $operation && ! $upgrade ]] && aurpkgs=(${pkgs[@]})
-    # core functions
     IgnoreChecks
     DownloadPkgs ${aurpkgs[@]}
     [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks ${deps[@]}
@@ -804,8 +802,9 @@ fi
 # sync (-y) handling
 # update (-u) handling
 if [[ $operation = makepkg ]]; then
-    [[ $upgrade ]] && UpgradeAur
-    Core ${pkgs[@]}
+    # selective upgrade compatibility
+    [[ $upgrade ]] && UpgradeAur || aurpkgs=(${pkgs[@]})
+    Core ${aurpkgs[@]}
     exit
 fi
 
@@ -861,11 +860,11 @@ fi
 
 # pacman sysupgrade (-Su) handling
 if [[ $option = sysupgrade ]]; then
-    ClassifyPkgs ${pkgs[@]}
-    [[ -n ${aurpkgs[@]} ]] && unset aurpkgs
+    ClassifyPkgs ${pkgs[@]} && unset pkgs
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
     [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${pkgs[@]}
+    [[ ${aurpkgs[@]} ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+    [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
     exit
 fi
 
