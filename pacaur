@@ -861,8 +861,10 @@ fi
 
 # pacman sysupgrade (-Su) handling
 if [[ $option = sysupgrade ]]; then
+    ClassifyPkgs ${pkgs[@]}
+    [[ -n ${aurpkgs[@]} ]] && unset aurpkgs
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
-    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]}
+    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${pkgs[@]}
     exit
 fi
