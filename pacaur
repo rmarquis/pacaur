@@ -97,18 +97,6 @@ DownloadPkgs() {
 
     if [[ $carchmagic = false ]]; then
         DownloadDepsAur ${aurpkgs[@]}
-        # check binary depends pkgs
-        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        if [[ $upgrade && $aur ]]; then
-            checkrepodepspkgs=${repodepspkgs[@]} && unset repodepspkgs
-            for i in ${checkrepodepspkgs[@]}; do
-                [[ " ${aurpkgs[@]} " =~ " $i " ]] && aurpkgs=(${aurpkgs[@]/$i/}) && continue
-                repodepspkgs+=("$i")
-            done
-
-            nothingtodo ${aurpkgs[@]}
-        fi
-        [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
         aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         # check for CARCH 32/64bits bash magic
@@ -144,17 +132,6 @@ DownloadPkgs() {
         # download pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && rm $tmpDir/repodepspkgs
         [[ -n "${depspkgs[@]}" ]] && DownloadDepsAur ${depspkgs[@]}
-        # check binary depends pkgs
-        [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        if [[ $upgrade && $aur ]]; then
-            checkrepodepspkgs=${repodepspkgs[@]} && unset repodepspkgs
-            for i in ${checkrepodepspkgs[@]}; do
-                [[ " ${aurpkgs[@]} " =~ " $i " ]] && aurpkgs=(${aurpkgs[@]/$i/}) && continue
-                repodepspkgs+=("$i")
-            done
-            nothingtodo ${aurpkgs[@]}
-        fi
-        [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
         local j=0
         for i in ${depspkgs[@]}; do
@@ -162,6 +139,19 @@ DownloadPkgs() {
             ((j++))
         done
     fi
+
+    # check binary depends pkgs
+    [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    if [[ $upgrade && $aur ]]; then
+        checkrepodepspkgs=${repodepspkgs[@]} && unset repodepspkgs
+        for i in ${checkrepodepspkgs[@]}; do
+            [[ " ${aurpkgs[@]} " =~ " $i " ]] && aurpkgs=(${aurpkgs[@]/$i/}) && continue
+            repodepspkgs+=("$i")
+        done
+
+        nothingtodo ${aurpkgs[@]}
+    fi
+    [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
 }
 
 ShowBinaryDeps() {
