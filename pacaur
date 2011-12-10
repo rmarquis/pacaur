@@ -111,26 +111,16 @@ DownloadPkgs() {
             . "$buildDir/$i/PKGBUILD"
             sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
         done
-        # remove versioning
-        local j=0
-        for i in ${sourcedpkgs[@]}; do
-            sourcedpkgs[$j]=${i%%=*}
-            sourcedpkgs[$j]=${sourcedpkgs[$j]%%>*}
-            sourcedpkgs[$j]=${sourcedpkgs[$j]%%<*}
-            ((j++))
-        done
         # remove installed deps
-        depspkgs=($(expac -Q -v %n ${sourcedpkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
-        depspkgs=(${depspkgs[@]//\'/}) && depspkgs=(${depspkgs[@]//\`/})
+        depspkgs=$($pacmanBin -T "${sourcedpkgs[@]}")
+        # return AUR depends pkgs only
+        for i in ${depspkgs[@]}; do
+            [[ -n $(expac -S -1 '%n' "$i") ]] && continue
+            aurdepspkgs+=("$i")
+        done
         # download pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && rm $tmpDir/repodepspkgs
         [[ -n "${depspkgs[@]}" ]] && recursive=true && DownloadAur ${depspkgs[@]}
-        # return AUR depends pkgs only
-        local j=0
-        for i in ${depspkgs[@]}; do
-            [[ -z $(expac -S -1 %n $i) ]] && aurdepspkgs[$j]="$i"
-            ((j++))
-        done
     fi
 
     # check binary depends pkgs
