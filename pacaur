@@ -74,17 +74,9 @@ InfoAur() {
 }
 
 DownloadAur() {
-    [[ $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
-
-    nothingtodo ${deps[@]}
-    timeout ${deps[@]}
-}
-
-DownloadDepsAur() {
-    [[ $operation = download ]] && deps+=($($cower -dd ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -dd ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $recursive ]] && d="-dd" || d="-d"
+    [[ $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    [[ ! $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
 
     nothingtodo ${deps[@]}
@@ -96,7 +88,7 @@ DownloadPkgs() {
     source /etc/makepkg.conf
 
     if [[ $carchmagic = false ]]; then
-        DownloadDepsAur ${aurpkgs[@]}
+        recursive=true && DownloadAur ${aurpkgs[@]}
         # return AUR depends pkgs only
         aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
         # check for CARCH 32/64bits bash magic
@@ -131,7 +123,7 @@ DownloadPkgs() {
         depspkgs=(${depspkgs[@]//\'/}) && depspkgs=(${depspkgs[@]//\`/})
         # download pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && rm $tmpDir/repodepspkgs
-        [[ -n "${depspkgs[@]}" ]] && DownloadDepsAur ${depspkgs[@]}
+        [[ -n "${depspkgs[@]}" ]] && recursive=true && DownloadAur ${depspkgs[@]}
         # return AUR depends pkgs only
         local j=0
         for i in ${depspkgs[@]}; do
@@ -809,7 +801,7 @@ fi
 # download (-d) handling
 if [[ $operation = download ]]; then
     [[ $count -eq 1 ]] && DownloadAur ${pkgs[@]}
-    [[ $count -ne 1 ]] && DownloadDepsAur ${pkgs[@]}
+    [[ $count -ne 1 ]] && recursive=true && DownloadAur ${pkgs[@]}
     EditPkgs ${deps[@]}
     exit
 fi
