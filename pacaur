@@ -75,8 +75,10 @@ InfoAur() {
 
 DownloadAur() {
     [[ $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ ! $operation = download ]] && deps+=($($cower -d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
 
+    nothingtodo ${deps[@]}
     timeout ${deps[@]}
 }
 
@@ -85,6 +87,7 @@ DownloadDepsAur() {
     [[ ! $operation = download ]] && deps+=($($cower -dd ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
 
+    nothingtodo ${deps[@]}
     timeout ${deps[@]}
 }
 
@@ -99,9 +102,11 @@ DownloadPkgs() {
         if [[ $upgrade && $aur ]]; then
             checkrepodepspkgs=${repodepspkgs[@]} && unset repodepspkgs
             for i in ${checkrepodepspkgs[@]}; do
-                [[ " ${aurpkgs[@]} " =~ " $i " ]] && echo -e "${colorR}::${reset} no results found for $i" && continue
+                [[ " ${aurpkgs[@]} " =~ " $i " ]] && aurpkgs=(${aurpkgs[@]/$i/}) && continue
                 repodepspkgs+=("$i")
             done
+
+            nothingtodo ${aurpkgs[@]}
         fi
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
@@ -112,6 +117,14 @@ DownloadPkgs() {
         done
     else
         DownloadAur ${aurpkgs[@]}
+        if [[ $upgrade && $aur ]]; then
+            for i in ${aurpkgs[@]}; do
+                [[ " ${deps[@]} " =~ " $i " ]] && continue
+                aurpkgs=(${aurpkgs[@]/$i/})
+            done
+
+            nothingtodo ${aurpkgs[@]}
+        fi
         # source pkgs
         for i in ${aurpkgs[@]}; do
             . "$buildDir/$i/PKGBUILD"
@@ -129,15 +142,17 @@ DownloadPkgs() {
         depspkgs=($(expac -Q -v %n ${sourcedpkgs[@]} 2>&1 | grep 'error:' | awk -F " " '{print $3}'))
         depspkgs=(${depspkgs[@]//\'/}) && depspkgs=(${depspkgs[@]//\`/})
         # download pkgs
+        [[ -e "$tmpDir/repodepspkgs" ]] && rm $tmpDir/repodepspkgs
         [[ -n "${depspkgs[@]}" ]] && DownloadDepsAur ${depspkgs[@]}
         # check binary depends pkgs
         [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
         if [[ $upgrade && $aur ]]; then
             checkrepodepspkgs=${repodepspkgs[@]} && unset repodepspkgs
             for i in ${checkrepodepspkgs[@]}; do
-                [[ " ${aurpkgs[@]} " =~ " $i " ]] && echo -e "${colorR}::${reset} no results found for $i" && continue
+                [[ " ${aurpkgs[@]} " =~ " $i " ]] && aurpkgs=(${aurpkgs[@]/$i/}) && continue
                 repodepspkgs+=("$i")
             done
+            nothingtodo ${aurpkgs[@]}
         fi
         [[ -n "${repodepspkgs[@]}" ]] && ShowBinaryDeps ${repodepspkgs[@]}
         # return AUR depends pkgs only
@@ -200,7 +215,6 @@ UpgradeAur() {
     fi
 
     nothingtodo ${aurpkgs[@]}
-
     timeout ${aurpkgs[@]}
 }
 
@@ -607,16 +621,16 @@ paraexec() {
     done
 }
 
+timeout(){
+    if [[ -z "$(echo $@ | grep -v 'resolve host name' | grep -v 'no results found for')" ]]; then
+        exit 1
+    fi
+}
+
 nothingtodo() {
     if [[ -z "$@" ]]; then
         echo " there is nothing to do"
         exit
-    fi
-}
-
-timeout(){
-    if [[ -z "$(echo $@ | grep -v 'resolve host name' | grep -v 'no results found for')" ]]; then
-        exit 1
     fi
 }
 
