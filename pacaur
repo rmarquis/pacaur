@@ -133,7 +133,7 @@ DownloadPkgs() {
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsdepspkgs=($(pactree -su "${repodepspkgs[@]}"))
         repodeps=($($pacmanBin -T "${repodepsdepspkgs[@]}"))
-        [[ -n "${repodeps[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodeps[@]}" | sort -du
+        [[ -n "${repodeps[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodeps[@]}" | sort -u
     fi
 }
 
