@@ -119,7 +119,6 @@ DownloadPkgs() {
             aurdepspkgs+=("$i")
         done
         # download pkgs
-        [[ -e "$tmpDir/repodepspkgs" ]] && rm $tmpDir/repodepspkgs
         [[ -n "${depspkgs[@]}" ]] && recursive=true && DownloadAur ${depspkgs[@]}
     fi
 
