@@ -112,13 +112,10 @@ DownloadPkgs() {
         done
         # remove installed deps
         depspkgs=($($pacmanBin -T "${sourcedpkgs[@]}"))
-        # return AUR depends pkgs only
-        for i in "${depspkgs[@]}"; do
-            [[ -n $(expac -S -1 %n "$i") ]] && continue
-            aurdepspkgs+=("$i")
-        done
         # download pkgs
         [[ -n "${depspkgs[@]}" ]] && recursive=true && DownloadAur ${depspkgs[@]}
+        # return AUR depends pkgs only
+        aurdepspkgs=(`comm -3 <(echo "${depspkgs[@]}" | sed 's/ /\n/g' | sort -u) <(echo "$(expac -S -1 %n "${depspkgs[@]}")" | sed 's/ /\n/g' | sort -u)`)
     fi
 
     # check binary depends pkgs
