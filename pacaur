@@ -97,16 +97,8 @@ DownloadPkgs() {
         done
     else
         DownloadAur ${aurpkgs[@]}
-        # prevent false positive binary pkgs output with -Sua <pkg>
-        if [[ $upgrade && $aur ]]; then
-            for i in "${aurpkgs[@]}"; do
-                [[ " ${deps[@]} " =~ " $i " ]] && continue
-                aurpkgs=(${aurpkgs[@]/$i/})
-            done
-            nothingtodo ${aurpkgs[@]}
-        fi
         # source pkgs
-        for i in "${aurpkgs[@]}"; do
+        for i in "${deps[@]}"; do
             . "$buildDir/$i/PKGBUILD"
             sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
         done
@@ -120,15 +112,6 @@ DownloadPkgs() {
 
     # check binary depends pkgs
     [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    # prevent false positive binary pkgs output with -Sua <pkg>
-    if [[ $upgrade && $aur ]]; then
-        checkrepodepspkgs=(${repodepspkgs[@]}) && unset repodepspkgs
-        for i in "${checkrepodepspkgs[@]}"; do
-            [[ " ${aurpkgs[@]} " =~ " $i " ]] && aurpkgs=(${aurpkgs[@]/$i/}) && continue
-            repodepspkgs+=("$i")
-        done
-        nothingtodo ${aurpkgs[@]}
-    fi
     # show binary deps
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsdepspkgs=($(pactree -su "${repodepspkgs[@]}"))
