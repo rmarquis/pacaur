@@ -76,8 +76,8 @@ InfoAur() {
 DownloadAur() {
     [[ $recursive ]] && d="-dd" || d="-d"
     [[ $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodepspkgs" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ -e "$tmpDir/repodepspkgs" ]] && grep 'no results found for' "$tmpDir/repodepspkgs"
+    [[ ! $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
 
     nothingtodo ${deps[@]}
     timeout ${deps[@]}
@@ -111,16 +111,16 @@ DownloadPkgs() {
     fi
 
     # check binary depends pkgs
-    [[ -e "$tmpDir/repodepspkgs" ]] && repodepspkgs=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ -e "$tmpDir/repodeps" ]] && repodeps=($(cat "$tmpDir/repodeps" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     # show binary deps
-    if [[ -n "${repodepspkgs[@]}" ]]; then
-        for i in ${repodepspkgs[@]}; do
-            repobinary+=($(pactree -su "$i"))
+    if [[ -n "${repodeps[@]}" ]]; then
+        for i in ${repodeps[@]}; do
+            allrepopkgs+=($(pactree -su "$i"))
         done
-        repodeps=($($pacmanBin -T "${repobinary[@]}"))
+        repodepspkgs=($($pacmanBin -T "${allrepopkgs[@]}"))
         # add versioned binary packages given by cower
-        repodeps+=($(cat "$tmpDir/repodepspkgs" | grep -v 'no results found for' | awk -F " " '{print $6"/"$2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ -n "${repodeps[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodeps[@]}" | sort -u
+        repodepspkgs+=($(cat "$tmpDir/repodeps" | grep -v 'no results found for' | awk -F " " '{print $6"/"$2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        [[ -n "${repodepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}" | sort -u
     fi
 }
 
@@ -437,7 +437,7 @@ IgnoreDepsChecks() {
     deps+=("${aurpkgs[@]}")
 
     # check dependencies
-    for i in "${repodeps[@]}"; do
+    for i in "${repodepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             warn "${colorW}$i${reset}: ignoring package upgrade"
             CleanUp ${aurpkgs[@]} &>/dev/null
