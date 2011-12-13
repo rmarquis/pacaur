@@ -303,8 +303,8 @@ CleanUp() {
 }
 
 CheckAur() {
-    [[ $quiet ]] && $cower -uq --color=never $@
     [[ ! $quiet ]] && $cower -u $@
+    [[ $quiet ]] && $cower -uq --color=never $@
 }
 
 CheckRepo() {
@@ -479,11 +479,11 @@ FindCachedPkg() {
 }
 
 DownloadPkgbuild() {
-    [[ ! -f "$tmpDir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD"
+    [[ ! -f "$tmpDir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD" || error "no results found for $i"
 }
 
 DownloadJson() {
-    [[ ! -f "$tmpDir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json"
+    [[ ! -f "$tmpDir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json" || error "no results found for $i"
 }
 
 Core() {
