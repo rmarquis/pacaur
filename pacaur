@@ -165,16 +165,10 @@ Prompt() {
     echo ""
 
     if [[ ! $noconfirm ]]; then
-        if [[ $installpkg ]]; then
-            if ! proceedY "Proceed with installation?"; then
-                CleanUp ${deps[@]} &>/dev/null
-                exit
-            fi
-        else
-            if ! proceedY "Proceed with download?"; then
-                CleanUp ${deps[@]} &>/dev/null
-                exit
-            fi
+        [[ $installpkg ]] && action="installation" || action="download"
+        if ! proceedY "Proceed with $action?"; then
+            CleanUp ${deps[@]} &>/dev/null
+            exit
         fi
     fi
 
