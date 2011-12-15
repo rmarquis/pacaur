@@ -107,7 +107,7 @@ DownloadPkgs() {
         # download pkgs
         [[ -n "${depspkgs[@]}" ]] && recursive=true && DownloadAur ${depspkgs[@]}
         # return AUR depends pkgs only
-        aurdepspkgs=(`comm -3 <(echo "${depspkgs[@]}" | sed 's/ /\n/g' | sort -u) <(echo "$(expac -S -1 %n "${depspkgs[@]}")" | sed 's/ /\n/g' | sort -u)`)
+        [[ -n "${depspkgs[@]}" ]] && aurdepspkgs=(`comm -3 <(echo "${depspkgs[@]}" | sed 's/ /\n/g' | sort -u) <(echo "$(expac -S -1 %n "${depspkgs[@]}")" | sed 's/ /\n/g' | sort -u)`)
     fi
 
     # check binary depends pkgs
