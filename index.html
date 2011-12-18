@@ -62,16 +62,21 @@ sudo</p>
     
 
     
-      <h2>Install</h2>
+      <h2>Installation</h2>
       <p>AUR packages:
         <ul>
           <li><a href="https://aur.archlinux.org/packages.php?ID=55002">pacaur-legacy</a> (for pacman 3.5.4)</li>
-          <li><a href="https://aur.archlinux.org/packages.php?ID=49145">pacaur</a> (stable)</li>
+          <li><a href="https://aur.archlinux.org/packages.php?ID=49145">pacaur</a> (stable, for pacman 4.x.x)</li>
           <li><a href="https://aur.archlinux.org/packages.php?ID=54046">pacaur-git</a> (development)</li>
         </ul>
       </p>
 
-      <p>Manual installation:
+      <p>Quick install (pacman 3.5.4):
+      <pre>$ curl -o PKGBUILD http://aur.archlinux.org/packages/co/cower-legacy/PKGBUILD && makepkg -si
+$ curl -o PKGBUILD http://aur.archlinux.org/packages/pa/pacaur-legacy/PKGBUILD && makepkg -si </pre>
+      </p>
+
+      <p>Quick install (pacman 4.x.x):
       <pre>$ curl -o PKGBUILD http://aur.archlinux.org/packages/co/cower/PKGBUILD && makepkg -si
 $ curl -o PKGBUILD http://aur.archlinux.org/packages/pa/pacaur/PKGBUILD && makepkg -si </pre>
       </p>
