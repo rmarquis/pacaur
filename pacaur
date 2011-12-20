@@ -104,6 +104,17 @@ DownloadPkgs() {
         done
         # remove installed deps
         depspkgs=($($pacmanBin -T "${sourcedpkgs[@]}"))
+        # remove AUR package versioning
+        if [[ -n $(echo "${depspkgs[@]}" | grep -E '<|>|=') ]]; then
+            depspkgsrepo=($(expac -S -1 -v %n ${depspkgs[@]} 2>"$tmpDir/aurdeps"))
+            depspkgsaur=($(cat "$tmpDir/aurdeps" | grep 'error:' | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}'))
+            unset depspkgs
+            for i in ${depspkgsaur[@]}; do
+                depspkgsaur[$j]=$(echo "$i" | awk -F "<" '{print $1}' | awk -F ">" '{print $1}' | awk -F "=" '{print $1}')
+                ((j++))
+            done
+            depspkgs+=("${depspkgsrepo[@]}") && depspkgs+=("${depspkgsaur[@]}")
+        fi
         # download pkgs
         [[ -n "${depspkgs[@]}" ]] && recursive=true && DownloadAur ${depspkgs[@]}
         # return AUR depends pkgs only
