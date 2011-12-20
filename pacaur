@@ -107,8 +107,9 @@ DownloadPkgs() {
         # remove AUR package versioning
         if [[ -n $(echo "${depspkgs[@]}" | grep -E '<|>|=') ]]; then
             depspkgsrepo=($(expac -S -1 -v %n ${depspkgs[@]} 2>"$tmpDir/aurdeps"))
-            depspkgsaur=($(cat "$tmpDir/aurdeps" | grep 'error:' | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}'))
+            [[ -e "$tmpDir/aurdeps" ]] && depspkgsaur=($(cat "$tmpDir/aurdeps" | grep 'error:' | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}'))
             unset depspkgs
+            j=0
             for i in ${depspkgsaur[@]}; do
                 depspkgsaur[$j]=$(echo "$i" | awk -F "<" '{print $1}' | awk -F ">" '{print $1}' | awk -F "=" '{print $1}')
                 ((j++))
