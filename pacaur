@@ -638,7 +638,7 @@ while [[ $1 ]]; do
         '-y'|'--sync') operation=makepkg; installpkg=true; coweropts+=("-f");;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
-        '-f'|'--force') coweropts+=("-f");;
+        '-f'|'--force') coweropts+=("-f"); pacopts+=("-f");;
         '-e'|'--edit') edit=true; editpkg=true;;
         '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
         '-q'|'--quiet') quiet=true;;
