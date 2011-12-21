@@ -597,7 +597,7 @@ usage() {
     echo "   -u, --update    update AUR package(s)"
     echo ""
     echo "options:"
-    echo "   -f, --force     force operation -- can be combined with the -d flag"
+    echo "   -f, --force     overwrite existing files -- can be combined with the -d flag"
     echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u flags"
     echo "   -q, --quiet     show less information for query and search"
     echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire build directory"
@@ -638,7 +638,8 @@ while [[ $1 ]]; do
         '-y'|'--sync') operation=makepkg; installpkg=true; coweropts+=("-f");;
         '-k'|'--check') operation=check;;
         '-u'|'--update') operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
-        '-f'|'--force') coweropts+=("-f"); pacopts+=("-f");;
+        '-f') coweropts+=("-f");;
+        '--force') coweropts+=("-f"); pacopts+=("--force");;
         '-e'|'--edit') edit=true; editpkg=true;;
         '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
         '-q'|'--quiet') quiet=true;;
