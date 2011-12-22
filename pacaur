@@ -99,6 +99,8 @@ DownloadPkgs() {
         allaurdeps+=("${aurpkgs[@]}")
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
+        # reduce root binary deps
+        repodeps=($(echo "${repodeps[@]}" | sed 's/ /\n/g' | sort -u))
     fi
 
     # return AUR deps pkgs only
