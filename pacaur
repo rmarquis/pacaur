@@ -79,7 +79,6 @@ DownloadAur() {
     [[ ! $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
 
-    nothingtodo ${deps[@]}
     timeout ${deps[@]}
 }
 
