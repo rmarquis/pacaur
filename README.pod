@@ -82,14 +82,14 @@ This behavior can be disabled with the I<fallback> variable in the config file.
 
 =over 4
 
-=item B<-f, --force>
-
-Overwrite existing files when downloading.
-
 =item B<-e, --edit>
 
 Edit I<target> PKGBUILD when downloading or building target. Can also be used
 as a standalone command.
+
+=item B<-f, --force>
+
+Overwrite existing files when downloading.
 
 =item B<-q, --quiet>
 
