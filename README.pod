@@ -157,9 +157,13 @@ Display the help message and quit.
 
 =head1 CONFIG FILE
 
-pacaur honors a system-wide config file at
+pacaur honors a system-wide config file which will be looked for first at
 
-  /etc/pacaur.conf
+  $XDG_CONFIG_DIRS/pacaur/pacaur.conf
+
+and falling back to
+
+  /etc/xdg/pacaur/pacaur.conf
 
 User-defined configuration files overriding the general settings will be looked
 for first at

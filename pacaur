@@ -34,10 +34,10 @@ cleandevel=true                 # cleanup devel after install
 carchmagic=false                # CARCH compatibility
 
 # source config
-configDir="${XDG_CONFIG_HOME:-${HOME}/.config}"
-source /etc/${name}.conf
-[[ -r "$configDir/${name}/config" ]] && source "$configDir/${name}/config"
-
+configDir="${XDG_CONFIG_DIRS:-/etc/xdg/}/${name}"
+userconfigDir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
+source "$configDir/${name}.conf"
+[[ -r "$userconfigDir/config" ]] && source "$userconfigDir/config"
 
 #
 # Color
