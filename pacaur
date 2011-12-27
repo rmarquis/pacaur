@@ -34,8 +34,9 @@ cleandevel=true                 # cleanup devel after install
 carchmagic=false                # CARCH compatibility
 
 # source config
+configDir="${XDG_CONFIG_HOME:-${HOME}/.config}"
 source /etc/${name}.conf
-[[ -r "$HOME/.config/${name}/config" ]] && source "$HOME/.config/${name}/config"
+[[ -r "$configDir/${name}/config" ]] && source "$configDir/${name}/config"
 
 
 #

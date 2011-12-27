@@ -157,13 +157,18 @@ Display the help message and quit.
 
 =head1 CONFIG FILE
 
-pacaur honors a config file which will be looked for first at
+pacaur honors a system-wide config file at
 
-  $HOME/.config/pacaur/config
+  /etc/pacaur.conf
+
+User-defined configuration files overriding the general settings will be looked
+for first at
+
+  $XDG_CONFIG_HOME/pacaur/config
 
 and falling back to
 
-  /etc/pacaur.conf
+  $HOME/.config/pacaur/config
 
 In addition, pacaur fully honors cower config file. See B<cower>(1).
 
