@@ -514,10 +514,10 @@ Core() {
     IgnoreChecks
     DownloadPkgs ${aurpkgs[@]}
     [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks ${deps[@]}
+    ConflictChecks ${deps[@]}
     ReinstallChecks ${deps[@]}
     OutofdateChecks ${deps[@]}
     Prompt ${deps[@]}
-    ConflictChecks ${deps[@]}
     MakePkgs ${deps[@]}
     CleanUp ${deps[@]}
 }
