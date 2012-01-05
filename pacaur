@@ -406,6 +406,8 @@ ConflictChecks() {
             ((k++))
         done
     fi
+
+    nothingtodo ${deps[@]}
 }
 
 ReinstallChecks() {
