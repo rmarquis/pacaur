@@ -211,11 +211,11 @@ Extend pacman commands to the AUR. Default is B<true>.
 
 =item B<editpkgbuild>
 
-Enable editing of PKGBUILD. Default is B<true>.
+Enable editing of PKGBUILD when using pacman extended operations. Default is B<true>.
 
 =item B<editinstall>
 
-Enable editing of install script. Default is B<true>.
+Enable editing of install script when using pacman extended operations. Default is B<true>.
 
 =item B<cleandevel>
 
