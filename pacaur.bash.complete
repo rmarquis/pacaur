@@ -13,7 +13,7 @@ _pacaur()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     # operations that wrap pacman operations are not completed yet: -S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc
-    operations="-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help"
+    operations="-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help --fixbackend"
     options="-f --force -e --edit -q --quiet -c --clean -a --aur -r --repo --devel --ignore --noconfirm --noedit --rebuild --asroot --carch"
 
     # define a function that checks whether the whole line contains one of the words passed to it

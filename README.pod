@@ -151,6 +151,11 @@ When building AUR package(s) as root, allow makepkg to run as root user.
 When I<carchmagic> option is disabled, temporarily enable $CARCH bash magic
 compatibility.
 
+=item B<--fixbackend>
+
+When I<cower> backend breaks following an update, attempt to fix it by quickly
+rebuilding it.
+
 =back
 
 

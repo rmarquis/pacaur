@@ -635,6 +635,14 @@ version() {
     echo "$name $version"
 }
 
+fixbackend() {
+    info "Rebuilding ${colorW}cower${reset} backend..."
+    mkdir -p "$buildDir/cower" && cd "$buildDir/cower"
+    curl -o PKGBUILD http://aur.archlinux.org/packages/cower/PKGBUILD
+    makepkg -sfi ${makeopts[@]} --noconfirm
+    count=1 && CleanUp cower
+}
+
 
 #
 # Main
@@ -682,6 +690,7 @@ while [[ $index -ne 1 ]]; do
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
+                    fixbackend) fixbackend && exit;;
                     version) version && exit;;
                     help) usage && exit;;
                     *) pacopts+=("--$OPTARG");;
