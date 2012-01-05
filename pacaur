@@ -34,6 +34,12 @@ cleandevel=true                 # cleanup devel after install
 carchmagic=false                # CARCH compatibility
 
 # source config
+if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
+    xdg_config=($(echo "${XDG_CONFIG_DIRS}" | awk -F ":" '{for (i=1; i<=NF; i++) print $i}' ))
+    for i in ${xdg_config[@]}; do
+        [[ -d "$i" ]] && export XDG_CONFIG_DIRS=$i && break
+    done
+fi
 configDir="${XDG_CONFIG_DIRS:-/etc/xdg/}/${name}"
 userconfigDir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
 source "$configDir/${name}.conf"
