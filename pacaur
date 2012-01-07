@@ -72,7 +72,7 @@ SearchAur() {
 }
 
 InfoAur() {
-    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
+    $cower ${pacmanarg[@]} $@
 }
 
 DownloadAur() {
@@ -642,114 +642,106 @@ version() {
 # Main
 #
 
-[[ $1 ]] || usage
 pkgs=()
 count=0
-while [[ $1 ]]; do
-    case "$1" in
-        '-s'|'--search') operation=search;;
-        '-i'|'--info') operation=info; ((count++));;
-        '-d'|'--download') operation=download; ((count++));;
-        '-m'|'--makepkg') operation=makepkg; coweropts+=("-f");;
-        '-y'|'--sync') operation=makepkg; installpkg=true; coweropts+=("-f");;
-        '-k'|'--check') operation=check;;
-        '-u'|'--update') operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
-        '-f') coweropts+=("-f");;
-        '--force') coweropts+=("-f"); pacopts+=("--force");;
-        '-e'|'--edit') edit=true; editpkg=true;;
-        '-c'|'--clean') clean=true; cleanpkg=true; ((count++));;
-        '-q'|'--quiet') quiet=true;;
-        # shortcuts
-        '-sq') operation=search; quiet=true;;
-        '-ii') operation=info; count=2;;
-        '-dd') operation=download; count=2;;
-        '-df') operation=download; ((count++)); coweropts+=("-f");;
-        '-de') operation=download; ((count++)); edit=true;;
-        '-def'|'-dfe') operation=download; ((count++)); edit=true; coweropts+=("-f");;
-        '-ddf') operation=download; count=2; coweropts+=("-f");;
-        '-dde') operation=download; count=2; edit=true;;
-        '-ddef'|'-ddfe') operation=download; count=2; edit=true; coweropts+=("-f");;
-        '-me') operation=makepkg; edit=true; coweropts+=("-f");;
-        '-ye') operation=makepkg; edit=true; installpkg=true; coweropts+=("-f");;
-        '-kq') operation=check; quiet=true;;
-        '-ue') operation=makepkg; upgrade=true; edit=true; installpkg=true; coweropts+=("-f");;
-        '-cc') clean=true; cleanpkg=true; count=2;;
-        # pacman
-        '-S') option=sync; installpkg=true; coweropts+=("-f");;
-        '-Ss') option=search;;
-        '-Si') option=info; ((count++));;
-        '-Sii') option=info; count=2;;
-        '-Sw') option=sync; coweropts+=("-f");;
-        '-Sy') option=sync; installpkg=true; refresh=true; coweropts+=("-f");;
-        '-Qu') option=upgrades;;
-        '-Sc') option=cleancache; ((count++)); pacmanarg="$1";;
-        '-Scc') option=cleancache; count=2; pacmanarg="$1";;
-        '-r'|'--repo') repo='1';;
-        '-a'|'--aur') aur='1';;
-        # pacman shortcuts
-        '-Sa') option=sync; installpkg=true; coweropts+=("-f"); aur='1';;
-        '-Sr') option=sync; installpkg=true; coweropts+=("-f"); repo='1';;
-        '-Ssa') option=search; aur='1';;
-        '-Ssr') option=search; repo='1';;
-        '-Ssq') option=search; quiet=true;;
-        '-Ssqa'|'-Ssaq') option=search; quiet=true; aur='1';;
-        '-Ssqr'|'-Ssrq') option=search; quiet=true; repo='1';;
-        '-Sia') option=info; ((count++)); aur='1';;
-        '-Sir') option=info; ((count++)); repo='1';;
-        '-Siia') option=info; count=2; aur='1';;
-        '-Siir') option=info; count=2; repo='1';;
-        '-Swa') option=sync; coweropts+=("-f"); aur='1';;
-        '-Swr') option=sync; coweropts+=("-f"); repo='1';;
-        '-Sya') option=sync; installpkg=true; refresh=true; coweropts+=("-f"); aur='1';;
-        '-Syr') option=sync; installpkg=true; refresh=true; coweropts+=("-f"); repo='1';;
-        '-Qua') option=upgrades; aur='1';;
-        '-Qur') option=upgrades; repo='1';;
-        '-Quq') option=upgrades; quiet=true;;
-        '-Quqa') option=upgrades; quiet=true; aur='1';;
-        '-Quqr') option=upgrades; quiet=true; repo='1';;
-        -S*u*w*a|-S*w*u*a) option=sysupgrade; upgrade=true; pacmanarg="$1"; coweropts+=("-f"); aur='1';;
-        -S*u*w*r|-S*w*u*r) option=sysupgrade; upgrade=true; pacmanarg="$1"; coweropts+=("-f"); repo='1';;
-        -S*u*w*|-S*w*u*) option=sysupgrade; upgrade=true; pacmanarg="$1"; coweropts+=("-f");;
-        -S*u*a) option=sysupgrade; upgrade=true; installpkg=true; pacmanarg="$1"; coweropts+=("-f"); aur='1';;
-        -S*u*r) option=sysupgrade; upgrade=true; installpkg=true; pacmanarg="$1"; coweropts+=("-f"); repo='1';;
-        -S*u*) option=sysupgrade; upgrade=true; installpkg=true; pacmanarg="$1"; coweropts+=("-f");;
-        -Syw|-Swy) option=sync; refresh=true; coweropts+=("-f");;
-        -Sywa|-Swya) option=sync; refresh=true; coweropts+=("-f"); aur='1';;
-        -Sywr|-Swyr) option=sync; refresh=true; coweropts+=("-f"); repo='1';;
-        '-Sca') option=cleancache; ((count++)); pacmanarg="$1"; aur='1';;
-        '-Scr') option=cleancache; ((count++)); pacmanarg="$1"; repo='1';;
-        '-Scca') option=cleancache; count=2; pacmanarg="$1"; aur='1';;
-        '-Sccr') option=cleancache; count=2; pacmanarg="$1"; repo='1';;
-        # others
-        '--devel') devel=true;;
-        '--asroot') makeopts+=("--asroot");;
-        '--carch') carchmagic=true;;
-        '--ignore') ignoredpkgs+=("$2"); ignoreopts+=("--ignore" "$2"); shift;;
-        '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
-        '--noedit') noedit=true;;
-        '--rebuild') rebuild=true;;
-        -D* | '--database') sudo $pacmanBin $@; exit;;
-        -Q* | '--query') $pacmanBin $@; exit;;
-        -R* | '--remove') sudo $pacmanBin $@; exit;;
-        -S* | '--sync') sudo $pacmanBin $@; exit;;
-        -T* | '--deptest') sudo $pacmanBin $@; exit;;
-        -U* | '--upgrade') sudo $pacmanBin $@; exit;;
-        '-h'|'--help') usage; exit;;
-        '-v'|'--version') version; exit;;
-        --*) pacopts+=("$1");;
-        -*) echo "$name: invalid option -- '$1'"; exit 1;;
-        *) pkgs+=("$1");;
-    esac
-    shift
+index=0
+
+args=("$@")
+for i in "${args[@]}"; do
+    [[ "$i" =~ ^-[a-zA-Z0-9] ]] && opts+=("$i")
 done
+
+while [[ $index -ne 1 ]]; do
+
+    while getopts "sidmykufecqrahvVDQRSTUbglnoptw-:" OPT; do
+        pacmanarg+=("-$OPT");
+
+        case "$OPT" in
+            -)
+                case "$OPTARG" in
+                    # pacaur
+                    search) operation=search;;
+                    info) operation=info;;
+                    download) operation=download; ((count++));;
+                    makepkg) operation=makepkg; coweropts+=("-f");;
+                    sync) operation=makepkg; installpkg=true; coweropts+=("-f");;
+                    check) operation=check;;
+                    update) operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
+                    force) coweropts+=("-f"); pacopts+=("--force");;
+                    edit) edit=true; editpkg=true;;
+                    clean) clean=true; cleanpkg=true; ((count++));;
+                    quiet) quiet=true; pacopts+=("--quiet");;
+                    # pacman
+                    repo) repo='1';;
+                    aur) aur='1';;
+                    # others
+                    devel) devel=true;;
+                    asroot) makeopts+=("--asroot");;
+                    carch) carchmagic=true;;
+                    ignore) ignoredpkgs+=("${args[$OPTIND]}"); ignoreopts+=("--ignore" "${args[$OPTIND]}"); shift `expr $OPTIND - 1`;;
+                    noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
+                    noedit) noedit=true;;
+                    rebuild) rebuild=true;;
+                    version) version && exit;;
+                    help) usage && exit;;
+                    *) pacopts+=("--$OPTARG");;
+                esac
+                ;;
+            # pacaur
+            s)  [[ $pacS ]] && option=search;
+                [[ ! $pacQ && ! $pacS ]] && operation=search;;
+            i)  [[ $pacS ]] && option=info;
+                [[ ! $pacQ && ! $pacS ]] && operation=info;;
+            d)  [[ ! $pacQ && ! $pacS ]] && operation=download && ((count++)) || continue;;
+            m)  [[ ! $pacQ && ! $pacS ]] && operation=makepkg && coweropts+=("-f") || continue;;
+            y)  [[ $pacS ]] && option=sync && refresh=true && coweropts+=("-f");
+                [[ ! $pacQ && ! $pacS ]] && operation=makepkg && installpkg=true && coweropts+=("-f");;
+            k)  [[ $pacQ || $pacS ]] && continue || operation=check;;
+            u)  [[ $pacQ ]] && option=upgrades;
+                [[ $pacS ]] && option=sysupgrade && upgrade=true && coweropts+=("-f");
+                [[ ! $pacQ && ! $pacS ]] && operation=makepkg && upgrade=true && installpkg=true && coweropts+=("-f");;
+            f)  [[ ! $pacQ && ! $pacS ]] && coweropts+=("-f") || continue;;
+            e)  [[ ! $pacQ ]] && edit=true && editpkg=true;;
+            c)  [[ $pacS ]] && option=cleancache && ((count++));
+                [[ ! $pacQ && ! $pacS ]] &&  clean=true && cleanpkg=true && ((count++));;
+            q)  [[ ! $pacQ && ! $pacS ]] && quiet=true || pacopts+=("--quiet");;
+            # pacman
+            r)  repo='1';;
+            a)  aur='1';;
+            Q)  pacQ='1';;
+            S)  pacS='1'; option=sync; coweropts+=("-f");
+                [[ " ${opts[@]} " =~ "w" ]] && continue || installpkg=true;;
+            # others
+            h)  [[ "$@" =~ ^-[A-Z] ]] && continue || usage && exit;;
+            v)  [[ "$@" =~ ^-[A-Z] ]] && continue || version && exit;;
+            *)  continue;;
+        esac
+    done
+
+    # packages
+    shift
+    pkgs+=("$1")
+
+    index=$OPTIND
+done
+
+# filters
+checkpkgs=("${pkgs[@]}") && unset pkgs
+for i in "${checkpkgs[@]}"; do
+    [[ -z "$i" || "$i" =~ ^--[a-zA-Z0-9] ]] && continue || pkgs+=("$i")
+done
+[[ -n "$(echo "${pacmanarg[@]}" | grep -e "--")" ]] && pacmanarg=(${pacmanarg[@]/--/})
+[[ -n "$(echo "${pacmanarg[@]}" | grep -e "-r")" ]] && pacmanarg=(${pacmanarg[@]/-r/})
+[[ -n "$(echo "${pacmanarg[@]}" | grep -e "-e")" ]] && pacmanarg=(${pacmanarg[@]/-e/})
+[[ $option && $operation ]] && unset operation
+[[ $option || $operation ]] && [[ $editpkg || $cleanpkg ]] && unset editpkg cleanpkg
+[[ $upgrade = true ]] && [[ $option = sync ]] && option=sysupgrade
+[[ $repo && $aur ]] && error "target not found"
 
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in $configDir/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
-[[ ! $operation && ! $option && ! $cleanpkg && ! $editpkg ]] && error "no operation specified (use -h for help)"
-[[ $option = sync || $option = info || $option = search ]] && [[ ! $refresh ]] && [[ ! $pkgs ]] && error "no targets specified (use -h for help)"
-[[ $repo && $aur ]] && error "target not found"
 
 # search (-s) handling
 if [[ $operation = search ]]; then
@@ -765,8 +757,8 @@ fi
 
 # download (-d) handling
 if [[ $operation = download ]]; then
-    [[ $count -eq 1 ]] && DownloadAur ${pkgs[@]}
-    [[ $count -ne 1 ]] && recursive=true && DownloadAur ${pkgs[@]}
+    [[ $count -ne 1 ]] && recursive=true
+    DownloadAur ${pkgs[@]}
     EditPkgs ${deps[@]}
     exit
 fi
@@ -787,18 +779,16 @@ fi
 
 # pacman search (-Ss) handling
 if [[ $option = search ]]; then
-    [[ ! $aur ]] && [[ ! $quiet ]] && $pacmanBin -Ss ${pkgs[@]}
-    [[ ! $aur ]] && [[ $quiet ]] && $pacmanBin -Ssq ${pkgs[@]}
+    [[ ! $aur ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
     exit
 fi
 
 # pacman info (-Si) handling
 if [[ $option = info ]]; then
-    ClassifyPkgs ${pkgs[@]}
+    [[ ! ${pkgs[@]} ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
-        [[ $count -eq 1 ]] && $pacmanBin -Si ${repopkgs[@]}
-        [[ $count -ne 1 ]] && $pacmanBin -Sii ${repopkgs[@]}
+        $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     fi
     if [[ -n "${aurpkgs[@]}" ]]; then
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
@@ -809,10 +799,9 @@ fi
 
 # pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
 if [[ $option = sync ]]; then
-    [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
-    [[ ! ${pkgs[@]} ]] && sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+    [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
-        sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+        sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     fi
     if [[ -n "${aurpkgs[@]}" ]]; then
         [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
@@ -824,9 +813,9 @@ fi
 
 # pacman sysupgrade (-Su) handling
 if [[ $option = sysupgrade ]]; then
-    [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
+    # no selective upgrade here
     ClassifyPkgs ${pkgs[@]} && unset pkgs
-    [[ ! $aur ]] && sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+    [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
     exit
@@ -841,8 +830,7 @@ fi
 
 # pacman clean (-Sc) handling
 if [[ $option = cleancache ]]; then
-    [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
-    [[ ! $aur ]] && sudo $pacmanBin $pacmanarg
+    [[ ! $aur ]] && runasroot $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
     exit
 fi
@@ -859,4 +847,8 @@ if [[ $cleanpkg ]]; then
     exit
 fi
 
+if [[ ! $option && ! $operation ]]; then
+    $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+    exit
+fi
 # vim:set ts=4 sw=2 et:
