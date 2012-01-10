@@ -71,13 +71,11 @@ fi
 #
 
 SearchAur() {
-    [[ ! $quiet ]] && $cower -s $@
-    [[ $quiet ]] && $cower -sq --color=never $@
+    [[ $quiet ]] && $cower -sq --color=never $@ || $cower -s $@
 }
 
 InfoAur() {
-    [[ $count -eq 1 ]] && $cower -i $@
-    [[ $count -ne 1 ]] && $cower -ii $@
+    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
 }
 
 DownloadAur() {
@@ -333,8 +331,7 @@ CleanUp() {
 }
 
 CheckAur() {
-    [[ ! $quiet ]] && $cower -u $@
-    [[ $quiet ]] && $cower -uq --color=never $@
+    [[ $quiet ]] && $cower -uq --color=never $@ || $cower -u $@
 }
 
 CheckRepo() {
