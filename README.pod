@@ -211,18 +211,18 @@ Extend pacman commands to the AUR. Default is B<true>.
 
 =item B<editpkgbuild>
 
-Enable PKGBUILD editing when using pacman extended operations.
+When using pacman extended operations, enable PKGBUILD editing.
 Default is B<true>.
 
 =item B<editinstall>
 
-Enable install script editing when using pacman extended operations.
+When using pacman extended operations, enable install script editing.
 Default is B<true>.
 
 =item B<cleandevel>
 
-Clean build directory of development packages when clean config option is
-enabled. Default is B<true>.
+When clean config option is enabled, clean build directory of development
+packages. Default is B<true>.
 
 =item B<carchmagic>
 
