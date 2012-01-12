@@ -332,6 +332,8 @@ CleanUp() {
 
 CheckAur() {
     [[ $quiet ]] && $cower -uq --color=never $@ || $cower -u $@
+    # override unconventional  cower exit codes (0 = no update, 1 = updates available)
+    [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' ${pkgs[@]} &>/dev/null
 }
 
 CheckRepo() {
