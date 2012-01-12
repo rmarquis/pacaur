@@ -72,8 +72,21 @@ will be updated.
 Additionally, pacaur wraps B<pacman operations> and extends respectively its
 install, search, info, download, update, check updates and clean functions to
 the AUR.
-Pacaur will also pass any pacman related options to the pacman binary specifed.
-This behavior can be disabled with the I<fallback> variable in the config file. 
+Pacaur will also pass any pacman related options to the pacman binary. This
+behavior can be disabled with the I<fallback> variable in the config file.
+
+=item B<-c, --clean>
+
+Remove I<target> build directory. Pass this option twice to clean the entire
+build directory.
+
+=item B<-v, --version>
+
+Display version and exit.
+
+=item B<-h, --help>
+
+Display the help message and quit.
 
 =back
 
@@ -95,11 +108,6 @@ Overwrite existing files when downloading.
 
 Show less information for search and query operations. Search will only show
 package names and not version, group, and description information.
-
-=item B<-c, --clean>
-
-Remove I<target> build directory. Pass this option twice to clean the entire
-build directory.
 
 =item B<-a, --aur>
 
@@ -142,15 +150,6 @@ When building AUR package(s) as root, allow makepkg to run as root user.
 
 When I<carchmagic> option is disabled, temporarily enable $CARCH bash magic
 compatibility.
-
-=item B<-v, --version>
-
-Display version and exit.
-
-=item B<-h, --help>
-
-Display the help message and quit.
-
 
 =back
 
