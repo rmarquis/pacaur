@@ -40,7 +40,7 @@ if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
         [[ -d "$i" ]] && export XDG_CONFIG_DIRS=$i && break
     done
 fi
-configDir="${XDG_CONFIG_DIRS:-/etc/xdg/}/${name}"
+configDir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
 userconfigDir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
 source "$configDir/${name}.conf"
 [[ -r "$userconfigDir/config" ]] && source "$userconfigDir/config"
@@ -95,7 +95,7 @@ DownloadPkgs() {
         recursive=true && DownloadAur ${aurpkgs[@]}
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
-            [[ -n $(grep 'CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in /etc/${name}.conf or use --carch option."
+            [[ -n $(grep 'CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in $configDir/${name}.conf or use --carch option."
         done
         # check binary depends pkgs
         [[ -e "$tmpDir/repodeps" ]] && repodeps=($(cat "$tmpDir/repodeps" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
@@ -754,9 +754,9 @@ done
 #
 
 # sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in /etc/${name}.conf"
-[[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in /etc/${name}.conf"
-[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in /etc/${name}.conf"
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
+[[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in $configDir/${name}.conf"
+[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
 [[ ! $operation && ! $option && ! $cleanpkg && ! $editpkg ]] && error "no operation specified (use -h for help)"
 [[ $option = sync || $option = info || $option = search ]] && [[ ! $refresh ]] && [[ ! $pkgs ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
