@@ -549,7 +549,11 @@ runasroot() {
     if [[ ! $@ ]]; then
         [[ $UID -ne 0 ]] && sudo -v
     else
-        [[ $UID -eq 0 ]] && "$@" || sudo "$@"
+        if [[ $UID -eq 0 ]]; then
+            "$@"
+        else
+            sudo "$@"
+        fi
     fi
 }
 
