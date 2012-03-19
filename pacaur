@@ -269,6 +269,9 @@ MakePkgs() {
             [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
         done
     else
+        # check destination folder
+        [[ ! $PKGDEST ]] && [[ $clean = true ]] && error "Please set ${colorW}PKGDEST${reset} variable in /etc/makepkg.conf or disable ${colorW}clean${reset} option."
+
         for i in "${deps[@]}"; do
             # check package cache
             [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
