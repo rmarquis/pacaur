@@ -549,15 +549,7 @@ ClassifyPkgs() {
 }
 
 runasroot() {
-    if [[ ! $@ ]]; then
-        [[ $UID -ne 0 ]] && sudo -v
-    else
-        if [[ $UID -eq 0 ]]; then
-            "$@"
-        else
-            sudo "$@"
-        fi
-    fi
+    [[ ! $@ ]] && sudo -v || sudo "$@"
 }
 
 proceedY() {
