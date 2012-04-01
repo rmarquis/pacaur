@@ -809,15 +809,10 @@ fi
 
 # pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
 if [[ $option = sync ]]; then
-    [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+    [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
+    [[ ! ${pkgs[@]} ]] && sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
-        if [[ $refresh ]]; then
-            [[ $installpkg ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ ! $installpkg ]] && sudo $pacmanBin -Syw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        else
-            [[ $installpkg ]] && sudo $pacmanBin -S ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ ! $installpkg ]] && sudo $pacmanBin -Sw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        fi
+        sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     fi
     if [[ -n "${aurpkgs[@]}" ]]; then
         [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
@@ -829,8 +824,8 @@ fi
 
 # pacman sysupgrade (-Su) handling
 if [[ $option = sysupgrade ]]; then
-    ClassifyPkgs ${pkgs[@]} && unset pkgs
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
+    ClassifyPkgs ${pkgs[@]} && unset pkgs
     [[ ! $aur ]] && sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
