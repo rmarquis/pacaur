@@ -808,18 +808,18 @@ fi
 # pacman downloadonly (-Sw) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sync ]]; then
-    [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && runasroot $pacmanBin -Sy ${pacopts[@]} || ClassifyPkgs ${pkgs[@]}
+    [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
         if [[ $refresh ]]; then
-            [[ $installpkg ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${repopkgs[@]}
-            [[ ! $installpkg ]] && runasroot $pacmanBin -Syw ${pacopts[@]} ${repopkgs[@]}
+            [[ $installpkg ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $installpkg ]] && runasroot $pacmanBin -Syw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         else
-            [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${repopkgs[@]}
-            [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${repopkgs[@]}
+            [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         fi
     fi
     if [[ -n "${aurpkgs[@]}" ]]; then
-        [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]}
+        [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
         Core ${aurpkgs[@]}
     fi
