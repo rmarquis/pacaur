@@ -7,12 +7,12 @@ _pacaur()
     # nullglob avoids problems when no results are found (copied from cower's autocomplete)
     [[ -o nullglob ]] || { shopt -s nullglob; ng=1; }
 
-    ##define variables
+    # define variables
     local cur prev operations options
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    # I only use pacaur to handle the AUR, operations that wrap pacman operations are not completed: -S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc
+    # operations that wrap pacman operations are not completed yet: -S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc
     operations="-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help"
     options="-f --force -e --edit -q --quiet -c --clean -a --aur -r --repo --devel --ignore --noconfirm --noedit --rebuild --asroot --carch"
 
@@ -22,28 +22,29 @@ _pacaur()
     ## completion of operations and options
     # complete operations when only 'pacaur -' is given
     if [[ "${prev}" == "pacaur" ]]; then
-        COMPREPLY=( $(compgen -W "${operations}" -- "${cur}") )
-    # complete options after '-' when an operations is already given
+        COMPREPLY=( $(compgen -W "${operations}" -- $cur) )
+    # complete options after '-' when an operation is already given
     elif [[ "${cur}" == -* ]] && searchfor "${operations}" ; then
-       COMPREPLY=( $(compgen -W "${options}" -- "${cur}") )
+        COMPREPLY=( $(compgen -W "${options}" -- $cur) )
 
     ## completion of package names
-    # there is no package name completing for -i --info -v --version
+    # there is no package name completing for -h --help, -v --version
     # complete with all packages installed on the system, just after --ignore
     elif [[ "${prev}" = --ignore ]]; then
-        COMPREPLY=( $(compgen -W "$(pacman -Qq)" -- "${cur}") )
+        COMPREPLY=( $(compgen -W "$(pacman -Qq)" -- $cur) )
     # complete with all locally installed packages, after -k --check -u --update
     elif searchfor "-k --check -u --update"; then
         COMPREPLY=( $(compgen -W "$(pacman -Qqm)" -- $cur) )
-    # complete with all available aur packages, after -s --search  -i --info -d --download -m --makepkg -y --sync
+    # complete with all available AUR packages, after -s --search  -i --info -d --download -m --makepkg -y --sync
+    # anything shorter than 2 characters can't be autocompleted due to the AUR's search minimum
     elif searchfor "-s --search  -i --info -d --download -m --makepkg -y --sync"; then
         COMPREPLY=( $(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur) )
-        # anything shorter than 2 characters can't be autocompleted due to the AUR's search minimum
     fi
 
-    # restore nullglob setting (copied from cower's autocomplete)
+    # restore nullglob setting
     [[ $ng ]] && shopt -u nullglob
 }
+
 complete -F _pacaur pacaur
 
 # vim:set ts=4 sw=2 et:
