@@ -31,7 +31,7 @@ fallback=true                   # pacman fallback
 editpkgbuild=true               # edit PKGBUILD
 editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
-carchmagic=false                # CARCH compatibility
+carchmagic=true                 # CARCH compatibility
 
 # source config
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then

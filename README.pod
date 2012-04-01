@@ -233,7 +233,7 @@ packages. Default is B<true>.
 Enable compatibility with I<$CARCH> bash magic. When enabled, use a full bash
 dependency solver instead of cower's internal solver to ensure compatibility
 with architecture-independent PKGBUILDs using the $CARCH makepkg variable, at
-the cost of a slight dependency solving speed only. Default is B<false>.
+the cost of a slight dependency solving speed only. Default is B<true>.
 
 =back
 
