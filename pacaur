@@ -237,7 +237,7 @@ EditPkgs() {
 
 MakePkgs() {
     # initialize sudo
-    runasroot
+    sudo -v
 
     # reverse deps order
     deps=($(echo "${deps[@]}" | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
@@ -252,7 +252,7 @@ MakePkgs() {
             [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
             if [[ $cachedpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
-                yes | runasroot $pacmanBin -U $cachedpkg ${pacopts[@]}
+                yes | sudo $pacmanBin -U $cachedpkg ${pacopts[@]}
             else
                 # build and install
                 if [[ -e "$buildDir/$i/PKGBUILD" ]]; then
@@ -264,9 +264,9 @@ MakePkgs() {
                 fi
             fi
             # set dep status
-            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && runasroot $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
         done
     else
         # check destination folder
@@ -294,12 +294,12 @@ MakePkgs() {
                     error "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
                 # set dep status
-                runasroot $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+                sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
             fi
         done
         # remove AUR deps
         [[ -n "${aurdepspkgs[@]}" ]] && info "Removing installed AUR dependencies..."
-        [[ -n "${aurdepspkgs[@]}" ]] && runasroot $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
+        [[ -n "${aurdepspkgs[@]}" ]] && sudo $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 }
 
@@ -548,10 +548,6 @@ ClassifyPkgs() {
     fi
 }
 
-runasroot() {
-    [[ ! $@ ]] && sudo -v || sudo "$@"
-}
-
 proceedY() {
     echo -ne "$* [Y/n] "
     read -n 1 yn
@@ -732,12 +728,12 @@ while [[ $1 ]]; do
         '--noconfirm') noconfirm=true; pacopts+=("--noconfirm");;
         '--noedit') noedit=true;;
         '--rebuild') rebuild=true;;
-        -D* | '--database') runasroot $pacmanBin $@; exit;;
+        -D* | '--database') sudo $pacmanBin $@; exit;;
         -Q* | '--query') $pacmanBin $@; exit;;
-        -R* | '--remove') runasroot $pacmanBin $@; exit;;
-        -S* | '--sync') runasroot $pacmanBin $@; exit;;
-        -T* | '--deptest') runasroot $pacmanBin $@; exit;;
-        -U* | '--upgrade') runasroot $pacmanBin $@; exit;;
+        -R* | '--remove') sudo $pacmanBin $@; exit;;
+        -S* | '--sync') sudo $pacmanBin $@; exit;;
+        -T* | '--deptest') sudo $pacmanBin $@; exit;;
+        -U* | '--upgrade') sudo $pacmanBin $@; exit;;
         '-h'|'--help') usage; exit;;
         '-v'|'--version') version; exit;;
         --*) pacopts+=("$1");;
@@ -808,18 +804,18 @@ fi
 # pacman downloadonly (-Sw) handling
 # pacman refresh (-Sy) handling
 if [[ $option = sync ]]; then
-    [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+    [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
         if [[ $refresh ]]; then
-            [[ $installpkg ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ ! $installpkg ]] && runasroot $pacmanBin -Syw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ $installpkg ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $installpkg ]] && sudo $pacmanBin -Syw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         else
-            [[ $installpkg ]] && runasroot $pacmanBin -S ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ ! $installpkg ]] && runasroot $pacmanBin -Sw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ $installpkg ]] && sudo $pacmanBin -S ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $installpkg ]] && sudo $pacmanBin -Sw ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         fi
     fi
     if [[ -n "${aurpkgs[@]}" ]]; then
-        [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && runasroot $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
+        [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
         Core ${aurpkgs[@]}
     fi
@@ -844,7 +840,7 @@ fi
 if [[ $option = sysupgrade ]]; then
     ClassifyPkgs ${pkgs[@]} && unset pkgs
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
-    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+    [[ ! $aur ]] && sudo $pacmanBin $pacmanarg ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
     [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
     exit
@@ -860,7 +856,7 @@ fi
 # pacman clean (-Sc) handling
 if [[ $option = cleancache ]]; then
     [[ -z "$(echo $pacmanarg | grep -v "r$")" ]] && pacmanarg=${pacmanarg%?}
-    [[ ! $aur ]] && runasroot $pacmanBin $pacmanarg
+    [[ ! $aur ]] && sudo $pacmanBin $pacmanarg
     [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
     exit
 fi
