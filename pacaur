@@ -43,10 +43,7 @@ userconfigDir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
 source "$configDir/${name}.conf"
 [[ -r "$userconfigDir/config" ]] && source "$userconfigDir/config"
 
-#
-# Color
-#
-
+# color
 if $color; then
     pacmanBin='pacman-color'
     cower='cower --color=always'
@@ -122,13 +119,16 @@ FindPkgsDeps() {
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=(${aurpkgs[@]})
 
     DownloadAur ${depspkgsaur[@]}
+
     # source pkgs
     for i in "${deps[@]}"; do
         . "$buildDir/$i/PKGBUILD"
         sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
     done
+
     # remove installed deps
     depspkgs=($($pacmanBin -T "${sourcedpkgs[@]}"))
+
     # split binary and AUR depends pkgs
     [[ -e "$tmpDir/aurdeps" ]] && rm "$tmpDir/aurdeps"
     [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v %n ${depspkgs[@]} 2>"$tmpDir/aurdeps")) && repodeps+=(${depspkgsrepo[@]})
@@ -306,7 +306,7 @@ CleanUp() {
         if [[ $count -eq 1 ]]; then
             cd "$buildDir"
             for i in "$@"; do
-                # hack for cvs protected files
+                # hack for vcs protected files
                 chmod -R 755 $i &>/dev/null
                 rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
             done
@@ -318,12 +318,12 @@ CleanUp() {
                     unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
                     . "$i/PKGBUILD"
                     [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
-                    # hack for cvs protected files
+                    # hack for vcs protected files
                     chmod -R 755 $i &>/dev/null
                     rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
                 done
             else
-                # hack for cvs protected files
+                # hack for vcs protected files
                 chmod -R 755 $buildDir/* &>/dev/null
                 rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
             fi
@@ -644,7 +644,7 @@ version() {
 
 
 #
-# Argument parsing
+# Main
 #
 
 [[ $1 ]] || usage
@@ -748,11 +748,6 @@ while [[ $1 ]]; do
     shift
 done
 
-
-#
-# Main
-#
-
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in $configDir/${name}.conf"
@@ -784,9 +779,7 @@ if [[ $operation = download ]]; then
     exit
 fi
 
-# makepkg (-m) handling
-# sync (-y) handling
-# update (-u) handling
+# makepkg (-m), sync (-y), update (-u) handling
 if [[ $operation = makepkg ]]; then
     # selective upgrade compatibility
     [[ $upgrade ]] && UpgradeAur || aurpkgs=(${pkgs[@]})
@@ -808,9 +801,21 @@ if [[ $option = search ]]; then
     exit
 fi
 
-# pacman sync (-S) handling
-# pacman downloadonly (-Sw) handling
-# pacman refresh (-Sy) handling
+# pacman info (-Si) handling
+if [[ $option = info ]]; then
+    ClassifyPkgs ${pkgs[@]}
+    if [[ -n "${repopkgs[@]}" ]]; then
+        [[ $count -eq 1 ]] && $pacmanBin -Si ${repopkgs[@]}
+        [[ $count -ne 1 ]] && $pacmanBin -Sii ${repopkgs[@]}
+    fi
+    if [[ -n "${aurpkgs[@]}" ]]; then
+        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+        InfoAur ${aurpkgs[@]}
+    fi
+    exit
+fi
+
+# pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
 if [[ $option = sync ]]; then
     [[ ! ${pkgs[@]} ]] && [[ $refresh ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
     if [[ -n "${repopkgs[@]}" ]]; then
@@ -826,20 +831,6 @@ if [[ $option = sync ]]; then
         [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
         [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
         Core ${aurpkgs[@]}
-    fi
-    exit
-fi
-
-# pacman info (-Si) handling
-if [[ $option = info ]]; then
-    ClassifyPkgs ${pkgs[@]}
-    if [[ -n "${repopkgs[@]}" ]]; then
-        [[ $count -eq 1 ]] && $pacmanBin -Si ${repopkgs[@]}
-        [[ $count -ne 1 ]] && $pacmanBin -Sii ${repopkgs[@]}
-    fi
-    if [[ -n "${aurpkgs[@]}" ]]; then
-        [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-        InfoAur ${aurpkgs[@]}
     fi
     exit
 fi
