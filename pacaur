@@ -435,7 +435,7 @@ IgnoreChecks() {
     [[ ! $upgrade ]] && GetIgnoredPkgs
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
-    checkaurpkgs=(${aurpkgs[@]})
+    checkaurpkgs=("${aurpkgs[@]}")
     unset aurpkgs
 
     # check targets
@@ -534,8 +534,8 @@ Core() {
 
 ClassifyPkgs() {
     if [[ $fallback = true ]]; then
-        [[ $repo ]] && repopkgs=(${pkgs[@]})
-        [[ $aur ]] && aurpkgs=(${pkgs[@]})
+        [[ $repo ]] && repopkgs=("${pkgs[@]}")
+        [[ $aur ]] && aurpkgs=("${pkgs[@]}")
         if [[ ! $repo && ! $aur ]]; then
             GetIgnoredGrps
             for i in "${pkgs[@]}"; do
@@ -544,7 +544,7 @@ ClassifyPkgs() {
             done
         fi
     else
-        [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
+        [[ ! $aur ]] && repopkgs=("${pkgs[@]}") || aurpkgs=("${pkgs[@]}")
     fi
 }
 
@@ -774,7 +774,7 @@ fi
 # makepkg (-m), sync (-y), update (-u) handling
 if [[ $operation = makepkg ]]; then
     # selective upgrade compatibility
-    [[ $upgrade ]] && UpgradeAur || aurpkgs=(${pkgs[@]})
+    [[ $upgrade ]] && UpgradeAur || aurpkgs=("${pkgs[@]}")
     Core ${aurpkgs[@]}
     exit
 fi
