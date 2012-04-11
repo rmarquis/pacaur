@@ -14,8 +14,8 @@ version="2.5.6"
 
 # tmpdir
 tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-[[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null || sudo rm -rf "$tmpDir"
-mkdir -p "$tmpDir"
+[[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
+[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpDir"
 
 # locale
 export LANG=C
