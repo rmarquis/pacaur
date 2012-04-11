@@ -12,11 +12,13 @@ version="2.5.6"
 # Config
 #
 
-# locale
-export LANG=C
-
 # tmpdir
 tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+[[ -d "$tmpDir" ]] && rm -rf "$tmpDir" &>/dev/null || sudo rm -rf "$tmpDir"
+mkdir -p "$tmpDir"
+
+# locale
+export LANG=C
 
 # general options
 buildDir="$tmpDir"              # build directory
@@ -518,13 +520,6 @@ DownloadJson() {
     [[ ! -f "$tmpDir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json" || error "no results found for $i"
 }
 
-SetTmpdir() {
-    if [[ -d "$tmpDir" ]]; then
-        [[ -w "$tmpDir" ]] && rm -rf "$tmpDir" || sudo rm -rf "$tmpDir"
-    fi
-    mkdir -p "$tmpDir"
-}
-
 Core() {
     IgnoreChecks
     DownloadPkgs ${aurpkgs[@]}
@@ -755,9 +750,6 @@ done
 [[ ! $operation && ! $option && ! $cleanpkg && ! $editpkg ]] && error "no operation specified (use -h for help)"
 [[ $option = sync || $option = info || $option = search ]] && [[ ! $refresh ]] && [[ ! $pkgs ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
-
-# set up tmpdir
-[[ $operation = download || $operation = makepkg || $option = sync || $option = sysupgrade ]] && SetTmpdir
 
 # search (-s) handling
 if [[ $operation = search ]]; then
