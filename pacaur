@@ -698,23 +698,22 @@ while [[ $index -ne 1 ]]; do
                 ;;
             # pacaur
             s)  [[ $pacS ]] && operation=pacsearch;
-                [[ ! $pacQ && ! $pacS ]] && operation=search;;
+                [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=search || continue;;
             i)  [[ $pacS ]] && operation=pacinfo;
-                [[ ! $pacQ && ! $pacS ]] && operation=info;;
-            d)  [[ ! $pacQ && ! $pacS ]] && operation=download && ((count++)) || continue;;
-            m)  [[ ! $pacQ && ! $pacS ]] && operation=makepkg && coweropts+=("-f") || continue;;
+                [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=info || continue;;
+            d)  [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=download && ((count++)) || continue;;
+            m)  [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=makepkg && coweropts+=("-f") || continue;;
             y)  [[ $pacS ]] && operation=sync && refresh=true && coweropts+=("-f");
-                [[ ! $pacQ && ! $pacS ]] && operation=makepkg && installpkg=true && coweropts+=("-f");;
-            k)  [[ $pacQ || $pacS ]] && continue || operation=check;;
+                [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=makepkg && installpkg=true && coweropts+=("-f") || continue;;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=check;;
             u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
-                [[ ! $pacQ && ! $pacS ]] && operation=makepkg && upgrade=true && installpkg=true && coweropts+=("-f");;
-            f)  [[ ! $pacQ && ! $pacS ]] && coweropts+=("-f") || continue;;
-            e)  [[ $pacQ ]] && pacopts+=("--explicit") || edit=true;
-                [[ "$@" =~ ^-[A-Z] ]] && continue;
+                [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=makepkg && upgrade=true && installpkg=true && coweropts+=("-f") || continue;;
+            f)  [[ ! $pac && ! $pacQ && ! $pacS ]] && coweropts+=("-f") || continue;;
+            e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=cleancache && ((count++));
-                [[ ! $pacQ && ! $pacS ]] && operation=cleanpkg && clean=true && ((count++));;
+                [[ ! $pac && ! $pacQ && ! $pacS ]] && operation=cleanpkg && clean=true && ((count++)) || continue;;
             q)  [[ ! $pacQ && ! $pacS ]] && quiet=true || pacopts+=("--quiet");;
             # pacman
             r)  repo='1';;
@@ -722,9 +721,10 @@ while [[ $index -ne 1 ]]; do
             Q)  pacQ='1';;
             S)  pacS='1'; operation=sync; coweropts+=("-f");
                 [[ " ${opts[@]} " =~ "w" ]] && continue || installpkg=true;;
+            [A-Z]) pac='1';;
             # others
-            h)  [[ "$@" =~ ^-[A-Z] ]] && continue || usage && exit;;
-            v)  [[ "$@" =~ ^-[A-Z] ]] && continue || version && exit;;
+            h)  [[ "$@" =~ ^-[A-Z] ]] && unset operation && continue || usage && exit;;
+            v)  [[ "$@" =~ ^-[A-Z] ]] && unset operation && continue || version && exit;;
             *)  continue;;
         esac
     done
@@ -827,7 +827,11 @@ case $operation in
         exit;;
     *)
         # others
-        $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+        if [[ " ${opts[@]} " =~ "Q" || " ${opts[@]} " =~ "T" ]]; then
+            $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+        else
+            sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+        fi
         exit;;
 esac
 
