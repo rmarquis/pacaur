@@ -707,7 +707,7 @@ while [[ $index -ne 1 ]]; do
                 [[ ! $pacQ && ! $pacS ]] && operation=makepkg && installpkg=true && coweropts+=("-f");;
             k)  [[ $pacQ || $pacS ]] && continue || operation=check;;
             u)  [[ $pacQ ]] && operation=upgrades;
-                [[ $pacS ]] && operation=sysupgrade && upgrade=true && coweropts+=("-f");
+                [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ ! $pacQ && ! $pacS ]] && operation=makepkg && upgrade=true && installpkg=true && coweropts+=("-f");;
             f)  [[ ! $pacQ && ! $pacS ]] && coweropts+=("-f") || continue;;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") || edit=true;
@@ -743,7 +743,6 @@ for i in "${checkpkgs[@]}"; do
 done
 [[ -n "$(echo "${pacmanarg[@]}" | grep -e "--")" ]] && pacmanarg=(${pacmanarg[@]/--/})
 [[ -n "$(echo "${pacmanarg[@]}" | grep -e "-r")" ]] && pacmanarg=(${pacmanarg[@]/-r/})
-[[ $upgrade ]] && [[ $operation = sync ]] && operation=sysupgrade
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = makepkg || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
@@ -799,21 +798,22 @@ case $operation in
         fi
         exit;;
     sync)
-        # pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
-        [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-        [[ -n "${repopkgs[@]}" ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        if [[ -n "${aurpkgs[@]}" ]]; then
-            [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
-            [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-            Core ${aurpkgs[@]}
+        if [[ ! $upgrade ]]; then
+            # pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
+            [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            [[ -n "${repopkgs[@]}" ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            if [[ -n "${aurpkgs[@]}" ]]; then
+                [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
+                [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                Core ${aurpkgs[@]}
+            fi
+        else
+            # pacman sysupgrade (-Su) handling
+            ClassifyPkgs ${pkgs[@]} && unset pkgs  # no selective upgrade here
+            [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
         fi
-        exit;;
-    sysupgrade)
-        # pacman sysupgrade (-Su) handling
-        ClassifyPkgs ${pkgs[@]} && unset pkgs  # no selective upgrade here
-        [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-        [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
         exit;;
     upgrades)
         # pacman upgrades (-Qu) handling
