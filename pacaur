@@ -14,8 +14,6 @@ version="2.5.7"
 
 # tmpdir
 tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-[[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
-[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpDir"
 
 # locale
 export LANG=C
@@ -648,6 +646,16 @@ fixbackend() {
 # Main
 #
 
+# set up directories
+[[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
+[[ ! -d "$tmpDir" ]] && mkdir -p "$tmpDir"
+[[ ! -d "$buildDir" ]] && mkdir -p "$buildDir"
+
+# sanity check
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
+[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
+[[ ! -w "$buildDir" ]] && error "Build directory is not writable. Check ${colorW}$buildDir${reset} permissions."
+
 # get short arguments
 args=("$@")
 for i in "${args[@]}"; do
@@ -745,11 +753,6 @@ done
 [[ -n "$(echo "${pacmanarg[@]}" | grep -e "-r")" ]] && pacmanarg=(${pacmanarg[@]/-r/})
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = makepkg || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
-
-# sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
-[[ ! -d $buildDir ]] && error "Build directory does not exist!\nCheck configuration in $configDir/${name}.conf"
-[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
 
 case $operation in
     search)
