@@ -333,7 +333,7 @@ CleanUp() {
 
 CheckAur() {
     [[ $quiet ]] && $cower -uq --color=never $@ || $cower -u $@
-    # override unconventional cower exit codes
+    # hack to override unconventional cower exit codes
     [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' ${pkgs[@]} &>/dev/null
 }
 
@@ -792,9 +792,7 @@ case $operation in
     pacinfo)
         # pacman info (-Si) handling
         [[ ! ${pkgs[@]} ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-        if [[ -n "${repopkgs[@]}" ]]; then
-            $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        fi
+        [[ -n "${repopkgs[@]}" ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
             [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             InfoAur ${aurpkgs[@]}
@@ -803,9 +801,7 @@ case $operation in
     sync)
         # pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
         [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-        if [[ -n "${repopkgs[@]}" ]]; then
-            sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        fi
+        [[ -n "${repopkgs[@]}" ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
             [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
             [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
