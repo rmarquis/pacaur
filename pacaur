@@ -823,7 +823,7 @@ case $operation in
         exit;;
     cleancache)
         # pacman clean (-Sc) handling
-        [[ ! $aur ]] && runasroot $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+        [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         exit;;
     *)
