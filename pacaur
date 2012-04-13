@@ -15,11 +15,14 @@ version="2.5.7"
 # locale
 export LANG=C
 
-# tmpdir
+# source makepkg variables
+source /etc/makepkg.conf
+
+# set directories
 tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+buildDir="${BUILDDIR:-$tmpDir}"
 
 # general options
-buildDir="$tmpDir"              # build directory
 editor=${EDITOR:-vi}            # PKGBUILD editor
 color=false                     # enable color
 clean=true                      # cleanup after install
@@ -83,9 +86,6 @@ DownloadAur() {
 }
 
 DownloadPkgs() {
-    # set architecture variables
-    source /etc/makepkg.conf
-
     if [[ $carchmagic = false ]]; then
         recursive=true && DownloadAur ${aurpkgs[@]}
         # check for CARCH 32/64bits bash magic

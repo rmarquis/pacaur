@@ -186,10 +186,6 @@ The available options are:
 
 =over 4
 
-=item B<buildDir>
-
-Define the build directory. Default is B</tmp/pacaurtmp-$USER>.
-
 =item B<editor>
 
 Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
