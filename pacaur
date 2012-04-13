@@ -828,7 +828,7 @@ case $operation in
         exit;;
     *)
         # others operations handling
-        if [[ -n "$(echo "${pacmanarg[@]}" | grep -e "-Q")" || -n "$(echo "${pacmanarg[@]}" | grep -e "-T")" ]]; then
+        if [[ -z "${pkgs[@]}" || -n "$(echo "${pacmanarg[@]}" | grep -e "-[QT]")" ]]; then
             $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
             sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
