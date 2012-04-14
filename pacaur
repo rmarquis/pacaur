@@ -15,13 +15,6 @@ version="2.5.7"
 # locale
 export LANG=C
 
-# source makepkg variables
-source /etc/makepkg.conf
-
-# set directories
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-buildDir="${BUILDDIR:-$tmpDir}"
-
 # general options
 editor=${EDITOR:-vi}            # PKGBUILD editor
 color=false                     # enable color
@@ -62,6 +55,16 @@ else
     pacmanBin='pacman'
     cower='cower'
 fi
+
+# source makepkg variables
+source /etc/makepkg.conf
+
+# set up directories
+tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+buildDir="${BUILDDIR:-$tmpDir}"
+[[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
+[[ ! -d "$tmpDir" ]] && mkdir -p "$tmpDir"
+[[ ! -d "$buildDir" ]] && mkdir -p "$buildDir"
 
 
 #
@@ -116,7 +119,7 @@ DownloadPkgs() {
 }
 
 FindPkgsDeps() {
-    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=(${aurpkgs[@]})
+    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
     DownloadAur ${depspkgsaur[@]}
 
@@ -625,7 +628,6 @@ usage() {
     echo "   -a, --aur       only search or install packages from the AUR"
     echo "   -r, --repo      only search or install packages from the repositories"
     echo ""
-    exit
 }
 
 version() {
@@ -644,16 +646,6 @@ fixbackend() {
 #
 # Main
 #
-
-# set up directories
-[[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
-[[ ! -d "$tmpDir" ]] && mkdir -p "$tmpDir"
-[[ ! -d "$buildDir" ]] && mkdir -p "$buildDir"
-
-# sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
-[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
-[[ ! -w "$buildDir" ]] && error "Build directory is not writable.\nCheck ${colorW}$buildDir${reset} permissions."
 
 # get short arguments
 args=("$@")
@@ -742,11 +734,14 @@ while [[ $index -ne 1 ]]; do
 
     index=$OPTIND
 done
-
-# filters
 pkgs=(${pkgs[@]//})
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
+
+# sanity check
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
+[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
+[[ ! -w "$buildDir" ]] && error "You do not have write permission to build packages in ${colorW}$buildDir${reset}."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = makepkg || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
