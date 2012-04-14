@@ -201,8 +201,7 @@ Prompt() {
 }
 
 EditPkgs() {
-    [[ $noedit ]] && return
-    [[ $operation ]] && [[ ! $edit ]] && return
+    [[ $noedit || ! $edit ]] && return
     for i in "$@"; do
        # edit pkgbuild
        if [[ ! $editpkgbuild = false ]]; then
@@ -727,7 +726,7 @@ while [[ $index -ne 1 ]]; do
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
-            S)  pacS='1'; operation=sync; coweropts+=("-f");
+            S)  pacS='1'; operation=sync; edit=true; coweropts+=("-f");
                 [[ "${opts[@]}" =~ "w" ]] && continue || installpkg=true;;
             [A-Z]) pac='1';;
             # others
