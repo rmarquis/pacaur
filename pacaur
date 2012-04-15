@@ -689,7 +689,7 @@ while [[ $index -ne 1 ]]; do
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
-                    fixbackend) fixbackend && exit;;
+                    fixbackend|allanbrokeit) fixbackend && exit;;
                     version) version && exit;;
                     help) usage && exit;;
                     *) pacopts+=("--$OPTARG");;
