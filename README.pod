@@ -75,11 +75,6 @@ the AUR.
 Pacaur will also pass any pacman related options to the pacman binary. This
 behavior can be disabled with the I<fallback> variable in the config file.
 
-=item B<-c, --clean>
-
-Remove I<target> build directory. Pass this option twice to clean the entire
-build directory.
-
 =item B<-v, --version>
 
 Display version and exit.
@@ -99,6 +94,11 @@ Display the help message and quit.
 
 Edit I<target> PKGBUILD when downloading or building target. Can also be used
 as a standalone command.
+
+=item B<-c, --clean>
+
+Remove I<target> build files when building target. Can also be used as a
+standalone command. Pass this option twice to clean the entire build directory.
 
 =item B<-f, --force>
 

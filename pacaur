@@ -7,7 +7,6 @@
 name="pacaur"
 version="3.0.0"
 
-
 #
 # Config
 #
@@ -258,6 +257,17 @@ MakePkgs() {
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
         else
+            # clean
+            makeopts=(${makeopts[@]/--clean/})
+            if [[ $clean = true ]]; then
+                if [[ $cleandevel = true || $count -gt 1 ]]; then
+                    makeopts+=("--clean")
+                else
+                    unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
+                    . "$buildDir/$i/PKGBUILD"
+                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" || makeopts+=("--clean")
+                fi
+            fi
             # build
             if [[ -e "$buildDir/$i/PKGBUILD" ]]; then
                 info "Building ${colorW}$i${reset} package..."
@@ -296,32 +306,17 @@ MakePkgs() {
 }
 
 CleanUp() {
-    if [[ $clean = true ]]; then
-        if [[ $count -eq 1 ]]; then
-            cd "$buildDir"
-            for i in "$@"; do
-                # hack for vcs protected files
-                chmod -R 755 $i &>/dev/null
-                rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
-            done
-        else
-            # skip if devel package
-            if [[ $cleandevel = false && $count -ne 2 ]]; then
-                for i in "$@"; do
-                    cd "$buildDir"
-                    unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                    . "$i/PKGBUILD"
-                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
-                    # hack for vcs protected files
-                    chmod -R 755 $i &>/dev/null
-                    rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
-                done
-            else
-                # hack for vcs protected files
-                chmod -R 755 $buildDir/* &>/dev/null
-                rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
-            fi
-        fi
+    if [[ $count -eq 1 ]]; then
+        cd "$buildDir"
+        for i in "$@"; do
+            # hack for vcs protected files
+            chmod -R 755 $i &>/dev/null
+            rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+        done
+    else
+        # hack for vcs protected files
+        chmod -R 755 $buildDir/* &>/dev/null
+        rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
     fi
 }
 
@@ -521,7 +516,6 @@ Core() {
     OutofdateChecks ${deps[@]}
     Prompt ${deps[@]}
     MakePkgs ${deps[@]}
-    CleanUp ${deps[@]}
 }
 
 ClassifyPkgs() {
@@ -603,12 +597,12 @@ usage() {
     echo "   -k, --check     check for AUR update(s)"
     echo "   -u, --update    update AUR package(s)"
     echo " general"
-    echo "   -c, --clean     clean target(s) build files -- pass twice to clean the entire build directory"
     echo "   -v, --version   display version information"
     echo "   -h, --help      display help information"
     echo ""
     echo "options:"
     echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u flags"
+    echo "   -c, --clean     clean target(s) build files -- can be combined with the -m, -y, -u flags"
     echo "   -f, --force     overwrite existing files -- can be combined with the -d flag"
     echo "   -q, --quiet     show less information for query and search"
     echo "   --devel         consider AUR development packages upgrade"
@@ -706,7 +700,7 @@ while [[ $index -ne 1 ]]; do
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=cleancache && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=cleanpkg && clean=true && ((count++));;
+                [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
             q)  [[ $pacQ || $pacS ]] && pacopts+=("--quiet") || quiet=true;;
             # pacman
             r)  repo='1';;
@@ -736,7 +730,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -w "$buildDir" ]] && error "You do not have write permission to build packages in ${colorW}$buildDir${reset}."
-[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = makepkg || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = makepkg || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
 # operations
