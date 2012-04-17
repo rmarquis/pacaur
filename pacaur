@@ -244,42 +244,28 @@ MakePkgs() {
     [[ $color != true ]] && makeopts+=("--nocolor")
     export PACMAN=$pacmanBin
 
-    if [[ $installpkg ]]; then
-        for i in "${deps[@]}"; do
-            # check package cache
-            [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
-            if [[ $cachedpkg ]]; then
+    # check destination folder
+    [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && error "Please set ${colorW}PKGDEST${reset} variable in /etc/makepkg.conf or disable ${colorW}clean${reset} option."
+
+    for i in "${deps[@]}"; do
+        # check package cache
+        [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
+        if [[ $cachedpkg ]]; then
+            if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
                 yes | sudo $pacmanBin -U $cachedpkg ${pacopts[@]}
             else
-                # build and install
-                if [[ -e "$buildDir/$i/PKGBUILD" ]]; then
-                    info "Building ${colorW}$i${reset} package..."
-                    cd "$buildDir/$i"
+                info "Package ${colorW}$i${reset} already available in cache"
+            fi
+        else
+            # build
+            if [[ -e "$buildDir/$i/PKGBUILD" ]]; then
+                info "Building ${colorW}$i${reset} package..."
+                cd "$buildDir/$i"
+                if [[ $installpkg ]]; then
+                    # install
                     yes | makepkg -sfi ${makeopts[@]}
                 else
-                    error "Could not open ${colorW}$i${reset} PKGBUILD"
-                fi
-            fi
-            # set dep status
-            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
-        done
-    else
-        # check destination folder
-        [[ ! $PKGDEST ]] && [[ $clean = true ]] && error "Please set ${colorW}PKGDEST${reset} variable in /etc/makepkg.conf or disable ${colorW}clean${reset} option."
-
-        for i in "${deps[@]}"; do
-            # check package cache
-            [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
-            if [[ $cachedpkg ]]; then
-                info "Package ${colorW}$i${reset} already available in cache"
-            else
-                # build
-                if [[ -e "$buildDir/$i/PKGBUILD" ]]; then
-                    info "Building ${colorW}$i${reset} package..."
-                    cd "$buildDir/$i"
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                         # install AUR deps
                         info "Installing ${colorW}$i${reset} dependency..."
@@ -288,13 +274,21 @@ MakePkgs() {
                         # install then remove binary deps
                         yes | makepkg -sfr ${makeopts[@]}
                     fi
-                else
-                    error "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
-                # set dep status
-                sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            else
+                error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
-        done
+        fi
+        # set dep status
+        if [[ $installpkg ]]; then
+            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+        else
+            sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+        fi
+    done
+    if [[ ! $installpkg ]]; then
         # remove AUR deps
         [[ -n "${aurdepspkgs[@]}" ]] && info "Removing installed AUR dependencies..."
         [[ -n "${aurdepspkgs[@]}" ]] && sudo $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
