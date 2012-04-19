@@ -71,11 +71,11 @@ buildDir="${BUILDDIR:-$tmpDir}"
 #
 
 SearchAur() {
-    [[ $quiet ]] && $cower -sq --color=never $@ || $cower -s $@
+    if [[ $quiet ]]; then $cower -sq --color=never $@; else $cower -s $@; fi
 }
 
 InfoAur() {
-    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
+    if [[ $count -eq 1 ]]; then $cower -i $@; else $cower -ii $@; fi
 }
 
 DownloadAur() {
@@ -321,7 +321,7 @@ CleanUp() {
 }
 
 CheckAur() {
-    [[ $quiet ]] && $cower -uq --color=never $@ || $cower -u $@
+    if [[ $quiet ]]; then $cower -uq --color=never $@; else $cower -u $@; fi
     # hack to override unconventional cower exit codes
     [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' ${pkgs[@]} &>/dev/null
 }
