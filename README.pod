@@ -8,7 +8,7 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
 
 =head1 DESCRIPTION
 
-pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
+Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
 designed to allow a fast workflow and to use an uncluttered interface. It is
 built upon the well designed cower and expac C backends. Invoking pacaur
 consists of supplying an operation, any applicable options, and usually one or
@@ -16,7 +16,7 @@ more targets.
 
 =head1 USERBASE TARGET
 
-pacaur provides two sets of command line options: commands which are AUR
+Pacaur provides two sets of command line options: commands which are AUR
 specific, and commands that call the pacman binary and extend for AUR functions.
 As such, pacaur can be used by users who prefer to keep their AUR frontend
 separated from pacman, or by users who prefer to have a single tool to manage
@@ -161,7 +161,7 @@ rebuilding it.
 
 =head1 CONFIG FILE
 
-pacaur honors a system-wide config file which will be looked for first at
+Pacaur honors a system-wide config file which will be looked for first at
 
   $XDG_CONFIG_DIRS/pacaur/pacaur.conf
 
