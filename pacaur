@@ -75,7 +75,7 @@ SearchAur() {
 }
 
 InfoAur() {
-    $cower ${pacmanarg[@]} $@
+    [[ $count -eq 1 ]] && $cower -i $@ || $cower -ii $@
 }
 
 DownloadAur() {
@@ -656,7 +656,7 @@ while [[ $index -ne 1 ]]; do
                 case "$OPTARG" in
                     # pacaur
                     search) operation=search;;
-                    info) operation=info;;
+                    info) operation=info; ((count++));;
                     download) operation=download; ((count++));;
                     makepkg) operation=makepkg; coweropts+=("-f");;
                     sync) operation=makepkg; installpkg=true; coweropts+=("-f");;
@@ -686,8 +686,8 @@ while [[ $index -ne 1 ]]; do
             # pacaur
             s)  [[ $pacS ]] && operation=pacsearch;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=search;;
-            i)  [[ $pacS ]] && operation=pacinfo;
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=info;;
+            i)  [[ $pacS ]] && operation=pacinfo && ((count++));
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=info && ((count++));;
             d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && coweropts+=("-f");;
             y)  [[ $pacS ]] && operation=sync && refresh=true && coweropts+=("-f");
