@@ -207,7 +207,7 @@ EditPkgs() {
     for i in "$@"; do
        # edit pkgbuild
        if [[ ! $editpkgbuild = false ]]; then
-            if [[ $option ]]; then
+            if [[ $operation = sync ]]; then
                 if proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD?"; then
                     [[ -e "$buildDir/$i/PKGBUILD" ]] && $editor "$buildDir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
@@ -220,7 +220,7 @@ EditPkgs() {
             unset install
             [[ -e "$buildDir/$i/PKGBUILD" ]] && source "$buildDir/$i/PKGBUILD"
             if [[ $install ]]; then
-                if [[ $option ]]; then
+                if [[ $operation = sync ]]; then
                     if proceedY "${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
                         [[ -e "$buildDir/$i/$install" ]] && $editor "$buildDir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
                     fi
