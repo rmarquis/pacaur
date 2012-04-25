@@ -430,6 +430,7 @@ IgnoreChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
                 if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    warn "${colorW}$i${reset}: ignoring package upgrade"
                     continue
                 fi
             else
