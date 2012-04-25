@@ -672,7 +672,7 @@ while [[ $index -ne 1 ]]; do
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     carch) carchmagic=true;;
-                    ignore) ignoredpkgs+=("${args[$OPTIND]}"); ignoreopts+=("--ignore" "${args[$OPTIND]}"); shift `expr $OPTIND - 1`;;
+                    ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore" "${!OPTIND}"); shift 2;;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
