@@ -434,7 +434,6 @@ IgnoreChecks() {
                     continue
                 fi
             else
-                warn "${colorW}$i${reset}: ignoring package upgrade"
                 continue
             fi
         fi
