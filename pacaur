@@ -124,7 +124,7 @@ FindPkgsDeps() {
 
     # source pkgs
     for i in "${deps[@]}"; do
-        [[ -e "$buildDir/$i/PKGBUILD" ]] && . "$buildDir/$i/PKGBUILD"
+        [[ -e "$buildDir/$i/PKGBUILD" ]] && . "$buildDir/$i/PKGBUILD" || error "Could not read ${colorW}$i${reset} PKGBUILD"
         sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
     done
 
@@ -171,7 +171,7 @@ UpgradeAur() {
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            [[ -e "$tmpDir/${allaurpkgs[$i]}.PKGBUILD" ]] && . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD"
+            [[ -e "$tmpDir/${allaurpkgs[$i]}.PKGBUILD" ]] && . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD" || error "Could not read ${colorW}${allaurpkgs[$i]}${reset} PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     warn "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
