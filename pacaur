@@ -92,7 +92,7 @@ DownloadPkgs() {
         recursive=true && DownloadAur ${aurpkgs[@]}
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
-            [[ -n $(grep 'CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in $configDir/${name}.conf or use --carch option."
+            [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in $configDir/${name}.conf or use --carch option."
         done
         # check binary depends pkgs
         [[ -e "$tmpDir/repodeps" ]] && repodeps=($(cat "$tmpDir/repodeps" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
@@ -124,7 +124,7 @@ FindPkgsDeps() {
 
     # source pkgs
     for i in "${deps[@]}"; do
-        . "$buildDir/$i/PKGBUILD"
+        [[ -e "$buildDir/$i/PKGBUILD" ]] && . "$buildDir/$i/PKGBUILD"
         sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
     done
 
@@ -171,7 +171,7 @@ UpgradeAur() {
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD"
+            [[ -e "$tmpDir/${allaurpkgs[$i]}.PKGBUILD" ]] && . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     warn "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
@@ -264,7 +264,7 @@ MakePkgs() {
                     makeopts+=("--clean")
                 else
                     unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                    . "$buildDir/$i/PKGBUILD"
+                    [[ -e "$buildDir/$i/PKGBUILD" ]] && . "$buildDir/$i/PKGBUILD"
                     [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" || makeopts+=("--clean")
                 fi
             fi
@@ -414,7 +414,7 @@ OutofdateChecks() {
     done
     wait
     for i in "${deps[@]}"; do
-        [[ -n $(grep '"OutOfDate":"1"' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
+        [[ -e "$tmpDir/$i.json" ]] && [[ -n $(grep '"OutOfDate":"1"' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
     done
 }
 
@@ -488,8 +488,8 @@ GetIgnoredGrps() {
 }
 
 GetAurVersion() {
-    Apkgver=$(grep '^pkgver' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
-    Apkgrel=$(grep '^pkgrel' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    [[ -e "$buildDir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    [[ -e "$buildDir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
     Aversion="$Apkgver-$Apkgrel"
 }
 
