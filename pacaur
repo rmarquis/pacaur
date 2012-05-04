@@ -706,7 +706,8 @@ while [[ $index -ne 1 ]]; do
             a)  aur='1';;
             Q)  pacQ='1';;
             S)  pacS='1'; operation=sync; edit=true; coweropts+=("-f");
-                [[ "${opts[@]}" =~ "w" ]] && continue || installpkg=true;;
+                [[ "${opts[@]}" =~ "w" ]] && continue || installpkg=true;
+                [[ "${opts[@]}" =~ "l" ]] && unset operation;;
             [A-Z]) pac='1';;
             # others
             h)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && unset operation && continue || usage && exit;;
