@@ -707,7 +707,7 @@ while [[ $index -ne 1 ]]; do
             Q)  pacQ='1';;
             S)  pacS='1'; operation=sync; edit=true; coweropts+=("-f");
                 [[ "${opts[@]}" =~ "w" ]] && continue || installpkg=true;
-                [[ "${opts[@]}" =~ "l" ]] && unset operation;;
+                [[ "${opts[@]}" =~ "g" || "${opts[@]}" =~ "l" ]] && unset operation;;
             [A-Z]) pac='1';;
             # others
             h)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && unset operation && continue || usage && exit;;
@@ -810,7 +810,7 @@ case $operation in
         exit;;
     *)
         # others operations handling
-        if [[ -z "${pkgs[@]}" || -n "$(echo "${pacmanarg[@]}" | grep -e "-[QT]")" ]]; then
+        if [[ -z "${pkgs[@]}" || -n "$(echo "${pacmanarg[@]}" | grep -e "-[QTgl]")" ]]; then
             $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
             sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
