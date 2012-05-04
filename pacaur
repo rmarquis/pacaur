@@ -700,7 +700,7 @@ while [[ $index -ne 1 ]]; do
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=cleancache && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
-            q)  [[ $pacQ || $pacS ]] && pacopts+=("--quiet") || quiet=true;;
+            q)  [[ $pacQ || $pacS ]] && quiet=true && pacopts+=("--quiet") || quiet=true;;
             # pacman
             r)  repo='1';;
             a)  aur='1';;
