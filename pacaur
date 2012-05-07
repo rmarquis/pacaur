@@ -79,17 +79,17 @@ InfoAur() {
 }
 
 DownloadAur() {
-    [[ $recursive ]] && d="-dd" || d="-d"
-    [[ $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    [[ ! $operation = download ]] && deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ ! $operation = download ]] && [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
+    [[ ! $operation = download ]] && coweropts+=("-d")
+    deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $operation = download ]] && [[ -e "$tmpDir/repodeps" ]] && grep 'is available in' "$tmpDir/repodeps"
+    [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
 
     timeout ${deps[@]}
 }
 
 DownloadPkgs() {
     if [[ $carchmagic = false ]]; then
-        recursive=true && DownloadAur ${aurpkgs[@]}
+        coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
             [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in $configDir/${name}.conf or use --carch option."
@@ -656,7 +656,7 @@ while [[ $index -ne 1 ]]; do
                     # pacaur
                     search) operation=search; aur='1'; coweropts+=("-s");;
                     info) operation=info; aur='1'; coweropts+=("-i");;
-                    download) operation=download; ((count++));;
+                    download) operation=download; coweropts+=("-d");;
                     makepkg) operation=sync; aur='1';  coweropts+=("-f");;
                     sync) operation=sync; installpkg=true; aur='1'; coweropts+=("-f");;
                     check) operation=upgrades; aur='1'; coweropts+=("-u");;
@@ -687,7 +687,7 @@ while [[ $index -ne 1 ]]; do
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=search && aur='1' && coweropts+=("-s");;
             i)  [[ $pacS ]] && operation=info && coweropts+=("-i");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=info && aur='1' && coweropts+=("-i");;
-            d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
+            d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download && coweropts+=("-d");;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && aur='1' && coweropts+=("-f");;
             y)  [[ $pacS ]] && operation=sync && refresh=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && installpkg=true && aur='1' && coweropts+=("-f");;
@@ -737,7 +737,6 @@ pacmanarg=(${pacmanarg[@]/-r/})
 case $operation in
     download)
         # download (-d) handling
-        [[ $count -ne 1 ]] && recursive=true
         DownloadAur ${pkgs[@]}
         EditPkgs ${deps[@]}
         exit;;
