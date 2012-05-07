@@ -654,12 +654,12 @@ while [[ $index -ne 1 ]]; do
             -)
                 case "$OPTARG" in
                     # pacaur
-                    search) operation=search;;
-                    info) operation=info; ((count++));;
+                    search) operation=search; aur='1';;
+                    info) operation=info; aur='1'; ((count++));;
                     download) operation=download; ((count++));;
                     makepkg) operation=makepkg; coweropts+=("-f");;
                     sync) operation=makepkg; installpkg=true; coweropts+=("-f");;
-                    check) operation=check;;
+                    check) operation=upgrades; aur='1';;
                     update) operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
                     force) coweropts+=("-f"); pacopts+=("--force");;
                     edit) edit=true; editpkg=true;;
@@ -683,15 +683,15 @@ while [[ $index -ne 1 ]]; do
                 esac
                 ;;
             # pacaur
-            s)  [[ $pacS ]] && operation=pacsearch;
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=search;;
-            i)  [[ $pacS ]] && operation=pacinfo && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=info && ((count++));;
+            s)  [[ $pacS ]] && operation=search;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=search && aur='1';;
+            i)  [[ $pacS ]] && operation=info && ((count++));
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=info && aur='1' && ((count++));;
             d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && coweropts+=("-f");;
             y)  [[ $pacS ]] && operation=sync && refresh=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && installpkg=true && coweropts+=("-f");;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=check;;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades && aur='1';;
             u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && upgrade=true && installpkg=true && coweropts+=("-f");;
@@ -735,14 +735,6 @@ pacmanarg=(${pacmanarg[@]/-r/})
 
 # operations
 case $operation in
-    search)
-        # search (-s) handling
-        SearchAur ${pkgs[@]}
-        exit;;
-    info)
-        # info (-i) handling
-        InfoAur ${pkgs[@]}
-        exit;;
     download)
         # download (-d) handling
         [[ $count -ne 1 ]] && recursive=true
@@ -754,10 +746,6 @@ case $operation in
         [[ $upgrade ]] && UpgradeAur || aurpkgs=("${pkgs[@]}")  # selective upgrade compatibility
         Core ${aurpkgs[@]}
         exit;;
-    check)
-        # check (-k) handling
-        CheckAur ${pkgs[@]}
-        exit;;
     cleanpkg)
         # clean (-c) handling
         CleanUp ${pkgs[@]}
@@ -766,13 +754,13 @@ case $operation in
         # edit (-e) handling
         EditPkgs ${pkgs[@]}
         exit;;
-    pacsearch)
-        # pacman search (-Ss) handling
+    search)
+        # search (-Ss, -s) handling
         [[ ! $aur ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
         exit;;
-    pacinfo)
-        # pacman info (-Si) handling
+    info)
+        # info (-Si, -i) handling
         [[ ! ${pkgs[@]} ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
         [[ -n "${repopkgs[@]}" ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
@@ -799,7 +787,7 @@ case $operation in
         fi
         exit;;
     upgrades)
-        # pacman upgrades (-Qu) handling
+        # upgrades (-Qu, -k) handling
         [[ ! $aur ]] && CheckRepo ${pkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CheckAur ${pkgs[@]}
         exit;;
