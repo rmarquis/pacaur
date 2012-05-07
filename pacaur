@@ -71,11 +71,11 @@ buildDir="${BUILDDIR:-$tmpDir}"
 #
 
 SearchAur() {
-    if [[ $quiet ]]; then $cower -sq --color=never $@; else $cower -s $@; fi
+    $cower ${coweropts[@]} $@
 }
 
 InfoAur() {
-    if [[ $count -eq 1 ]]; then $cower -i $@; else $cower -ii $@; fi
+    $cower ${coweropts[@]} $@
 }
 
 DownloadAur() {
@@ -321,7 +321,7 @@ CleanUp() {
 }
 
 CheckAur() {
-    if [[ $quiet ]]; then $cower -uq --color=never $@; else $cower -u $@; fi
+    $cower ${coweropts[@]} $@
     # hack to override unconventional cower exit codes
     [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' ${pkgs[@]} &>/dev/null
 }
@@ -654,17 +654,17 @@ while [[ $index -ne 1 ]]; do
             -)
                 case "$OPTARG" in
                     # pacaur
-                    search) operation=search; aur='1';;
-                    info) operation=info; aur='1'; ((count++));;
+                    search) operation=search; aur='1'; coweropts+=("-s");;
+                    info) operation=info; aur='1'; coweropts+=("-i");;
                     download) operation=download; ((count++));;
                     makepkg) operation=sync; aur='1';  coweropts+=("-f");;
                     sync) operation=sync; installpkg=true; aur='1'; coweropts+=("-f");;
-                    check) operation=upgrades; aur='1';;
+                    check) operation=upgrades; aur='1'; coweropts+=("-u");;
                     update) operation=sync; upgrade=true; installpkg=true; aur='1'; coweropts+=("-f"); selective=true;;
                     force) coweropts+=("-f"); pacopts+=("--force");;
                     edit) edit=true; editpkg=true;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
-                    quiet) quiet=true; pacopts+=("--quiet");;
+                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
                     # pacman
                     repo) repo='1';;
                     aur) aur='1';;
@@ -683,16 +683,16 @@ while [[ $index -ne 1 ]]; do
                 esac
                 ;;
             # pacaur
-            s)  [[ $pacS ]] && operation=search;
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=search && aur='1';;
-            i)  [[ $pacS ]] && operation=info && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=info && aur='1' && ((count++));;
+            s)  [[ $pacS ]] && operation=search && coweropts+=("-s");
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=search && aur='1' && coweropts+=("-s");;
+            i)  [[ $pacS ]] && operation=info && coweropts+=("-i");
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=info && aur='1' && coweropts+=("-i");;
             d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && aur='1' && coweropts+=("-f");;
             y)  [[ $pacS ]] && operation=sync && refresh=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && installpkg=true && aur='1' && coweropts+=("-f");;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades && aur='1';;
-            u)  [[ $pacQ ]] && operation=upgrades;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades && aur='1' && coweropts+=("-u");;
+            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-u");
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && upgrade=true && installpkg=true && aur='1' && coweropts+=("-f") && selective=true;;
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
@@ -700,7 +700,7 @@ while [[ $index -ne 1 ]]; do
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=cleancache && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
-            q)  [[ $pacQ || $pacS ]] && quiet=true && pacopts+=("--quiet") || quiet=true;;
+            q)  [[ $pacQ || $pacS ]] && quiet=true && pacopts+=("--quiet") && coweropts+=("-q") && coweropts+=("--color=never") || quiet=true && coweropts+=("-q") && coweropts+=("--color=never");;
             # pacman
             r)  repo='1';;
             a)  aur='1';;
