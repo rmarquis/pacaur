@@ -113,6 +113,10 @@ DownloadPkgs() {
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanBin -T "${allrepopkgs[@]}"))
+
+        # providers check
+        ProviderChecks ${repodepspkgs[@]}
+
         [[ -n "${repodepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}" | sort -u
     fi
 }
@@ -245,6 +249,14 @@ MakePkgs() {
     # check destination folder
     [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && error "Please set ${colorW}PKGDEST${reset} variable in /etc/makepkg.conf or disable ${colorW}clean${reset} option."
 
+    # install provider packages
+    if [[ -n "${providerpkgs[@]}" ]]; then
+        # install provided AUR deps
+        info "Installing ${colorW}${providerpkgs[@]}${reset} dependency..."
+        yes | sudo $pacmanBin -S ${providerpkgs[@]}
+        sudo $pacmanBin -D ${providerpkgs[@]} --asdeps &>/dev/null
+    fi
+
     for i in "${deps[@]}"; do
         # check package cache
         [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
@@ -367,6 +379,44 @@ CleanCache() {
             fi
         fi
     fi
+}
+
+ProviderChecks() {
+    allproviders=($(expac -S %P "${repodepspkgs[@]}" | uniq))
+
+    for ((i=0; i<${#allproviders[@]}; i++)); do
+        providers=($(expac -Ss %n "^${allproviders[$i]}$"))
+        [[ ! ${#providers[@]} -gt 1 ]] && continue
+
+        # skip if already provided
+        for j in "${providerpkgs[@]}"; do
+            provided+=($(expac -S %P $j))
+        done
+        [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${allproviders[$i]} " ]] && continue
+
+        if [[ ! $noconfirm ]]; then
+            info "${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
+            expac -S '   %!) %n (%r) ' ${providers[@]}
+
+            nb=-1;
+            while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
+                unset nb
+                echo -e -n "\nEnter a number (default=0):"
+                read -n 1 nb
+                echo ""
+
+                case $nb in
+                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo -e "\n${colorR}::${reset} invalid value: $nb is not between 0 and ${#providers[@]}" && ((i--)) || break;;
+                    '') nb=0;;
+                    *) echo -e "${colorR}::${reset} invalid number: $nb";;
+                esac
+
+            done
+        else
+            nb=0;
+        fi
+        providerpkgs+=(${providers[$nb]})
+   done
 }
 
 ConflictChecks() {
