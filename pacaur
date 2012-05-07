@@ -657,10 +657,10 @@ while [[ $index -ne 1 ]]; do
                     search) operation=search; aur='1';;
                     info) operation=info; aur='1'; ((count++));;
                     download) operation=download; ((count++));;
-                    makepkg) operation=makepkg; coweropts+=("-f");;
-                    sync) operation=makepkg; installpkg=true; coweropts+=("-f");;
+                    makepkg) operation=sync; aur='1';  coweropts+=("-f");;
+                    sync) operation=sync; installpkg=true; aur='1'; coweropts+=("-f");;
                     check) operation=upgrades; aur='1';;
-                    update) operation=makepkg; upgrade=true; installpkg=true; coweropts+=("-f");;
+                    update) operation=sync; upgrade=true; installpkg=true; aur='1'; coweropts+=("-f"); selective=true;;
                     force) coweropts+=("-f"); pacopts+=("--force");;
                     edit) edit=true; editpkg=true;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
@@ -688,13 +688,13 @@ while [[ $index -ne 1 ]]; do
             i)  [[ $pacS ]] && operation=info && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=info && aur='1' && ((count++));;
             d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
-            m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && coweropts+=("-f");;
+            m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && aur='1' && coweropts+=("-f");;
             y)  [[ $pacS ]] && operation=sync && refresh=true && coweropts+=("-f");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && installpkg=true && coweropts+=("-f");;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && installpkg=true && aur='1' && coweropts+=("-f");;
             k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades && aur='1';;
             u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=makepkg && upgrade=true && installpkg=true && coweropts+=("-f");;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync && upgrade=true && installpkg=true && aur='1' && coweropts+=("-f") && selective=true;;
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
@@ -730,7 +730,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -w "$buildDir" ]] && error "You do not have write permission to build packages in ${colorW}$buildDir${reset}."
-[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = makepkg || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
 # operations
@@ -740,11 +740,6 @@ case $operation in
         [[ $count -ne 1 ]] && recursive=true
         DownloadAur ${pkgs[@]}
         EditPkgs ${deps[@]}
-        exit;;
-    makepkg)
-        # makepkg (-m), sync (-y), update (-u) handling
-        [[ $upgrade ]] && UpgradeAur || aurpkgs=("${pkgs[@]}")  # selective upgrade compatibility
-        Core ${aurpkgs[@]}
         exit;;
     cleanpkg)
         # clean (-c) handling
@@ -770,7 +765,7 @@ case $operation in
         exit;;
     sync)
         if [[ ! $upgrade ]]; then
-            # pacman sync (-S), downloadonly (-Sw), refresh (-Sy) handling
+            # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy) handling
             [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
@@ -779,8 +774,9 @@ case $operation in
                 Core ${aurpkgs[@]}
             fi
         else
-            # pacman sysupgrade (-Su) handling
-            ClassifyPkgs ${pkgs[@]} && unset pkgs  # no selective upgrade here
+            # sysupgrade (-Su, -u) handling
+            ClassifyPkgs ${pkgs[@]}
+            [[ ! $selective ]] && unset pkgs  # selective upgrade switch
             [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
