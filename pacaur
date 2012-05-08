@@ -203,30 +203,29 @@ Prompt() {
 }
 
 EditPkgs() {
-    [[ $noedit || ! $edit ]] && return
+    [[ $noedit ]] && return
     for i in "$@"; do
-       # edit pkgbuild
-       if [[ ! $editpkgbuild = false ]]; then
-            if [[ $operation = sync ]]; then
+        unset install
+        [[ -e "$buildDir/$i/PKGBUILD" ]] && source "$buildDir/$i/PKGBUILD"
+        if [[ ! $edit ]]; then
+            # edit pkgbuild
+            if [[ ! $editpkgbuild = false ]]; then
                 if proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD?"; then
                     [[ -e "$buildDir/$i/PKGBUILD" ]] && $editor "$buildDir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
-            else
-                [[ -e "$buildDir/$i/PKGBUILD" ]] && $editor "$buildDir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
-        fi
-        # edit install script
-        if [[ ! $editinstall = false ]]; then
-            unset install
-            [[ -e "$buildDir/$i/PKGBUILD" ]] && source "$buildDir/$i/PKGBUILD"
-            if [[ $install ]]; then
-                if [[ $operation = sync ]]; then
+            # edit install script
+            if [[ ! $editinstall = false ]]; then
+                if [[ $install ]]; then
                     if proceedY "${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
                         [[ -e "$buildDir/$i/$install" ]] && $editor "$buildDir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
                     fi
-                else
-                    [[ -e "$buildDir/$i/$install" ]] && $editor "$buildDir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
                 fi
+            fi
+        else
+            [[ -e "$buildDir/$i/PKGBUILD" ]] && $editor "$buildDir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+            if [[ $install ]]; then
+                [[ -e "$buildDir/$i/$install" ]] && $editor "$buildDir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
             fi
         fi
     done
@@ -605,7 +604,7 @@ usage() {
     echo "   -a, --aur       only search, install or clean packages from the AUR"
     echo "   -r, --repo      only search, install or clean packages from the repositories"
     echo " general"
-    echo "   -e, --edit      edit target PKGBUILD -- can be combined with the -d, -m, -y, -u flags"
+    echo "   -e, --edit      edit target PKGBUILD and view install script"
     echo "   -c, --clean     clean target(s) build files -- can be combined with the -m, -y, -u flags"
     echo "   -f, --force     overwrite existing files -- can be combined with the -d flag"
     echo "   -q, --quiet     show less information for query and search"
@@ -662,7 +661,7 @@ while [[ $index -ne 1 ]]; do
                     check) operation=upgrades; coweropts+=("-u"); aur='1';;
                     update) operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
                     force) coweropts+=("-f"); pacopts+=("--force");;
-                    edit) edit=true; editpkg=true;;
+                    edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
                     # pacman
@@ -705,7 +704,7 @@ while [[ $index -ne 1 ]]; do
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
-            S)  pacS='1'; operation=sync; edit=true; coweropts+=("-f");
+            S)  pacS='1'; operation=sync; coweropts+=("-f");
                 [[ "${opts[@]}" =~ "w" ]] && continue || installpkg=true;
                 [[ "${opts[@]}" =~ "g" || "${opts[@]}" =~ "l" ]] && unset operation;;
             [A-Z]) pac='1';;

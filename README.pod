@@ -92,7 +92,7 @@ Display the help message and quit.
 
 =item B<-e, --edit>
 
-Edit I<target> PKGBUILD when downloading or building target. Can also be used
+Edit I<target> PKGBUILD and view install script when downloading or building target. Can also be used
 as a standalone command.
 
 =item B<-c, --clean>
@@ -211,13 +211,11 @@ Extend pacman commands to the AUR. Default is B<true>.
 
 =item B<editpkgbuild>
 
-When using pacman extended operations, enable PKGBUILD editing. Default is
-B<true>.
+Enable PKGBUILD editing prompt. Default is B<true>.
 
 =item B<editinstall>
 
-When using pacman extended operations, enable install script editing. Default
-is B<true>.
+Enable install script editing prompt. Default is B<true>.
 
 =item B<cleandevel>
 
