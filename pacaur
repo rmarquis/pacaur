@@ -143,7 +143,7 @@ FindPkgsDeps() {
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # remove AUR package versioning
-        j=0
+        local j=0
         for i in "${depspkgsaur[@]}"; do
             depspkgsaur[$j]=$(echo "$i" | awk -F "<" '{print $1}' | awk -F ">" '{print $1}' | awk -F "=" '{print $1}')
             ((j++))
@@ -160,7 +160,6 @@ UpgradeAur() {
     GetIgnoredPkgs
 
     info "${colorW}Starting AUR upgrade...${reset}"
-
     aurpkgs+=($($cower -u ${pkgs[@]} ${ignoreopts[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
     # add devel packages
@@ -251,8 +250,7 @@ MakePkgs() {
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
-        # install provided AUR deps
-        info "Installing ${colorW}${providerpkgs[@]}${reset} dependency..."
+        info "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
         yes | sudo $pacmanBin -S ${providerpkgs[@]}
         sudo $pacmanBin -D ${providerpkgs[@]} --asdeps &>/dev/null
     fi
@@ -289,7 +287,7 @@ MakePkgs() {
                 else
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                         # install AUR deps
-                        info "Installing ${colorW}$i${reset} dependency..."
+                        info "Installing ${colorW}$i${reset} dependencies..."
                         yes | makepkg -sfi ${makeopts[@]}
                     else
                         # install then remove binary deps
@@ -309,8 +307,8 @@ MakePkgs() {
             sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
     done
+    # remove AUR deps
     if [[ ! $installpkg ]]; then
-        # remove AUR deps
         [[ -n "${aurdepspkgs[@]}" ]] && info "Removing installed AUR dependencies..."
         [[ -n "${aurdepspkgs[@]}" ]] && sudo $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
@@ -355,9 +353,6 @@ CheckRepo() {
 }
 
 CleanCache() {
-    # set cache variables
-    source /etc/makepkg.conf
-
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
         [[ ! $aur ]] && echo ""
         echo -e "${colorW}AUR cache directory:${reset} $PKGDEST"
@@ -398,9 +393,9 @@ ProviderChecks() {
             info "${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
             expac -S '   %!) %n (%r) ' ${providers[@]}
 
-            nb=-1;
+            local nb=-1
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
-                unset nb
+
                 echo -e -n "\nEnter a number (default=0):"
                 read -n 1 nb
                 echo ""
@@ -413,7 +408,7 @@ ProviderChecks() {
 
             done
         else
-            nb=0;
+            local nb=0
         fi
         providerpkgs+=(${providers[$nb]})
    done
@@ -784,21 +779,26 @@ pacmanarg=(${pacmanarg[@]/-r/})
 
 # operations
 case $operation in
-    download)   # download (-d) handling
+    download)
+        # download (-d) handling
         DownloadAur ${pkgs[@]}
         EditPkgs ${deps[@]}
         exit;;
-    cleanpkg)   # clean (-c) handling
+    cleanpkg)
+        # clean (-c) handling
         CleanUp ${pkgs[@]}
         exit;;
-    editpkg)    # edit (-e) handling
+    editpkg)
+        # edit (-e) handling
         EditPkgs ${pkgs[@]}
         exit;;
-    search)     # search (-Ss, -s) handling
+    search)
+        # search (-Ss, -s) handling
         [[ ! $aur ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
         exit;;
-    info)       # info (-Si, -i) handling
+    info)
+        # info (-Si, -i) handling
         [[ ! ${pkgs[@]} ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
         [[ -n "${repopkgs[@]}" ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
@@ -806,7 +806,8 @@ case $operation in
             InfoAur ${aurpkgs[@]}
         fi
         exit;;
-    sync)       # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy), sysupgrade (-Su, -u) handling
+    sync)
+        # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy), sysupgrade (-Su, -u) handling
         if [[ ! $upgrade ]]; then
             [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
@@ -823,15 +824,18 @@ case $operation in
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
         fi
         exit;;
-    upgrades)   # upgrades (-Qu, -k) handling
+    upgrades)
+        # upgrades (-Qu, -k) handling
         [[ ! $aur ]] && CheckRepo ${pkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CheckAur ${pkgs[@]}
         exit;;
-    cleancache) # pacman clean (-Sc) handling
+    cleancache)
+        # clean (-Sc) handling
         [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         exit;;
-    *)          # others operations handling
+    *)
+        # others operations handling
         if [[ -z "${pkgs[@]}" || -n "$(echo "${pacmanarg[@]}" | grep -e "-[QTgl]")" ]]; then
             $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
