@@ -633,31 +633,32 @@ usage() {
     echo "usage:  ${name} <operation> [options] [package(s)]"
     echo "operations:"
     echo " AUR only"
-    echo "   -s, --search    search AUR repository for matching strings"
-    echo "   -i, --info      view package information -- pass twice for details"
-    echo "   -d, --download  download target(s) -- pass twice to download AUR dependencies"
-    echo "   -m, --makepkg   download and make target(s)"
-    echo "   -y, --sync      download, make and install target(s)"
-    echo "   -k, --check     check for AUR update(s)"
-    echo "   -u, --update    update AUR package(s)"
+    echo "   -s, --search     search AUR repository for matching strings"
+    echo "   -i, --info       view package information -- pass twice for details"
+    echo "   -d, --download   download target(s) -- pass twice to download AUR dependencies"
+    echo "   -m, --makepkg    download and make target(s)"
+    echo "   -y, --sync       download, make and install target(s)"
+    echo "   -k, --check      check for AUR update(s)"
+    echo "   -u, --update     update AUR package(s)"
     echo " general"
-    echo "   -v, --version   display version information"
-    echo "   -h, --help      display help information"
+    echo "   -v, --version    display version information"
+    echo "   -h, --help       display help information"
     echo ""
     echo "options:"
     echo " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
-    echo "   -a, --aur       only search, install or clean packages from the AUR"
-    echo "   -r, --repo      only search, install or clean packages from the repositories"
+    echo "   -a, --aur        only search, install or clean packages from the AUR"
+    echo "   -r, --repo       only search, install or clean packages from the repositories"
     echo " general"
-    echo "   -e, --edit      edit target PKGBUILD and view install script"
-    echo "   -c, --clean     clean target(s) build files -- can be combined with the -m, -y, -u flags"
-    echo "   -f, --force     overwrite existing files -- can be combined with the -d flag"
-    echo "   -q, --quiet     show less information for query and search"
-    echo "   --devel         consider AUR development packages upgrade"
-    echo "   --ignore        ignore a package upgrade (can be used more than once)"
-    echo "   --noconfirm     do not prompt for any confirmation"
-    echo "   --noedit        do not prompt to edit files"
-    echo "   --rebuild       always rebuild package"
+    echo "   -e, --edit       edit target PKGBUILD and view install script"
+    echo "   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u flags"
+    echo "   -f, --force      overwrite existing files -- can be combined with the -d flag"
+    echo "   -q, --quiet      show less information for query and search"
+    echo "   -o, --ignore-ood hide out of date results for search"
+    echo "   --devel          consider AUR development packages upgrade"
+    echo "   --ignore         ignore a package upgrade (can be used more than once)"
+    echo "   --noconfirm      do not prompt for any confirmation"
+    echo "   --noedit         do not prompt to edit files"
+    echo "   --rebuild        always rebuild package"
     echo ""
 }
 
@@ -710,6 +711,7 @@ while [[ $index -ne 1 ]]; do
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
+                    ignore-ood) coweropts+=("-o");;
                     # pacman
                     repo) repo='1';;
                     aur) aur='1';;
@@ -746,6 +748,7 @@ while [[ $index -ne 1 ]]; do
             c)  [[ $pacS ]] && operation=cleancache; ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true; ((count++));;
             q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
+            o)  [[ $pac || $pacQ ]] && continue || coweropts+=("-o");;
             # pacman
             r)  repo='1';;
             a)  aur='1';;
@@ -770,6 +773,7 @@ done
 pkgs=(${pkgs[@]//})
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
+[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-o/})
 
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
