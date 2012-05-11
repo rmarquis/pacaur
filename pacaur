@@ -773,6 +773,7 @@ done
 pkgs=(${pkgs[@]//})
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
+[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-o/})
 
 # sanity check
