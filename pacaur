@@ -80,7 +80,7 @@ InfoAur() {
 
 DownloadAur() {
     [[ ! $operation = download ]] && coweropts+=("-d")
-    deps+=($($cower $d ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    deps+=($($cower ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ $operation = download ]] && [[ -e "$tmpDir/repodeps" ]] && grep -E "available|exists" "$tmpDir/repodeps" 
     [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
 
@@ -686,7 +686,6 @@ for i in "${args[@]}"; do
     [[ "$i" =~ ^-[a-zA-Z0-9] ]] && opts+=("$i")
 done
 
-pkgs=()
 count=0
 index=0
 
@@ -736,11 +735,11 @@ while [[ $index -ne 1 ]]; do
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=info; coweropts+=("-i"); aur='1';;
             d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download; coweropts+=("-d");;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
-            y)  [[ $pacS ]] && operation=sync; refresh=true;
+            y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
             k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-u"); aur='1';;
-            u)  [[ $pacQ ]] && operation=upgrades; coweropts+=("-u");
-                [[ $pacS ]] && operation=sync; upgrade=true; coweropts+=("-f");
+            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-u");
+                [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
@@ -766,11 +765,9 @@ while [[ $index -ne 1 ]]; do
 
     # packages
     shift
-    [[ "$1" =~ ^--[a-zA-Z0-9] ]] && continue || pkgs+=("$1")
-
+    [[ "$1" =~ ^--[a-zA-Z0-9] ]] && continue || [[ -n "$1" ]] && pkgs+=("$1")
     index=$OPTIND
 done
-pkgs=(${pkgs[@]//})
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})

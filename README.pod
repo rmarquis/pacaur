@@ -67,17 +67,17 @@ Update foreign packages in the AUR. Without any arguments, all manually
 installed packages will be updated. If targets are supplied, only those targets
 will be updated.
 
-=item B<-S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc>
+=item B<-S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc>
 
 Additionally, pacaur wraps B<pacman operations> and extends respectively its
 install, search, info, download, update, check updates and clean functions to
 the AUR.
-Pacaur will also pass any pacman related options to the pacman binary. This
-behavior can be disabled with the I<fallback> variable in the config file.
+This behavior can be disabled with the I<fallback> variable in the config file.
+Pacaur will also pass any pacman related options to the pacman binary.
 
 =item B<-v, --version>
 
-Display version and exit.
+Display version and quit.
 
 =item B<-h, --help>
 
@@ -228,10 +228,10 @@ packages. Default is B<true>.
 
 =item B<carchmagic>
 
-Enable compatibility with I<$CARCH> bash magic. When enabled, use a full bash
-dependency solver instead of cower's internal solver to ensure compatibility
-with architecture-independent PKGBUILDs using the $CARCH makepkg variable, at
-the cost of a slight dependency solving speed only. Default is B<true>.
+Enable compatibility with I<$CARCH> bash magic. Ensure that architecture
+independent PKGBUILDs using the $CARCH makepkg variable are correctly handled
+by using a full bash dependency solver instead of cower's internal solver.
+Default is B<true>.
 
 =back
 
