@@ -25,6 +25,7 @@ editpkgbuild=true               # edit PKGBUILD
 editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
 carchmagic=true                 # CARCH compatibility
+tempdirroot=/tmp                # where to put temporary and build files by default
 
 # source config
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -59,7 +60,7 @@ fi
 source /etc/makepkg.conf
 
 # set up directories
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+tmpDir="${TMPDIR:$tempdirroot}/${name}tmp-$USER"
 buildDir="${BUILDDIR:-$tmpDir}"
 [[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
 [[ ! -d "$tmpDir" ]] && mkdir -p "$tmpDir"
