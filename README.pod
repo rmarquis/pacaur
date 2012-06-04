@@ -182,7 +182,8 @@ and falling back to
 
   $HOME/.config/pacaur/config
 
-In addition, pacaur fully honors cower config file. See B<cower>(1).
+In addition, pacaur fully honors cower config file and makepkg environment
+variables, such as $BUILDDIR. See B<cower>(1) and B<makepkg>(8).
 
 The available options are: 
 
