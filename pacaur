@@ -695,7 +695,7 @@ count=0
 index=0
 
 # get options
-while [[ $index -ne 1 ]]; do
+while [[ -n "${!OPTIND}" ]]; do
 
     while getopts "sidmykufecqrahvVDQRSTUbglnoptw-:" OPT; do
         pacmanarg+=("-$OPT");
@@ -723,7 +723,7 @@ while [[ $index -ne 1 ]]; do
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     carch) carchmagic=true;;
-                    ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore" "${!OPTIND}"); shift 2;;
+                    ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
@@ -769,10 +769,11 @@ while [[ $index -ne 1 ]]; do
     done
 
     # packages
-    shift
-    [[ "$1" =~ ^--[a-zA-Z0-9] ]] && continue || [[ -n "$1" ]] && pkgs+=("$1")
-    index=$OPTIND
+    [[ -z "${!OPTIND}" ]] && break || pkgs+=("${!OPTIND}")
+    shift $OPTIND
+    OPTIND=1
 done
+
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
