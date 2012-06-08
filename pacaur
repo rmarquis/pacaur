@@ -83,11 +83,6 @@ DownloadAur() {
     deps+=($($cower ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ $operation = download ]] && [[ -e "$tmpDir/repodeps" ]] && grep -E "available|exists" "$tmpDir/repodeps" 
     [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
-    # hack to warn when a maintainer breaks repo integrity
-    if [[ ! $operation = download && -e "$tmpDir/repodeps" ]]; then
-        errorpkgs+=($(cat "$tmpDir/repodeps" | grep "available" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ -n "${errorpkgs[@]}" ]] && error "no results found for ${errorpkgs[@]}"
-    fi
 
     timeout ${deps[@]}
 }
