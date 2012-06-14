@@ -183,7 +183,8 @@ and falling back to
   $HOME/.config/pacaur/config
 
 In addition, pacaur fully honors cower config file and makepkg environment
-variables, such as $BUILDDIR. See B<cower>(1) and B<makepkg>(8).
+variables. These variables (such as $BUILDDIR) can be overriden in the config
+file if needed. See B<cower>(1) and B<makepkg>(8).
 
 The available options are: 
 
