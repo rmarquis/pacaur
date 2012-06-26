@@ -397,7 +397,8 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 echo -e -n "\nEnter a number (default=0):"
-                read -n 1 nb
+                nbchar=$(echo "${#providers[@]}" | wc -m)
+                read -n ${#nbchar} nb
                 echo ""
 
                 case $nb in
