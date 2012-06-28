@@ -391,7 +391,7 @@ ProviderChecks() {
 
         if [[ ! $noconfirm ]]; then
             info "${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
-            expac -S '   %!) %n (%r) ' ${providers[@]}
+            expac -S -1 '   %!) %n (%r) ' ${providers[@]}
 
             local nb=-1
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
