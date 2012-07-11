@@ -822,8 +822,7 @@ case $operation in
                 Core ${aurpkgs[@]}
             fi
         else
-            ClassifyPkgs ${pkgs[@]}
-            [[ ! $selective ]] && unset pkgs  # selective upgrade switch
+            [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
             [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
