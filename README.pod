@@ -158,9 +158,7 @@ rebuilding it.
 =back
 
 
-=head1 CONFIGURATION
-
-=head2 CONFIG FILE
+=head1 CONFIG FILE
 
 =over 4
 
@@ -188,12 +186,11 @@ and falling back to
 =item B<other config>
 
 In addition, pacaur fully honors cower config file and makepkg environment
-variables. These variables (such as $BUILDDIR) can be overriden in the config
-file if needed. See B<cower>(1) and B<makepkg>(8).
+variables.See B<cower>(1) and B<makepkg>(8).
 
 =back
 
-=head2 CONFIG OPTIONS
+=head1 CONFIG OPTIONS
 
 The available options are:
 
@@ -208,19 +205,6 @@ I</tmp/pacaurtmp-$USER>.
 
 Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
 
-=item B<color>
-
-Enable color output. This option requires the pacman binary I<pacman-color> to
-be installed. Default is B<false>.
-
-=item B<clean>
-
-Clean build directory after operation. Default is B<true>.
-
-=item B<fallback>
-
-Extend pacman commands to the AUR. Default is B<true>.
-
 =item B<editpkgbuild>
 
 Enable PKGBUILD editing prompt. Default is B<true>.
@@ -229,10 +213,23 @@ Enable PKGBUILD editing prompt. Default is B<true>.
 
 Enable install script editing prompt. Default is B<true>.
 
+=item B<fallback>
+
+Extend pacman commands to the AUR. Default is B<true>.
+
+=item B<clean>
+
+Clean build directory after operation. Default is B<true>.
+
 =item B<cleandevel>
 
 When clean config option is enabled, clean build directory of development
 packages. Default is B<true>.
+
+=item B<color>
+
+Enable color output. This option requires the pacman binary I<pacman-color> to
+be installed. Default is B<false>.
 
 =back
 
