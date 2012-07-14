@@ -163,7 +163,13 @@ rebuilding it.
 =back
 
 
-=head1 CONFIG FILE
+=head1 CONFIGURATION
+
+=head2 CONFIG FILE
+
+=over 4
+
+=item B<system config>
 
 Pacaur honors a system-wide config file which will be looked for first at
 
@@ -172,6 +178,8 @@ Pacaur honors a system-wide config file which will be looked for first at
 and falling back to
 
   /etc/xdg/pacaur/pacaur.conf
+
+=item B<user config>
 
 User-defined configuration files overriding the general settings will be looked
 for first at
@@ -182,15 +190,24 @@ and falling back to
 
   $HOME/.config/pacaur/config
 
+=item B<other config>
+
 In addition, pacaur fully honors cower config file and makepkg environment
 variables. These variables (such as $BUILDDIR) can be overriden in the config
 file if needed. See B<cower>(1) and B<makepkg>(8).
 
-The available options are: 
+=back
 
-=head2 GENERAL OPTIONS
+=head2 CONFIG OPTIONS
+
+The available options are:
 
 =over 4
+
+=item B<buildDir>
+
+Define the build directory. Default is B<$BUILDDIR>, with a fallback on
+I</tmp/pacaurtmp-$USER>.
 
 =item B<editor>
 
@@ -208,12 +225,6 @@ Clean build directory after operation. Default is B<true>.
 =item B<fallback>
 
 Extend pacman commands to the AUR. Default is B<true>.
-
-=back
-
-=head2 ADVANCED OPTIONS
-
-=over 4
 
 =item B<editpkgbuild>
 
