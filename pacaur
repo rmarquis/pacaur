@@ -29,7 +29,6 @@ fallback=true                   # pacman fallback
 editpkgbuild=true               # edit PKGBUILD
 editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
-carchmagic=true                 # CARCH compatibility
 
 # set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -90,21 +89,11 @@ DownloadAur() {
 }
 
 DownloadPkgs() {
-    if [[ $carchmagic = false ]]; then
-        coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
-        # check for CARCH 32/64bits bash magic
-        for i in "${deps[@]}"; do
-            [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$buildDir/$i/PKGBUILD") ]] && error "${colorW}$i${reset} requires \$CARCH bash magic compatibility to be enabled.\nCheck configuration in $configDir/${name}.conf or use --carch option."
-        done
-        # check binary depends pkgs
-        [[ -e "$tmpDir/repodeps" ]] && repodeps=($(cat "$tmpDir/repodeps" | grep -v 'no results found for' | awk -F " " '{print $2}' | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    else
-        allaurdeps+=("${aurpkgs[@]}")
-        FindPkgsDeps ${aurpkgs[@]}
-        deps=("${allaurdeps[@]}")
-        # reduce root binary deps
-        repodeps=($(echo "${repodeps[@]}" | sed 's/ /\n/g' | sort -u))
-    fi
+    allaurdeps+=("${aurpkgs[@]}")
+    FindPkgsDeps ${aurpkgs[@]}
+    deps=("${allaurdeps[@]}")
+    # reduce root binary deps
+    repodeps=($(echo "${repodeps[@]}" | sed 's/ /\n/g' | sort -u))
 
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
@@ -720,7 +709,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     # others
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
-                    carch) carchmagic=true;;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;

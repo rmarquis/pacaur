@@ -150,11 +150,6 @@ Always rebuild packages regardless of any existing file in $PKGDEST directory.
 
 When building AUR package(s) as root, allow makepkg to run as root user.
 
-=item B<--carch>
-
-When I<carchmagic> option is disabled, temporarily enable $CARCH bash magic
-compatibility.
-
 =item B<--fixbackend>
 
 When I<cower> backend breaks following an update, attempt to fix it by quickly
@@ -238,13 +233,6 @@ Enable install script editing prompt. Default is B<true>.
 
 When clean config option is enabled, clean build directory of development
 packages. Default is B<true>.
-
-=item B<carchmagic>
-
-Enable compatibility with I<$CARCH> bash magic. Ensure that architecture
-independent PKGBUILDs using the $CARCH makepkg variable are correctly handled
-by using a full bash dependency solver instead of cower's internal solver.
-Default is B<true>.
 
 =back
 
