@@ -14,13 +14,11 @@ version="3.1.2"
 # locale
 export LANG=C
 
-# general options
-editor=${EDITOR:-vi}            # PKGBUILD editor
+# config options
+editor="${EDITOR:-vi}"          # PKGBUILD editor
 color=false                     # enable color
 clean=true                      # cleanup after install
 fallback=true                   # pacman fallback
-
-# advanced options
 editpkgbuild=true               # edit PKGBUILD
 editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
