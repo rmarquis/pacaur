@@ -199,7 +199,7 @@ The available options are:
 
 =over 4
 
-=item B<buildDir>
+=item B<builddir>
 
 Define the build directory. Default is B<$BUILDDIR>, with a fallback on
 I</tmp/pacaurtmp-$USER>.

@@ -18,10 +18,10 @@ export LANG=C
 source /etc/makepkg.conf
 
 # temp directory
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+tmpdir="${TMPDIR:-/tmp}/${name}tmp-$USER"
 
 # config options
-buildDir="${BUILDDIR:-$tmpDir}" # build directory
+builddir="${BUILDDIR:-$tmpdir}" # build directory
 editor="${EDITOR:-vi}"          # PKGBUILD editor
 color=false                     # enable color
 clean=true                      # cleanup after install
@@ -62,9 +62,9 @@ else
 fi
 
 # set up directories
-[[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
-[[ ! -d "$tmpDir" ]] && mkdir -p "$tmpDir"
-[[ ! -d "$buildDir" ]] && mkdir -p "$buildDir"
+[[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
+[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
+[[ ! -d "$builddir" ]] && mkdir -p "$builddir"
 
 
 #
@@ -81,9 +81,9 @@ InfoAur() {
 
 DownloadAur() {
     [[ ! $operation = download ]] && coweropts+=("-d") && coweropts+=("--ignorerepo")
-    deps+=($($cower ${coweropts[@]} $@ -t $buildDir 2>"$tmpDir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ $operation = download ]] && [[ -e "$tmpDir/repodeps" ]] && grep -E "available|exists" "$tmpDir/repodeps" 
-    [[ -e "$tmpDir/repodeps" ]] && grep 'no results found for' "$tmpDir/repodeps"
+    deps+=($($cower ${coweropts[@]} $@ -t $builddir 2>"$tmpdir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    [[ $operation = download ]] && [[ -e "$tmpdir/repodeps" ]] && grep -E "available|exists" "$tmpdir/repodeps" 
+    [[ -e "$tmpdir/repodeps" ]] && grep 'no results found for' "$tmpdir/repodeps"
 
     timeout ${deps[@]}
 }
@@ -119,7 +119,7 @@ FindPkgsDeps() {
 
     # source pkgs
     for i in "${deps[@]}"; do
-        [[ -e "$buildDir/$i/PKGBUILD" ]] && . "$buildDir/$i/PKGBUILD" || error "Could not read ${colorW}$i${reset} PKGBUILD"
+        [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD" || error "Could not read ${colorW}$i${reset} PKGBUILD"
         sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
     done
 
@@ -127,9 +127,9 @@ FindPkgsDeps() {
     depspkgs=($($pacmanBin -T "${sourcedpkgs[@]}"))
 
     # split binary and AUR depends pkgs
-    [[ -e "$tmpDir/aurdeps" ]] && rm "$tmpDir/aurdeps"
-    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v %n ${depspkgs[@]} 2>"$tmpDir/aurdeps")) && repodeps+=(${depspkgsrepo[@]})
-    [[ -e "$tmpDir/aurdeps" ]] && depspkgsaur=($(cat "$tmpDir/aurdeps" | grep 'error:' | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}')) || unset depspkgsaur
+    [[ -e "$tmpdir/aurdeps" ]] && rm "$tmpdir/aurdeps"
+    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v %n ${depspkgs[@]} 2>"$tmpdir/aurdeps")) && repodeps+=(${depspkgsrepo[@]})
+    [[ -e "$tmpdir/aurdeps" ]] && depspkgsaur=($(cat "$tmpdir/aurdeps" | grep 'error:' | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}')) || unset depspkgsaur
     unset deps sourcedpkgs depends makedepends depspkgs
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
@@ -165,7 +165,7 @@ UpgradeAur() {
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            [[ -e "$tmpDir/${allaurpkgs[$i]}.PKGBUILD" ]] && . "$tmpDir/${allaurpkgs[$i]}.PKGBUILD" || error "Could not read ${colorW}${allaurpkgs[$i]}${reset} PKGBUILD"
+            [[ -e "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" ]] && . "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" || error "Could not read ${colorW}${allaurpkgs[$i]}${reset} PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     warn "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
@@ -200,26 +200,26 @@ EditPkgs() {
     [[ $noedit ]] && return
     for i in "$@"; do
         unset install
-        [[ -e "$buildDir/$i/PKGBUILD" ]] && source "$buildDir/$i/PKGBUILD"
+        [[ -e "$builddir/$i/PKGBUILD" ]] && source "$builddir/$i/PKGBUILD"
         if [[ ! $edit ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
                 if proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD?"; then
-                    [[ -e "$buildDir/$i/PKGBUILD" ]] && $editor "$buildDir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+                    [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
             fi
             # edit install script
             if [[ ! $editinstall = false ]]; then
                 if [[ $install ]]; then
                     if proceedY "${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
-                        [[ -e "$buildDir/$i/$install" ]] && $editor "$buildDir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
+                        [[ -e "$builddir/$i/$install" ]] && $editor "$builddir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
                     fi
                 fi
             fi
         else
-            [[ -e "$buildDir/$i/PKGBUILD" ]] && $editor "$buildDir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && success "${colorW}$i${reset} PKGBUILD edited" || error "Could not open ${colorW}$i${reset} PKGBUILD"
             if [[ $install ]]; then
-                [[ -e "$buildDir/$i/$install" ]] && $editor "$buildDir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
+                [[ -e "$builddir/$i/$install" ]] && $editor "$builddir/$i/$install" && success "${colorW}$i${reset} install script viewed" || error "Could not open ${colorW}$i${reset} install script"
             fi
         fi
     done
@@ -264,14 +264,14 @@ MakePkgs() {
                     makeopts+=("--clean")
                 else
                     unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                    [[ -e "$buildDir/$i/PKGBUILD" ]] && . "$buildDir/$i/PKGBUILD"
+                    [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD"
                     [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" || makeopts+=("--clean")
                 fi
             fi
             # build
-            if [[ -e "$buildDir/$i/PKGBUILD" ]]; then
+            if [[ -e "$builddir/$i/PKGBUILD" ]]; then
                 info "Building ${colorW}$i${reset} package..."
-                cd "$buildDir/$i"
+                cd "$builddir/$i"
                 if [[ $installpkg ]]; then
                     # install
                     yes | makepkg -sfi ${makeopts[@]}
@@ -307,7 +307,7 @@ MakePkgs() {
 
 CleanUp() {
     if [[ $count -eq 1 ]]; then
-        cd "$buildDir"
+        cd "$builddir"
         for i in "$@"; do
             # hack for vcs protected files
             chmod -R 755 $i &>/dev/null
@@ -315,8 +315,8 @@ CleanUp() {
         done
     else
         # hack for vcs protected files
-        chmod -R 755 $buildDir/* &>/dev/null
-        rm -r $buildDir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
+        chmod -R 755 $builddir/* &>/dev/null
+        rm -r $builddir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
     fi
 }
 
@@ -411,7 +411,7 @@ ConflictChecks() {
         local k=0
         for i in "${deps[@]}"; do
             unset conflicts
-            [[ -e "$buildDir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$buildDir/$i/PKGBUILD") ]] && . "$buildDir/$i/PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$builddir/$i/PKGBUILD") ]] && . "$builddir/$i/PKGBUILD"
             [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
@@ -450,7 +450,7 @@ OutofdateChecks() {
     done
     wait
     for i in "${deps[@]}"; do
-        [[ -e "$tmpDir/$i.json" ]] && [[ -n $(grep '"OutOfDate":"1"' "$tmpDir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
+        [[ -e "$tmpdir/$i.json" ]] && [[ -n $(grep '"OutOfDate":"1"' "$tmpdir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
     done
 }
 
@@ -524,8 +524,8 @@ GetIgnoredGrps() {
 }
 
 GetAurVersion() {
-    [[ -e "$buildDir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
-    [[ -e "$buildDir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$buildDir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2-)
     Aversion="$Apkgver-$Apkgrel"
 }
 
@@ -536,11 +536,11 @@ FindCachedPkg() {
 }
 
 DownloadPkgbuild() {
-    [[ ! -f "$tmpDir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpDir/$i.PKGBUILD"
+    [[ ! -f "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/$i/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
 }
 
 DownloadJson() {
-    [[ ! -f "$tmpDir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpDir/$i.json"
+    [[ ! -f "$tmpdir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpdir/$i.json"
 }
 
 Core() {
@@ -661,7 +661,7 @@ version() {
 fixbackend() {
     info "Rebuilding ${colorW}cower${reset} backend..."
     cowerexec=($(expac -Q %n cower)) # cower-git compatibility
-    mkdir -p "$buildDir/$cowerexec" && cd "$buildDir/$cowerexec"
+    mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
     curl -o PKGBUILD http://aur.archlinux.org/packages/$cowerexec/PKGBUILD
     makepkg -sfi ${makeopts[@]} --noconfirm
     count=1 && CleanUp $cowerexec
@@ -768,7 +768,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
 [[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
-[[ ! -w "$buildDir" ]] && error "You do not have write permission to build packages in ${colorW}$buildDir${reset}."
+[[ ! -w "$builddir" ]] && error "You do not have write permission to build packages in ${colorW}$builddir${reset}."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
 
