@@ -14,7 +14,14 @@ version="3.1.2"
 # locale
 export LANG=C
 
+# source makepkg variables
+source /etc/makepkg.conf
+
+# temp directory
+tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+
 # config options
+buildDir="${BUILDDIR:-$tmpDir}" # build directory
 editor="${EDITOR:-vi}"          # PKGBUILD editor
 color=false                     # enable color
 clean=true                      # cleanup after install
@@ -24,13 +31,15 @@ editinstall=true                # edit install script
 cleandevel=true                 # cleanup devel after install
 carchmagic=true                 # CARCH compatibility
 
-# source config
+# set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
     xdg_config=($(echo "${XDG_CONFIG_DIRS}" | awk -F ":" '{for (i=1; i<=NF; i++) print $i}' ))
     for i in ${xdg_config[@]}; do
         [[ -d "$i" ]] && export XDG_CONFIG_DIRS=$i && break
     done
 fi
+
+# source config
 configDir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
 userconfigDir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
 source "$configDir/${name}.conf"
@@ -53,12 +62,7 @@ else
     cower='cower'
 fi
 
-# source makepkg variables
-source /etc/makepkg.conf
-
 # set up directories
-tmpDir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-buildDir="${BUILDDIR:-$tmpDir}"
 [[ -d "$tmpDir" ]] && [[ ! -w "$tmpDir" ]] && sudo rm -rf "$tmpDir"
 [[ ! -d "$tmpDir" ]] && mkdir -p "$tmpDir"
 [[ ! -d "$buildDir" ]] && mkdir -p "$buildDir"
