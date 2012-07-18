@@ -545,13 +545,13 @@ DownloadJson() {
 
 Core() {
     IgnoreChecks
-    DownloadPkgs ${aurpkgs[@]}
-    [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks ${deps[@]}
-    ConflictChecks ${deps[@]}
-    ReinstallChecks ${deps[@]}
-    OutofdateChecks ${deps[@]}
-    Prompt ${deps[@]}
-    MakePkgs ${deps[@]}
+    DownloadPkgs
+    [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks
+    ConflictChecks
+    ReinstallChecks
+    OutofdateChecks
+    Prompt
+    MakePkgs
 }
 
 ClassifyPkgs() {
