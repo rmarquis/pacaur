@@ -435,12 +435,20 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    exist=($(expac -Q %n "${deps[@]}"))
-    Qversion=($(expac -Q %v "${deps[@]}"))
+    exist=($(expac -Q %n "${aurpkgs[@]}"))
+    Qversion=($(expac -Q %v "${aurpkgs[@]}"))
     for ((i=0; i<${#exist[@]}; i++)); do
-        [[ " ${deps[@]} " =~ " ${exist[$i]} " ]] && GetAurVersion ${exist[$i]} || continue
-        [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue || warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
+        [[ " ${aurpkgs[@]} " =~ " ${exist[$i]} " ]] && GetAurVersion ${exist[$i]} || continue
+        [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue
+        if [[ ! $needed ]]; then
+            warn "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
+        else
+            warn "${exist[$i]}-${Qversion[$i]} is up to date -- skipping"
+            deps=(${deps[@]/${exist[$i]}/})
+        fi
     done
+
+    nothingtodo ${deps[@]}
 }
 
 OutofdateChecks() {
@@ -710,6 +718,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
+                    needed) needed=true; pacopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
