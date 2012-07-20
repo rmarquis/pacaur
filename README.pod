@@ -109,10 +109,6 @@ Overwrite existing files when downloading.
 Show less information for search and query operations. Search will only show
 package names and not version, group, and description information.
 
-=item B<-o, --ignore-ood>
-
-When searching, ignore all results marked as out of date.
-
 =item B<-a, --aur>
 
 When used with pacman extended operations, only search or install packages from
