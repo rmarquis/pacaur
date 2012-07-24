@@ -83,6 +83,11 @@ Display version and quit.
 
 Display the help message and quit.
 
+=item B<--fixbackend>
+
+When I<cower> backend breaks following an update, attempt to fix it by quickly
+rebuilding it.
+
 =back
 
 
@@ -146,11 +151,6 @@ Always rebuild packages regardless of any existing file in $PKGDEST directory.
 
 When building AUR package(s) as root, allow makepkg to run as root user.
 
-=item B<--fixbackend>
-
-When I<cower> backend breaks following an update, attempt to fix it by quickly
-rebuilding it.
-
 =back
 
 
@@ -182,7 +182,7 @@ and falling back to
 =item B<other config>
 
 In addition, pacaur fully honors cower config file and makepkg environment
-variables.See B<cower>(1) and B<makepkg>(8).
+variables. See B<cower>(1) and B<makepkg>(8).
 
 =back
 
