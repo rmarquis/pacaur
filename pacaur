@@ -643,6 +643,7 @@ usage() {
     echo " general"
     echo "   -v, --version    display version information"
     echo "   -h, --help       display help information"
+    echo "   --fixbackend     quickly rebuild backend"
     echo ""
     echo "options:"
     echo " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
