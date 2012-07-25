@@ -770,7 +770,6 @@ done
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
-[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-o/})
 
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
