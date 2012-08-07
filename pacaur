@@ -306,7 +306,7 @@ MakePkgs() {
 }
 
 CleanUp() {
-    if [[ $count -eq 1 ]]; then
+    if [[ $count -lt 2 ]]; then
         cd "$builddir"
         for i in "$@"; do
             # hack for vcs protected files
@@ -672,7 +672,7 @@ fixbackend() {
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
     curl -o PKGBUILD http://aur.archlinux.org/packages/$cowerexec/PKGBUILD
     makepkg -sfi ${makeopts[@]} --noconfirm
-    count=1 && CleanUp $cowerexec
+    CleanUp $cowerexec
 }
 
 
@@ -743,8 +743,8 @@ while [[ -n "${!OPTIND}" ]]; do
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
-            c)  [[ $pacS ]] && operation=cleancache; ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true; ((count++));;
+            c)  [[ $pacS ]] && operation=cleancache && ((count++));
+                [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
             q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
             # pacman
             r)  repo='1';;
