@@ -1,6 +1,6 @@
 #!/bin/bash
 # the path to this file should be /etc/bash_completion.d/pacaur
-# to use it without reloading your shell: $ source /etc/bash_completion.d/pacaur
+# to use it without reloading your shell: $ source /usr/share/bash-completion/completions/pacaur
 
 _pacaur()
 {
@@ -12,8 +12,7 @@ _pacaur()
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    # operations that wrap pacman operations are not completed yet: -S, -Ss, -Si, -Sii, -Sw. -Su, -Qu, -Sc, -Scc
-    operations="-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help --fixbackend"
+    operations="-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help --fixbackend -S -Ss -Si -Sii -Sw -Su -Qu -Sc -Scc"
     options="-f --force -e --edit -q --quiet -c --clean -a --aur -r --repo --devel --ignore --noconfirm --noedit --rebuild --asroot"
 
     # define a function that checks whether the whole line contains one of the words passed to it
@@ -28,17 +27,21 @@ _pacaur()
         COMPREPLY=( $(compgen -W "${options}" -- $cur) )
 
     ## completion of package names
-    # there is no package name completing for -h --help, -v --version
-    # complete with all packages installed on the system, just after --ignore
+    # there is no package name completing for -h --help, -v --version -Ss -Su, -Qu
+    # complete with all packages installed on the system
     elif [[ "${prev}" = --ignore ]]; then
         COMPREPLY=( $(compgen -W "$(pacman -Qq)" -- $cur) )
-    # complete with all locally installed packages, after -k --check -u --update
+    # complete with all locally installed packages
     elif searchfor "-k --check -u --update"; then
         COMPREPLY=( $(compgen -W "$(pacman -Qqm)" -- $cur) )
-    # complete with all available AUR packages, after -s --search  -i --info -d --download -m --makepkg -y --sync
+    # complete with all available AUR packages
     # anything shorter than 2 characters can't be autocompleted due to the AUR's search minimum
-    elif searchfor "-s --search  -i --info -d --download -m --makepkg -y --sync"; then
+    elif searchfor "-s --search -i --info -d --download -m --makepkg -y --sync"; then
         COMPREPLY=( $(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur) )
+    # complete with all available repository packages
+    elif searchfor "-S -Si -Sii -Sw -Sc -Scc"; then
+        COMPREPLY=( $(compgen -W "$(pacman -Ssq)" -- $cur) )
+
     fi
 
     # restore nullglob setting
