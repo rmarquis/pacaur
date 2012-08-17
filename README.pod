@@ -41,18 +41,18 @@ Show info for I<target>. Pass this option twice to fetch more detailed info.
 
 =item B<-d, --download>
 
-Download I<target> PKGBUILD. Pass this option twice to fetch dependencies (done
+Download I<target>(s) PKGBUILD. Pass this option twice to fetch dependencies (done
 recursively).
 
 =item B<-m, --makepkg>
 
-Download I<target> PKGBUILD and build target. Missing dependencies will be
+Download I<target>(s) PKGBUILD and build target(s). Missing dependencies will be
 installed as required to ensure the build to succeed, before being automatically
 uninstalled.
 
 =item B<-y, --sync>
 
-Download I<target> PKGBUILD, build and install target. Missing dependencies
+Download I<target>(s) PKGBUILD, build and install target(s). Missing dependencies
 will be automatically installed as required.
 
 =item B<-k, --check>
@@ -97,12 +97,12 @@ rebuilding it.
 
 =item B<-e, --edit>
 
-Edit I<target> PKGBUILD and view install script when downloading or building target. Can also be used
-as a standalone command.
+Edit I<target>(s) PKGBUILD and view install script when downloading or building
+target(s). Can also be used as a standalone command.
 
 =item B<-c, --clean>
 
-Remove I<target> build files when building target. Can also be used as a
+Remove I<target>(s) build files after building target(s). Can also be used as a
 standalone command. Pass this option twice to clean the entire build directory.
 
 =item B<-f, --force>
@@ -145,7 +145,7 @@ Perform commands without editing any installation files. Bypass --edit option.
 
 =item B<--rebuild>
 
-Always rebuild packages regardless of any existing file in $PKGDEST directory.
+Always rebuild package(s) regardless of any existing file in $PKGDEST directory.
 
 =item B<--asroot>
 

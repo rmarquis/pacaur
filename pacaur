@@ -650,7 +650,7 @@ usage() {
     echo "   -a, --aur        only search, install or clean packages from the AUR"
     echo "   -r, --repo       only search, install or clean packages from the repositories"
     echo " general"
-    echo "   -e, --edit       edit target PKGBUILD and view install script"
+    echo "   -e, --edit       edit target(s) PKGBUILD and view install script"
     echo "   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u flags"
     echo "   -f, --force      overwrite existing files -- can be combined with the -d flag"
     echo "   -q, --quiet      show less information for query and search"
@@ -658,7 +658,7 @@ usage() {
     echo "   --ignore         ignore a package upgrade (can be used more than once)"
     echo "   --noconfirm      do not prompt for any confirmation"
     echo "   --noedit         do not prompt to edit files"
-    echo "   --rebuild        always rebuild package"
+    echo "   --rebuild        always rebuild package(s)"
     echo ""
 }
 
