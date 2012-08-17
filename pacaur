@@ -488,6 +488,7 @@ IgnoreChecks() {
 }
 
 IgnoreDepsChecks() {
+    [[ -z "${ignoredpkgs[@]}" ]] && return
     unset deps
 
     # add checked targets
@@ -554,7 +555,7 @@ DownloadJson() {
 Core() {
     IgnoreChecks
     DownloadPkgs
-    [[ -n "${ignoredpkgs[@]}" ]] && IgnoreDepsChecks
+    IgnoreDepsChecks
     ConflictChecks
     ReinstallChecks
     OutofdateChecks
