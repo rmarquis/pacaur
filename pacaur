@@ -621,19 +621,19 @@ nothingtodo() {
 }
 
 error() {
-    echo -e "${colorR}::${reset} $1" && exit 1
+    echo -e "${colorR}::${reset} $@" && exit 1
 }
 
 success() {
-    echo -e "${colorG}::${reset} $1"
+    echo -e "${colorG}::${reset} $@"
 }
 
 warn() {
-    echo -e "${colorY}::${reset} $1"
+    echo -e "${colorY}::${reset} $@"
 }
 
 info() {
-    echo -e "${colorB}::${reset} $1"
+    echo -e "${colorB}::${reset} $@"
 }
 
 usage() {
