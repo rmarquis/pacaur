@@ -306,9 +306,15 @@ MakePkgs() {
 }
 
 CleanUp() {
+    [[ ! $clean = true ]] && return
     if [[ $count -lt 2 ]]; then
         cd "$builddir"
         for i in "$@"; do
+            if [[ ! $cleandevel = true ]]; then
+                unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
+                [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD"
+                [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
+            fi
             # hack for vcs protected files
             chmod -R 755 $i &>/dev/null
             rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
