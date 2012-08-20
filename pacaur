@@ -694,7 +694,6 @@ for i in "${args[@]}"; do
 done
 
 count=0
-index=0
 
 # get options
 while [[ -n "${!OPTIND}" ]]; do
