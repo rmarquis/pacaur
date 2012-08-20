@@ -265,7 +265,7 @@ MakePkgs() {
                 else
                     unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
                     [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD"
-                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" || makeopts+=("--clean")
+                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && warn "${colorW}$i${reset} cleaning skipped" || makeopts+=("--clean")
                 fi
             fi
             # build
@@ -313,7 +313,7 @@ CleanUp() {
             if [[ ! $cleandevel = true ]]; then
                 unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
                 [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD"
-                [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && success "${colorW}$i${reset} cleaning skipped" && continue
+                [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && warn "${colorW}$i${reset} cleaning skipped" && continue
             fi
             # hack for vcs protected files
             chmod -R 755 $i &>/dev/null
