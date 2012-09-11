@@ -288,6 +288,8 @@ MakePkgs() {
             else
                 error "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
+            # clean
+            CleanUp $i
         fi
         # set dep status
         if [[ $installpkg ]]; then
