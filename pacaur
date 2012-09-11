@@ -257,17 +257,6 @@ MakePkgs() {
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
         else
-            # clean
-            makeopts=(${makeopts[@]/--clean/})
-            if [[ $clean = true ]]; then
-                if [[ $cleandevel = true || $count -gt 1 ]]; then
-                    makeopts+=("--clean")
-                else
-                    unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                    [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD"
-                    [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && warn "${colorW}$i${reset} cleaning skipped" || makeopts+=("--clean")
-                fi
-            fi
             # build
             if [[ -e "$builddir/$i/PKGBUILD" ]]; then
                 info "Building ${colorW}$i${reset} package..."
