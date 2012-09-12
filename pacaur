@@ -46,7 +46,7 @@ source "$configdir/${name}.conf"
 
 # color
 if $color; then
-    pacmanBin='pacman-color'
+    pacmanbin='pacman-color'
     cower='cower --color=always'
     reset="\e[0m"
     colorR="\e[1;31m"
@@ -57,7 +57,7 @@ if $color; then
     colorC="\e[1;36m"
     colorW="\e[1;39m"
 else
-    pacmanBin='pacman'
+    pacmanbin='pacman'
     cower='cower'
 fi
 
@@ -103,7 +103,7 @@ DownloadPkgs() {
         for i in "${repodeps[@]}"; do
             allrepopkgs+=($(pactree -su "$i"))
         done
-        repodepspkgs=($($pacmanBin -T "${allrepopkgs[@]}"))
+        repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}"))
 
         # providers check
         [[ -n "${repodepspkgs[@]}" ]] && ProviderChecks ${repodepspkgs[@]}
@@ -124,7 +124,7 @@ FindPkgsDeps() {
     done
 
     # remove installed deps
-    depspkgs=($($pacmanBin -T "${sourcedpkgs[@]}"))
+    depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}"))
 
     # split binary and AUR depends pkgs
     [[ -e "$tmpdir/aurdeps" ]] && rm "$tmpdir/aurdeps"
@@ -155,7 +155,7 @@ UpgradeAur() {
 
     # add devel packages
     if [[ $devel ]]; then
-        allaurpkgs=($($pacmanBin -Qmq))
+        allaurpkgs=($($pacmanbin -Qmq))
         Qversion=($(expac -Q %v "${allaurpkgs[@]}"))
 
         for i in "${allaurpkgs[@]}"; do
@@ -234,7 +234,7 @@ MakePkgs() {
 
     # makepkg options
     [[ $color != true ]] && makeopts+=("--nocolor")
-    export PACMAN=$pacmanBin
+    export PACMAN=$pacmanbin
 
     # check destination folder
     [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && error "Please set ${colorW}PKGDEST${reset} variable in /etc/makepkg.conf or disable ${colorW}clean${reset} option."
@@ -242,8 +242,8 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         info "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes | sudo $pacmanBin -S ${providerpkgs[@]}
-        sudo $pacmanBin -D ${providerpkgs[@]} --asdeps &>/dev/null
+        yes | sudo $pacmanbin -S ${providerpkgs[@]}
+        sudo $pacmanbin -D ${providerpkgs[@]} --asdeps &>/dev/null
     fi
 
     for i in "${deps[@]}"; do
@@ -252,7 +252,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
-                yes | sudo $pacmanBin -U $cachedpkg ${pacopts[@]}
+                yes | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
             else
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
@@ -282,17 +282,17 @@ MakePkgs() {
         fi
         # set dep status
         if [[ $installpkg ]]; then
-            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanBin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $i --asexplicit ${pacopts[@]} &>/dev/null
         else
-            sudo $pacmanBin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
     done
     # remove AUR deps
     if [[ ! $installpkg ]]; then
         [[ -n "${aurdepspkgs[@]}" ]] && info "Removing installed AUR dependencies..."
-        [[ -n "${aurdepspkgs[@]}" ]] && sudo $pacmanBin -Rsn ${aurdepspkgs[@]} --noconfirm
+        [[ -n "${aurdepspkgs[@]}" ]] && sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 }
 
@@ -325,7 +325,7 @@ CheckAur() {
 }
 
 CheckRepo() {
-    outofdate=($($pacmanBin -Quq $@))
+    outofdate=($($pacmanbin -Quq $@))
     if [[ -n "${outofdate[@]}" ]]; then
         Qversion=($(expac -Q %v "${outofdate[@]}"))
         Sversion=($(expac -S -1 %v "${outofdate[@]}"))
@@ -569,7 +569,7 @@ ClassifyPkgs() {
             GetIgnoredGrps
             for i in "${pkgs[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$($pacmanBin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+                [[ -z "$($pacmanbin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
     else
@@ -770,7 +770,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configdir/${name}.conf"
-[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configdir/${name}.conf"
+[[ ! -f /usr/bin/$pacmanbin ]] && error "The binary ${colorW}$pacmanbin${reset} is not installed.\nCheck configuration in $configdir/${name}.conf"
 [[ ! -w "$builddir" ]] && error "You do not have write permission to build packages in ${colorW}$builddir${reset}."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
@@ -792,13 +792,13 @@ case $operation in
         exit;;
     search)
         # search (-Ss, -s) handling
-        [[ ! $aur ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+        [[ ! $aur ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
         exit;;
     info)
         # info (-Si, -i) handling
-        [[ ! ${pkgs[@]} ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-        [[ -n "${repopkgs[@]}" ]] && $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+        [[ ! ${pkgs[@]} ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+        [[ -n "${repopkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
             [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             InfoAur ${aurpkgs[@]}
@@ -807,16 +807,16 @@ case $operation in
     sync)
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy), sysupgrade (-Su, -u) handling
         if [[ ! $upgrade ]]; then
-            [[ ! ${pkgs[@]} ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-            [[ -n "${repopkgs[@]}" ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! ${pkgs[@]} ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
-                [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanBin -Sy ${pacopts[@]} ${ignoreopts[@]}
+                [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
                 [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 Core ${aurpkgs[@]}
             fi
         else
             [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
-            [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
         fi
@@ -828,15 +828,15 @@ case $operation in
         exit;;
     cleancache)
         # clean (-Sc) handling
-        [[ ! $aur ]] && sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+        [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         exit;;
     *)
         # others operations handling
         if [[ -z "${pkgs[@]}" || -n "$(echo "${pacmanarg[@]}" | grep -e "-[QTgl]")" ]]; then
-            $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+            $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
-            sudo $pacmanBin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+            sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         fi
         exit;;
 esac
