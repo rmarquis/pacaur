@@ -311,9 +311,17 @@ CleanUp() {
             rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
         done
     else
-        # hack for vcs protected files
-        chmod -R 755 $builddir/* &>/dev/null
-        rm -r $builddir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
+        if [[ -n "$@" ]];; then
+            for i in "$@"; do
+                # hack for vcs protected files
+                chmod -R 755 $i &>/dev/null
+                rm -r $i &>/dev/null && success "${colorW}$i${reset} cleaned" || warn "Could not clean ${colorW}$i${reset}"
+            done
+        else
+            # hack for vcs protected files
+            chmod -R 755 $builddir/* &>/dev/null
+            rm -r $builddir/* &>/dev/null && success "Build directory cleaned" || warn "Build directory already cleaned"
+        fi
     fi
 }
 
