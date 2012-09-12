@@ -105,10 +105,6 @@ target(s). Can also be used as a standalone command.
 Remove I<target>(s) build files after building target(s). Can also be used as a
 standalone command. Pass this option twice to clean the entire build directory.
 
-=item B<-f, --force>
-
-Overwrite existing files when downloading.
-
 =item B<-q, --quiet>
 
 Show less information for search and query operations. Search will only show
@@ -123,6 +119,10 @@ the AUR.
 
 When used with pacman extended operations, only search or install packages from
 the repositories.
+
+=item B<-f, --force>
+
+Overwrite existing files when downloading.
 
 =item B<--devel>
 
