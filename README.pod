@@ -102,8 +102,10 @@ target(s). Can also be used as a standalone command.
 
 =item B<-c, --clean>
 
-Remove I<target>(s) build files after building target(s). Can also be used as a
-standalone command. Pass this option twice to clean the entire build directory.
+Remove I<target>(s) build files after building target(s). Pass this option twice
+to force cleaning when the cleandevel option is disabled. Can also be used as a
+standalone command. When passed twice without any arguments, clean the entire
+build directory.
 
 =item B<-q, --quiet>
 
