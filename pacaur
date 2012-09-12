@@ -39,10 +39,10 @@ if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
 fi
 
 # source config
-configDir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
-userconfigDir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
-source "$configDir/${name}.conf"
-[[ -r "$userconfigDir/config" ]] && source "$userconfigDir/config"
+configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
+userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
+source "$configdir/${name}.conf"
+[[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # color
 if $color; then
@@ -769,8 +769,8 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 
 # sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configDir/${name}.conf"
-[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configDir/${name}.conf"
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && error "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configdir/${name}.conf"
+[[ ! -f /usr/bin/$pacmanBin ]] && error "The binary ${colorW}$pacmanBin${reset} is not installed.\nCheck configuration in $configdir/${name}.conf"
 [[ ! -w "$builddir" ]] && error "You do not have write permission to build packages in ${colorW}$builddir${reset}."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && error "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && error "target not found"
