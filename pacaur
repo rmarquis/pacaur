@@ -80,7 +80,7 @@ InfoAur() {
 }
 
 DownloadAur() {
-    [[ ! $operation = download ]] && coweropts+=("-d") && coweropts+=("--ignorerepo")
+    [[ ! $operation = download ]] && coweropts+=("-d")
     deps+=($($cower ${coweropts[@]} $@ -t $builddir 2>"$tmpdir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     [[ $operation = download ]] && [[ -e "$tmpdir/repodeps" ]] && grep -E "available|exists" "$tmpdir/repodeps" 
     [[ -e "$tmpdir/repodeps" ]] && grep 'no results found for' "$tmpdir/repodeps"
