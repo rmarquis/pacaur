@@ -77,7 +77,7 @@ EnsureSudo() {
 }
 
 EnsureSudoYes() {
-   while [ "$(sudo awk 'BEGIN{system("echo $UID")}')" != "0" ]; do sleep 1; done;
+    while [ "$(sudo awk 'BEGIN{system("echo $UID")}')" != "0" ]; do sleep 1; done;
     yes | $@
 }
 
@@ -273,15 +273,15 @@ MakePkgs() {
                 cd "$builddir/$i"
                 if [[ $installpkg ]]; then
                     # install
-                    yes | makepkg -sf ${makeopts[@]} && EnsureSudoYes makepkg -i
+                    EnsureSudoYes makepkg -sf ${makeopts[@]} && EnsureSudoYes makepkg -i
                 else
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                         # install AUR deps
                         info "Installing ${colorW}$i${reset} dependencies..."
-                        yes | makepkg -sf ${makeopts[@]} && EnsureSudoYes makepkg -i
+                        EnsureSudoYes makepkg -sf ${makeopts[@]} && EnsureSudoYes makepkg -i
                     else
                         # install then remove binary deps
-                        yes | makepkg -sfr ${makeopts[@]}
+                        EnsureSudoYes makepkg -sfr ${makeopts[@]}
                     fi
                 fi
             else
