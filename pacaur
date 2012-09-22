@@ -71,6 +71,16 @@ fi
 # Functions
 #
 
+EnsureSudo() {
+    while [ "$(sudo awk 'BEGIN{system("echo $UID")}')" != "0" ]; do sleep 1; done;
+    $@
+}
+
+EnsureSudoYes() {
+    while [ "$(sudo awk 'BEGIN{system("echo $UID")}')" != "0" ]; do sleep 1; done;
+    yes | $@
+}
+
 SearchAur() {
     $cower ${coweropts[@]} $@
 }
@@ -242,8 +252,8 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         info "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes | sudo $pacmanbin -S ${providerpkgs[@]}
-        sudo $pacmanbin -D ${providerpkgs[@]} --asdeps &>/dev/null
+        EnsureSudoYes sudo $pacmanbin -S ${providerpkgs[@]}
+        EnsureSudo sudo $pacmanbin -D ${providerpkgs[@]} --asdeps &>/dev/null
     fi
 
     for i in "${deps[@]}"; do
@@ -252,7 +262,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
-                yes | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                EnsureSudoYes sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
             else
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
@@ -263,15 +273,15 @@ MakePkgs() {
                 cd "$builddir/$i"
                 if [[ $installpkg ]]; then
                     # install
-                    yes | makepkg -sfi ${makeopts[@]}
+                    EnsureSudoYes makepkg -sf ${makeopts[@]} && EnsureSudoYes makepkg -i
                 else
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                         # install AUR deps
                         info "Installing ${colorW}$i${reset} dependencies..."
-                        yes | makepkg -sfi ${makeopts[@]}
+                        EnsureSudoYes makepkg -sf ${makeopts[@]} && EnsureSudoYes makepkg -i
                     else
                         # install then remove binary deps
-                        yes | makepkg -sfr ${makeopts[@]}
+                        EnsureSudoYes makepkg -sfr ${makeopts[@]}
                     fi
                 fi
             else
@@ -282,17 +292,17 @@ MakePkgs() {
         fi
         # set dep status
         if [[ $installpkg ]]; then
-            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && EnsureSudo sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && EnsureSudo sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && EnsureSudo sudo $pacmanbin -D $i --asexplicit ${pacopts[@]} &>/dev/null
         else
-            sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
+            EnsureSudo sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
     done
     # remove AUR deps
     if [[ ! $installpkg ]]; then
         [[ -n "${aurdepspkgs[@]}" ]] && info "Removing installed AUR dependencies..."
-        [[ -n "${aurdepspkgs[@]}" ]] && sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
+        [[ -n "${aurdepspkgs[@]}" ]] && EnsureSudo sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 }
 
@@ -807,16 +817,16 @@ case $operation in
     sync)
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy), sysupgrade (-Su, -u) handling
         if [[ ! $upgrade ]]; then
-            [[ ! ${pkgs[@]} ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-            [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! ${pkgs[@]} ]] && EnsureSudo sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            [[ -n "${repopkgs[@]}" ]] && EnsureSudo sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
-                [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
+                [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && EnsureSudo sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
                 [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 Core ${aurpkgs[@]}
             fi
         else
             [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
-            [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $aur ]] && EnsureSudo sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
         fi
@@ -828,7 +838,7 @@ case $operation in
         exit;;
     cleancache)
         # clean (-Sc) handling
-        [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+        [[ ! $aur ]] && EnsureSudo sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         exit;;
     *)
@@ -836,7 +846,7 @@ case $operation in
         if [[ -z "${pkgs[@]}" || -n "$(echo "${pacmanarg[@]}" | grep -e "-[QTgl]")" ]]; then
             $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
-            sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+            EnsureSudo sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         fi
         exit;;
 esac
