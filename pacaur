@@ -242,8 +242,7 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         info "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        sudo $pacmanbin -S --noconfirm ${providerpkgs[@]}
-        sudo $pacmanbin -D ${providerpkgs[@]} --asdeps &>/dev/null
+        sudo $pacmanbin -S --asdeps --noconfirm ${providerpkgs[@]}
     fi
 
     for i in "${deps[@]}"; do
