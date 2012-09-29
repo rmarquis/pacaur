@@ -242,8 +242,7 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         info "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes | sudo $pacmanbin -S ${providerpkgs[@]}
-        sudo $pacmanbin -D ${providerpkgs[@]} --asdeps &>/dev/null
+        sudo $pacmanbin -S --asdeps --noconfirm ${providerpkgs[@]}
     fi
 
     for i in "${deps[@]}"; do
@@ -252,7 +251,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 info "Installing ${colorW}$i${reset} cached package..."
-                yes | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                sudo $pacmanbin -U --noconfirm $cachedpkg ${pacopts[@]}
             else
                 info "Package ${colorW}$i${reset} already available in cache"
             fi
@@ -263,15 +262,15 @@ MakePkgs() {
                 cd "$builddir/$i"
                 if [[ $installpkg ]]; then
                     # install
-                    yes | makepkg -sfi ${makeopts[@]}
+                    makepkg -sfi --noconfirm ${makeopts[@]}
                 else
                     if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                         # install AUR deps
                         info "Installing ${colorW}$i${reset} dependencies..."
-                        yes | makepkg -sfi ${makeopts[@]}
+                        makepkg -sfi --noconfirm ${makeopts[@]}
                     else
                         # install then remove binary deps
-                        yes | makepkg -sfr ${makeopts[@]}
+                        makepkg -sfr --noconfirm ${makeopts[@]}
                     fi
                 fi
             else
