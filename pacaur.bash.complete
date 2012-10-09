@@ -1,53 +1,47 @@
 #!/bin/bash
-# the path to this file should be /etc/bash_completion.d/pacaur
-# to use it without reloading your shell: $ source /usr/share/bash-completion/completions/pacaur
 
-_pacaur()
-{
-    # nullglob avoids problems when no results are found (copied from cower's autocomplete)
-    [[ -o nullglob ]] || { shopt -s nullglob; ng=1; }
+#
+# /usr/share/bash-completion/completions/pacaur
+#
 
-    # define variables
-    local cur prev operations options
-    COMPREPLY=()
-    cur="${COMP_WORDS[COMP_CWORD]}"
-    prev="${COMP_WORDS[COMP_CWORD-1]}"
-    operations="-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help --fixbackend -S -Ss -Si -Sii -Sw -Su -Qu -Sc -Scc"
-    options="-f --force -e --edit -q --quiet -c --clean -a --aur -r --repo --devel --ignore --noconfirm --noedit --rebuild --asroot"
-
-    # define a function that checks whether the whole line contains one of the words passed to it
-    searchfor() { echo "${COMP_LINE}" | grep -q -- "$(echo "$1" | sed 's/ /\\\|/g')"; }
-
-    ## completion of operations and options
-    # complete operations when only 'pacaur -' is given
-    if [[ "${prev}" == "pacaur" ]]; then
-        COMPREPLY=( $(compgen -W "${operations}" -- $cur) )
-    # complete options after '-' when an operation is already given
-    elif [[ "${cur}" == -* ]] && searchfor "${operations}" ; then
-        COMPREPLY=( $(compgen -W "${options}" -- $cur) )
-
-    ## completion of package names
-    # there is no package name completing for -h --help, -v --version -Ss -Su, -Qu
-    # complete with all packages installed on the system
-    elif [[ "${prev}" = --ignore ]]; then
-        COMPREPLY=( $(compgen -W "$(pacman -Qq)" -- $cur) )
-    # complete with all locally installed packages
-    elif searchfor "-k --check -u --update"; then
-        COMPREPLY=( $(compgen -W "$(pacman -Qqm)" -- $cur) )
-    # complete with all available AUR packages
-    # anything shorter than 2 characters can't be autocompleted due to the AUR's search minimum
-    elif searchfor "-s --search -i --info -d --download -m --makepkg -y --sync"; then
-        COMPREPLY=( $(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur) )
-    # complete with all available repository packages
-    elif searchfor "-S -Si -Sii -Sw -Sc -Scc"; then
-        COMPREPLY=( $(compgen -W "$(pacman -Ssq)" -- $cur) )
-
-    fi
-
-    # restore nullglob setting
-    [[ $ng ]] && shopt -u nullglob
+_cower_pkg() {
+    # at least 2 characters required due to AUR limitation
+    COMPREPLY=($(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur))
 }
 
-complete -F _pacaur pacaur
+_pacaur() {
+    # define variables
+    local cur op o
+    COMPREPLY=()
+    cur=$(_get_cword)
+    if ((COMP_CWORD == 1)); then
+        if [[ $cur != -* ]]; then
+            _pacman_file; return 0;
+        else
+            _pacman &> /dev/null
+            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help --fixbackend"
+            return 0
+        fi
+    fi
+    for o in 'D database' 'Q query' 'R remove' 'S sync' 'U upgrade' 'i info' 'd download' 'm makepkg' 'y sync' 'k check' 'u update'; do
+        _arch_incomp "$o" && break
+    done
+    (($?)) && op="" || op="${o% *}"
+    _pacman &> /dev/null
+    if [[ "$cur" == -* ]]; then
+        case "$op" in
+           S) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo -e --edit --devel --noconfirm --noedit --rebuild --asroot";;
+           Q) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo";;
+        esac
+    else
+        case "$op" in
+           d|i|m|y) _cower_pkg;;
+           k|u) _pacman_pkg Qqm;;
+        esac
+    fi
+}
+
+_completion_loader pacman
+complete -o default -F _pacaur pacaur
 
 # vim:set ts=4 sw=2 et:
