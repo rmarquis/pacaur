@@ -796,7 +796,7 @@ case $operation in
         exit;;
     info)
         # info (-Si, -i) handling
-        [[ ! ${pkgs[@]} ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+        [[ -z "${pkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
         [[ -n "${repopkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
             [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
@@ -806,10 +806,10 @@ case $operation in
     sync)
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy), sysupgrade (-Su, -u) handling
         if [[ ! $upgrade ]]; then
-            [[ ! ${pkgs[@]} ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            [[ -z "${pkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
-                [[ $refresh ]] && [[ ! ${repopkgs[@]} ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
+                [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
                 [[ $fallback = true && ! $aur ]] && warn "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 Core ${aurpkgs[@]}
             fi
