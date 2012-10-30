@@ -80,9 +80,12 @@ InfoAur() {
 }
 
 DownloadAur() {
-    deps+=($($cower ${coweropts[@]} -d $@ -t $builddir 2>"$tmpdir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    [[ $operation = download ]] && [[ -e "$tmpdir/repodeps" ]] && grep -E "available|exists" "$tmpdir/repodeps" 
-    [[ -e "$tmpdir/repodeps" ]] && grep 'no results found for' "$tmpdir/repodeps"
+    if [[ $operation = download ]]; then
+        deps+=($($cower ${coweropts[@]} -d $@ -t $builddir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
+    else
+        deps+=($($cower ${coweropts[@]} -d $@ -t $builddir 2>"$tmpdir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+        [[ -e "$tmpdir/repodeps" ]] && grep 'no results found for' "$tmpdir/repodeps"
+    fi
 
     timeout ${deps[@]}
 }
@@ -115,6 +118,7 @@ FindPkgsDeps() {
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
     DownloadAur ${depspkgsaur[@]}
+    [[ $operation = download && $count -lt 2 ]] && return
 
     # source pkgs
     for i in "${deps[@]}"; do
@@ -696,7 +700,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     # pacaur
                     search) operation=search; coweropts+=("-s"); aur='1';;
                     info) operation=info; coweropts+=("-i"); aur='1';;
-                    download) operation=download;;
+                    download) operation=download; ((count++));;
                     makepkg) operation=sync; coweropts+=("-f"); aur='1';;
                     sync) operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
                     check) operation=upgrades; coweropts+=("-u"); aur='1';;
@@ -727,7 +731,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=search; coweropts+=("-s"); aur='1';;
             i)  [[ $pacS ]] && operation=info && coweropts+=("-i");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=info; coweropts+=("-i"); aur='1';;
-            d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download;;
+            d)  [[ $pac || $pacQ || $pacS ]] && continue || operation=download; ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
