@@ -458,7 +458,7 @@ OutofdateChecks() {
     done
     wait
     for i in "${deps[@]}"; do
-        [[ -e "$tmpdir/$i.json" ]] && [[ -n $(grep '"OutOfDate":"1"' "$tmpdir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
+        [[ -e "$tmpdir/$i.json" ]] && [[ -n $(grep '"OutOfDate":1' "$tmpdir/$i.json") ]] && warn "$i is flagged ${colorR}out of date${reset}"
     done
 }
 
