@@ -545,11 +545,11 @@ FindCachedPkg() {
 }
 
 DownloadPkgbuild() {
-    [[ ! -f "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/${i:0:2}/$i/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
+    [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/${i:0:2}/$i/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
 }
 
 DownloadJson() {
-    [[ ! -f "$tmpdir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpdir/$i.json"
+    [[ ! -s "$tmpdir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpdir/$i.json"
 }
 
 Core() {
