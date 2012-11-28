@@ -670,7 +670,7 @@ fixbackend() {
     info "Rebuilding ${colorW}cower${reset} backend..."
     cowerexec=($(expac -Q %n cower)) # cower-git compatibility
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
-    curl -o PKGBUILD http://aur.archlinux.org/packages/$cowerexec/PKGBUILD
+    curl -o PKGBUILD https://aur.archlinux.org/packages/co/$cowerexec/PKGBUILD
     makepkg -sfi ${makeopts[@]} --noconfirm
     CleanUp $cowerexec
 }
