@@ -9,18 +9,18 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
 =head1 DESCRIPTION
 
 Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
-designed to allow a fast workflow and to use an uncluttered interface. It is
-built upon the well designed cower and expac C backends. Invoking pacaur
+designed to minimize user prompt interaction and to use an uncluttered interface.
+It is built upon the well designed cower and expac C backends. Invoking pacaur
 consists of supplying an operation, any applicable options, and usually one or
 more targets.
 
 =head1 USERBASE TARGET
 
-Pacaur provides two sets of command line options: commands which are AUR
-specific, and commands that call the pacman binary and extend for AUR functions.
-As such, pacaur can be used by users who prefer to keep their AUR frontend
-separated from pacman, or by users who prefer to have a single tool to manage
-officials and AUR repositories.
+Pacaur provides two sets of command line options: commands that call the pacman
+binary and extend for AUR functions, and commands which are AUR specific.
+As such, pacaur can be used by users who prefer to have a single tool to manage
+officials and AUR repositories, or by users who prefer to keep their AUR
+frontend separated from pacman.
 
 Fundamental knowledge of the AUR manual build process with makepkg is assumed to
 be known.
@@ -28,6 +28,14 @@ be known.
 =head1 OPERATIONS
 
 =over 4
+
+=item B<-S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc>
+
+Optionally, pacaur wraps B<pacman operations> and extends respectively its
+install, search, info, download, update, check updates and clean functions to
+the AUR.
+This behavior can be disabled with the I<fallback> variable in the config file.
+Pacaur will also pass any pacman related options to the pacman binary.
 
 =item B<-s, --search>
 
@@ -66,14 +74,6 @@ those targets will be checked.
 Update foreign packages in the AUR. Without any arguments, all manually
 installed packages will be updated. If targets are supplied, only those targets
 will be updated.
-
-=item B<-S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc>
-
-Additionally, pacaur wraps B<pacman operations> and extends respectively its
-install, search, info, download, update, check updates and clean functions to
-the AUR.
-This behavior can be disabled with the I<fallback> variable in the config file.
-Pacaur will also pass any pacman related options to the pacman binary.
 
 =item B<-v, --version>
 
