@@ -633,6 +633,8 @@ info() {
 usage() {
     echo "usage:  ${name} <operation> [options] [package(s)]"
     echo "operations:"
+    echo " pacman extension"
+    echo "   -S, -Q           extend pacman operations to the AUR"
     echo " AUR only"
     echo "   -s, --search     search AUR repository for matching strings"
     echo "   -i, --info       view package information -- pass twice for details"
@@ -652,7 +654,7 @@ usage() {
     echo "   -r, --repo       only search, install or clean packages from the repositories"
     echo " general"
     echo "   -e, --edit       edit target(s) PKGBUILD and view install script"
-    echo "   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u flags"
+    echo "   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u operations"
     echo "   -q, --quiet      show less information for query and search"
     echo "   --devel          consider AUR development packages upgrade"
     echo "   --ignore         ignore a package upgrade (can be used more than once)"
