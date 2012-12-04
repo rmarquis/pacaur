@@ -30,14 +30,14 @@ _pacaur() {
     _pacman &> /dev/null
     if [[ "$cur" == -* ]]; then
         case "$op" in
-           S) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo -e --edit --devel --noconfirm --noedit --rebuild --asroot";;
-           Q) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo";;
+            S) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo -e --edit --devel --noconfirm --noedit --rebuild --asroot";;
+            Q) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo";;
         esac
     else
         case "$op" in
-           # S) _pacman_pkg Slq; _cower_pkg;; # disabled. Too slow and no fallback var support.
-           d|i|m|y) _cower_pkg;;
-           k|u) _pacman_pkg Qqm;;
+            # S) _pacman_pkg Slq; _cower_pkg;; # disabled. Too slow and no fallback var support.
+            d|i|m|y) _cower_pkg;;
+            k|u) _pacman_pkg Qqm;;
         esac
     fi
 }
