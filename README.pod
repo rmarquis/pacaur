@@ -9,18 +9,18 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
 =head1 DESCRIPTION
 
 Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
-designed to minimize user prompt interaction and to use an uncluttered interface.
-It is built upon the well designed cower and expac C backends. Invoking pacaur
-consists of supplying an operation, any applicable options, and usually one or
-more targets.
+designed to minimize user prompt interaction and to use an uncluttered
+interface. It is built upon the well designed cower and expac C backends.
+Invoking pacaur consists of supplying an operation, any applicable options, and
+usually one or more targets.
 
 =head1 USERBASE TARGET
 
-Pacaur provides two sets of command line options: commands that call the pacman
-binary and extend for AUR functions, and commands which are AUR specific.
-As such, pacaur can be used by users who prefer to have a single tool to manage
-officials and AUR repositories, or by users who prefer to keep their AUR
-frontend separated from pacman.
+Pacaur provides two sets of command line options: commands which call the pacman
+binary and extend for AUR functions B<(-S, -Q)>, and commands which are AUR
+specific B<(-s, -i, -d, -m, -y, -k, -u)>. As such, pacaur can be used by users
+who prefer to have a single tool to manage officials and AUR repositories, or by
+users who prefer to keep their AUR frontend separated from pacman.
 
 Fundamental knowledge of the AUR manual build process with makepkg is assumed to
 be known.
@@ -31,11 +31,11 @@ be known.
 
 =item B<-S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc>
 
-Optionally, pacaur wraps B<pacman operations> and extends respectively its
-install, search, info, download, update, check updates and clean functions to
-the AUR.
-This behavior can be disabled with the I<fallback> variable in the config file.
-Pacaur will also pass any pacman related options to the pacman binary.
+Pacaur wraps B<pacman operations> and extends respectively its install, search,
+info, download, update, check updates and clean functions to the AUR. This
+behavior is optional and can be disabled with the I<fallback> variable in the
+config file. Pacaur will also pass any pacman related options to the pacman
+binary.
 
 =item B<-s, --search>
 
@@ -49,8 +49,8 @@ Show info for I<target>. Pass this option twice to fetch more detailed info.
 
 =item B<-d, --download>
 
-Download I<target>(s) PKGBUILD. Pass this option twice to fetch dependencies (done
-recursively).
+Download I<target>(s) PKGBUILD. Pass this option twice to fetch dependencies
+(done recursively).
 
 =item B<-m, --makepkg>
 
@@ -60,8 +60,8 @@ uninstalled.
 
 =item B<-y, --sync>
 
-Download I<target>(s) PKGBUILD, build and install target(s). Missing dependencies
-will be automatically installed as required.
+Download I<target>(s) PKGBUILD, build and install target(s). Missing
+dependencies will be automatically installed as required.
 
 =item B<-k, --check>
 
