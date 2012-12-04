@@ -6,7 +6,7 @@
 
 _cower_pkg() {
     # at least 2 characters required due to AUR limitation
-    COMPREPLY=($(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur))
+    COMPREPLY+=($(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur))
 }
 
 _pacaur() {
@@ -35,6 +35,7 @@ _pacaur() {
         esac
     else
         case "$op" in
+           # S) _pacman_pkg Slq; _cower_pkg;; # disabled. Too slow and no fallback var support.
            d|i|m|y) _cower_pkg;;
            k|u) _pacman_pkg Qqm;;
         esac
