@@ -545,11 +545,13 @@ FindCachedPkg() {
 }
 
 DownloadPkgbuild() {
-    [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org/packages/${i:0:2}/$i/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
+    DownloadJson $i
+    Aurlpath=$(cat "$tmpdir/$i.json" | awk -F '"' '{print $48}' | sed -e 's/\\//g')
+    [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
 }
 
 DownloadJson() {
-    [[ ! -s "$tmpdir/$i.json" ]] && curl -Lfs "https://aur.archlinux.org/rpc.php?type=info&arg=$i" > "$tmpdir/$i.json"
+    [[ ! -s "$tmpdir/$i.json" ]] && curl -LfGs --data-urlencode "arg=$i" "https://aur.archlinux.org/rpc.php?type=info" > "$tmpdir/$i.json"
 }
 
 Core() {
@@ -672,8 +674,8 @@ fixbackend() {
     info "Rebuilding ${colorW}cower${reset} backend..."
     cowerexec=($(expac -Q %n cower)) # cower-git compatibility
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
-    curl -o PKGBUILD https://aur.archlinux.org/packages/co/$cowerexec/PKGBUILD
-    makepkg -sfi ${makeopts[@]} --noconfirm
+    DownloadPkgbuild $cowerexec
+    makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerexec
 }
 
