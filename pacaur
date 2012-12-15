@@ -80,12 +80,13 @@ InfoAur() {
 }
 
 DownloadAur() {
-    if [[ $operation = download ]]; then
-        deps+=($($cower ${coweropts[@]} -d $@ -t $builddir | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
-    else
-        deps+=($($cower ${coweropts[@]} -d $@ -t $builddir 2>"$tmpdir/repodeps" | awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-        [[ -e "$tmpdir/repodeps" ]] && grep 'no results found for' "$tmpdir/repodeps"
-    fi
+    while read -r flag pkg info; do
+        case $flag in
+            S)  [[ -n "$info" ]] && deps+=("$pkg"); [[ $operation = download ]] && echo "$info";;
+            W)  continue;;
+            E)  echo "$info";;
+        esac
+    done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
 
     timeout ${deps[@]}
 }
