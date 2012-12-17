@@ -546,7 +546,7 @@ FindCachedPkg() {
 
 DownloadPkgbuild() {
     DownloadJson $i
-    Aurlpath=$(cat "$tmpdir/$i.json" | awk -F '"' '{print $48}' | sed -e 's/\\//g')
+    Aurlpath=$(cat "$tmpdir/$i.json" | grep -Po '"URLPath":".*?[^\\]"' | awk -F ":" '{print $2}' | sed -e 's/\\//g' -e 's/\"//g')
     [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
 }
 
