@@ -801,7 +801,7 @@ case $operation in
         [[ -z "${pkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
         [[ -n "${repopkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
-            [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             InfoAur ${aurpkgs[@]}
         fi
         exit;;
@@ -812,13 +812,13 @@ case $operation in
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-                [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 Core ${aurpkgs[@]}
             fi
         else
             [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
             [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[@]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
         fi
         exit;;
