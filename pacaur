@@ -168,9 +168,8 @@ UpgradeAur() {
         done
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            [[ -e "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" ]] && source "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" || msg "e" "Could not read ${colorW}${allaurpkgs[$i]}${reset} PKGBUILD"
-            if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
+            GetDevelPrefix "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"
+            if [[ -n "$develprefix" ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
                     continue
@@ -305,9 +304,8 @@ CleanUp() {
         cd "$builddir"
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
-                unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                [[ -e "$builddir/$i/PKGBUILD" ]] && source "$builddir/$i/PKGBUILD"
-                [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && msg "w" "${colorW}$i${reset} cleaning skipped" && continue
+                GetDevelPrefix "$builddir/$i/PKGBUILD"
+                [[ -n "$develprefix" ]] && msg "w" "${colorW}$i${reset} cleaning skipped" && continue
             else
                 # hack for vcs protected files
                 chmod -R 755 $i &>/dev/null
@@ -537,6 +535,11 @@ GetAurVersion() {
     [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     Aversion="$Apkgver-$Apkgrel"
+}
+
+GetDevelPrefix() {
+    unset develprefix
+    [[ -e "$@" ]] && develprefix="$(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$@")"
 }
 
 FindCachedPkg() {
