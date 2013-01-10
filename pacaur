@@ -17,6 +17,23 @@ export LANG=C
 # source makepkg variables
 source /etc/makepkg.conf
 
+# color
+if $color; then
+    pacmanbin='pacman-color'
+    cower='cower --color=always'
+    reset="\e[0m"
+    colorR="\e[1;31m"
+    colorG="\e[1;32m"
+    colorY="\e[1;33m"
+    colorB="\e[1;34m"
+    colorM="\e[1;35m"
+    colorC="\e[1;36m"
+    colorW="\e[1;39m"
+else
+    pacmanbin='pacman'
+    cower='cower'
+fi
+
 # temp directory
 tmpdir="${TMPDIR:-/tmp}/${name}tmp-$USER"
 
@@ -43,23 +60,6 @@ configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
 userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
 source "$configdir/${name}.conf"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
-
-# color
-if $color; then
-    pacmanbin='pacman-color'
-    cower='cower --color=always'
-    reset="\e[0m"
-    colorR="\e[1;31m"
-    colorG="\e[1;32m"
-    colorY="\e[1;33m"
-    colorB="\e[1;34m"
-    colorM="\e[1;35m"
-    colorC="\e[1;36m"
-    colorW="\e[1;39m"
-else
-    pacmanbin='pacman'
-    cower='cower'
-fi
 
 # set up directories
 [[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
