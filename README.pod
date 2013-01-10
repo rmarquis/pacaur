@@ -149,6 +149,11 @@ Perform commands without editing any installation files. Bypass --edit option.
 
 Always rebuild package(s) regardless of any existing file in $PKGDEST directory.
 
+=item B<--insecure>
+
+When used with the secure mode enabled, temporarily enable $CARCH bash magic
+compatibility.
+
 =item B<--asroot>
 
 When building AUR package(s) as root, allow makepkg to run as root user.
@@ -228,6 +233,13 @@ packages. Default is B<true>.
 
 Enable color output. This option requires the pacman binary I<pacman-color> to
 be installed. Default is B<false>.
+
+=item B<secure>
+
+Use cower's internal dependency solver instead of the full bash solver to
+enhance security. This breaks compatibility with I<$CARCH> bash magic and
+PKGBUILDs using the $CARCH makepkg variable might not be correctly handled
+anymore. Default is B<false>.
 
 =back
 

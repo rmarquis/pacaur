@@ -46,6 +46,7 @@ fallback=true                   # pacman fallback to the AUR
 clean=true                      # cleanup after install
 cleandevel=true                 # cleanup devel after install
 color=false                     # color support via pacman-color
+secure=false                    # secure mode
 
 # set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -92,11 +93,23 @@ DownloadAur() {
 }
 
 DownloadPkgs() {
-    allaurdeps+=("${aurpkgs[@]}")
-    FindPkgsDeps ${aurpkgs[@]}
-    deps=("${allaurdeps[@]}")
-    # reduce root binary deps
-    repodeps=($(echo "${repodeps[@]}" | sed 's/ /\n/g' | sort -u))
+    if [[ $secure = true ]]; then
+        if [[ $operation = download && $count -lt 2 ]]; then
+            DownloadAur ${aurpkgs[@]} && return
+        else
+            coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
+        fi
+        # check for CARCH 32/64bits bash magic
+        for i in "${deps[@]}"; do
+            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$builddir/$i/PKGBUILD") ]] && msg "w" "\$CARCH variable detected. ${colorW}$i${reset} might require the full bash dependency solver. Disable the secure mode with the --insecure option."
+        done
+    else
+        allaurdeps+=("${aurpkgs[@]}")
+        FindPkgsDeps ${aurpkgs[@]}
+        deps=("${allaurdeps[@]}")
+        # reduce root binary deps
+        repodeps=($(echo "${repodeps[@]}" | sed 's/ /\n/g' | sort -u))
+    fi
 
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
@@ -666,6 +679,7 @@ usage() {
     echo "   --noconfirm      do not prompt for any confirmation"
     echo "   --noedit         do not prompt to edit files"
     echo "   --rebuild        always rebuild package(s)"
+    echo "   --insecure       disable secure mode and enable bash magic compatibility"
     echo ""
 }
 
@@ -727,6 +741,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
+                    insecure) secure=false;;
                     fixbackend|allanbrokeit) fixbackend; exit;;
                     version) version; exit;;
                     help) usage; exit;;
