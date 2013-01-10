@@ -202,8 +202,7 @@ Prompt() {
 EditPkgs() {
     [[ $noedit ]] && return
     for i in "$@"; do
-        unset install
-        [[ -e "$builddir/$i/PKGBUILD" ]] && source "$builddir/$i/PKGBUILD"
+        GetInstallScript $i
         if [[ ! $edit ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
@@ -213,16 +212,16 @@ EditPkgs() {
             fi
             # edit install script
             if [[ ! $editinstall = false ]]; then
-                if [[ $install ]]; then
+                if [[ -n "$installscript" ]]; then
                     if proceedY "${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
-                        [[ -e "$builddir/$i/$install" ]] && $editor "$builddir/$i/$install" && msg "s" "${colorW}$i${reset} install script viewed" || msg "e" "Could not open ${colorW}$i${reset} install script"
+                        [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" "${colorW}$i${reset} install script viewed" || msg "e" "Could not open ${colorW}$i${reset} install script"
                     fi
                 fi
             fi
         else
             [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" "${colorW}$i${reset} PKGBUILD edited" || msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
-            if [[ $install ]]; then
-                [[ -e "$builddir/$i/$install" ]] && $editor "$builddir/$i/$install" && msg "s" "${colorW}$i${reset} install script viewed" || msg "e" "Could not open ${colorW}$i${reset} install script"
+            if [[ -n "$installscript" ]]; then
+                [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" "${colorW}$i${reset} install script viewed" || msg "e" "Could not open ${colorW}$i${reset} install script"
             fi
         fi
     done
@@ -535,6 +534,12 @@ GetAurVersion() {
     [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     Aversion="$Apkgver-$Apkgrel"
+}
+
+GetInstallScript() {
+    installscript="$(grep "^install=" "$builddir/$@/PKGBUILD" | cut -d '=' -f 2-)"
+    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgname=$(grep '^pkgname' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+    installscript=$(echo $installscript | sed -e "s/\$pkgname/$Apkgname/g")
 }
 
 GetDevelPrefix() {
