@@ -46,7 +46,7 @@ fallback=true                   # pacman fallback to the AUR
 clean=true                      # cleanup after install
 cleandevel=true                 # cleanup devel after install
 color=false                     # color support via pacman-color
-secure=false                    # secure mode
+secure=false                    # enhanced security
 
 # set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -203,14 +203,6 @@ UpgradeAur() {
     timeout ${aurpkgs[@]}
 }
 
-PreviewPkgs() {
-    EditPkgs $i
-    if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
-        CleanUp ${deps[@]} &>/dev/null
-        exit
-    fi
-}
-
 Prompt() {
     echo -e "\n${colorY}AUR Targets (${#deps[@]}):${reset} ${deps[@]}\n"
 
@@ -223,6 +215,14 @@ Prompt() {
     fi
 
     EditPkgs ${deps[@]}
+}
+
+PreviewPkgs() {
+    EditPkgs $i
+    if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
+        CleanUp ${deps[@]} &>/dev/null
+        exit
+    fi
 }
 
 EditPkgs() {
