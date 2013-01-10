@@ -151,8 +151,9 @@ Always rebuild package(s) regardless of any existing file in $PKGDEST directory.
 
 =item B<--insecure>
 
-When used with the secure mode enabled, temporarily enable $CARCH bash magic
-compatibility.
+When using the secure mode, temporarily disable it to allow full $CARCH bash
+magic compatibility by enabling the full bash dependency solver. If potentially
+harmful code using sudo is detected, a notice will be shown before sourcing.
 
 =item B<--asroot>
 
@@ -238,8 +239,9 @@ be installed. Default is B<false>.
 
 Use cower's internal dependency solver instead of the full bash solver to
 enhance security. This breaks compatibility with I<$CARCH> bash magic and
-PKGBUILDs using the $CARCH makepkg variable might not be correctly handled
-anymore. Default is B<false>.
+PKGBUILDs using the $CARCH makepkg variable will not be correctly handled
+anymore. In normal mode, a notice will however be shown before sourcing if
+potentially harmful code using sudo is detected. Default is B<false>.
 
 =back
 
