@@ -412,7 +412,7 @@ ConflictChecks() {
         local k=0
         for i in "${deps[@]}"; do
             unset conflicts
-            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$builddir/$i/PKGBUILD") ]] && source "$builddir/$i/PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
             [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
