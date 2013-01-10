@@ -524,18 +524,18 @@ IgnoreDepsChecks() {
 }
 
 GetIgnoredPkgs() {
-    ignoredpkgs+=($(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2-))
-    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2-))
+    ignoredpkgs+=($(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
+    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2- | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
 GetIgnoredGrps() {
-    ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2-))
+    ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
 }
 
 GetAurVersion() {
-    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2-)
-    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2-)
+    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     Aversion="$Apkgver-$Apkgrel"
 }
 
