@@ -123,7 +123,7 @@ FindPkgsDeps() {
 
     # source pkgs
     for i in "${deps[@]}"; do
-        [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD" || msg "e" "Could not read ${colorW}$i${reset} PKGBUILD"
+        [[ -e "$builddir/$i/PKGBUILD" ]] && source "$builddir/$i/PKGBUILD" || msg "e" "Could not read ${colorW}$i${reset} PKGBUILD"
         sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
     done
 
@@ -169,7 +169,7 @@ UpgradeAur() {
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
             unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-            [[ -e "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" ]] && . "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" || msg "e" "Could not read ${colorW}${allaurpkgs[$i]}${reset} PKGBUILD"
+            [[ -e "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" ]] && source "$tmpdir/${allaurpkgs[$i]}.PKGBUILD" || msg "e" "Could not read ${colorW}${allaurpkgs[$i]}${reset} PKGBUILD"
             if [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
@@ -306,7 +306,7 @@ CleanUp() {
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
                 unset _darcstrunk _cvsroot _gitroot _svntrunk _bzrtrunk _hgroot
-                [[ -e "$builddir/$i/PKGBUILD" ]] && . "$builddir/$i/PKGBUILD"
+                [[ -e "$builddir/$i/PKGBUILD" ]] && source "$builddir/$i/PKGBUILD"
                 [[ ${_darcstrunk} || ${_cvsroot} || ${_gitroot} || ${_svntrunk} || ${_bzrtrunk} || ${_hgroot} ]] && msg "w" "${colorW}$i${reset} cleaning skipped" && continue
             else
                 # hack for vcs protected files
@@ -412,7 +412,7 @@ ConflictChecks() {
         local k=0
         for i in "${deps[@]}"; do
             unset conflicts
-            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$builddir/$i/PKGBUILD") ]] && . "$builddir/$i/PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'conflicts=(' "$builddir/$i/PKGBUILD") ]] && source "$builddir/$i/PKGBUILD"
             [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
