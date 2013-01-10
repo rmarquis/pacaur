@@ -11,7 +11,7 @@ version="3.2.9"
 # Config
 #
 
-# locale
+# avoid locale issues
 export LANG=C
 
 # source makepkg variables
