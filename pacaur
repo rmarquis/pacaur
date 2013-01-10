@@ -138,7 +138,7 @@ FindPkgsDeps() {
     for i in "${deps[@]}"; do
         if [[ -e "$builddir/$i/PKGBUILD" ]]; then
             # preview before sourcing
-            [[ -n $(grep 'sudo' "$builddir/$i/PKGBUILD" | grep -v 'depends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}." && EditPkgs $i
+            [[ -n $(grep -w 'sudo' "$builddir/$i/PKGBUILD" | grep -v '^depends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}." && EditPkgs $i
             source "$builddir/$i/PKGBUILD" && sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
         else
             msg "e" "Could not read ${colorW}$i${reset} PKGBUILD"
