@@ -101,7 +101,7 @@ DownloadPkgs() {
         fi
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
-            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$builddir/$i/PKGBUILD") ]] && msg "w" "\$CARCH variable detected. ${colorW}$i${reset} might require the full bash dependency solver. Disable the secure mode with the --insecure option."
+            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$builddir/$i/PKGBUILD") ]] && msg "e" "${colorW}\$CARCH${reset} variable detected. ${colorW}$i${reset} requires the full bash dependency solver to be enabled with the --insecure option."
         done
     else
         allaurdeps+=("${aurpkgs[@]}")
