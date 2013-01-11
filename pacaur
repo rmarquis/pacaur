@@ -17,6 +17,20 @@ export LANG=C
 # source makepkg variables
 source /etc/makepkg.conf
 
+# temp directory
+tmpdir="${TMPDIR:-/tmp}/${name}tmp-$USER"
+
+# config options
+builddir="${BUILDDIR:-$tmpdir}" # build directory
+editor="${EDITOR:-vi}"          # PKGBUILD editor
+editpkgbuild=true               # edit PKGBUILD
+editinstall=true                # edit install script
+fallback=true                   # pacman fallback to the AUR
+clean=true                      # cleanup after install
+cleandevel=true                 # cleanup devel after install
+color=false                     # color support via pacman-color
+secure=false                    # enhanced security
+
 # color
 if $color; then
     pacmanbin='pacman-color'
@@ -33,20 +47,6 @@ else
     pacmanbin='pacman'
     cower='cower'
 fi
-
-# temp directory
-tmpdir="${TMPDIR:-/tmp}/${name}tmp-$USER"
-
-# config options
-builddir="${BUILDDIR:-$tmpdir}" # build directory
-editor="${EDITOR:-vi}"          # PKGBUILD editor
-editpkgbuild=true               # edit PKGBUILD
-editinstall=true                # edit install script
-fallback=true                   # pacman fallback to the AUR
-clean=true                      # cleanup after install
-cleandevel=true                 # cleanup devel after install
-color=false                     # color support via pacman-color
-secure=false                    # enhanced security
 
 # set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
