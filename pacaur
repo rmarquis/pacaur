@@ -42,7 +42,7 @@ fi
 # source config
 configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/pacaur"
 userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
-source "$configdir/pacaur.conf"
+source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # color
@@ -808,8 +808,8 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 
 # sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configdir/pacaur.conf"
-[[ ! -f /usr/bin/$pacmanbin ]] && msg "e" "The binary ${colorW}$pacmanbin${reset} is not installed.\nCheck configuration in $configdir/pacaur.conf"
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configdir/config"
+[[ ! -f /usr/bin/$pacmanbin ]] && msg "e" "The binary ${colorW}$pacmanbin${reset} is not installed.\nCheck configuration in $configdir/config"
 [[ ! -w "$builddir" ]] && msg "e" "You do not have write permission to build packages in ${colorW}$builddir${reset}."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && msg "e" "target not found"

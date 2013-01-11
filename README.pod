@@ -170,11 +170,11 @@ When building AUR package(s) as root, allow makepkg to run as root user.
 
 Pacaur honors a system-wide config file which will be looked for first at
 
-  $XDG_CONFIG_DIRS/pacaur/pacaur.conf
+  $XDG_CONFIG_DIRS/pacaur/config
 
 and falling back to
 
-  /etc/xdg/pacaur/pacaur.conf
+  /etc/xdg/pacaur/config
 
 =item B<user config>
 
