@@ -31,6 +31,20 @@ cleandevel=true                 # cleanup devel after install
 color=false                     # color support via pacman-color
 secure=false                    # enhanced security
 
+# set xdg path
+if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
+    xdg_config=($(echo "${XDG_CONFIG_DIRS}" | awk -F ":" '{for (i=1; i<=NF; i++) print $i}' ))
+    for i in ${xdg_config[@]}; do
+        [[ -d "$i" ]] && export XDG_CONFIG_DIRS=$i && break
+    done
+fi
+
+# source config
+configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
+userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
+source "$configdir/${name}.conf"
+[[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
+
 # color
 if $color; then
     pacmanbin='pacman-color'
@@ -48,25 +62,10 @@ else
     cower='cower'
 fi
 
-# set xdg path
-if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
-    xdg_config=($(echo "${XDG_CONFIG_DIRS}" | awk -F ":" '{for (i=1; i<=NF; i++) print $i}' ))
-    for i in ${xdg_config[@]}; do
-        [[ -d "$i" ]] && export XDG_CONFIG_DIRS=$i && break
-    done
-fi
-
-# source config
-configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/${name}"
-userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/${name}"
-source "$configdir/${name}.conf"
-[[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
-
 # set up directories
 [[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
 [[ ! -d "$builddir" ]] && mkdir -p "$builddir"
-
 
 #
 # Functions
