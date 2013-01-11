@@ -16,6 +16,7 @@ export LANG=C
 
 # source makepkg variables
 source /etc/makepkg.conf
+[[ -r "$HOME/.makepkg.conf" ]] && source "$HOME/.makepkg.conf"
 
 # temp directory
 tmpdir="${TMPDIR:-/tmp}/${name}tmp-$USER"
