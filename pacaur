@@ -63,6 +63,9 @@ else
     cower='cower'
 fi
 
+# alternative pacman binary
+[[ $PACMAN ]] && pacmanbin=$PACMAN
+
 # set up directories
 [[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
