@@ -221,9 +221,11 @@ Prompt() {
 
 PreviewPkgs() {
     EditPkgs $i
-    if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
-        CleanUp ${deps[@]} &>/dev/null
-        exit
+    if [[ ! $noconfirm ]]; then
+        if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
+            CleanUp ${deps[@]} &>/dev/null
+            exit
+        fi
     fi
 }
 
