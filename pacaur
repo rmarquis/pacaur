@@ -121,12 +121,12 @@ DownloadPkgs() {
         for i in "${repodeps[@]}"; do
             allrepopkgs+=($(pactree -su "$i"))
         done
-        repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}"))
+        repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
 
         # providers check
         [[ -n "${repodepspkgs[@]}" ]] && ProviderChecks ${repodepspkgs[@]}
 
-        [[ -n "${repodepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}" | sort -u
+        [[ -n "${repodepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}"
     fi
 }
 
