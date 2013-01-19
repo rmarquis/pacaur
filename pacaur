@@ -123,13 +123,13 @@ DownloadPkgs() {
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
 
-        # providers check
-        [[ -n "${repodepspkgs[@]}" ]] && ProviderChecks ${repodepspkgs[@]}
-
-        [[ -n "${repodepspkgs[@]}" ]] && expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}"
-
-        # compute binary size
         if [[ -n "${repodepspkgs[@]}" ]]; then
+            # providers check
+            ProviderChecks ${repodepspkgs[@]}
+
+            expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}"
+
+            # compute binary size
             binaryksize=($(expac -S -1 "%k" "${repodepspkgs[@]}"))
             binarymsize=($(expac -S -1 "%m" "${repodepspkgs[@]}"))
             sumk=0
