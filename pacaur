@@ -86,7 +86,7 @@ DownloadAur() {
     while read -r flag pkg info; do
         case $flag in
             S)  [[ -n "$info" ]] && deps+=("$pkg"); [[ $operation = download ]] && echo "$info";;
-            W)  continue;;
+            W)  [[ $operation = download ]] && echo "$info" || continue;;
             E)  echo "$info";;
         esac
     done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
