@@ -178,8 +178,6 @@ FindPkgsDeps() {
 }
 
 UpgradeAur() {
-    GetIgnoredPkgs
-
     msg "i" "${colorW}Starting AUR upgrade...${reset}"
     aurpkgs+=($($cower -u ${pkgs[@]} ${ignoreopts[@]} | tee 1>&2 >(awk -F " " '{print $2}'| sed -r "s:\x1B\[[0-9;]*[mK]::g")))
 
@@ -503,7 +501,6 @@ OutofdateChecks() {
 }
 
 IgnoreChecks() {
-    [[ ! $upgrade ]] && GetIgnoredPkgs
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     checkaurpkgs=("${aurpkgs[@]}")
@@ -606,6 +603,8 @@ DownloadJson() {
 }
 
 Core() {
+    GetIgnoredPkgs
+    [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
     DownloadPkgs
     IgnoreDepsChecks
@@ -869,7 +868,7 @@ case $operation in
             [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
             [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && UpgradeAur && Core ${aurpkgs[@]}
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
         fi
         exit;;
     upgrades)
