@@ -72,11 +72,7 @@ fi
 # Functions
 #
 
-SearchAur() {
-    $cower ${coweropts[@]} $@
-}
-
-InfoAur() {
+SearchInfoAur() {
     $cower ${coweropts[@]} $@
 }
 
@@ -848,7 +844,7 @@ case $operation in
     search)
         # search (-Ss, -s) handling
         [[ ! $aur ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
-        [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
+        [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchInfoAur ${pkgs[@]}
         exit;;
     info)
         # info (-Si, -i) handling
@@ -856,7 +852,7 @@ case $operation in
         [[ -n "${repopkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
             [[ $fallback = true && ! $aur ]] && msg "w" "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-            InfoAur ${aurpkgs[@]}
+            SearchInfoAur ${aurpkgs[@]}
         fi
         exit;;
     sync)
