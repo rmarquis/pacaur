@@ -256,8 +256,8 @@ EditPkgs() {
         if [[ ! $edit ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
-                if proceedY "${colorB}::${reset} Edit ${colorW}$i${reset} PKGBUILD?"; then
-                    [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" "${colorW}$i${reset} PKGBUILD edited" || msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
+                if proceedY "${colorB}::${reset} View ${colorW}$i${reset} PKGBUILD?"; then
+                    [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" "${colorW}$i${reset} PKGBUILD viewed" || msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
             fi
             # edit install script
@@ -269,7 +269,7 @@ EditPkgs() {
                 fi
             fi
         else
-            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" "${colorW}$i${reset} PKGBUILD edited" || msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" "${colorW}$i${reset} PKGBUILD viewed" || msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
             if [[ -n "$installscript" ]]; then
                 [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" "${colorW}$i${reset} install script viewed" || msg "e" "Could not open ${colorW}$i${reset} install script"
             fi
