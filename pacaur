@@ -28,6 +28,7 @@ clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
 color=false                                 # color support via pacman-color
 secure=false                                # enhanced security
+sudoloop=false                              # prevent sudo timeout
 
 # source xdg config
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -507,7 +508,9 @@ MakePkgs() {
     touch "$tmpdir/build.lock"
 
     # initialize sudo
-    sudo -v
+    if sudo -v; then
+        [[ $sudoloop ]] && sudov &
+    fi
 
     # reverse deps order
     deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${deps[@]} | awk -F "\n" '{print}'))
@@ -576,7 +579,8 @@ MakePkgs() {
         sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 
-    # remove lock
+    # remove locks
+    rm "$tmpdir/sudov.lock"
     rm "$tmpdir/build.lock"
 }
 
@@ -747,9 +751,18 @@ nothingtodo() {
     [[ -z "$@" ]] && printf "%s\n" " there is nothing to do" && exit || return 0
 }
 
+sudov() {
+    touch "$tmpdir/sudov.lock"
+    while [[ -e "$tmpdir/sudov.lock" ]]; do
+        sudo -n -v
+        sleep 2
+    done
+}
+
 trap ctrlc INT
 ctrlc() {
     echo
+    [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
     CleanUp ${deps[@]}
     exit

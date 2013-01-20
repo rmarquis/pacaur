@@ -243,6 +243,11 @@ PKGBUILDs using the $CARCH makepkg variable will not be correctly handled
 anymore. In normal mode, a notice will however be shown before sourcing if
 potentially harmful code using sudo is detected. Default is B<false>.
 
+=item B<sudoloop>
+
+Prevent sudo timeout. This option overrides the system-wide sudo configuration.
+Default is B<false>.
+
 =back
 
 =head1 SEE ALSO

@@ -15,4 +15,5 @@
 #cleandevel=true                       # clean up devel package
 #color=false                           # color support via pacman-color
 #secure=false                          # enhanced security
+#sudoloop=false                        # prevent sudo timeout
 
