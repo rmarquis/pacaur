@@ -17,19 +17,17 @@ export LANG=C
 source /etc/makepkg.conf
 [[ -r "$HOME/.makepkg.conf" ]] && source "$HOME/.makepkg.conf"
 
-# temp directory
-tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"
-
-# config options
-builddir="${BUILDDIR:-$tmpdir}" # build directory
-editor="${EDITOR:-vi}"          # PKGBUILD editor
-editpkgbuild=true               # edit PKGBUILD
-editinstall=true                # edit install script
-fallback=true                   # pacman fallback to the AUR
-clean=true                      # cleanup after install
-cleandevel=true                 # cleanup devel after install
-color=false                     # color support via pacman-color
-secure=false                    # enhanced security
+# set variables
+tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
+builddir="${BUILDDIR:-$tmpdir}"             # build directory
+editor="${EDITOR:-vi}"                      # PKGBUILD editor
+editpkgbuild=true                           # edit PKGBUILD
+editinstall=true                            # edit install script
+fallback=true                               # pacman fallback to the AUR
+clean=true                                  # cleanup after install
+cleandevel=true                             # cleanup devel after install
+color=false                                 # color support via pacman-color
+secure=false                                # enhanced security
 
 # set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -124,7 +122,6 @@ DownloadPkgs() {
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
-            # providers check
             ProviderChecks ${repodepspkgs[@]}
 
             expac -S -1 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" "${repodepspkgs[@]}"
@@ -185,7 +182,6 @@ FindPkgsDeps() {
 }
 
 UpgradeAur() {
-    # ignore check
     GetIgnoredPkgs
 
     msg "i" "${colorW}Starting AUR upgrade...${reset}"
@@ -732,7 +728,6 @@ fixbackend() {
     makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerexec
 }
-
 
 #
 # Main
