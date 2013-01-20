@@ -559,13 +559,13 @@ IgnoreDepsChecks() {
     done
 }
 
-GetIgnoredPkgs() {
+getignoredpkgs() {
     ignoredpkgs+=($(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2- | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
-GetIgnoredGrps() {
+getignoredgrps() {
     ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
 }
 
@@ -603,7 +603,7 @@ DownloadJson() {
 }
 
 Core() {
-    GetIgnoredPkgs
+    getignoredpkgs
     [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
     DownloadPkgs
@@ -620,7 +620,7 @@ ClassifyPkgs() {
         [[ $repo ]] && repopkgs=("${pkgs[@]}")
         [[ $aur ]] && aurpkgs=("${pkgs[@]}")
         if [[ ! $repo && ! $aur ]]; then
-            GetIgnoredGrps
+            getignoredgrps
             for i in "${pkgs[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
                 [[ -z "$($pacmanbin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
