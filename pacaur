@@ -11,7 +11,7 @@ version="3.3.2"
 #
 
 # avoid locale issues
-export LANG=C
+export LC_ALL=C
 
 # source makepkg variables
 source /etc/makepkg.conf
