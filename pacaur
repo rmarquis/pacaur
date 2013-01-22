@@ -585,7 +585,7 @@ GetAurVersion() {
 GetInstallScript() {
     installscript="$(grep "^install=" "$builddir/$@/PKGBUILD" | cut -d '=' -f 2-)"
     [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgname=$(grep '^pkgname' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-    installscript=$(echo $installscript | sed -e "s/\$pkgname/$Apkgname/g")
+    installscript=$(echo $installscript | sed -e "s/\$[{]pkgname[}]/$Apkgname/g")
 }
 
 GetDevelPrefix() {
