@@ -171,7 +171,7 @@ FindPkgsDeps() {
         # remove AUR package versioning
         local j=0
         for i in "${depspkgsaur[@]}"; do
-            depspkgsaur[$j]=$(echo "$i" | awk -F "<" '{print $1}' | awk -F ">" '{print $1}' | awk -F "=" '{print $1}')
+            depspkgsaur[$j]=$(echo "$i" | awk -F ">|<|=" '{print $1}')
             ((j++))
         done
         for i in "${depspkgsaur[@]}"; do
