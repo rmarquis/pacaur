@@ -192,8 +192,7 @@ UpgradeAur() {
         done
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            GetDevelPrefix "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"
-            if [[ -n "$develprefix" ]]; then
+            if isdevel "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
                     continue
@@ -343,8 +342,10 @@ CleanUp() {
         cd "$builddir"
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
-                GetDevelPrefix "$builddir/$i/PKGBUILD"
-                [[ -n "$develprefix" ]] && msg "w" "${colorW}$i${reset} cleaning skipped" && continue
+                if isdevel "$builddir/$i/PKGBUILD"; then
+                    msg "w" "${colorW}$i${reset} cleaning skipped"
+                    continue
+                fi
             else
                 # hack for vcs protected files
                 chmod -R 755 $i &>/dev/null
@@ -581,9 +582,8 @@ GetInstallScript() {
     installscript=$(echo $installscript | sed -e "s/\$[{]pkgname[}]/$Apkgname/g")
 }
 
-GetDevelPrefix() {
-    unset develprefix
-    [[ -e "$@" ]] && develprefix="$(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$@")"
+isdevel() {
+    [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$1") ]]
 }
 
 FindCachedPkg() {
