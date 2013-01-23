@@ -288,7 +288,7 @@ MakePkgs() {
 
     for i in "${deps[@]}"; do
         # check package cache
-        [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && FindCachedPkg "$i-$Aversion"
+        [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && getcachedpkg "$i-$Aversion"
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 msg "i" "Installing ${colorW}$i${reset} cached package..."
@@ -588,10 +588,10 @@ isdevel() {
     [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$1") ]]
 }
 
-FindCachedPkg() {
-    cachedpkg="$PKGDEST/$@-${CARCH}${PKGEXT}"
-    [[ ! -f "$cachedpkg" ]] && cachedpkg="$PKGDEST/$@-any${PKGEXT}"
-    [[ ! -f "$cachedpkg" ]] && cachedpkg=""
+getcachedpkg() {
+    cachedpkg="$PKGDEST/$1-${CARCH}${PKGEXT}"
+    [[ ! -f "$cachedpkg" ]] && cachedpkg="$PKGDEST/$1-any${PKGEXT}"
+    [[ ! -f "$cachedpkg" ]] && unset cachedpkg
 }
 
 DownloadPkgbuild() {
