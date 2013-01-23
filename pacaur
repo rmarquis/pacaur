@@ -85,6 +85,11 @@ DownloadAur() {
         esac
     done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
 
+    # check PKGBUILDs
+    for i in "${deps[@]}"; do
+        [[ -e "$builddir/$i/PKGBUILD" ]] && continue || msg "e" "Could not read ${colorW}$i${reset} PKGBUILD"
+    done
+
     timeout ${deps[@]}
 }
 
@@ -97,7 +102,7 @@ DownloadPkgs() {
         fi
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
-            [[ -e "$builddir/$i/PKGBUILD" ]] && [[ -n $(grep 'CARCH' "$builddir/$i/PKGBUILD") ]] && msg "e" "${colorW}\$CARCH${reset} variable detected. ${colorW}$i${reset} requires the full bash dependency solver to be enabled with the --insecure option."
+            [[ -n $(grep 'CARCH' "$builddir/$i/PKGBUILD") ]] && msg "e" "${colorW}\$CARCH${reset} variable detected. ${colorW}$i${reset} requires the full bash dependency solver to be enabled with the --insecure option."
         done
     else
         allaurdeps+=("${aurpkgs[@]}")
@@ -145,13 +150,9 @@ FindPkgsDeps() {
 
     # source pkgs
     for i in "${deps[@]}"; do
-        if [[ -e "$builddir/$i/PKGBUILD" ]]; then
-            # preview before sourcing
-            PreviewPkgs $i
-            source "$builddir/$i/PKGBUILD" && sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
-        else
-            msg "e" "Could not read ${colorW}$i${reset} PKGBUILD"
-        fi
+        # preview before sourcing
+        PreviewPkgs $i
+        source "$builddir/$i/PKGBUILD" && sourcedpkgs+=($(echo -e "${depends[*]}\n${makedepends[*]}"))
     done
 
     # remove installed deps
@@ -298,24 +299,20 @@ MakePkgs() {
             fi
         else
             # build
-            if [[ -e "$builddir/$i/PKGBUILD" ]]; then
-                msg "i" "Building ${colorW}$i${reset} package..."
-                cd "$builddir/$i"
-                if [[ $installpkg ]]; then
-                    # install
+            msg "i" "Building ${colorW}$i${reset} package..."
+            cd "$builddir/$i"
+            if [[ $installpkg ]]; then
+                # install
+                yes | makepkg -sfi ${makeopts[@]}
+            else
+                if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
+                    # install AUR deps
+                    msg "i" "Installing ${colorW}$i${reset} dependencies..."
                     yes | makepkg -sfi ${makeopts[@]}
                 else
-                    if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
-                        # install AUR deps
-                        msg "i" "Installing ${colorW}$i${reset} dependencies..."
-                        yes | makepkg -sfi ${makeopts[@]}
-                    else
-                        # install then remove binary deps
-                        yes | makepkg -sfr ${makeopts[@]}
-                    fi
+                    # install then remove binary deps
+                    yes | makepkg -sfr ${makeopts[@]}
                 fi
-            else
-                msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
             fi
             # clean
             CleanUp $i
@@ -450,7 +447,7 @@ ConflictChecks() {
         local k=0
         for i in "${deps[@]}"; do
             unset conflicts
-            [[ -e "$builddir/$i/PKGBUILD" ]] && conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+            conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
             [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
