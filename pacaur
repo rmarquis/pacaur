@@ -712,7 +712,6 @@ usage() {
     echo "   --noconfirm      do not prompt for any confirmation"
     echo "   --noedit         do not prompt to edit files"
     echo "   --rebuild        always rebuild package(s)"
-    echo "   --insecure       disable secure mode and enable bash magic compatibility"
     echo ""
 }
 
