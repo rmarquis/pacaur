@@ -288,7 +288,7 @@ MakePkgs() {
 
     for i in "${deps[@]}"; do
         # check package cache
-        [[ $PKGDEST && ! $rebuild ]] && GetAurVersion $i && getcachedpkg "$i-$Aversion"
+        [[ $PKGDEST && ! $rebuild ]] && getaurversion $i && getcachedpkg "$i-$Aversion"
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 msg "i" "Installing ${colorW}$i${reset} cached package..."
@@ -477,7 +477,7 @@ ReinstallChecks() {
     exist=($(expac -Q %n "${aurpkgs[@]}"))
     Qversion=($(expac -Q %v "${aurpkgs[@]}"))
     for ((i=0; i<${#exist[@]}; i++)); do
-        [[ " ${aurpkgs[@]} " =~ " ${exist[$i]} " ]] && GetAurVersion ${exist[$i]} || continue
+        [[ " ${aurpkgs[@]} " =~ " ${exist[$i]} " ]] && getaurversion ${exist[$i]} || continue
         [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
             msg "w" "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
@@ -578,9 +578,9 @@ getinstallscript() {
     fi
 }
 
-GetAurVersion() {
-    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgver=$(grep '^pkgver' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-    [[ -e "$builddir/$@/PKGBUILD" ]] && Apkgrel=$(grep '^pkgrel' "$builddir/$@/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+getaurversion() {
+    Apkgver=$(grep '^pkgver' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+    Apkgrel=$(grep '^pkgrel' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     Aversion="$Apkgver-$Apkgrel"
 }
 
