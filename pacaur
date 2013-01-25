@@ -193,7 +193,7 @@ UpgradeAur() {
         done
         wait
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            if isdevel "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"; then
+            if [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$tmpdir/${allaurpkgs[$i]}.PKGBUILD") ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
                     continue
@@ -339,7 +339,7 @@ CleanUp() {
         cd "$builddir"
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
-                if isdevel "$builddir/$i/PKGBUILD"; then
+                if [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$builddir/$i/PKGBUILD") ]]; then
                     msg "w" "${colorW}$i${reset} cleaning skipped"
                     continue
                 fi
@@ -579,10 +579,6 @@ getaurversion() {
     Apkgver=$(grep '^pkgver' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     Apkgrel=$(grep '^pkgrel' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
     Aversion="$Apkgver-$Apkgrel"
-}
-
-isdevel() {
-    [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$1") ]]
 }
 
 getcachedpkg() {
