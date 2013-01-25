@@ -188,7 +188,7 @@ UpgradeAur() {
         Qversion=($(expac -Q %v "${allaurpkgs[@]}"))
 
         for i in "${allaurpkgs[@]}"; do
-            DownloadPkgbuild $i &
+            downloadpkgbuild $i &
             paraexec
         done
         wait
@@ -489,7 +489,7 @@ ReinstallChecks() {
 
 OutofdateChecks() {
     for i in "${deps[@]}"; do
-        DownloadJson $i &
+        downloadjson $i &
         paraexec
     done
     wait
@@ -587,14 +587,14 @@ getcachedpkg() {
     [[ ! -f "$cachedpkg" ]] && unset cachedpkg
 }
 
-DownloadPkgbuild() {
-    DownloadJson $i
+downloadpkgbuild() {
+    downloadjson $i
     Aurlpath=$(cat "$tmpdir/$i.json" | grep -Po '"URLPath":".*?[^\\]"' | awk -F ":" '{print $2}' | sed -e 's/\\//g' -e 's/\"//g')
-    [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" > "$tmpdir/$i.PKGBUILD"
+    [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" -o "$tmpdir/$i.PKGBUILD"
 }
 
-DownloadJson() {
-    [[ ! -s "$tmpdir/$i.json" ]] && curl -LfGs --data-urlencode "arg=$i" "https://aur.archlinux.org/rpc.php?type=info" > "$tmpdir/$i.json"
+downloadjson() {
+    [[ ! -s "$tmpdir/$i.json" ]] && curl -LfGs --data-urlencode "arg=$i" "https://aur.archlinux.org/rpc.php?type=info" -o "$tmpdir/$i.json"
 }
 
 Core() {
@@ -713,7 +713,7 @@ fixbackend() {
     msg "i" "Rebuilding ${colorW}cower${reset} backend..."
     cowerexec=($(expac -Q %n cower)) # cower-git compatibility
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
-    DownloadPkgbuild $cowerexec
+    downloadpkgbuild $cowerexec
     makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerexec
 }
