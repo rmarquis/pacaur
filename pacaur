@@ -494,7 +494,8 @@ OutofdateChecks() {
     done
     wait
     for i in "${deps[@]}"; do
-        [[ -e "$tmpdir/$i.json" ]] && [[ -n "$(grep -Po '"OutOfDate":[^0][0-9]*' "$tmpdir/$i.json")" ]] && msg "w" "${colorW}$i${reset} is flagged ${colorR}out of date${reset}"
+        timestamp=$(grep -Po '"OutOfDate":[^0][0-9]*' "$tmpdir/$i.json" | awk -F ":" '{print $2}')
+        [[ $timestamp ]] && msg "w" "${colorW}$i${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@$timestamp" "+%Y-%m-%d")${reset}" || continue
     done
 }
 
