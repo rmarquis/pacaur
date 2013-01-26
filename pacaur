@@ -192,6 +192,10 @@ UpgradeAur() {
             paraexec
         done
         wait
+        # skip foreign packages
+        for i in "${allaurpkgs[@]}"; do
+            [[ -e "$tmpdir/$i.PKGBUILD" ]] && continue || allaurpkgs=(${allaurpkgs[@]/$i/})
+        done
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
             if [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$tmpdir/${allaurpkgs[$i]}.PKGBUILD") ]]; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
