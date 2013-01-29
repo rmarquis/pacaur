@@ -235,7 +235,14 @@ Prompt() {
 }
 
 PreviewPkgs() {
-    [[ -n $(grep -w 'sudo' "$builddir/$i/PKGBUILD" | grep -Ev '^depends|^optdepends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
+    # sanitize for sudo security check
+    cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
+    while [[ -n "$(grep -Po '^depends=\([^)].*[^)]$|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]] ; do
+        sed -i -e '/^depends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+        sed -i -e '/^optdepends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+    done
+
+    [[ -n $(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
     if [[ ! $noconfirm ]]; then
         if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
             CleanUp ${deps[@]} &>/dev/null
