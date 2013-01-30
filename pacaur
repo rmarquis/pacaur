@@ -160,7 +160,7 @@ FindPkgsDeps() {
 
     # split binary and AUR depends pkgs
     [[ -e "$tmpdir/aurdeps" ]] && rm "$tmpdir/aurdeps"
-    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v %n ${depspkgs[@]} 2>"$tmpdir/aurdeps")) && repodeps+=(${depspkgsrepo[@]})
+    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v '%n' "${depspkgs[@]}" 2>"$tmpdir/aurdeps")) && repodeps+=(${depspkgsrepo[@]})
     [[ -e "$tmpdir/aurdeps" ]] && depspkgsaur=($(cat "$tmpdir/aurdeps" | grep 'error:' | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}')) || unset depspkgsaur
     unset deps sourcedpkgs depends makedepends depspkgs
 
@@ -186,7 +186,7 @@ UpgradeAur() {
     # add devel packages
     if [[ $devel ]]; then
         allaurpkgs=($($pacmanbin -Qmq))
-        Qversion=($(expac -Q %v "${allaurpkgs[@]}"))
+        Qversion=($(expac -Q '%v' "${allaurpkgs[@]}"))
 
         for i in "${allaurpkgs[@]}"; do
             downloadpkgbuild $i &
@@ -367,14 +367,14 @@ CleanUp() {
 CheckAur() {
     $cower ${coweropts[@]} $@
     # hack to override unconventional cower exit codes
-    [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' ${pkgs[@]} &>/dev/null
+    [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' "${pkgs[@]}" &>/dev/null
 }
 
 CheckRepo() {
     outofdate=($($pacmanbin -Quq $@))
     if [[ -n "${outofdate[@]}" ]]; then
-        Qversion=($(expac -Q %v "${outofdate[@]}"))
-        Sversion=($(expac -S -1 %v "${outofdate[@]}"))
+        Qversion=($(expac -Q '%v' "${outofdate[@]}"))
+        Sversion=($(expac -S -1 '%v' "${outofdate[@]}"))
         for ((i=0; i<${#outofdate[@]}; i++)); do
             Qgroup[$i]=$(expac -Q -l " " '%G' "${outofdate[$i]}")
         done
@@ -412,21 +412,21 @@ CleanCache() {
 }
 
 ProviderChecks() {
-    allproviders=($(expac -S %P "${repodepspkgs[@]}" | uniq))
+    allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
 
     for ((i=0; i<${#allproviders[@]}; i++)); do
-        providers=($(expac -Ss %n "^${allproviders[$i]}$"))
+        providers=($(expac -Ss '%n' "^${allproviders[$i]}$"))
         [[ ! ${#providers[@]} -gt 1 ]] && continue
 
         # skip if already provided
         for j in "${providerpkgs[@]}"; do
-            provided+=($(expac -S %P $j))
+            provided+=($(expac -S '%P' "$j"))
         done
         [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${allproviders[$i]} " ]] && continue
 
         if [[ ! $noconfirm ]]; then
             msg "i" "${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
-            expac -S -1 '   %!) %n (%r) ' ${providers[@]}
+            expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
 
             local nb=-1
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
@@ -456,7 +456,7 @@ ConflictChecks() {
         for i in "${deps[@]}"; do
             unset conflicts
             conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-            [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q %n "${conflicts[@]}"))
+            [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${conflicts[@]}"))
             # return when no conflict
             [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
 
@@ -479,8 +479,8 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    exist=($(expac -Q %n "${aurpkgs[@]}"))
-    Qversion=($(expac -Q %v "${aurpkgs[@]}"))
+    exist=($(expac -Q '%n' "${aurpkgs[@]}"))
+    Qversion=($(expac -Q '%v' "${aurpkgs[@]}"))
     for ((i=0; i<${#exist[@]}; i++)); do
         [[ " ${aurpkgs[@]} " =~ " ${exist[$i]} " ]] && getaurversion ${exist[$i]} || continue
         [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue
@@ -724,7 +724,7 @@ version() {
 
 fixbackend() {
     msg "i" "Rebuilding ${colorW}cower${reset} backend..."
-    cowerexec=($(expac -Q %n cower)) # cower-git compatibility
+    cowerexec=($(expac -Q '%n' "cower")) # cower-git compatibility
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
     downloadpkgbuild $cowerexec
     makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
