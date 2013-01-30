@@ -193,12 +193,8 @@ UpgradeAur() {
             paraexec
         done
         wait
-        # skip foreign packages
-        for i in "${allaurpkgs[@]}"; do
-            [[ -e "$tmpdir/$i.PKGBUILD" ]] && continue || allaurpkgs=(${allaurpkgs[@]/$i/})
-        done
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            if [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$tmpdir/${allaurpkgs[$i]}.PKGBUILD") ]]; then
+            if isdevel "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"; then
                 if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
                     msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
                     continue
@@ -351,7 +347,7 @@ CleanUp() {
         cd "$builddir"
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
-                if [[ $(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$builddir/$i/PKGBUILD") ]]; then
+                if isdevel "$builddir/$i/PKGBUILD"; then
                     msg "w" "${colorW}$i${reset} cleaning skipped"
                     continue
                 fi
@@ -598,6 +594,10 @@ getcachedpkg() {
     cachedpkg="$PKGDEST/$1-${CARCH}${PKGEXT}"
     [[ ! -f "$cachedpkg" ]] && cachedpkg="$PKGDEST/$1-any${PKGEXT}"
     [[ ! -f "$cachedpkg" ]] && unset cachedpkg
+}
+
+isdevel() {
+    [[ -e "$1" ]] && [[ -n "$(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$1")" ]]
 }
 
 downloadpkgbuild() {
