@@ -607,7 +607,7 @@ downloadpkgbuild() {
 }
 
 downloadjson() {
-    [[ ! -s "$tmpdir/$i.json" ]] && curl -LfGs --data-urlencode "arg=$i" "https://aur.archlinux.org/rpc.php?type=info" -o "$tmpdir/$i.json"
+    [[ ! -s "$tmpdir/$i.json" ]] && curl -sfg --compressed "https://aur.archlinux.org/rpc.php?type=info&arg=$i" -o "$tmpdir/$i.json"
 }
 
 Core() {
