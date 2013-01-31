@@ -479,16 +479,16 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    exist=($(expac -Q '%n' "${aurpkgs[@]}"))
+    Qname=($(expac -Q '%n' "${aurpkgs[@]}"))
     Qversion=($(expac -Q '%v' "${aurpkgs[@]}"))
-    for ((i=0; i<${#exist[@]}; i++)); do
-        [[ " ${aurpkgs[@]} " =~ " ${exist[$i]} " ]] && getaurversion ${exist[$i]} || continue
+    for ((i=0; i<${#Qname[@]}; i++)); do
+        [[ " ${aurpkgs[@]} " =~ " ${Qname[$i]} " ]] && getaurversion ${Qname[$i]} || continue
         [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
-            msg "w" "${exist[$i]}-${Qversion[$i]} is up to date -- reinstalling"
+            msg "w" "${Qname[$i]}-${Qversion[$i]} is up to date -- reinstalling"
         else
-            msg "w" "${exist[$i]}-${Qversion[$i]} is up to date -- skipping"
-            deps=(${deps[@]/${exist[$i]}/})
+            msg "w" "${Qname[$i]}-${Qversion[$i]} is up to date -- skipping"
+            deps=(${deps[@]/${Qname[$i]}/})
         fi
     done
 
