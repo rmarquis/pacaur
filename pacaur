@@ -136,9 +136,9 @@ DownloadPkgs() {
             sumk=0
             summ=0
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
-                getcachedrepopkg "${repodepspkgsver[$i]}"
+                getcachedpkg "${repodepspkgsver[$i]}" '/var/cache/pacman/pkg'
                 summ=$(($summ + ${binarymsize[$i]}))
-                [[ $cachedrepopkg ]] && continue || sumk=$(($sumk + ${binaryksize[$i]}))
+                [[ $cachedpkg ]] && continue || sumk=$(($sumk + ${binaryksize[$i]}))
             done
             sumk=$(echo $sumk 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
             summ=$(echo $summ 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
@@ -301,7 +301,7 @@ MakePkgs() {
 
     for i in "${deps[@]}"; do
         # check package cache
-        [[ $PKGDEST && ! $rebuild ]] && getaurversion $i && getcachedpkg "$i-$Aversion"
+        [[ $PKGDEST && ! $rebuild ]] && getaurversion $i && getcachedpkg "$i-$Aversion" "$PKGDEST"
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 msg "i" "Installing ${colorW}$i${reset} cached package..."
@@ -595,15 +595,9 @@ getaurversion() {
 }
 
 getcachedpkg() {
-    cachedpkg="$PKGDEST/$1-${CARCH}${PKGEXT}"
-    [[ ! -f "$cachedpkg" ]] && cachedpkg="$PKGDEST/$1-any${PKGEXT}"
+    cachedpkg="$2/$1-${CARCH}${PKGEXT}"
+    [[ ! -f "$cachedpkg" ]] && cachedpkg="$2/$1-any${PKGEXT}"
     [[ ! -f "$cachedpkg" ]] && unset cachedpkg
-}
-
-getcachedrepopkg() {
-    cachedrepopkg="/var/cache/pacman/pkg/$1-${CARCH}${PKGEXT}"
-    [[ ! -f "$cachedrepopkg" ]] && cachedrepopkg="/var/cache/pacman/pkg/$1-any${PKGEXT}"
-    [[ ! -f "$cachedrepopkg" ]] && unset cachedrepopkg
 }
 
 isdevel() {
