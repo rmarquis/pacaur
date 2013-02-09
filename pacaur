@@ -145,6 +145,22 @@ DownloadPkgs() {
             unset cachedpkg
         fi
     fi
+
+    # version checks
+    if getverbosepkglists; then
+        for i in "${deps[@]}"; do
+            getaurversion $i
+            depsAver+=("$Aversion")
+        done
+        for i in "${deps[@]}"; do
+            Qver=$(expac -Q '%v' "$i")
+            [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=(" ")
+        done
+        if [[ -n "${repodepspkgs[@]}" ]]; then
+            repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
+            repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
+        fi
+    fi
 }
 
 FindPkgsDeps() {
@@ -215,11 +231,46 @@ UpgradeAur() {
 }
 
 Prompt() {
-    echo -e "\n${colorY}AUR Targets  (${#deps[@]}):${reset} ${deps[@]}"
-    if [[ -n "${repodepspkgs[@]}" ]]; then
-        echo -e "${colorY}Repo Targets (${#repodepspkgs[@]}):${reset} ${repodepspkgs[@]}\n"
+    if getverbosepkglists; then
+        # compute table length
+        lengthn=("${deps[@]}" "${repodepspkgs[@]}")
+        lengthv=("${depsQver[@]}" "${depsAver[@]}" "${repodepsQver[@]}" "${repodepsSver[@]}")
+        lname=0
+        for i in ${lengthn[@]}; do
+            x=${#i}
+            [[ $x -gt $lname ]] && lname=$x
+        done
+        lver=0
+        for i in ${lengthv[@]}; do
+            x=${#i}
+            [[ $x -gt $lver ]] && lver=$x
+        done
+        [[ $lname -gt 4 ]] && lname=$(($lname+2)) || lname=6
+        [[ $lver -gt 10 ]] && lver=$(($lver+2)) || lver=12
 
-        echo -e "${colorW}Repo Download Size:${reset}    $sumk MiB"
+        # show detailed output
+        printf "\n${colorY}%s${reset}\n\n" "AUR Targets  (${#deps[@]}):"
+        printf "${colorW}%-${lname}s %-${lver}s %-${lver}s${reset}\n\n" "Name" "Old Version" "New Version"
+        for ((i=0; i<${#deps[@]}; i++)); do
+            printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset}\n" "${deps[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
+        done
+
+        if [[ -n "${repodepspkgs[@]}" ]]; then
+            printf "\n${colorY}%s${reset}\n\n" "Repo Targets  (${#repodepspkgs[@]}):"
+            printf "${colorW}%-${lname}s %-${lver}s %-${lver}s %s${reset}\n\n" "Name" "Old Version" "New Version" "Download Size"
+            for ((i=0; i<${#repodepspkgs[@]}; i++)); do
+                printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset} %13s\n" "${repodepspkgs[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" "$(echo ${binaryksize[$i]} 1048576 | awk '{ printf("%.2f\n", $1/$2) }') MiB";
+            done
+        fi
+    else
+        echo -e "\n${colorY}AUR Targets  (${#deps[@]}):${reset} ${deps[@]}"
+        if [[ -n "${repodepspkgs[@]}" ]]; then
+            echo -e "${colorY}Repo Targets (${#repodepspkgs[@]}):${reset} ${repodepspkgs[@]}\n"
+        fi
+    fi
+
+    if [[ -n "${repodepspkgs[@]}" ]]; then
+        echo -e "\n${colorW}Repo Download Size:${reset}    $sumk MiB"
         echo -e "${colorW}Repo Installed Size:${reset}   $summ MiB"
     fi
 
@@ -579,6 +630,10 @@ getignoredpkgs() {
 
 getignoredgrps() {
     ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
+}
+
+getverbosepkglists() {
+    [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]
 }
 
 getinstallscript() {
