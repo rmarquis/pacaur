@@ -106,6 +106,7 @@ DownloadPkgs() {
         done
     else
         allaurdeps+=("${aurpkgs[@]}")
+        msg "i" "resolving dependencies..."
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
         # reduce root binary deps
@@ -457,6 +458,7 @@ ProviderChecks() {
 }
 
 ConflictChecks() {
+    msg "i" "looking for inter-conflicts..."
     if [[ ! $noconfirm ]]; then
         local k=0
         for i in "${deps[@]}"; do
