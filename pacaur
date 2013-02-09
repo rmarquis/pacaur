@@ -87,7 +87,7 @@ DownloadAur() {
 
     # check PKGBUILDs
     for i in "${deps[@]}"; do
-        [[ -e "$builddir/$i/PKGBUILD" ]] && continue || msg "e" "Could not read ${colorW}$i${reset} PKGBUILD"
+        [[ -e "$builddir/$i/PKGBUILD" ]] && continue || msg "e" "Could not read ${colorW}$i${reset} PKGBUILD: badly packaged taurball"
     done
 
     timeout ${deps[@]}
