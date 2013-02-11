@@ -137,8 +137,9 @@ DownloadPkgs() {
             summ=0
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
                 getcachedpkg "${repodepspkgsver[$i]}" '/var/cache/pacman/pkg'
+                [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
+                sumk=$(($sumk + ${binaryksize[$i]}))
                 summ=$(($summ + ${binarymsize[$i]}))
-                [[ $cachedpkg ]] && continue || sumk=$(($sumk + ${binaryksize[$i]}))
             done
             sumk=$(echo $sumk 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
             summ=$(echo $summ 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
