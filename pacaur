@@ -32,7 +32,7 @@ secure=false                                # enhanced security
 # set xdg path
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
     xdg_config=($(echo "${XDG_CONFIG_DIRS}" | awk -F ":" '{for (i=1; i<=NF; i++) print $i}' ))
-    for i in ${xdg_config[@]}; do
+    for i in "${xdg_config[@]}"; do
         [[ -d "$i" ]] && export XDG_CONFIG_DIRS=$i && break
     done
 fi
@@ -230,12 +230,12 @@ Prompt() {
         lengthn=("${deps[@]}" "${repodepspkgs[@]}")
         lengthv=("${depsQver[@]}" "${depsAver[@]}" "${repodepsQver[@]}" "${repodepsSver[@]}")
         lname=0
-        for i in ${lengthn[@]}; do
+        for i in "${lengthn[@]}"; do
             x=${#i}
             [[ $x -gt $lname ]] && lname=$x
         done
         lver=0
-        for i in ${lengthv[@]}; do
+        for i in "${lengthv[@]}"; do
             x=${#i}
             [[ $x -gt $lver ]] && lver=$x
         done
