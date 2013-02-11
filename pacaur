@@ -146,20 +146,18 @@ DownloadPkgs() {
         fi
     fi
 
-    # version checks
-    if getverbosepkglists; then
-        for i in "${deps[@]}"; do
-            getaurversion $i
-            depsAver+=("$Aversion")
-        done
-        for i in "${deps[@]}"; do
-            Qver=$(expac -Q '%v' "$i")
-            [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=(" ")
-        done
-        if [[ -n "${repodepspkgs[@]}" ]]; then
-            repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
-            repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
-        fi
+    # get version numbers
+    for i in "${deps[@]}"; do
+        getaurversion $i
+        depsAver+=("$Aversion")
+    done
+    for i in "${deps[@]}"; do
+        Qver=$(expac -Q '%v' "$i")
+        [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("-")
+    done
+    if [[ -n "${repodepspkgs[@]}" ]]; then
+        repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
+        repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
     fi
 }
 
@@ -533,16 +531,15 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    Qname=($(expac -Q '%n' "${aurpkgs[@]}"))
-    Qversion=($(expac -Q '%v' "${aurpkgs[@]}"))
-    for ((i=0; i<${#Qname[@]}; i++)); do
-        [[ " ${aurpkgs[@]} " =~ " ${Qname[$i]} " ]] && getaurversion ${Qname[$i]} || continue
-        [[ $(vercmp "$Aversion" "${Qversion[$i]}") -gt 0 ]] && continue
+    aurdepsQver=(${depsQver[@]:0:${#aurpkgs[@]}})
+    aurdepsAver=(${depsAver[@]:0:${#aurpkgs[@]}})
+    for ((i=0; i<${#aurpkgs[@]}; i++)); do
+        [[ $(vercmp "${aurdepsAver[$i]}" "${aurdepsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
-            msg "w" "${Qname[$i]}-${Qversion[$i]} is up to date -- reinstalling"
+            msg "w" "${aurpkgs[$i]}-${aurdepsQver[$i]} is up to date -- reinstalling"
         else
-            msg "w" "${Qname[$i]}-${Qversion[$i]} is up to date -- skipping"
-            deps=(${deps[@]/${Qname[$i]}/})
+            msg "w" "${aurpkgs[$i]}-${aurdepsQver[$i]} is up to date -- skipping"
+            deps=(${deps[@]/${aurpkgs[$i]}/})
         fi
     done
 
