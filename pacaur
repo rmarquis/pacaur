@@ -258,8 +258,15 @@ Prompt() {
             done
         fi
     else
-        printf "\n${colorY}%-17s${reset} %s\n" "AUR Targets  (${#deps[@]}):" "$(echo ${deps[@]})"
-        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n" "Repo Targets (${#repodepspkgs[@]}):" "$(echo ${repodepspkgs[@]})"
+        # show version
+        for ((i=0; i<${#deps[@]}; i++)); do
+            depsver="${depsver}${deps[$i]}-${depsAver[$i]}  "
+        done
+        for ((i=0; i<${#repodepspkgs[@]}; i++)); do
+            repodepspkgsver="${repodepspkgsver}${repodepspkgs[$i]}-${repodepsSver[$i]}  "
+        done
+        printf "\n${colorY}%-17s${reset} %s\n" "AUR Targets  (${#deps[@]}):" "$depsver"
+        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n" "Repo Targets (${#repodepspkgs[@]}):" "$repodepspkgsver"
     fi
 
     if [[ -n "${repodepspkgs[@]}" ]]; then
