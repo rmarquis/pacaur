@@ -126,8 +126,9 @@ DownloadPkgs() {
 
     # get version numbers
     for i in "${deps[@]}"; do
-        getaurversion $i
-        depsAver+=("$Aversion")
+        Apkgver=$(grep '^pkgver' "$builddir/$i/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+        Apkgrel=$(grep '^pkgrel' "$builddir/$i/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+        depsAver+=("$Apkgver-$Apkgrel")
     done
     for i in "${deps[@]}"; do
         Qver=$(expac -Q '%v' "$i")
@@ -138,17 +139,14 @@ DownloadPkgs() {
         repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
     fi
 
+    # compute binary size
     if [[ -n "${repodepspkgs[@]}" ]]; then
-        # get binary version
-        repodepspkgsver=($(expac -S -1 '%n-%v' "${repodepspkgs[@]}"))
-
-        # compute binary size
         binaryksize=($(expac -S -1 "%k" "${repodepspkgs[@]}"))
         binarymsize=($(expac -S -1 "%m" "${repodepspkgs[@]}"))
         sumk=0
         summ=0
         for ((i=0; i<${#repodepspkgs[@]}; i++)); do
-            getcachedpkg "${repodepspkgsver[$i]}" '/var/cache/pacman/pkg'
+            getcachedpkg "${repodepspkgs[$i]}-${repodepsSver[$i]}" '/var/cache/pacman/pkg'
             [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
             sumk=$(($sumk + ${binaryksize[$i]}))
             summ=$(($summ + ${binarymsize[$i]}))
@@ -227,7 +225,7 @@ UpgradeAur() {
 }
 
 Prompt() {
-    if getverbosepkglists; then
+    if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         # compute table length
         lengthn=("${deps[@]}" "${repodepspkgs[@]}")
         lengthv=("${depsQver[@]}" "${depsAver[@]}" "${repodepsQver[@]}" "${repodepsSver[@]}")
@@ -628,10 +626,6 @@ getignoredgrps() {
     ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
 }
 
-getverbosepkglists() {
-    [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]
-}
-
 getinstallscript() {
     [[ ! -e "$builddir/$1/PKGBUILD" ]] && return
     installscript="$(grep "^install=" "$builddir/$1/PKGBUILD" | cut -d '=' -f 2-)"
@@ -639,12 +633,6 @@ getinstallscript() {
         Apkgname=$(grep '^pkgname' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
         installscript=$(echo $installscript | sed -e "s/\$[{]*pkgname[}]*/$Apkgname/g")
     fi
-}
-
-getaurversion() {
-    Apkgver=$(grep '^pkgver' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-    Apkgrel=$(grep '^pkgrel' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-    Aversion="$Apkgver-$Apkgrel"
 }
 
 getcachedpkg() {
