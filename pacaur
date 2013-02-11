@@ -122,28 +122,6 @@ DownloadPkgs() {
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-
-        if [[ -n "${repodepspkgs[@]}" ]]; then
-            ProviderChecks ${repodepspkgs[@]}
-
-            # get binary version
-            repodepspkgsver=($(expac -S -1 '%n-%v' "${repodepspkgs[@]}"))
-
-            # compute binary size
-            binaryksize=($(expac -S -1 "%k" "${repodepspkgs[@]}"))
-            binarymsize=($(expac -S -1 "%m" "${repodepspkgs[@]}"))
-            sumk=0
-            summ=0
-            for ((i=0; i<${#repodepspkgs[@]}; i++)); do
-                getcachedpkg "${repodepspkgsver[$i]}" '/var/cache/pacman/pkg'
-                [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
-                sumk=$(($sumk + ${binaryksize[$i]}))
-                summ=$(($summ + ${binarymsize[$i]}))
-            done
-            sumk=$(echo $sumk 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
-            summ=$(echo $summ 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
-            unset cachedpkg
-        fi
     fi
 
     # get version numbers
@@ -158,6 +136,26 @@ DownloadPkgs() {
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
         repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
+    fi
+
+    if [[ -n "${repodepspkgs[@]}" ]]; then
+        # get binary version
+        repodepspkgsver=($(expac -S -1 '%n-%v' "${repodepspkgs[@]}"))
+
+        # compute binary size
+        binaryksize=($(expac -S -1 "%k" "${repodepspkgs[@]}"))
+        binarymsize=($(expac -S -1 "%m" "${repodepspkgs[@]}"))
+        sumk=0
+        summ=0
+        for ((i=0; i<${#repodepspkgs[@]}; i++)); do
+            getcachedpkg "${repodepspkgsver[$i]}" '/var/cache/pacman/pkg'
+            [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
+            sumk=$(($sumk + ${binaryksize[$i]}))
+            summ=$(($summ + ${binarymsize[$i]}))
+        done
+        sumk=$(echo $sumk 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
+        summ=$(echo $summ 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
+        unset cachedpkg
     fi
 }
 
@@ -465,6 +463,7 @@ CleanCache() {
 }
 
 ProviderChecks() {
+    [[ -z "${repodepspkgs[@]}" ]] && return
     allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
 
     for ((i=0; i<${#allproviders[@]}; i++)); do
@@ -673,6 +672,7 @@ Core() {
     [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
     DownloadPkgs
+    ProviderChecks
     IgnoreDepsChecks
     ConflictChecks
     ReinstallChecks
