@@ -153,7 +153,7 @@ DownloadPkgs() {
     done
     for i in "${deps[@]}"; do
         Qver=$(expac -Q '%v' "$i")
-        [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("-")
+        [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
     done
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
@@ -531,8 +531,8 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    aurdepsQver=(${depsQver[@]:0:${#aurpkgs[@]}})
-    aurdepsAver=(${depsAver[@]:0:${#aurpkgs[@]}})
+    aurdepsQver=("${depsQver[@]:0:${#aurpkgs[@]}}")
+    aurdepsAver=("${depsAver[@]:0:${#aurpkgs[@]}}")
     for ((i=0; i<${#aurpkgs[@]}; i++)); do
         [[ $(vercmp "${aurdepsAver[$i]}" "${aurdepsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
