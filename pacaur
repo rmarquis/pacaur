@@ -262,17 +262,17 @@ Prompt() {
         fi
     else
         printf "\n${colorY}%-17s${reset} %s\n" "AUR Targets  (${#deps[@]}):" "$(echo ${deps[@]})"
-        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n\n" "Repo Targets (${#repodepspkgs[@]}):" "$(echo ${repodepspkgs[@]})"
+        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n" "Repo Targets (${#repodepspkgs[@]}):" "$(echo ${repodepspkgs[@]})"
     fi
 
     if [[ -n "${repodepspkgs[@]}" ]]; then
-        printf "${colorW}%-20s${reset} %11s\n" "Repo Download Size:" "$sumk MiB"
-        printf "${colorW}%-20s${reset} %11s\n\n" "Repo Installed Size:" "$summ MiB"
+        printf "\n${colorW}%-20s${reset} %11s\n" "Repo Download Size:" "$sumk MiB"
+        printf "${colorW}%-20s${reset} %11s\n" "Repo Installed Size:" "$summ MiB"
     fi
 
     if [[ ! $noconfirm ]]; then
         [[ $installpkg ]] && action="installation" || action="download"
-        if ! proceedY "Proceed with $action?"; then
+        if ! proceedY "\nProceed with $action?"; then
             CleanUp ${deps[@]} &>/dev/null
             exit
         fi
