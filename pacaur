@@ -346,9 +346,10 @@ MakePkgs() {
         yes | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
     fi
 
+    local j=0
     for i in "${deps[@]}"; do
         # check package cache
-        [[ $PKGDEST && ! $rebuild ]] && getaurversion $i && getcachedpkg "$i-$Aversion" "$PKGDEST"
+        [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$i-${depsAver[$j]}" "$PKGDEST"
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 msg "i" "Installing ${colorW}$i${reset} cached package..."
@@ -384,6 +385,7 @@ MakePkgs() {
         else
             sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
+        ((j++))
     done
     # remove AUR deps
     if [[ ! $installpkg ]]; then
