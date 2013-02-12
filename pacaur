@@ -126,11 +126,12 @@ DownloadPkgs() {
 
     # get version numbers
     for i in "${deps[@]}"; do
-        Apkgver=$(grep '^pkgver' "$builddir/$i/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-        Apkgrel=$(grep '^pkgrel' "$builddir/$i/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-        depsAver+=("$Apkgver-$Apkgrel")
+        downloadjson $i &
+        paraexec
     done
+    wait
     for i in "${deps[@]}"; do
+        depsAver+=($(grep -Po '"Version":"[0-9A-Za-z\.-]+"' "$tmpdir/$i.json" | awk -F ":" '{print $2}' | tr -d '"'))
         Qver=$(expac -Q '%v' "$i")
         [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
     done
@@ -546,11 +547,6 @@ ReinstallChecks() {
 }
 
 OutofdateChecks() {
-    for i in "${deps[@]}"; do
-        downloadjson $i &
-        paraexec
-    done
-    wait
     for i in "${deps[@]}"; do
         timestamp=$(grep -Po '"OutOfDate":[^0][0-9]*' "$tmpdir/$i.json" | awk -F ":" '{print $2}')
         [[ $timestamp ]] && msg "w" "${colorW}$i${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@$timestamp" "+%Y-%m-%d")${reset}" || continue
