@@ -250,7 +250,7 @@ Prompt() {
         done
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
-            printf "\n${colorY}%s${reset}\n\n" "Repo Targets  (${#repodepspkgs[@]}):"
+            printf "\n${colorY}%s${reset}\n\n" "Repo Targets (${#repodepspkgs[@]}):"
             printf "${colorW}%-${lname}s %-${lver}s %-${lver}s %s${reset}\n\n" "Name" "Old Version" "New Version" "Download Size"
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
                 printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset} %13s\n" "${repodepspkgs[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" "$(echo ${binaryksize[$i]} 1048576 | awk '{ printf("%.2f\n", $1/$2) }') MiB";
