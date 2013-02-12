@@ -126,13 +126,10 @@ DownloadPkgs() {
     fi
 
     # get version numbers
+    downloadjson ${deps[@]}
+    depsAver=($(getjsonvar "Version")) # return sorted results
+    deps=($(echo "${deps[@]}" | sed 's/ /\n/g' | sort -u))
     for i in "${deps[@]}"; do
-        downloadjson $i &
-        paraexec
-    done
-    wait
-    for i in "${deps[@]}"; do
-        depsAver+=($(grep -Po '"Version":"[0-9A-Za-z\.-]+"' "$tmpdir/$i.json" | awk -F ":" '{print $2}' | tr -d '"'))
         Qver=$(expac -Q '%v' "$i")
         [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
     done
@@ -188,8 +185,10 @@ UpgradeAur() {
         allaurpkgs=($($pacmanbin -Qmq))
         Qversion=($(expac -Q '%v' "${allaurpkgs[@]}"))
 
-        for i in "${allaurpkgs[@]}"; do
-            downloadpkgbuild $i &
+        downloadjson ${allaurpkgs[@]}
+        allaurpkgsurl=($(getjsonvar "URLPath"))
+        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
+            downloadpkgbuild "${allaurpkgs[$i]}" "${allaurpkgsurl[$i]}" &
             paraexec
         done
         wait
@@ -557,9 +556,9 @@ ReinstallChecks() {
 }
 
 OutofdateChecks() {
-    for i in "${deps[@]}"; do
-        timestamp=$(grep -Po '"OutOfDate":[^0][0-9]*' "$tmpdir/$i.json" | awk -F ":" '{print $2}')
-        [[ $timestamp ]] && msg "w" "${colorW}$i${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@$timestamp" "+%Y-%m-%d")${reset}" || continue
+    depsood=($(getjsonvar "OutOfDate"))
+    for ((i=0; i<${#deps[@]}; i++)); do
+        [[ "${depsood[$i]}" -gt 0 ]] && msg "w" "${colorW}${deps[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsood[$i]}" "+%Y-%m-%d")${reset}"
     done
 }
 
@@ -652,13 +651,17 @@ isdevel() {
 }
 
 downloadpkgbuild() {
-    downloadjson $i
-    Aurlpath=$(cat "$tmpdir/$i.json" | grep -Po '"URLPath":".*?[^\\]"' | awk -F ":" '{print $2}' | sed -e 's/\\//g' -e 's/\"//g')
-    curl -sf --compressed "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" -o "$tmpdir/$i.PKGBUILD"
+    curl -sf --compressed "https://aur.archlinux.org${2%/*}/PKGBUILD" -o "$tmpdir/$1.PKGBUILD"
 }
 
 downloadjson() {
-    curl -sfg --compressed "https://aur.archlinux.org/rpc.php?type=info&arg=$i" -o "$tmpdir/$i.json"
+    arg="$(printf "&arg[]=%s" "$@")"
+    url="$(printf "https://aur.archlinux.org/rpc.php?type=multiinfo%s" "$arg")"
+    curl -sfg --compressed "$url" -o "$tmpdir/raw.json"
+}
+
+getjsonvar() {
+    json_reformat < "$tmpdir/raw.json" | tr -d "\" "| grep -Po "Name:.*|$1:.*" | sed 'N;s/,\n/:/' | sed -r 's/,//g' | awk -F ":" '{print $4}'
 }
 
 Core() {
@@ -777,8 +780,10 @@ version() {
 fixbackend() {
     msg "i" "Rebuilding ${colorW}cower${reset} backend..."
     cowerexec=($(expac -Q '%n' "cower")) # cower-git compatibility
+    downloadjson $cowerexec
+    cowerexecurl=($(getjsonvar "URLPath"))
+    downloadpkgbuild "$cowerexec" "$cowerexecurl"
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
-    downloadpkgbuild $cowerexec
     makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerexec
 }
