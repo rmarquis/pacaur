@@ -46,7 +46,7 @@ source "$configdir/config"
 # color
 if $color; then
     pacmanbin='pacman-color'
-    cower='cower --color=always'
+    cower='cower --color=auto'
     reset="\e[0m"
     colorR="\e[1;31m"
     colorG="\e[1;32m"
@@ -83,7 +83,7 @@ DownloadAur() {
             W)  [[ $operation = download ]] && echo "$info" || continue;;
             E)  echo "$info";;
         esac
-    done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
+    done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir --color=always 2>&1)
 
     # check PKGBUILDs
     for i in "${deps[@]}"; do
@@ -179,7 +179,7 @@ FindPkgsDeps() {
 
 UpgradeAur() {
     msg "i" "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]} | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]}))
     aurpkgs=($(echo "${aurpkgs[@]}" | sed 's/ /\n/g' | sort -u))
 
     # add devel packages
