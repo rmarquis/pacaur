@@ -608,7 +608,7 @@ isdevel() {
 downloadpkgbuild() {
     downloadjson $i
     Aurlpath=$(cat "$tmpdir/$i.json" | grep -Po '"URLPath":".*?[^\\]"' | awk -F ":" '{print $2}' | sed -e 's/\\//g' -e 's/\"//g')
-    curl -Lfs --compressed "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" -o "$tmpdir/$i.PKGBUILD"
+    curl -sf --compressed "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" -o "$tmpdir/$i.PKGBUILD"
 }
 
 downloadjson() {
