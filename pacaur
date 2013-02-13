@@ -608,11 +608,11 @@ isdevel() {
 downloadpkgbuild() {
     downloadjson $i
     Aurlpath=$(cat "$tmpdir/$i.json" | grep -Po '"URLPath":".*?[^\\]"' | awk -F ":" '{print $2}' | sed -e 's/\\//g' -e 's/\"//g')
-    [[ ! -s "$tmpdir/$i.PKGBUILD" ]] && curl -Lfs "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" -o "$tmpdir/$i.PKGBUILD"
+    curl -Lfs "https://aur.archlinux.org${Aurlpath%/*}/PKGBUILD" -o "$tmpdir/$i.PKGBUILD"
 }
 
 downloadjson() {
-    [[ ! -s "$tmpdir/$i.json" ]] && curl -sfg --compressed "https://aur.archlinux.org/rpc.php?type=info&arg=$i" -o "$tmpdir/$i.json"
+    curl -sfg --compressed "https://aur.archlinux.org/rpc.php?type=info&arg=$i" -o "$tmpdir/$i.json"
 }
 
 Core() {
