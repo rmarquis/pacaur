@@ -663,8 +663,8 @@ Core() {
     [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
     DownloadPkgs
-    ProviderChecks
     IgnoreDepsChecks
+    ProviderChecks
     ConflictChecks
     ReinstallChecks
     OutofdateChecks
