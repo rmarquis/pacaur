@@ -128,7 +128,7 @@ DownloadPkgs() {
     # get version numbers
     downloadjson ${deps[@]}
     depsAver=($(getjsonvar "Version")) # return sorted results
-    deps=($(echo "${deps[@]}" | sed 's/ /\n/g' | sort -u))
+    depsbuild=("${deps[@]}") && deps=($(echo "${deps[@]}" | sed 's/ /\n/g' | sort -u))
     for i in "${deps[@]}"; do
         Qver=$(expac -Q '%v' "$i")
         [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
@@ -282,7 +282,7 @@ Prompt() {
         fi
     fi
 
-    EditPkgs ${deps[@]}
+    EditPkgs ${depsbuild[@]}
 }
 
 PreviewPkgs() {
@@ -335,7 +335,7 @@ MakePkgs() {
     sudo -v
 
     # reverse deps order
-    deps=($(echo "${deps[@]}" | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
+    deps=($(echo "${depsbuild[@]}" | awk -F "\n" '{print}' | awk -F " " '{for (i=NF;i>=1;i--) print $i}'))
 
     # makepkg options
     [[ $color != true ]] && makeopts+=("--nocolor")
