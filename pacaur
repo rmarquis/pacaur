@@ -588,10 +588,10 @@ IgnoreChecks() {
 
 IgnoreDepsChecks() {
     [[ -z "${ignoredpkgs[@]}" ]] && return
-    unset deps
+    unset depsbuild
 
     # add checked targets
-    deps+=("${aurpkgs[@]}")
+    depsbuild+=("${aurpkgs[@]}")
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
@@ -617,7 +617,7 @@ IgnoreDepsChecks() {
                 msg "e" "Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
-        deps+=("$i")
+        depsbuild+=("$i")
     done
 }
 
