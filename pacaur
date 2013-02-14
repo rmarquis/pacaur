@@ -538,14 +538,13 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    aurdepsQver=("${depsQver[@]:0:${#aurpkgs[@]}}")
-    aurdepsAver=("${depsAver[@]:0:${#aurpkgs[@]}}")
-    for ((i=0; i<${#aurpkgs[@]}; i++)); do
-        [[ $(vercmp "${aurdepsAver[$i]}" "${aurdepsQver[$i]}") -gt 0 ]] && continue
+    for ((i=0; i<${#deps[@]}; i++)); do
+        [[ ! " ${aurpkgs[@]} " =~ " ${deps[$i]} " ]] && continue
+        [[ $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
-            msg "w" "${aurpkgs[$i]}-${aurdepsQver[$i]} is up to date -- reinstalling"
+            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- reinstalling"
         else
-            msg "w" "${aurpkgs[$i]}-${aurdepsQver[$i]} is up to date -- skipping"
+            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- skipping"
             unset deps[$i] depsQver[$i] depsAver[$i]
         fi
     done
