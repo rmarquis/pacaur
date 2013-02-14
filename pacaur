@@ -98,6 +98,7 @@ DownloadPkgs() {
         if [[ $operation = download && $count -lt 2 ]]; then
             DownloadAur ${aurpkgs[@]} && return
         else
+            msg "i" "resolving dependencies..."
             coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
         fi
         # check for CARCH 32/64bits bash magic
