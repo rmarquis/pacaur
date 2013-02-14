@@ -545,6 +545,7 @@ ReinstallChecks() {
             msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- reinstalling"
         else
             msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- skipping"
+            depsbuild=(${depsbuild[@]/${deps[$i]}/})
             unset deps[$i] depsQver[$i] depsAver[$i]
         fi
     done
