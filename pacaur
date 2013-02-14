@@ -128,6 +128,7 @@ DownloadPkgs() {
     # get version numbers
     downloadjson ${deps[@]}
     depsAver=($(getjsonvar "Version")) # return sorted results
+    depsAood=($(getjsonvar "OutOfDate"))
     depsbuild=("${deps[@]}") && deps=($(echo "${deps[@]}" | sed 's/ /\n/g' | sort -u))
     for i in "${deps[@]}"; do
         Qver=$(expac -Q '%v' "$i")
@@ -546,19 +547,18 @@ ReinstallChecks() {
         else
             msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- skipping"
             depsbuild=(${depsbuild[@]/${deps[$i]}/})
-            unset deps[$i] depsQver[$i] depsAver[$i]
+            unset deps[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
     done
     # remove empty elements
-    [[ $needed ]] && deps=(${deps[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]})
+    [[ $needed ]] && deps=(${deps[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
 }
 
 OutofdateChecks() {
-    depsood=($(getjsonvar "OutOfDate"))
     for ((i=0; i<${#deps[@]}; i++)); do
-        [[ "${depsood[$i]}" -gt 0 ]] && msg "w" "${colorW}${deps[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsood[$i]}" "+%Y-%m-%d")${reset}"
+        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${deps[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
     done
 }
 
