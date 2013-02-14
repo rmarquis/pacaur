@@ -636,7 +636,7 @@ ClassifyPkgs() {
             getignoredgrps
             for i in "${pkgs[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$($pacmanbin -S --print $i 2>&1 | grep -v 'error:')" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+                [[ -z "$(expac -S '%n' "$i" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
     else
