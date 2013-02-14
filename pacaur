@@ -547,9 +547,11 @@ ReinstallChecks() {
             msg "w" "${aurpkgs[$i]}-${aurdepsQver[$i]} is up to date -- reinstalling"
         else
             msg "w" "${aurpkgs[$i]}-${aurdepsQver[$i]} is up to date -- skipping"
-            deps=(${deps[@]/${aurpkgs[$i]}/})
+            unset deps[$i] depsQver[$i] depsAver[$i]
         fi
     done
+    # remove empty elements
+    [[ $needed ]] && deps=(${deps[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]})
 
     nothingtodo ${deps[@]}
 }
