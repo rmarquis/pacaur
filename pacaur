@@ -181,12 +181,18 @@ UpgradeAur() {
     aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]}))
     aurpkgs=($(echo "${aurpkgs[@]}" | sed 's/ /\n/g' | sort -u))
 
+    # check foreign packages
+    allforeignpkgs=($($pacmanbin -Qmq))
+    downloadjson ${allforeignpkgs[@]}
+    allaurpkgs=($(getjsonvar "Name"))
+    foreignpkgs=($(comm -23 <(echo "${allforeignpkgs[@]}" | sed 's/ /\n/g') <(echo "${allaurpkgs[@]}" | sed 's/ /\n/g')))
+    for i in "${foreignpkgs[@]}"; do
+        msg "w" "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+    done
+
     # add devel packages
     if [[ $devel ]]; then
-        allaurpkgs=($($pacmanbin -Qmq))
         Qversion=($(expac -Q '%v' "${allaurpkgs[@]}"))
-
-        downloadjson ${allaurpkgs[@]}
         allaurpkgsurl=($(getjsonvar "URLPath"))
         for ((i=0; i<${#allaurpkgs[@]}; i++)); do
             downloadpkgbuild "${allaurpkgs[$i]}" "${allaurpkgsurl[$i]}" &
