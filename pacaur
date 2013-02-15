@@ -142,6 +142,7 @@ DownloadPkgs() {
             done
             sumk=$(echo $sumk 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
             summ=$(echo $summ 1048576 | awk '{ printf("%.2f\n", $1/$2) }')
+            unset cachedpkg
         fi
     fi
 }
