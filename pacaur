@@ -72,8 +72,97 @@ fi
 # Functions
 #
 
-SearchInfoAur() {
-    $cower ${coweropts[@]} $@
+ClassifyPkgs() {
+    if [[ $fallback = true ]]; then
+        [[ $repo ]] && repopkgs=("${pkgs[@]}")
+        [[ $aur ]] && aurpkgs=("${pkgs[@]}")
+        if [[ ! $repo && ! $aur ]]; then
+            getignoredgrps
+            for i in "${pkgs[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
+                [[ -z "$(expac -S '%n' "$i" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+            done
+        fi
+    else
+        [[ ! $aur ]] && repopkgs=("${pkgs[@]}") || aurpkgs=("${pkgs[@]}")
+    fi
+}
+
+Core() {
+    getignoredpkgs
+    [[ $upgrade ]] && UpgradeAur
+    IgnoreChecks
+    DownloadPkgs
+    IgnoreDepsChecks
+    ProviderChecks
+    ConflictChecks
+    ReinstallChecks
+    OutofdateChecks
+    Prompt
+    MakePkgs
+}
+
+UpgradeAur() {
+    msg "i" "${colorW}Starting AUR upgrade...${reset}"
+    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]}))
+    aurpkgs=($(echo "${aurpkgs[@]}" | sed 's/ /\n/g' | sort -u))
+
+    # check foreign packages
+    allforeignpkgs=($($pacmanbin -Qmq))
+    downloadjson ${allforeignpkgs[@]}
+    allaurpkgs=($(getjsonvar "Name"))
+    foreignpkgs=($(comm -23 <(echo "${allforeignpkgs[@]}" | sed 's/ /\n/g') <(echo "${allaurpkgs[@]}" | sed 's/ /\n/g')))
+    for i in "${foreignpkgs[@]}"; do
+        msg "w" "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+    done
+
+    # add devel packages
+    if [[ $devel ]]; then
+        Qversion=($(expac -Q '%v' "${allaurpkgs[@]}"))
+        allaurpkgsurl=($(getjsonvar "URLPath"))
+        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
+            downloadpkgbuild "${allaurpkgs[$i]}" "${allaurpkgsurl[$i]}" &
+            paraexec
+        done
+        wait
+        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
+            if isdevel "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"; then
+                if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
+                    msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
+                    continue
+                else
+                    aurpkgs+=("${allaurpkgs[$i]}")
+                fi
+            fi
+        done
+    fi
+
+    nothingtodo ${aurpkgs[@]}
+    timeout ${aurpkgs[@]}
+}
+
+IgnoreChecks() {
+    [[ -z "${ignoredpkgs[@]}" ]] && return
+
+    checkaurpkgs=("${aurpkgs[@]}")
+    unset aurpkgs
+
+    # check targets
+    for i in "${checkaurpkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            if [[ ! $upgrade && ! $noconfirm ]]; then
+                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    msg "w" "${colorW}$i${reset}: ignoring package upgrade"
+                    continue
+                fi
+            else
+                continue
+            fi
+        fi
+        aurpkgs+=("$i")
+    done
+
+    nothingtodo ${aurpkgs[@]}
 }
 
 DownloadAur() {
@@ -176,43 +265,149 @@ FindPkgsDeps() {
     fi
 }
 
-UpgradeAur() {
-    msg "i" "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]}))
-    aurpkgs=($(echo "${aurpkgs[@]}" | sed 's/ /\n/g' | sort -u))
-
-    # check foreign packages
-    allforeignpkgs=($($pacmanbin -Qmq))
-    downloadjson ${allforeignpkgs[@]}
-    allaurpkgs=($(getjsonvar "Name"))
-    foreignpkgs=($(comm -23 <(echo "${allforeignpkgs[@]}" | sed 's/ /\n/g') <(echo "${allaurpkgs[@]}" | sed 's/ /\n/g')))
-    for i in "${foreignpkgs[@]}"; do
-        msg "w" "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+PreviewPkgs() {
+    # sanitize for sudo security check
+    cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
+    while [[ -n "$(grep -Po '^depends=\([^)].*[^)]$|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]] ; do
+        sed -i -e '/^depends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+        sed -i -e '/^optdepends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
     done
 
-    # add devel packages
-    if [[ $devel ]]; then
-        Qversion=($(expac -Q '%v' "${allaurpkgs[@]}"))
-        allaurpkgsurl=($(getjsonvar "URLPath"))
-        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            downloadpkgbuild "${allaurpkgs[$i]}" "${allaurpkgsurl[$i]}" &
-            paraexec
+    [[ -n $(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
+    if [[ ! $noconfirm ]]; then
+        if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
+            CleanUp ${deps[@]} &>/dev/null
+            exit
+        fi
+    fi
+}
+
+IgnoreDepsChecks() {
+    [[ -z "${ignoredpkgs[@]}" ]] && return
+    unset depsbuild
+
+    # add checked targets
+    depsbuild+=("${aurpkgs[@]}")
+
+    # check dependencies
+    for i in "${repodepspkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            msg "w" "${colorW}$i${reset}: ignoring package upgrade"
+            CleanUp ${aurpkgs[@]} &>/dev/null
+            CleanUp ${aurdepspkgs[@]} &>/dev/null
+            msg "e" "Unresolved dependency '${colorW}$i${reset}'"
+        fi
+    done
+    for i in "${aurdepspkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            if [[ ! $noconfirm ]]; then
+                if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    CleanUp ${aurpkgs[@]} &>/dev/null
+                    CleanUp ${aurdepspkgs[@]} &>/dev/null
+                    msg "e" "Unresolved dependency '${colorW}$i${reset}'"
+                fi
+            else
+                msg "w" "${colorW}$i${reset}: ignoring package upgrade"
+                CleanUp ${aurpkgs[@]} &>/dev/null
+                CleanUp ${aurdepspkgs[@]} &>/dev/null
+                msg "e" "Unresolved dependency '${colorW}$i${reset}'"
+            fi
+        fi
+        depsbuild+=("$i")
+    done
+}
+
+ProviderChecks() {
+    [[ -z "${repodepspkgs[@]}" ]] && return
+    allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
+
+    for ((i=0; i<${#allproviders[@]}; i++)); do
+        providers=($(expac -Ss '%n' "^${allproviders[$i]}$"))
+        [[ ! ${#providers[@]} -gt 1 ]] && continue
+
+        # skip if already provided
+        for j in "${providerpkgs[@]}"; do
+            provided+=($(expac -S '%P' "$j"))
         done
-        wait
-        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            if isdevel "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"; then
-                if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
-                    msg "w" "${colorW}${allaurpkgs[$i]} ${colorY}${Qversion[$i]}${reset}: ignoring package upgrade"
+        [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${allproviders[$i]} " ]] && continue
+
+        if [[ ! $noconfirm ]]; then
+            msg "i" "${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
+            expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
+
+            local nb=-1
+            while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
+
+                echo -e -n "\nEnter a number (default=0):"
+                nbchar=$(echo "${#providers[@]}" | wc -m)
+                read -n ${#nbchar} nb
+                echo ""
+
+                case $nb in
+                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo -e "\n${colorR}::${reset} invalid value: $nb is not between 0 and ${#providers[@]}" && ((i--)) || break;;
+                    '') nb=0;;
+                    *) echo -e "${colorR}::${reset} invalid number: $nb";;
+                esac
+
+            done
+        else
+            local nb=0
+        fi
+        providerpkgs+=(${providers[$nb]})
+   done
+}
+
+ConflictChecks() {
+    msg "i" "looking for inter-conflicts..."
+    if [[ ! $noconfirm ]]; then
+        local k=0
+        for i in "${deps[@]}"; do
+            unset conflicts
+            conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+            [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${conflicts[@]}"))
+            # return when no conflict
+            [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
+
+            for j in "${conflictspkgs[@]}"; do
+                if [[ $j = $i ]]; then
                     continue
                 else
-                    aurpkgs+=("${allaurpkgs[$i]}")
+                    if ! proceedN "${colorB}::${reset} ${colorW}$i and $j are in conflict. Remove $j?${reset}"; then
+                        break
+                    else
+                        [[ " ${pkgs[@]} " =~ " $i " ]] && unset deps[$k] || msg "e" "failed to prepare transaction (conflicting dependencies)"
+                    fi
                 fi
-            fi
+            done
+            ((k++))
         done
     fi
 
-    nothingtodo ${aurpkgs[@]}
-    timeout ${aurpkgs[@]}
+    nothingtodo ${deps[@]}
+}
+
+ReinstallChecks() {
+    for ((i=0; i<${#deps[@]}; i++)); do
+        [[ ! " ${aurpkgs[@]} " =~ " ${deps[$i]} " ]] && continue
+        [[ $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
+        if [[ ! $needed ]]; then
+            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- reinstalling"
+        else
+            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- skipping"
+            depsbuild=(${depsbuild[@]/${deps[$i]}/})
+            unset deps[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+        fi
+    done
+    # remove empty elements
+    [[ $needed ]] && deps=(${deps[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
+
+    nothingtodo ${deps[@]}
+}
+
+OutofdateChecks() {
+    for ((i=0; i<${#deps[@]}; i++)); do
+        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${deps[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
+    done
 }
 
 Prompt() {
@@ -290,23 +485,6 @@ Prompt() {
     fi
 
     EditPkgs ${depsbuild[@]}
-}
-
-PreviewPkgs() {
-    # sanitize for sudo security check
-    cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
-    while [[ -n "$(grep -Po '^depends=\([^)].*[^)]$|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]] ; do
-        sed -i -e '/^depends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-        sed -i -e '/^optdepends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-    done
-
-    [[ -n $(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
-    if [[ ! $noconfirm ]]; then
-        if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
-            CleanUp ${deps[@]} &>/dev/null
-            exit
-        fi
-    fi
 }
 
 EditPkgs() {
@@ -428,10 +606,8 @@ CleanUp() {
     fi
 }
 
-CheckAur() {
+SearchInfoAur() {
     $cower ${coweropts[@]} $@
-    # hack to override unconventional cower exit codes
-    [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' "${pkgs[@]}" &>/dev/null
 }
 
 CheckRepo() {
@@ -449,6 +625,12 @@ CheckRepo() {
             ((i++))
         done
     fi
+}
+
+CheckAur() {
+    $cower ${coweropts[@]} $@
+    # hack to override unconventional cower exit codes
+    [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' "${pkgs[@]}" &>/dev/null
 }
 
 CleanCache() {
@@ -475,166 +657,14 @@ CleanCache() {
     fi
 }
 
-ProviderChecks() {
-    [[ -z "${repodepspkgs[@]}" ]] && return
-    allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
-
-    for ((i=0; i<${#allproviders[@]}; i++)); do
-        providers=($(expac -Ss '%n' "^${allproviders[$i]}$"))
-        [[ ! ${#providers[@]} -gt 1 ]] && continue
-
-        # skip if already provided
-        for j in "${providerpkgs[@]}"; do
-            provided+=($(expac -S '%P' "$j"))
-        done
-        [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${allproviders[$i]} " ]] && continue
-
-        if [[ ! $noconfirm ]]; then
-            msg "i" "${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
-            expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
-
-            local nb=-1
-            while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
-
-                echo -e -n "\nEnter a number (default=0):"
-                nbchar=$(echo "${#providers[@]}" | wc -m)
-                read -n ${#nbchar} nb
-                echo ""
-
-                case $nb in
-                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo -e "\n${colorR}::${reset} invalid value: $nb is not between 0 and ${#providers[@]}" && ((i--)) || break;;
-                    '') nb=0;;
-                    *) echo -e "${colorR}::${reset} invalid number: $nb";;
-                esac
-
-            done
-        else
-            local nb=0
-        fi
-        providerpkgs+=(${providers[$nb]})
-   done
-}
-
-ConflictChecks() {
-    msg "i" "looking for inter-conflicts..."
-    if [[ ! $noconfirm ]]; then
-        local k=0
-        for i in "${deps[@]}"; do
-            unset conflicts
-            conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-            [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${conflicts[@]}"))
-            # return when no conflict
-            [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
-
-            for j in "${conflictspkgs[@]}"; do
-                if [[ $j = $i ]]; then
-                    continue
-                else
-                    if ! proceedN "${colorB}::${reset} ${colorW}$i and $j are in conflict. Remove $j?${reset}"; then
-                        break
-                    else
-                        [[ " ${pkgs[@]} " =~ " $i " ]] && unset deps[$k] || msg "e" "failed to prepare transaction (conflicting dependencies)"
-                    fi
-                fi
-            done
-            ((k++))
-        done
-    fi
-
-    nothingtodo ${deps[@]}
-}
-
-ReinstallChecks() {
-    for ((i=0; i<${#deps[@]}; i++)); do
-        [[ ! " ${aurpkgs[@]} " =~ " ${deps[$i]} " ]] && continue
-        [[ $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
-        if [[ ! $needed ]]; then
-            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- reinstalling"
-        else
-            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- skipping"
-            depsbuild=(${depsbuild[@]/${deps[$i]}/})
-            unset deps[$i] depsQver[$i] depsAver[$i] depsAood[$i]
-        fi
-    done
-    # remove empty elements
-    [[ $needed ]] && deps=(${deps[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
-
-    nothingtodo ${deps[@]}
-}
-
-OutofdateChecks() {
-    for ((i=0; i<${#deps[@]}; i++)); do
-        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${deps[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
-    done
-}
-
-IgnoreChecks() {
-    [[ -z "${ignoredpkgs[@]}" ]] && return
-
-    checkaurpkgs=("${aurpkgs[@]}")
-    unset aurpkgs
-
-    # check targets
-    for i in "${checkaurpkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            if [[ ! $upgrade && ! $noconfirm ]]; then
-                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    msg "w" "${colorW}$i${reset}: ignoring package upgrade"
-                    continue
-                fi
-            else
-                continue
-            fi
-        fi
-        aurpkgs+=("$i")
-    done
-
-    nothingtodo ${aurpkgs[@]}
-}
-
-IgnoreDepsChecks() {
-    [[ -z "${ignoredpkgs[@]}" ]] && return
-    unset depsbuild
-
-    # add checked targets
-    depsbuild+=("${aurpkgs[@]}")
-
-    # check dependencies
-    for i in "${repodepspkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            msg "w" "${colorW}$i${reset}: ignoring package upgrade"
-            CleanUp ${aurpkgs[@]} &>/dev/null
-            CleanUp ${aurdepspkgs[@]} &>/dev/null
-            msg "e" "Unresolved dependency '${colorW}$i${reset}'"
-        fi
-    done
-    for i in "${aurdepspkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            if [[ ! $noconfirm ]]; then
-                if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    CleanUp ${aurpkgs[@]} &>/dev/null
-                    CleanUp ${aurdepspkgs[@]} &>/dev/null
-                    msg "e" "Unresolved dependency '${colorW}$i${reset}'"
-                fi
-            else
-                msg "w" "${colorW}$i${reset}: ignoring package upgrade"
-                CleanUp ${aurpkgs[@]} &>/dev/null
-                CleanUp ${aurdepspkgs[@]} &>/dev/null
-                msg "e" "Unresolved dependency '${colorW}$i${reset}'"
-            fi
-        fi
-        depsbuild+=("$i")
-    done
+getignoredgrps() {
+    ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
 }
 
 getignoredpkgs() {
     ignoredpkgs+=($(grep '^ *IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^ *IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2- | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
-}
-
-getignoredgrps() {
-    ignoredgrps+=($(grep '^ *IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
 }
 
 getinstallscript() {
@@ -670,36 +700,6 @@ getjsonvar() {
     json_reformat < "$tmpdir/raw.json" | tr -d "\" "| grep -Po "$1:.*" | sed -r 's/,//g' | awk -F ":" '{print $2}'
 }
 
-Core() {
-    getignoredpkgs
-    [[ $upgrade ]] && UpgradeAur
-    IgnoreChecks
-    DownloadPkgs
-    IgnoreDepsChecks
-    ProviderChecks
-    ConflictChecks
-    ReinstallChecks
-    OutofdateChecks
-    Prompt
-    MakePkgs
-}
-
-ClassifyPkgs() {
-    if [[ $fallback = true ]]; then
-        [[ $repo ]] && repopkgs=("${pkgs[@]}")
-        [[ $aur ]] && aurpkgs=("${pkgs[@]}")
-        if [[ ! $repo && ! $aur ]]; then
-            getignoredgrps
-            for i in "${pkgs[@]}"; do
-                [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$(expac -S '%n' "$i" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
-            done
-        fi
-    else
-        [[ ! $aur ]] && repopkgs=("${pkgs[@]}") || aurpkgs=("${pkgs[@]}")
-    fi
-}
-
 proceedY() {
     echo -ne "$* [Y/n] "
     read -n 1 yn
@@ -720,21 +720,6 @@ proceedN() {
     esac
 }
 
-paraexec() {
-    while (( $(jobs | wc -l) >= 10 )); do
-        sleep 0.1
-        jobs > /dev/null
-    done
-}
-
-timeout() {
-    [[ -z "$(echo "$@" | grep -v 'resolve host name' | grep -v 'no results found for')" ]] && exit 1 || return 0
-}
-
-nothingtodo() {
-    [[ -z "$@" ]] && echo " there is nothing to do" && exit || return 0
-}
-
 msg() {
     case "$1" in
         i) echo -e "${colorB}::${reset} $2";;   # info
@@ -743,6 +728,21 @@ msg() {
         e) echo -e "${colorR}::${reset} $2";    # error
            exit 1;;
     esac
+}
+
+paraexec() {
+    while (( $(jobs | wc -l) >= 10 )); do
+        sleep 0.1
+        jobs > /dev/null
+    done
+}
+
+nothingtodo() {
+    [[ -z "$@" ]] && echo " there is nothing to do" && exit || return 0
+}
+
+timeout() {
+    [[ -z "$(echo "$@" | grep -v 'resolve host name' | grep -v 'no results found for')" ]] && exit 1 || return 0
 }
 
 usage() {
