@@ -214,10 +214,10 @@ DownloadPkgs() {
 
     # get version numbers
     downloadjson ${deps[@]}
-    depsAver=($(getjsonvar "Version")) # return sorted results
+    depsAname=($(getjsonvar "Name")) # return sorted results
+    depsAver=($(getjsonvar "Version"))
     depsAood=($(getjsonvar "OutOfDate"))
-    depsbuild=("${deps[@]}") && deps=($(sort -u <<< ${deps[@]}))
-    for i in "${deps[@]}"; do
+    for i in "${depsAname[@]}"; do
         Qver=$(expac -Q '%v' "$i")
         [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
     done
@@ -282,10 +282,10 @@ PreviewPkgs() {
 
 IgnoreDepsChecks() {
     [[ -z "${ignoredpkgs[@]}" ]] && return
-    unset depsbuild
+    unset deps
 
     # add checked targets
-    depsbuild+=("${aurpkgs[@]}")
+    deps+=("${aurpkgs[@]}")
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
@@ -311,7 +311,7 @@ IgnoreDepsChecks() {
                 msg "e" "Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
-        depsbuild+=("$i")
+        deps+=("$i")
     done
 }
 
@@ -385,26 +385,26 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    for ((i=0; i<${#deps[@]}; i++)); do
+    for ((i=0; i<${#depsAname[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${deps[$i]} " ]] && continue
         [[ $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
-            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- reinstalling"
+            msg "w" "${depsAname[$i]}-${depsQver[$i]} is up to date -- reinstalling"
         else
-            msg "w" "${deps[$i]}-${depsQver[$i]} is up to date -- skipping"
-            depsbuild=(${depsbuild[@]/${deps[$i]}/})
-            unset deps[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+            msg "w" "${depsAname[$i]}-${depsQver[$i]} is up to date -- skipping"
+            deps=(${deps[@]/${deps[$i]}/})
+            unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
     done
     # remove empty elements
-    [[ $needed ]] && deps=(${deps[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
+    [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
 }
 
 OutofdateChecks() {
-    for ((i=0; i<${#deps[@]}; i++)); do
-        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${deps[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
+    for ((i=0; i<${#depsAname[@]}; i++)); do
+        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${depsAname[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
     done
 }
 
@@ -446,7 +446,7 @@ Prompt() {
         printf "\n${colorY}%s${reset}\n\n" "AUR Targets  (${#deps[@]}):"
         printf "${colorW}%-${lname}s %-${lver}s %-${lver}s${reset}\n\n" "Name" "Old Version" "New Version"
         for ((i=0; i<${#deps[@]}; i++)); do
-            printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset}\n" "${deps[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
+            printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset}\n" "${depsAname[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
         done
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
@@ -459,7 +459,7 @@ Prompt() {
     else
         # show version
         for ((i=0; i<${#deps[@]}; i++)); do
-            depsver="${depsver}${deps[$i]}-${depsAver[$i]}  "
+            depsver="${depsver}${depsAname[$i]}-${depsAver[$i]}  "
         done
         for ((i=0; i<${#repodepspkgs[@]}; i++)); do
             repodepspkgsver="${repodepspkgsver}${repodepspkgs[$i]}-${repodepsSver[$i]}  "
@@ -481,7 +481,7 @@ Prompt() {
         fi
     fi
 
-    EditPkgs ${depsbuild[@]}
+    EditPkgs ${deps[@]}
 }
 
 EditPkgs() {
@@ -515,7 +515,7 @@ MakePkgs() {
     sudo -v
 
     # reverse deps order
-    deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${depsbuild[@]} | awk -F "\n" '{print}'))
+    deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${deps[@]} | awk -F "\n" '{print}'))
 
     # makepkg options
     [[ $color != true ]] && makeopts+=("--nocolor")
