@@ -530,38 +530,41 @@ MakePkgs() {
         yes | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
     fi
 
-    local j=0
-    for i in "${deps[@]}"; do
-        # check package cache
+    # check package cache
+    for ((i=0; i<${#depsAname[@]}; i++)); do
         unset cachedpkg
-        [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$i-${depsAver[$j]}" "$PKGDEST"
+        [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
-                msg "i" "Installing ${colorW}$i${reset} cached package..."
+                msg "i" "Installing ${colorW}${depsAname[$i]}${reset} cached package..."
                 yes | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
             else
-                msg "i" "Package ${colorW}$i${reset} already available in cache"
+                msg "i" "Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
+            deps=(${deps[@]/${depsAname[$i]}/})
+        fi
+    done
+
+    # build
+    for i in "${deps[@]}"; do
+        msg "i" "Building ${colorW}$i${reset} package..."
+        cd "$builddir/$i"
+        if [[ $installpkg ]]; then
+            # install
+            yes | makepkg -sfi ${makeopts[@]}
         else
-            # build
-            msg "i" "Building ${colorW}$i${reset} package..."
-            cd "$builddir/$i"
-            if [[ $installpkg ]]; then
-                # install
+            if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
+                # install AUR deps
+                msg "i" "Installing ${colorW}$i${reset} dependencies..."
                 yes | makepkg -sfi ${makeopts[@]}
             else
-                if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
-                    # install AUR deps
-                    msg "i" "Installing ${colorW}$i${reset} dependencies..."
-                    yes | makepkg -sfi ${makeopts[@]}
-                else
-                    # install then remove binary deps
-                    yes | makepkg -sfr ${makeopts[@]}
-                fi
+                # install then remove binary deps
+                yes | makepkg -sfr ${makeopts[@]}
             fi
-            # clean
-            CleanUp $i
         fi
+        # clean
+        CleanUp $i
+
         # set dep status
         if [[ $installpkg ]]; then
             [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
@@ -570,8 +573,8 @@ MakePkgs() {
         else
             sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
-        ((j++))
     done
+
     # remove AUR deps
     if [[ ! $installpkg && -n "${aurdepspkgs[@]}" ]]; then
         msg "i" "Removing installed AUR dependencies..."
