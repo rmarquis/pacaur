@@ -582,11 +582,11 @@ getignoredgrps() {
 }
 
 getinstallscript() {
-    [[ ! -e "$builddir/$i/PKGBUILD" ]] && return
+    [[ ! -e "$builddir/$1/PKGBUILD" ]] && return
     installscript="$(grep "^install=" "$builddir/$1/PKGBUILD" | cut -d '=' -f 2-)"
-    if [[ -n $(echo "$installscript" | grep -E '\$[{]pkgname[}]') ]]; then
+    if [[ -n $(echo "$installscript" | grep -E '\$[{]*pkgname[}]*') ]]; then
         Apkgname=$(grep '^pkgname' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-        installscript=$(echo $installscript | sed -e "s/\$[{]pkgname[}]/$Apkgname/g")
+        installscript=$(echo $installscript | sed -e "s/\$[{]*pkgname[}]*/$Apkgname/g")
     fi
 }
 
