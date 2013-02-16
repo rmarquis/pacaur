@@ -151,7 +151,7 @@ IgnoreChecks() {
     for i in "${checkaurpkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
-                if ! proceedY "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                if ! proceed "y" "${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     msg "w" "${colorW}$i${reset}: ignoring package upgrade"
                     continue
                 fi
@@ -275,7 +275,7 @@ PreviewPkgs() {
 
     [[ -n $(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends') ]] && msg "w" "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
     if [[ ! $noconfirm ]]; then
-        if proceedN "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
+        if proceed "n" "${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
             CleanUp ${deps[@]} &>/dev/null
             exit
         fi
@@ -301,7 +301,7 @@ IgnoreDepsChecks() {
     for i in "${aurdepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $noconfirm ]]; then
-                if ! proceedY "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                if ! proceed "y" "${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     CleanUp ${aurpkgs[@]} &>/dev/null
                     CleanUp ${aurdepspkgs[@]} &>/dev/null
                     msg "e" "Unresolved dependency '${colorW}$i${reset}'"
@@ -372,7 +372,7 @@ ConflictChecks() {
                 if [[ $j = $i ]]; then
                     continue
                 else
-                    if ! proceedN "${colorB}::${reset} ${colorW}$i and $j are in conflict. Remove $j?${reset}"; then
+                    if ! proceed "n" "${colorB}::${reset} ${colorW}$i and $j are in conflict. Remove $j?${reset}"; then
                         break
                     else
                         [[ " ${pkgs[@]} " =~ " $i " ]] && unset deps[$k] || msg "e" "failed to prepare transaction (conflicting dependencies)"
@@ -478,7 +478,7 @@ Prompt() {
 
     if [[ ! $noconfirm ]]; then
         [[ $installpkg ]] && action="installation" || action="download"
-        if ! proceedY "\nProceed with $action?"; then
+        if ! proceed "y" "\nProceed with $action?"; then
             CleanUp ${deps[@]} &>/dev/null
             exit
         fi
@@ -494,14 +494,14 @@ EditPkgs() {
         if [[ ! $edit ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
-                if proceedY "${colorB}::${reset} View ${colorW}$i${reset} PKGBUILD?"; then
+                if proceed "y" "${colorB}::${reset} View ${colorW}$i${reset} PKGBUILD?"; then
                     [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" "${colorW}$i${reset} PKGBUILD viewed" || msg "e" "Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
             fi
             # edit install script
             if [[ ! $editinstall = false ]]; then
                 if [[ -n "$installscript" ]]; then
-                    if proceedY "${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
+                    if proceed "y" "${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
                         [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" "${colorW}$i${reset} install script viewed" || msg "e" "Could not open ${colorW}$i${reset} install script"
                     fi
                 fi
@@ -639,7 +639,7 @@ CleanCache() {
         echo -e "${colorW}AUR cache directory:${reset} $PKGDEST"
         if [[ $count -eq 1 ]]; then
             echo -e "${colorW}Packages to keep:${reset}\n  All locally installed packages"
-            if ! proceedY "Do you want to remove all other packages from AUR cache?"; then
+            if ! proceed "y" "Do you want to remove all other packages from AUR cache?"; then
                 exit
             fi
 
@@ -649,7 +649,7 @@ CleanCache() {
                 [[ $i != $(expac -Q '%n-%v' "$pkgname") ]] && rm $PKGDEST/$i-*
             done
         else
-            if ! proceedN "Do you want to remove ALL files from AUR cache?"; then
+            if ! proceed "n" "Do you want to remove ALL files from AUR cache?"; then
                 echo "removing all files from AUR cache..."
                 rm $PKGDEST/* &>/dev/null
             fi
@@ -700,23 +700,22 @@ getjsonvar() {
     json_reformat < "$tmpdir/raw.json" | tr -d "\" "| grep -Po "$1:.*" | sed -r 's/,//g' | awk -F ":" '{print $2}'
 }
 
-proceedY() {
-    echo -ne "$* [Y/n] "
-    read -n 1 yn
-    echo ""
-    case $yn in
-        [Yy]|'') return 0;;
-        *) return 1;;
-    esac
-}
-
-proceedN() {
-    echo -ne "$* [y/N] "
-    read -n 1 ny
-    echo ""
-    case $ny in
-        [Nn]|'') return 0;;
-        *) return 1;;
+proceed() {
+    case "$1" in
+        y)  echo -ne "$2 [Y/n] "
+            read -n 1 answer
+            echo ""
+            case $answer in
+                [Yy]|'') return 0;;
+                *) return 1;;
+            esac;;
+        n)  echo -ne "$2 [y/N] "
+            read -n 1 answer
+            echo ""
+            case $answer in
+                [Nn]|'') return 0;;
+                *) return 1;;
+            esac;;
     esac
 }
 
