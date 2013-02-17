@@ -44,7 +44,7 @@ source "$configdir/config"
 # color
 if $color; then
     pacmanbin='pacman-color'
-    cower='cower --color=auto'
+    coweropts+=("--color=auto")
     reset="\e[0m"
     colorR="\e[1;31m"
     colorG="\e[1;32m"
@@ -55,7 +55,6 @@ if $color; then
     colorW="\e[1;39m"
 else
     pacmanbin='pacman'
-    cower='cower'
 fi
 
 # alternative pacman binary
@@ -102,7 +101,7 @@ Core() {
 
 UpgradeAur() {
     msg "i" "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]} --color=always | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    aurpkgs+=($(cower -uq ${coweropts[@]} ${pkgs[@]} ${ignoreopts[@]}))
     aurpkgs=($( (sed 's/ /\n/g' | sort -u) <<< ${aurpkgs[@]}))
 
     # check foreign packages
@@ -167,9 +166,9 @@ DownloadAur() {
         case $flag in
             S)  [[ $operation = download ]] && echo "$info"; [[ -n "$info" ]] && deps+=("$pkg");;
             W)  [[ $operation = download ]] && echo "$info" || continue;;
-            E)  echo "$info" && errdeps+=("$pkg");;
+            E)  msg "f" "no results found for $pkg" && errdeps+=("$pkg");;
         esac
-    done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir --color=always 2>&1)
+    done < <(cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
 
     # PKGBUILDs check
     for i in "${deps[@]}"; do
@@ -605,7 +604,7 @@ CleanUp() {
 }
 
 SearchInfoAur() {
-    $cower ${coweropts[@]} $@
+    cower ${coweropts[@]} $@
 }
 
 CheckRepo() {
@@ -626,7 +625,7 @@ CheckRepo() {
 }
 
 CheckAur() {
-    $cower ${coweropts[@]} $@
+    cower ${coweropts[@]} $@
     # hack to override unconventional cower exit codes
     [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' "${pkgs[@]}" &>/dev/null
 }
