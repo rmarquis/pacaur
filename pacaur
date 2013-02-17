@@ -402,7 +402,7 @@ ReinstallChecks() {
 
 OutofdateChecks() {
     for ((i=0; i<${#depsAname[@]}; i++)); do
-        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${depsAname[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
+        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
     done
 }
 
