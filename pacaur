@@ -166,9 +166,11 @@ IgnoreChecks() {
 DownloadAur() {
     while read -r flag pkg info; do
         case $flag in
-            S)  [[ $operation = download ]] && printf "%s\n" "$info"; [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download ]] && printf "%s\n" "$info" || continue;;
-            E)  printf "%s\n" "$info" && errdeps+=("$pkg");;
+            S)  [[ $operation = download ]] && msg "i" "$pkg downloaded to $builddir";
+                [[ -n "$info" ]] && deps+=("$pkg");;
+            W)  [[ $operation = download ]] && repo=$(echo $info | awk -F " " '{print $6}') && msg "w" "${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || continue;;
+            E)  [[ $operation = download ]] && msg "f" "\`$builddir/$pkg' already exists. Use -f to overwrite." || msg "f" "no results found for $pkg";
+            errdeps+=("$pkg");;
         esac
     done < <(cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
 
