@@ -387,9 +387,9 @@ ReinstallChecks() {
         [[ ! " ${aurpkgs[@]} " =~ " ${deps[$i]} " ]] && continue
         [[ $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
-            msg "w" "${depsAname[$i]}-${depsQver[$i]} is up to date -- reinstalling"
+            msg "w" "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
         else
-            msg "w" "${depsAname[$i]}-${depsQver[$i]} is up to date -- skipping"
+            msg "w" "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
             deps=(${deps[@]/${deps[$i]}/})
             unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
