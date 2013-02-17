@@ -102,7 +102,7 @@ Core() {
 
 UpgradeAur() {
     msg "i" "${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]}))
+    aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]} --color=always | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     aurpkgs=($( (sed 's/ /\n/g' | sort -u) <<< ${aurpkgs[@]}))
 
     # check foreign packages
@@ -136,7 +136,6 @@ UpgradeAur() {
     fi
 
     nothingtodo ${aurpkgs[@]}
-    timeout ${aurpkgs[@]}
 }
 
 IgnoreChecks() {
@@ -168,16 +167,15 @@ DownloadAur() {
         case $flag in
             S)  [[ $operation = download ]] && echo "$info"; [[ -n "$info" ]] && deps+=("$pkg");;
             W)  [[ $operation = download ]] && echo "$info" || continue;;
-            E)  echo "$info";;
+            E)  echo "$info" && errdeps+=("$pkg");;
         esac
     done < <($cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir --color=always 2>&1)
 
-    # check PKGBUILDs
+    # PKGBUILDs check
     for i in "${deps[@]}"; do
-        [[ -e "$builddir/$i/PKGBUILD" ]] && continue || msg "e" "Could not read ${colorW}$i${reset} PKGBUILD: badly packaged tarball"
+        [[ ! -e "$builddir/$i/PKGBUILD" ]] && errdeps+=("$i") && msg "f" "Could not read ${colorW}$i${reset} PKGBUILD: badly packaged tarball"
     done
-
-    timeout ${deps[@]}
+    [[ -n "${errdeps[@]}" ]] && exit 1
 }
 
 DownloadPkgs() {
@@ -686,13 +684,13 @@ isdevel() {
 }
 
 downloadpkgbuild() {
-    curl -sf --compressed "https://aur.archlinux.org${2%/*}/PKGBUILD" -o "$tmpdir/$1.PKGBUILD"
+    curl -sf --compressed "https://aur.archlinux.org${2%/*}/PKGBUILD" -o "$tmpdir/$1.PKGBUILD" || msg "e" "Could not connect to the AUR"
 }
 
 downloadjson() {
     arg="$(printf "&arg[]=%s" "$@")"
     url="$(printf "https://aur.archlinux.org/rpc.php?type=multiinfo%s" "$arg")"
-    curl -sfg --compressed "$url" -o "$tmpdir/raw.json"
+    curl -sfg --compressed "$url" -o "$tmpdir/raw.json" || msg "e" "Could not connect to the AUR"
 }
 
 getjsonvar() {
@@ -723,6 +721,7 @@ msg() {
         i) echo -e "${colorB}::${reset} $2";;   # info
         s) echo -e "${colorG}::${reset} $2";;   # success
         w) echo -e "${colorY}::${reset} $2";;   # warn
+        f) echo -e "${colorR}::${reset} $2";;   # fail
         e) echo -e "${colorR}::${reset} $2";    # error
            exit 1;;
     esac
@@ -737,10 +736,6 @@ paraexec() {
 
 nothingtodo() {
     [[ -z "$@" ]] && echo " there is nothing to do" && exit || return 0
-}
-
-timeout() {
-    [[ -z "$(grep -Ev 'resolve host name|no results found for' <<< $@)" ]] && exit 1 || return 0
 }
 
 usage() {
