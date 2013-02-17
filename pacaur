@@ -696,7 +696,7 @@ downloadjson() {
 }
 
 getjsonvar() {
-    json_reformat < "$tmpdir/raw.json" | tr -d "\" "| grep -Po "$1:.*" | sed -r 's/,//g' | awk -F ":" '{print $2}'
+    json_reformat < "$tmpdir/raw.json" | tr -d "\" "| grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | sed -r 's/,//g' | awk -F "#" '{print $2}'
 }
 
 proceed() {
