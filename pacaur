@@ -103,7 +103,7 @@ Core() {
 UpgradeAur() {
     msg "i" "${colorW}Starting AUR upgrade...${reset}"
     aurpkgs+=($($cower -uq ${pkgs[@]} ${ignoreopts[@]}))
-    aurpkgs=($(sort -u <<< ${aurpkgs[@]}))
+    aurpkgs=($( (sed 's/ /\n/g' | sort -u) <<< ${aurpkgs[@]}))
 
     # check foreign packages
     allforeignpkgs=($($pacmanbin -Qmq))
@@ -198,7 +198,7 @@ DownloadPkgs() {
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
         # reduce root binary deps
-        repodeps=($(sort -u <<< ${repodeps[@]}))
+        repodeps=($( (sed 's/ /\n/g' | sort -u) <<< ${repodeps[@]}))
     fi
 
     # return AUR deps pkgs only
@@ -241,13 +241,13 @@ FindPkgsDeps() {
     done
 
     # remove installed deps
-    depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}"))
+    depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}" | sort -u))
 
     # split binary and AUR depends pkgs
-    [[ -e "$tmpdir/aurdeps" ]] && rm "$tmpdir/aurdeps"
-    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v '%n' "${depspkgs[@]}" 2>"$tmpdir/aurdeps")) && repodeps+=(${depspkgsrepo[@]})
-    [[ -e "$tmpdir/aurdeps" ]] && depspkgsaur=($(grep 'error:' "$tmpdir/aurdeps" | awk -F "\`" '{print $2}' | awk -F "'" '{print $1}')) || unset depspkgsaur
-    unset deps sourcedpkgs depends makedepends depspkgs
+    [[ -e "$tmpdir/tmpdeps" ]] && rm "$tmpdir/tmpdeps"
+    [[ -n "${depspkgs[@]}" ]] && repodeps+=($(expac -S -1 -v '%n' "${depspkgs[@]}" 2>"$tmpdir/tmpdeps"))
+    [[ -e "$tmpdir/tmpdeps" ]] && depspkgsaur=($(grep 'error:' "$tmpdir/tmpdeps" | tr -d "'\`" | awk -F " " '{print $3}')) || unset depspkgsaur
+    unset deps depends makedepends sourcedpkgs depspkgs
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # remove AUR package versioning
