@@ -427,20 +427,10 @@ Prompt() {
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         # compute table length
-        lengthn=("${deps[@]}" "${repodepspkgs[@]}")
-        lengthv=("${depsQver[@]}" "${depsAver[@]}" "${repodepsQver[@]}" "${repodepsSver[@]}")
-        lname=0
-        for i in "${lengthn[@]}"; do
-            x=${#i}
-            [[ $x -gt $lname ]] && lname=$x
-        done
-        lver=0
-        for i in "${lengthv[@]}"; do
-            x=${#i}
-            [[ $x -gt $lver ]] && lver=$x
-        done
-        [[ $lname -gt 4 ]] && lname=$(($lname+2)) || lname=6
-        [[ $lver -gt 10 ]] && lver=$(($lver+2)) || lver=12
+        lname=$(getlength <<< ${deps[@]} ${repodepspkgs[@]})
+        lver=$(getlength <<< ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]})
+        [[ $lname -gt 4 ]] && lname=$(($lname+1)) || lname=5
+        [[ $lver -gt 10 ]] && lver=$(($lver+1)) || lver=12
 
         # show detailed output
         printf "\n${colorY}%s${reset}\n\n" "AUR Targets  (${#deps[@]}):"
@@ -735,6 +725,15 @@ paraexec() {
         sleep 0.1
         jobs > /dev/null
     done
+}
+
+getlength() {
+    local length=0
+    for i in "$@"; do
+        x=${#i}
+        [[ $x -gt $length ]] && length=$x
+    done
+    echo $length
 }
 
 nothingtodo() {
