@@ -332,6 +332,7 @@ ProviderChecks() {
             expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
 
             local nb=-1
+            providersnb=$(( ${#providers[@]} -1 )) # count from 0
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 echo -e -n "\nEnter a number (default=0):"
@@ -340,7 +341,7 @@ ProviderChecks() {
                 echo ""
 
                 case $nb in
-                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo "" && msg "f" "invalid value: $nb is not between 0 and ${#providers[@]}" && ((i--)) || break;;
+                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo "" && msg "f" "invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
                     '') nb=0;;
                     *) msg "f" "invalid number: $nb";;
                 esac
