@@ -622,22 +622,32 @@ CheckRepo() {
     if [[ -n "${repopkgsQood[@]}" ]]; then
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
+        lname=$(getlength ${repopkgsQood[@]})
+        lver=$(getlength ${repopkgsQver[@]} ${repopkgSver[@]})
+
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
             repopkgsQgrp[$i]=$(expac -Q -l " " '%G' "${repopkgsQood[$i]}")
         done
-        local i=0
-        for j in "${repopkgsQood[@]}"; do
+        for ((i=0; i<${#repopkgsQood[@]}; i++)); do
             [[ -n "${repopkgsQgrp[$i]}" ]] && repopkgsQgrp[$i]="(${repopkgsQgrp[$i]})"
-            [[ ! $quiet ]] && msg "i" $"${colorW}$j ${colorR}${repopkgsQver[$i]} ${reset}-> ${colorG}${repopkgsSver[$i]}${reset} ${colorB}${repopkgsQgrp[$i]}${reset}" || echo "$j"
-            ((i++))
+            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%s${reset}\n" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" || echo "${repopkgsQood[$i]}";
         done
     fi
 }
 
 CheckAur() {
-    cower ${coweropts[@]} $@
-    # hack to override unconventional cower exit codes
-    [[ -z "${pkgs[@]}" ]] && return 0 || expac -Q '%n' "${pkgs[@]}" &>/dev/null
+    aurpkgsQood=($(cower ${coweropts[@]} $@ | sort -u))
+    if [[ -n "${aurpkgsQood[@]}" ]]; then
+        downloadjson ${aurpkgsQood[@]}
+        aurpkgsAver=($(getjsonvar "Version"))
+        aurpkgsQver=($(expac -Q '%v' "${aurpkgsQood[@]}"))
+        [[ ! $lname ]] && lname=$(getlength ${aurpkgsQood[@]})
+        [[ ! $lver ]] && lver=$(getlength ${aurpkgsQver[@]} ${aurpkgSver[@]})
+
+        for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
+            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "${aurpkgsQood[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" || echo ${aurpkgsQood[$i]};
+        done
+    fi
 }
 
 CleanCache() {
@@ -880,7 +890,7 @@ while [[ -n "${!OPTIND}" ]]; do
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
             k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-u"); aur='1';;
-            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-u");
+            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-uq"); coweropts+=("--color=never");
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
