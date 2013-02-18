@@ -527,7 +527,7 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         msg "i" "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
+        yes "y" | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
     fi
 
     # check package cache
@@ -537,7 +537,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 msg "i" "Installing ${colorW}${depsAname[$i]}${reset} cached package..."
-                yes | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                yes "y" | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
             else
                 msg "i" "Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
@@ -551,15 +551,15 @@ MakePkgs() {
         cd "$builddir/$i"
         if [[ $installpkg ]]; then
             # install
-            yes | makepkg -sfi ${makeopts[@]}
+            yes "y" | makepkg -sfi ${makeopts[@]}
         else
             if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                 # install AUR deps
                 msg "i" "Installing ${colorW}$i${reset} dependencies..."
-                yes | makepkg -sfi ${makeopts[@]}
+                yes "y" | makepkg -sfi ${makeopts[@]}
             else
                 # install then remove binary deps
-                yes | makepkg -sfr ${makeopts[@]}
+                yes "y" | makepkg -sfr ${makeopts[@]}
             fi
         fi
         # clean
