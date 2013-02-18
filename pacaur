@@ -165,9 +165,9 @@ IgnoreChecks() {
 DownloadAur() {
     while read -r flag pkg info; do
         case $flag in
-            S)  [[ $operation = download ]] && echo "$info"; [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download ]] && echo "$info" || continue;;
-            E)  echo $info && errdeps+=("$pkg");;
+            S)  [[ $operation = download ]] && printf "%s\n" "$info"; [[ -n "$info" ]] && deps+=("$pkg");;
+            W)  [[ $operation = download ]] && printf "%s\n" "$info" || continue;;
+            E)  printf "%s\n" "$info" && errdeps+=("$pkg");;
         esac
     done < <(cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
 
@@ -335,7 +335,7 @@ ProviderChecks() {
             providersnb=$(( ${#providers[@]} -1 )) # count from 0
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
-                echo -e -n "\nEnter a number (default=0):"
+                printf "\n%s" "Enter a number (default=0):"
                 nbchar=$(wc -l <<< ${#providers[@]})
                 read -n ${#nbchar} nb
                 echo ""
@@ -635,21 +635,21 @@ CheckAur() {
 CleanCache() {
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
         [[ ! $aur ]] && echo ""
-        echo -e "${colorW}AUR cache directory:${reset} $PKGDEST"
+        printf "${colorW}%s${reset} %s\n" "AUR cache directory:" "$PKGDEST"
         if [[ $count -eq 1 ]]; then
-            echo -e "${colorW}Packages to keep:${reset}\n  All locally installed packages"
+            printf "${colorW}%s${reset}\n %s\n" "Packages to keep:" "All locally installed packages"
             if ! proceed "y" "Do you want to remove all other packages from AUR cache?"; then
                 exit
             fi
 
-            echo "removing old packages from cache..."
+            printf "%s\n" "removing old packages from cache..."
             for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
                 pkgname=$(sed "s#\(.*\)-.*-.*#\1#g" <<< $i)
                 [[ $i != $(expac -Q '%n-%v' "$pkgname") ]] && rm $PKGDEST/$i-*
             done
         else
             if ! proceed "n" "Do you want to remove ALL files from AUR cache?"; then
-                echo "removing all files from AUR cache..."
+                printf "%s\n" "removing all files from AUR cache..."
                 rm $PKGDEST/* &>/dev/null
             fi
         fi
@@ -737,45 +737,45 @@ paraexec() {
 }
 
 nothingtodo() {
-    [[ -z "$@" ]] && echo " there is nothing to do" && exit || return 0
+    [[ -z "$@" ]] && printf "%s\n" " there is nothing to do" && exit || return 0
 }
 
 usage() {
-    echo "usage:  pacaur <operation> [options] [package(s)]"
-    echo "operations:"
-    echo " pacman extension"
-    echo "   -S, -Q           extend pacman operations to the AUR"
-    echo " AUR only"
-    echo "   -s, --search     search AUR repository for matching strings"
-    echo "   -i, --info       view package information -- pass twice for details"
-    echo "   -d, --download   download target(s) -- pass twice to download AUR dependencies"
-    echo "   -m, --makepkg    download and make target(s)"
-    echo "   -y, --sync       download, make and install target(s)"
-    echo "   -k, --check      check for AUR update(s)"
-    echo "   -u, --update     update AUR package(s)"
-    echo " general"
-    echo "   -v, --version    display version information"
-    echo "   -h, --help       display help information"
-    echo "   --fixbackend     quickly rebuild backend"
-    echo ""
-    echo "options:"
-    echo " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
-    echo "   -a, --aur        only search, install or clean packages from the AUR"
-    echo "   -r, --repo       only search, install or clean packages from the repositories"
-    echo " general"
-    echo "   -e, --edit       edit target(s) PKGBUILD and view install script"
-    echo "   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u operations"
-    echo "   -q, --quiet      show less information for query and search"
-    echo "   --devel          consider AUR development packages upgrade"
-    echo "   --ignore         ignore a package upgrade (can be used more than once)"
-    echo "   --noconfirm      do not prompt for any confirmation"
-    echo "   --noedit         do not prompt to edit files"
-    echo "   --rebuild        always rebuild package(s)"
-    echo ""
+    printf "%s\n" "usage:  pacaur <operation> [options] [package(s)]"
+    printf "%s\n" "operations:"
+    printf "%s\n" " pacman extension"
+    printf "%s\n" "   -S, -Q           extend pacman operations to the AUR"
+    printf "%s\n" " AUR only"
+    printf "%s\n" "   -s, --search     search AUR repository for matching strings"
+    printf "%s\n" "   -i, --info       view package information -- pass twice for details"
+    printf "%s\n" "   -d, --download   download target(s) -- pass twice to download AUR dependencies"
+    printf "%s\n" "   -m, --makepkg    download and make target(s)"
+    printf "%s\n" "   -y, --sync       download, make and install target(s)"
+    printf "%s\n" "   -k, --check      check for AUR update(s)"
+    printf "%s\n" "   -u, --update     update AUR package(s)"
+    printf "%s\n" " general"
+    printf "%s\n" "   -v, --version    display version information"
+    printf "%s\n" "   -h, --help       display help information"
+    printf "%s\n" "   --fixbackend     quickly rebuild backend"
+    printf "%s\n" ""
+    printf "%s\n" "options:"
+    printf "%s\n" " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
+    printf "%s\n" "   -a, --aur        only search, install or clean packages from the AUR"
+    printf "%s\n" "   -r, --repo       only search, install or clean packages from the repositories"
+    printf "%s\n" " general"
+    printf "%s\n" "   -e, --edit       edit target(s) PKGBUILD and view install script"
+    printf "%s\n" "   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u operations"
+    printf "%s\n" "   -q, --quiet      show less information for query and search"
+    printf "%s\n" "   --devel          consider AUR development packages upgrade"
+    printf "%s\n" "   --ignore         ignore a package upgrade (can be used more than once)"
+    printf "%s\n" "   --noconfirm      do not prompt for any confirmation"
+    printf "%s\n" "   --noedit         do not prompt to edit files"
+    printf "%s\n" "   --rebuild        always rebuild package(s)"
+    printf "%s\n" ""
 }
 
 version() {
-    echo "pacaur $version"
+    printf "pacaur %s\n" "$version"
 }
 
 fixbackend() {
