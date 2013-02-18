@@ -340,9 +340,9 @@ ProviderChecks() {
                 echo ""
 
                 case $nb in
-                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo -e "\n${colorR}::${reset} invalid value: $nb is not between 0 and ${#providers[@]}" && ((i--)) || break;;
+                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo "" && msg "f" "invalid value: $nb is not between 0 and ${#providers[@]}" && ((i--)) || break;;
                     '') nb=0;;
-                    *) echo -e "${colorR}::${reset} invalid number: $nb";;
+                    *) msg "f" "invalid number: $nb";;
                 esac
 
             done
