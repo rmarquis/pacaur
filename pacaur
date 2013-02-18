@@ -10,8 +10,10 @@ version="3.4.7"
 # Config
 #
 
-# avoid locale issues
-export LC_ALL=C
+# internationalization and C fallback
+TEXTDOMAINDIR='/usr/share/locale'
+TEXTDOMAIN='pacaur'
+[[ ! -e "$TEXTDOMAINDIR/${LANG%_*}/LC_MESSAGES/${TEXTDOMAIN}.mo" && ! -e "$TEXTDOMAINDIR/${LANG%.*}/LC_MESSAGES/${TEXTDOMAIN}.mo" ]] && export LC_ALL=C
 
 # source makepkg variables
 source /etc/makepkg.conf
