@@ -188,7 +188,7 @@ DownloadPkgs() {
         fi
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
-            [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && msg "e" "${colorW}\$CARCH${reset} variable detected. ${colorW}$i${reset} requires the full bash dependency solver to be enabled with the --insecure option."
+            [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && msg "e" "${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
         done
     else
         msg "i" "resolving dependencies..."
@@ -513,7 +513,7 @@ MakePkgs() {
     export PACMAN=$pacmanbin
 
     # check destination folder
-    [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && msg "e" "Please set ${colorW}PKGDEST${reset} variable in /etc/makepkg.conf or disable ${colorW}clean${reset} option."
+    [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && msg "e" "${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset or ${colorW}clean${reset} option is disabled"
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
@@ -881,9 +881,9 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 
 # sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" "The ${colorW}editor${reset} variable is not set.\nCheck configuration in $configdir/config"
-[[ ! -f /usr/bin/$pacmanbin ]] && msg "e" "The binary ${colorW}$pacmanbin${reset} is not installed.\nCheck configuration in $configdir/config"
-[[ ! -w "$builddir" ]] && msg "e" "You do not have write permission to build packages in ${colorW}$builddir${reset}."
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" "The ${colorW}editor${reset} variable is unset"
+[[ ! -f /usr/bin/$pacmanbin ]] && msg "e" "The ${colorW}$pacmanbin${reset} binary is not installed"
+[[ ! -w "$builddir" ]] && msg "e" "${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" "no targets specified (use -h for help)"
 [[ $repo && $aur ]] && msg "e" "target not found"
 
