@@ -502,6 +502,10 @@ EditPkgs() {
 }
 
 MakePkgs() {
+    # set lock
+    [[ -e "$tmpdir/build.lock" ]] && msg e "build lock exists in $tmpdir" && exit 1
+    touch "$tmpdir/build.lock"
+
     # initialize sudo
     sudo -v
 
@@ -571,6 +575,9 @@ MakePkgs() {
         msg "i" "Removing installed AUR dependencies..."
         sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
+
+    # remove lock
+    rm "$tmpdir/build.lock"
 }
 
 CleanUp() {
@@ -738,6 +745,14 @@ getlength() {
 
 nothingtodo() {
     [[ -z "$@" ]] && printf "%s\n" " there is nothing to do" && exit || return 0
+}
+
+trap ctrlc INT
+ctrlc() {
+    echo
+    [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
+    CleanUp ${deps[@]}
+    exit
 }
 
 usage() {
