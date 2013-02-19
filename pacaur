@@ -622,15 +622,17 @@ CheckRepo() {
     if [[ -n "${repopkgsQood[@]}" ]]; then
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
+        repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
         lname=$(getlength ${repopkgsQood[@]})
         lver=$(getlength ${repopkgsQver[@]} ${repopkgSver[@]})
+        lrepo=$(getlength ${repopkgsSrepo[@]})
 
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
             repopkgsQgrp[$i]=$(expac -Q -l " " '%G' "${repopkgsQood[$i]}")
         done
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
             [[ -n "${repopkgsQgrp[$i]}" ]] && repopkgsQgrp[$i]="(${repopkgsQgrp[$i]})"
-            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%s${reset}\n" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" || echo "${repopkgsQood[$i]}";
+            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" || echo "${repopkgsQood[$i]}";
         done
     fi
 }
@@ -643,9 +645,10 @@ CheckAur() {
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsQood[@]}"))
         [[ ! $lname ]] && lname=$(getlength ${aurpkgsQood[@]})
         [[ ! $lver ]] && lver=$(getlength ${aurpkgsQver[@]} ${aurpkgSver[@]})
+        [[ ! $lrepo ]] && lrepo=3
 
         for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
-            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "${aurpkgsQood[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" || echo ${aurpkgsQood[$i]};
+            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "aur" "${aurpkgsQood[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" || echo ${aurpkgsQood[$i]};
         done
     fi
 }
