@@ -432,8 +432,8 @@ Prompt() {
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         # compute table length
-        lname=$(getlength <<< ${deps[@]} ${repodepspkgs[@]})
-        lver=$(getlength <<< ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]})
+        lname=$(getlength ${deps[@]} ${repodepspkgs[@]})
+        lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]})
         [[ $lname -gt 4 ]] && lname=$(($lname+1)) || lname=5
         [[ $lver -gt 10 ]] && lver=$(($lver+1)) || lver=12
 
