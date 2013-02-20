@@ -1,0 +1,51 @@
+README for translators
+
+Note:   The target locale must be available on your system.
+        See https://wiki.archlinux.org/index.php/Locale
+
+Add a new translation
+---------------------
+To add a new translation, generate a new <locale>.po file from the current code,
+where <locale> is one of the locales given in /usr/share/i18n/locales:
+
+cd ./pacaur
+bash --dump-po-strings pacaur > pacaur.pot
+msguniq pacaur.pot > po/<locale>.po
+
+If applicable, use the 'short' locale (de, es, fr, ...) to make it available to
+all sublocales. Use the regular locale (en_GB, en_AU, ..., zh_CN, zh_TW) when
+this is not applicable.
+
+Open the po/<locale>.po file with your favorite text editor, and add your translation
+in the 'msgstr' field. Do not replace the original text in the 'msgid' field.
+
+#: hello:5
+msgid "Hello, world!"
+msgstr "世界你好!"
+
+Update a translation
+--------------------
+To update an existing translation, generate the updated pacaur.pot file and merge
+the existing changes:
+
+cd ./pacaur
+bash --dump-po-strings pacaur > pacaur.pot
+msgmerge --update po/<locale>.po pacaur.pot
+
+Testing your translation
+------------------------
+To test your translation, compile the source <locale>.po file and install it on
+your system:
+
+cd ./pacaur
+msgfmt -o /usr/share/locale/<locale>/LC_MESSAGES/pacaur.mo po/<locale>.po
+
+To launch pacaur with a specific locale:
+
+$ LANG=<locale> pacaur -S package
+
+Sending your translation
+------------------------
+Translation can be send through GitHub pull request on https://github.com/Spyhawk/pacaur.
+Beware of pulling the source <locale>.po file, not the compiled <locale>.po file.
+
