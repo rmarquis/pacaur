@@ -254,10 +254,8 @@ FindPkgsDeps() {
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # remove AUR package versioning
-        local j=0
-        for i in "${depspkgsaur[@]}"; do
-            depspkgsaur[$j]=$(awk -F ">|<|=" '{print $1}' <<< $i)
-            ((j++))
+        for ((i=0; i<${#depspkgsaur[@]}; i++)); do
+            depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
         done
         for i in "${depspkgsaur[@]}"; do
             [[ " ${allaurdeps[@]} " =~ " $i " ]] && continue || allaurdeps+=("$i")
