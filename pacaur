@@ -360,29 +360,32 @@ ProviderChecks() {
 
 ConflictChecks() {
     msg "i" $"looking for inter-conflicts..."
-    if [[ ! $noconfirm ]]; then
-        local k=0
-        for i in "${deps[@]}"; do
-            unset conflicts
-            conflicts=("$(grep "^conflicts=" "$builddir/$i/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-            [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "$i")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${conflicts[@]}"))
-            # return when no conflict
-            [[ " ${conflicts[@]} " =~ " $i " ]] && continue || conflictspkgs=("${conflicts[@]}")
+    for ((i=0; i<${#depsAname[@]}; i++)); do
+        unset conflicts
+        conflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+        [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${depsAname[$i]}")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${conflicts[@]}"))
+        # return when no conflict
+        [[ " ${conflicts[@]} " =~ " ${depsAname[$i]} " ]] && continue || conflictspkgs=("${conflicts[@]}")
 
-            for j in "${conflictspkgs[@]}"; do
-                if [[ $j = $i ]]; then
-                    continue
+        for j in "${conflictspkgs[@]}"; do
+            if [[ " ${aurpkgs[@]} " =~ " $j " && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
+                msg "f" $"unresolvable package conflicts detected"
+                msg "f" $"failed to prepare transaction (conflicting dependencies)"
+                msg "e" $"${depsAname[$i]} and $j are in conflict"
+            fi
+            if [[ ! $noconfirm && $j != ${depsAname[$i]} ]]; then
+                if ! proceed "n" $"${colorB}::${reset} ${colorW}${depsAname[$i]} and $j are in conflict. Remove $j?${reset}"; then
+                    depsQver[$i]=$(expac -Q %v "$j")
+                    break
                 else
-                    if ! proceed "n" $"${colorB}::${reset} ${colorW}$i and $j are in conflict. Remove $j?${reset}"; then
-                        break
-                    else
-                        [[ " ${pkgs[@]} " =~ " $i " ]] && unset deps[$k] || msg "e" $"failed to prepare transaction (conflicting dependencies)"
-                    fi
+                    deps=(${deps[@]/${depsAname[$i]}/})
+                    unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
                 fi
-            done
-            ((k++))
+            fi
         done
-    fi
+    done
+    # remove empty elements
+    depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
 }
