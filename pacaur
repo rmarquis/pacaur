@@ -241,7 +241,7 @@ FindPkgsDeps() {
     for i in "${deps[@]}"; do
         # preview before sourcing
         PreviewPkgs $i
-        source <(awk '/^build.*(.*)|^package.*(.*)/{exit};1' "$builddir/$i/PKGBUILD") && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
+        source "$builddir/$i/PKGBUILD" && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
     done
 
     # remove installed deps
