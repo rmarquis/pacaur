@@ -767,7 +767,7 @@ ctrlc() {
     echo
     [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
-    CleanUp ${deps[@]}
+    [[ $operation = sync ]] && CleanUp ${deps[@]}
     exit
 }
 
