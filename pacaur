@@ -95,6 +95,7 @@ Core() {
     IgnoreChecks
     DownloadPkgs
     IgnoreDepsChecks
+    getversionedpkgs
     ProviderChecks
     ConflictChecks
     ReinstallChecks
@@ -214,20 +215,6 @@ DownloadPkgs() {
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-    fi
-
-    # get version numbers
-    downloadjson ${deps[@]}
-    depsAname=($(getjsonvar "Name")) # return sorted results
-    depsAver=($(getjsonvar "Version"))
-    depsAood=($(getjsonvar "OutOfDate"))
-    for i in "${depsAname[@]}"; do
-        Qver=$(expac -Q '%v' "$i")
-        [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
-    done
-    if [[ -n "${repodepspkgs[@]}" ]]; then
-        repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
-        repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
     fi
 }
 
@@ -674,6 +661,21 @@ CleanCache() {
                 rm $PKGDEST/* &>/dev/null
             fi
         fi
+    fi
+}
+
+getversionedpkgs() {
+    downloadjson ${deps[@]}
+    depsAname=($(getjsonvar "Name")) # return sorted results
+    depsAver=($(getjsonvar "Version"))
+    depsAood=($(getjsonvar "OutOfDate"))
+    for i in "${depsAname[@]}"; do
+        Qver=$(expac -Q '%v' "$i")
+        [[ -n "$Qver" ]] && depsQver+=("$Qver") || depsQver+=("")
+    done
+    if [[ -n "${repodepspkgs[@]}" ]]; then
+        repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
+        repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
     fi
 }
 
