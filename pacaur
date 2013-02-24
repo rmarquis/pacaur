@@ -10,7 +10,7 @@ version="3.4.7"
 # Config
 #
 
-# internationalization and C fallback
+# internationalization
 TEXTDOMAINDIR='/usr/share/locale'
 TEXTDOMAIN='pacaur'
 [[ ! -e "$TEXTDOMAINDIR/${LANG%_*}/LC_MESSAGES/${TEXTDOMAIN}.mo" && ! -e "$TEXTDOMAINDIR/${LANG%.*}/LC_MESSAGES/${TEXTDOMAIN}.mo" ]] && export LC_ALL=C
@@ -192,6 +192,7 @@ DownloadPkgs() {
             msg "i" $"resolving dependencies..."
             coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
         fi
+
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
             [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && msg "e" $"${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
@@ -202,6 +203,7 @@ DownloadPkgs() {
         allaurdeps+=("${aurpkgs[@]}")
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
+
         # reduce root binary deps
         repodeps=($( (sed 's/ /\n/g' | sort -u) <<< ${repodeps[@]}))
     fi
@@ -226,7 +228,6 @@ FindPkgsDeps() {
 
     # source pkgs
     for i in "${deps[@]}"; do
-        # preview before sourcing
         PreviewPkgs $i
         source "$builddir/$i/PKGBUILD" && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
     done
@@ -253,13 +254,14 @@ FindPkgsDeps() {
 }
 
 PreviewPkgs() {
-    # sanitize for sudo security check
+    # sanitize
     cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
     while [[ -n "$(grep -Po '^depends=\([^)].*[^)]$|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]] ; do
         sed -i -e '/^depends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
         sed -i -e '/^optdepends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
     done
 
+    # sudo security check
     [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends')" ]] && msg "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
     if [[ ! $noconfirm ]]; then
         if proceed "n" $"${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
@@ -329,10 +331,10 @@ ProviderChecks() {
                 printf "\n%s" $"Enter a number (default=0):"
                 nbchar=$(wc -l <<< ${#providers[@]})
                 read -n ${#nbchar} nb
-                echo ""
+                echo
 
                 case $nb in
-                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo "" && msg "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
+                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo && msg "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
                     '') nb=0;;
                     *) msg "f" $"invalid number: $nb";;
                 esac
@@ -371,7 +373,6 @@ ConflictChecks() {
             fi
         done
     done
-    # remove empty elements
     depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
@@ -390,7 +391,6 @@ ReinstallChecks() {
             unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
     done
-    # remove empty elements
     [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
@@ -420,7 +420,6 @@ Prompt() {
     fi
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
-        # compute table length
         lname=$(getlength ${deps[@]} ${repodepspkgs[@]})
         lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]})
         [[ $lname -gt 4 ]] && lname=$(($lname+1)) || lname=5
@@ -458,7 +457,7 @@ Prompt() {
         printf "${colorW}%-20s${reset} %11s\n" $"Repo Installed Size:" $"$summ MiB"
     fi
 
-    echo ""
+    echo
     if [[ ! $noconfirm ]]; then
         [[ $installpkg ]] && action=$"installation" || action=$"download"
         if ! proceed "y" $"Proceed with $action?"; then
@@ -642,14 +641,13 @@ CheckAur() {
 
 CleanCache() {
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
-        [[ ! $aur ]] && echo ""
+        [[ ! $aur ]] && echo
         printf "${colorW}%s${reset} %s\n" $"AUR cache directory:" "$PKGDEST"
         if [[ $count -eq 1 ]]; then
             printf "${colorW}%s${reset}\n %s\n" $"Packages to keep:" $"All locally installed packages"
             if ! proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
                 exit
             fi
-
             printf "%s\n" $"removing old packages from cache..."
             for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
                 pkgname=$(sed "s#\(.*\)-.*-.*#\1#g" <<< $i)
@@ -666,7 +664,7 @@ CleanCache() {
 
 getversionedpkgs() {
     downloadjson ${deps[@]}
-    depsAname=($(getjsonvar "Name")) # return sorted results
+    depsAname=($(getjsonvar "Name"))    # return sorted results
     depsAver=($(getjsonvar "Version"))
     depsAood=($(getjsonvar "OutOfDate"))
     for i in "${depsAname[@]}"; do
@@ -726,14 +724,14 @@ proceed() {
     case "$1" in
         y)  echo -ne $"$2 [Y/n] "
             read -n 1 answer
-            echo ""
+            echo
             case $answer in
                 [Yy]|'') return 0;;
                 *) return 1;;
             esac;;
         n)  echo -ne $"$2 [y/N] "
             read -n 1 answer
-            echo ""
+            echo
             case $answer in
                 [Nn]|'') return 0;;
                 *) return 1;;
@@ -806,7 +804,7 @@ usage() {
     printf "%s\n" $"   -v, --version    display version information"
     printf "%s\n" $"   -h, --help       display help information"
     printf "%s\n" $"   --fixbackend     quickly rebuild backend"
-    printf "%s\n" ""
+    echo
     printf "%s\n" $"options:"
     printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
     printf "%s\n" $"   -a, --aur        only search, install or clean packages from the AUR"
@@ -820,11 +818,11 @@ usage() {
     printf "%s\n" $"   --noconfirm      do not prompt for any confirmation"
     printf "%s\n" $"   --noedit         do not prompt to edit files"
     printf "%s\n" $"   --rebuild        always rebuild package(s)"
-    printf "%s\n" ""
+    echo
 }
 
 version() {
-    printf "pacaur %s\n" "$version"
+    echo "pacaur $version"
 }
 
 fixbackend() {
@@ -856,7 +854,6 @@ while [[ -n "${!OPTIND}" ]]; do
         case "$OPT" in
             -)
                 case "$OPTARG" in
-                    # pacaur
                     search) operation=search; coweropts+=("-s"); aur='1';;
                     info) operation=info; coweropts+=("-i"); aur='1';;
                     download) operation=download; ((count++));;
@@ -868,10 +865,8 @@ while [[ -n "${!OPTIND}" ]]; do
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
-                    # pacman
                     repo) repo='1';;
                     aur) aur='1';;
-                    # others
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
@@ -885,7 +880,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     help) usage; exit;;
                     *) pacopts+=("--$OPTARG");;
                 esac;;
-            # pacaur
             s)  [[ $pacS ]] && operation=search && coweropts+=("-s");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=search; coweropts+=("-s"); aur='1';;
             i)  [[ $pacS ]] && operation=info && coweropts+=("-i");
@@ -904,7 +898,6 @@ while [[ -n "${!OPTIND}" ]]; do
             c)  [[ $pacS ]] && operation=cleancache && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
             q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
-            # pacman
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
@@ -912,13 +905,11 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ "${opts[@]}" =~ "w" ]] && continue || installpkg=true;
                 [[ "${opts[@]}" =~ "g" || "${opts[@]}" =~ "l" || "${opts[@]}" =~ "p" ]] && unset operation;;
             [A-Z]) pac='1';;
-            # others
             h)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && unset operation && continue || usage; exit;;
             v)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && unset operation && continue || version; exit;;
             *)  continue;;
         esac
     done
-
     # packages
     [[ -z "${!OPTIND}" ]] && break || pkgs+=("${!OPTIND}")
     shift $OPTIND
@@ -992,8 +983,7 @@ case $operation in
         [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         exit;;
-    *)
-        # others operations handling
+    *)  # others operations handling
         if [[ -z "${pkgs[@]}" || -n "$(grep -e "-[QTglp]" <<< ${pacmanarg[@]})" ]]; then
             $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
@@ -1001,5 +991,4 @@ case $operation in
         fi
         exit;;
 esac
-
 # vim:set ts=4 sw=2 et:
