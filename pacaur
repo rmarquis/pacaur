@@ -471,9 +471,10 @@ Prompt() {
         printf "${colorW}%-20s${reset} %11s\n" $"Repo Installed Size:" $"$summ MiB"
     fi
 
+    echo ""
     if [[ ! $noconfirm ]]; then
         [[ $installpkg ]] && action=$"installation" || action=$"download"
-        if ! proceed "y" $"\nProceed with $action?"; then
+        if ! proceed "y" $"Proceed with $action?"; then
             CleanUp ${deps[@]} &>/dev/null
             exit
         fi
