@@ -620,19 +620,18 @@ SearchInfoAur() {
 CheckRepo() {
     repopkgsQood=($($pacmanbin -Quq $@))
     if [[ -n "${repopkgsQood[@]}" ]]; then
+        [[ $quiet ]] && echo "${repopkgsQood[@]}" | sed 's/ /\n/g' && return
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
         repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
         lname=$(getlength ${repopkgsQood[@]})
         lver=$(getlength ${repopkgsQver[@]} ${repopkgSver[@]})
         lrepo=$(getlength ${repopkgsSrepo[@]})
-
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
             repopkgsQgrp[$i]=$(expac -Q -l " " '%G' "${repopkgsQood[$i]}")
         done
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
-            [[ -n "${repopkgsQgrp[$i]}" ]] && repopkgsQgrp[$i]="(${repopkgsQgrp[$i]})"
-            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" || echo "${repopkgsQood[$i]}";
+            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}(%s)${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" | sed 's/()//g'
         done
     fi
 }
@@ -640,15 +639,15 @@ CheckRepo() {
 CheckAur() {
     aurpkgsQood=($(cower ${coweropts[@]} $@ | sort -u))
     if [[ -n "${aurpkgsQood[@]}" ]]; then
+        [[ $quiet ]] && echo "${aurpkgsQood[@]}" | sed 's/ /\n/g' && return
         downloadjson ${aurpkgsQood[@]}
         aurpkgsAver=($(getjsonvar "Version"))
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsQood[@]}"))
         [[ ! $lname ]] && lname=$(getlength ${aurpkgsQood[@]})
         [[ ! $lver ]] && lver=$(getlength ${aurpkgsQver[@]} ${aurpkgSver[@]})
         [[ ! $lrepo ]] && lrepo=3
-
         for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
-            [[ ! $quiet ]] && printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "aur" "${aurpkgsQood[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" || echo ${aurpkgsQood[$i]};
+            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "aur" "${aurpkgsQood[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}"
         done
     fi
 }
