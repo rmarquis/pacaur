@@ -931,7 +931,9 @@ pacmanarg=(${pacmanarg[@]/-r/})
 case $operation in
     download)
         # download (-d) handling
-        aurpkgs+=("${pkgs[@]}") && DownloadPkgs
+        ClassifyPkgs ${pkgs[@]}
+        DownloadAur ${repopkgs[@]}
+        DownloadPkgs
         EditPkgs ${deps[@]}
         exit;;
     cleanpkg)
