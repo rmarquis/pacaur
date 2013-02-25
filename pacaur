@@ -237,7 +237,7 @@ FindPkgsDeps() {
 
     # split binary and AUR depends pkgs
     [[ -e "$tmpdir/tmpdeps" ]] && rm "$tmpdir/tmpdeps"
-    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v '%n' "${depspkgs[@]}" 2>"$tmpdir/tmpdeps"))
+    [[ -n "${depspkgs[@]}" ]] && depspkgsrepo=($(expac -S -1 -v '%n' "${depspkgs[@]}" 2>"$tmpdir/tmpdeps")) && repodeps+=(${depspkgsrepo[@]})
     [[ -e "$tmpdir/tmpdeps" ]] && depspkgsaur=($(awk -F " " '{print $3}' "$tmpdir/tmpdeps" | tr -d "'\`")) || unset depspkgsaur
     unset deps depends makedepends sourcedpkgs depspkgs
 
