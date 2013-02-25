@@ -189,7 +189,7 @@ DownloadPkgs() {
         if [[ $operation = download && $count -lt 2 ]]; then
             DownloadAur ${aurpkgs[@]} && return
         else
-            msg "i" $"resolving dependencies..."
+            [[ $operation != download ]] && msg "i" $"resolving dependencies..."
             coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
         fi
 
@@ -199,7 +199,7 @@ DownloadPkgs() {
         done
         [[ -n "${repodeps[@]}" ]] && repodeps=($(expac -S -1 '%n' "${repodeps[@]}"))
     else
-        msg "i" $"resolving dependencies..."
+        [[ $operation != download ]] && msg "i" $"resolving dependencies..."
         allaurdeps+=("${aurpkgs[@]}")
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
