@@ -30,7 +30,8 @@ the existing changes:
 
 cd ./pacaur
 bash --dump-po-strings pacaur > pacaur.pot
-msgmerge --update po/<locale>.po pacaur.pot
+msguniq pacaur.pot > pacaur.po
+msgmerge --update po/<locale>.po pacaur.po
 
 Testing your translation
 ------------------------
