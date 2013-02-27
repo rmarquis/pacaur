@@ -259,3 +259,8 @@ B<cower>(1), B<pacman>(8), B<makepkg>(8)
 
 Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
+
+=head1 TRANSLATORS
+
+[fr] - Français - spider-mario E<lt>https://github.com/spider-marioE<gt>
+
