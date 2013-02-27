@@ -421,23 +421,23 @@ Prompt() {
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         strname=$"Name"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
-        lname=$(( $(getlength ${deps[@]} ${repodepspkgs[@]} "$strname")+1 ))
-        lver=$(( $(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")+1 ))
+        lname=$(getlength ${deps[@]} ${repodepspkgs[@]} "$strname")
+        lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
 
         # show detailed output
         printf "\n${colorY}%s${reset}\n\n" $"AUR Targets  (${#deps[@]}):"
-        printf "${colorW}%-${lname}s %-${lver}s %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
+        printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
         for ((i=0; i<${#deps[@]}; i++)); do
-            printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset}\n" "${depsAname[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
+            printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}\n" "${depsAname[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
         done
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
             lsize=$(getlength "$strsize")
             printf "\n${colorY}%s${reset}\n\n" $"Repo Targets (${#repodepspkgs[@]}):"
-            printf "${colorW}%-${lname}s %-${lver}s %-${lver}s %s${reset}\n\n" $"Name" $"Old Version" $"New Version" $"Download Size"
+            printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s  %s${reset}\n\n" $"Name" $"Old Version" $"New Version" $"Download Size"
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
                 binarysize=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "${binaryksize[$i]} 1048576")
-                printf "%-${lname}s ${colorR}%-${lver}s${reset} ${colorG}%-${lver}s${reset} %${lsize}s\n" "${repodepspkgs[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" $"$binarysize MiB";
+                printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${repodepspkgs[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" $"$binarysize MiB";
             done
         fi
     else
