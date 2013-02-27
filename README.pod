@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 NAME
 
 pacaur - a fast workflow AUR helper using cower as backend
