@@ -453,8 +453,11 @@ Prompt() {
     fi
 
     if [[ -n "${repodepspkgs[@]}" ]]; then
-        printf "\n${colorW}%-20s${reset} %11s\n" $"Repo Download Size:" $"$sumk MiB"
-        printf "${colorW}%-20s${reset} %11s\n" $"Repo Installed Size:" $"$summ MiB"
+        strrepodlsize=$"Repo Download Size:"; strrepoinsize=$"Repo Installed Size:"; strsumk=$"$sumk MiB"; strsumm=$"$summ MiB"
+        lreposizelabel=$(getlength "$strrepodlsize" "$strrepoinsize")
+        lreposize=$(getlength "$strsumk" "$strsumm")
+        printf "\n${colorW}%-${lreposizelabel}s${reset}  %${lreposize}s\n" "$strrepodlsize" "$strsumk"
+        printf "${colorW}%-${lreposizelabel}s${reset}  %${lreposize}s\n" "$strrepoinsize" "$strsumm"
     fi
 
     echo
