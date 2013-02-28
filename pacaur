@@ -309,19 +309,21 @@ IgnoreDepsChecks() {
 ProviderChecks() {
     [[ -z "${repodepspkgs[@]}" ]] && return
     allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
+    # remove installed providers
+    providersdeps=($($pacmanbin -T "${allproviders[@]}" | sort -u))
 
-    for ((i=0; i<${#allproviders[@]}; i++)); do
-        providers=($(expac -Ss '%n' "^${allproviders[$i]}$"))
+    for ((i=0; i<${#providersdeps[@]}; i++)); do
+        providers=($(expac -Ss '%n' "^${providersdeps[$i]}$"))
         [[ ! ${#providers[@]} -gt 1 ]] && continue
 
         # skip if already provided
         for j in "${providerpkgs[@]}"; do
             provided+=($(expac -S '%P' "$j"))
         done
-        [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${allproviders[$i]} " ]] && continue
+        [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
 
         if [[ ! $noconfirm ]]; then
-            msg "i" $"${colorW} There are ${#providers[@]} providers available for ${allproviders[$i]}:${reset}"
+            msg "i" $"${colorW} There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
             expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
 
             local nb=-1
