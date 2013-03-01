@@ -426,6 +426,10 @@ Prompt() {
         lname=$(getlength ${deps[@]} ${repodepspkgs[@]} "$strname")
         lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
 
+        # local version column cleanup
+        for ((i=0; i<${#deps[@]}; i++)); do
+            [[ "${depsQver[$i]}" =~ '#' ]] && unset depsQver[$i]
+        done
         # show detailed output
         printf "\n${colorY}%s${reset}\n\n" $"AUR Targets  (${#deps[@]}):"
         printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
@@ -674,6 +678,7 @@ getversionedpkgs() {
     depsAood=($(getjsonvar "OutOfDate"))
     for ((i=0; i<${#depsAname[@]}; i++)); do
         depsQver[$i]=$(expac -Q '%v' "${depsAname[$i]}")
+        [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
     done
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
