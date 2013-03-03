@@ -13,7 +13,7 @@ version="3.4.7"
 # internationalization
 TEXTDOMAINDIR='/usr/share/locale'
 TEXTDOMAIN='pacaur'
-[[ ! -e "$TEXTDOMAINDIR/${LANG%_*}/LC_MESSAGES/${TEXTDOMAIN}.mo" && ! -e "$TEXTDOMAINDIR/${LANG%.*}/LC_MESSAGES/${TEXTDOMAIN}.mo" ]] && export LC_ALL=C
+[[ -e "$TEXTDOMAINDIR/${LANG%_*}/LC_MESSAGES/${TEXTDOMAIN}.mo" || -e "$TEXTDOMAINDIR/${LANG%.*}/LC_MESSAGES/${TEXTDOMAIN}.mo" ]] && export LC_COLLATE=C || export LC_ALL=C
 
 # source makepkg variables
 source /etc/makepkg.conf
