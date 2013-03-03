@@ -264,6 +264,10 @@ Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
 =head1 TRANSLATORS
 
-[fr] - Français - "spider-mario" E<lt>https://github.com/spider-marioE<gt>
-[jp] - 日本語 - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
+=over 4
 
+=item B<[fr] - Français>
+"spider-mario" E<lt>https://github.com/spider-marioE<gt>
+
+=item B<[ja] - 日本語>
+Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
