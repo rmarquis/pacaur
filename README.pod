@@ -153,9 +153,8 @@ Always rebuild package(s) regardless of any existing file in $PKGDEST directory.
 
 =item B<--insecure>
 
-When using the secure mode, temporarily disable it to allow full $CARCH bash
-magic compatibility by enabling the full bash dependency solver. If potentially
-harmful code using sudo is detected, a notice will be shown before sourcing.
+When using the secure mode, temporarily enable the full bash dependency solver
+to allow full $CARCH bash magic compatibility.
 
 =item B<--asroot>
 
@@ -240,15 +239,67 @@ be installed. Default is B<false>.
 =item B<secure>
 
 Use cower's internal dependency solver instead of the full bash solver to
-enhance security. This breaks compatibility with I<$CARCH> bash magic and
-PKGBUILDs using the $CARCH makepkg variable will not be correctly handled
-anymore. In normal mode, a notice will however be shown before sourcing if
-potentially harmful code using sudo is detected. Default is B<false>.
+enhance security. This breaks compatibility with I<$CARCH> bash magic. Default
+is B<false>.
 
 =item B<sudoloop>
 
 Prevent sudo timeout. This option overrides the system-wide sudo configuration.
 Default is B<false>.
+
+=back
+
+=head1 NOTES
+
+=over 4
+
+=item B<environment variables>
+
+Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>,
+I<$BUILDDIR>) are fully honored.
+
+=item B<detailed interface>
+
+An interface which displays name, version and size of target packages formatted
+as a table can be enabled with the I<VerbosePkgLists> misc option in pacman.conf.
+
+=item B<sudo configuration>
+
+To be used with minimal password prompting, I<sudo> should be configured
+accordingly. To avoid password prompt timeout (typically if you went grabbing a
+coffee while waiting the build to finish), disable it in your I</etc/sudoers>:
+
+    Defaults passwd_timeout=0
+
+Alternatively, enable the I<sudoloop> config option. This option will override
+the system-wide sudo configuration and refresh the sudo timestamp automatically
+while building packages.
+
+=item B<development package speed up>
+
+If you have development packages and that you want to avoid cleaning up their
+build directory, disable the I<cleandevel> config option. This will speed up
+the update even if the I<clean> config option is enabled for normal packages.
+
+=item B<broken backend>
+
+When I<cower> backend breaks following an update of one of the library it is
+based on, the I<--fixbackend> option attempts to fix it by quickly rebuilding
+it. The option I<--allanbrokeit> is an easy to remember alias to this option.
+
+=item B<secure mode>
+
+The I<secure> mode uses cower's internal dependency solver instead of the full
+bash solver to enhance security. The PKGBUILDs using the $CARCH makepkg
+variable will not be correctly handled anymore. In normal mode, a notice will
+however be shown before sourcing if potentially harmful pseudo code is detected.
+
+=item B<host name error>
+
+If a lot of "Couldn't resolve host name" and "Timeout was reached" messages are
+outputed while checking for updates in spite of the internet line working
+correctly, ensure your local I<DNS server> is correctly configured to improve
+queries speed. Using Google primary DNS (8.8.8.8 and 8.8.4.4) might also help.
 
 =back
 
@@ -264,10 +315,6 @@ Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
 =head1 TRANSLATORS
 
-=over 4
+B<[fr] - Français> - "spider-mario" E<lt>https://github.com/spider-marioE<gt>
 
-=item B<[fr] - Français>
-"spider-mario" E<lt>https://github.com/spider-marioE<gt>
-
-=item B<[ja] - 日本語>
-Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
+B<[ja] - 日本語> - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
