@@ -16,12 +16,17 @@ If applicable, use the 'short' locale (de, es, fr, ...) to make it available to
 all sublocales. Use the regular locale (en_GB, en_AU, ..., zh_CN, zh_TW) when
 this is not applicable.
 
-Open the po/<locale>.po file with your favorite text editor, and add your translation
-in the 'msgstr' field. Do not replace the original text in the 'msgid' field.
+Open the po/<locale>.po file with your favorite text editor, and add your
+translation in the 'msgstr' field. Do not replace the original text in the
+'msgid' field.
 
 #: hello:5
 msgid "Hello, world!"
 msgstr "世界你好!"
+
+Note: The msgid field with the single character "y" must be changed to the single
+letter used to answer "yes" to the localized pacman prompt ("o" for "oui",
+"j" for "ja", "s" for "si", etc.)
 
 Update a translation
 --------------------
