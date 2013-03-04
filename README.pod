@@ -315,6 +315,8 @@ Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
 =head1 TRANSLATORS
 
+B<[de] - Deutsch> - Marco "BigBoot" Kirchner E<lt>https://github.com/BigBootE<gt>
+
 B<[fr] - Français> - "spider-mario" E<lt>https://github.com/spider-marioE<gt>
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
