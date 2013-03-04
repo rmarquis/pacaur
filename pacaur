@@ -730,19 +730,20 @@ getjsonvar() {
 }
 
 proceed() {
+    Y=$"Y"; y=$"y"; N=$"N"; n=$"n"
     case "$1" in
         y)  echo -ne $"$2 [Y/n] "
             read -n 1 answer
             echo
             case $answer in
-                [Yy]|'') return 0;;
+                $Y|$y|'') return 0;;
                 *) return 1;;
             esac;;
         n)  echo -ne $"$2 [y/N] "
             read -n 1 answer
             echo
             case $answer in
-                [Nn]|'') return 0;;
+                $N|$n|'') return 0;;
                 *) return 1;;
             esac;;
     esac
