@@ -190,8 +190,7 @@ and falling back to
 
 =item B<other config>
 
-In addition, pacaur fully honors cower config file and makepkg environment
-variables. See B<cower>(1) and B<makepkg>(8).
+In addition, pacaur fully honors cower config file. See B<cower>(1).
 
 =back
 
@@ -239,8 +238,8 @@ be installed. Default is B<false>.
 =item B<secure>
 
 Use cower's internal dependency solver instead of the full bash solver to
-enhance security. This breaks compatibility with I<$CARCH> bash magic. Default
-is B<false>.
+enhance security. This option breaks compatibility with I<$CARCH> bash magic.
+Default is B<false>.
 
 =item B<sudoloop>
 
@@ -253,39 +252,29 @@ Default is B<false>.
 
 =over 4
 
-=item B<environment variables>
+=item B<sudo configuration>
 
-Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>,
-I<$BUILDDIR>) are fully honored.
+To be used with minimal password prompting, I<sudo> should be configured
+accordingly. See B<sudoers>(5). Alternatively, enable the I<sudoloop> config
+option. This option will override the system-wide sudo configuration and
+refresh the sudo timestamp automatically when building packages.
 
 =item B<detailed interface>
 
 An interface which displays name, version and size of target packages formatted
-as a table can be enabled with the I<VerbosePkgLists> misc option in pacman.conf.
+as a table can be enabled with the I<VerbosePkgLists> misc option in
+I<pacman.conf>.
 
-=item B<sudo configuration>
+=item B<environment variables>
 
-To be used with minimal password prompting, I<sudo> should be configured
-accordingly. To avoid password prompt timeout (typically if you went grabbing a
-coffee while waiting the build to finish), disable it in your I</etc/sudoers>:
+Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>,
+I<$BUILDDIR>) are fully honored. See B<makepkg>(8).
 
-    Defaults passwd_timeout=0
+=item B<development build>
 
-Alternatively, enable the I<sudoloop> config option. This option will override
-the system-wide sudo configuration and refresh the sudo timestamp automatically
-while building packages.
-
-=item B<development package speed up>
-
-If you have development packages and that you want to avoid cleaning up their
-build directory, disable the I<cleandevel> config option. This will speed up
-the update even if the I<clean> config option is enabled for normal packages.
-
-=item B<broken backend>
-
-When I<cower> backend breaks following an update of one of the library it is
-based on, the I<--fixbackend> option attempts to fix it by quickly rebuilding
-it. The option I<--allanbrokeit> is an easy to remember alias to this option.
+If you want to avoid cleaning up the build directory of development packages,
+disable the I<cleandevel> config option. This will speed up the update even if
+the I<clean> config option is enabled for normal packages.
 
 =item B<secure mode>
 
@@ -293,6 +282,12 @@ The I<secure> mode uses cower's internal dependency solver instead of the full
 bash solver to enhance security. The PKGBUILDs using the $CARCH makepkg
 variable will not be correctly handled anymore. In normal mode, a notice will
 however be shown before sourcing if potentially harmful pseudo code is detected.
+
+=item B<broken backend>
+
+When I<cower> backend breaks following an update of one of the library it is
+based on, the I<--fixbackend> option attempts to fix it by quickly rebuilding
+it. Note that I<--allanbrokeit> is an alias to this option.
 
 =item B<host name error>
 
@@ -305,7 +300,7 @@ queries speed. Using Google primary DNS (8.8.8.8 and 8.8.4.4) might also help.
 
 =head1 SEE ALSO
 
-B<cower>(1), B<pacman>(8), B<makepkg>(8)
+B<cower>(1), B<pacman>(8), B<makepkg>(8), B<sudoers>(5)
 
 
 =head1 AUTHOR
