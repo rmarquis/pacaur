@@ -28,9 +28,11 @@ editinstall=true                            # edit install script
 fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
-color=false                                 # color support via pacman-color
 secure=false                                # enhanced security
 sudoloop=false                              # prevent sudo timeout
+
+# set pacman binary
+pacmanbin="${PACMAN:-pacman}"
 
 # source xdg config
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
@@ -45,8 +47,8 @@ source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # color
-if $color; then
-    pacmanbin='pacman-color'
+if [[ -n "$(grep '^Color' '/etc/pacman.conf')" ]]; then
+    pacopts+=("--color=always")
     coweropts+=("--color=always")
     reset="\e[0m"
     colorR="\e[1;31m"
@@ -57,12 +59,10 @@ if $color; then
     colorC="\e[1;36m"
     colorW="\e[1;39m"
 else
-    pacmanbin='pacman'
+    pacopts+=("--color=never")
     coweropts+=("--color=never")
+    makeopts+=("--nocolor")
 fi
-
-# alternative pacman binary
-[[ $PACMAN ]] && pacmanbin=$PACMAN
 
 # set up directories
 [[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
@@ -154,7 +154,7 @@ IgnoreChecks() {
     for i in "${checkaurpkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
-                if ! proceed "y" $"${colorY}::${reset} $i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                if ! proceed "y" $"$i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     msg "w" $"${colorW}$i${reset}: ignoring package upgrade"
                     continue
                 fi
@@ -267,7 +267,7 @@ PreviewPkgs() {
     # sudo security check
     [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends')" ]] && msg "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
     if [[ ! $noconfirm ]]; then
-        if proceed "n" $"${colorY}::${reset} Do you ${colorW}really${reset} want to continue?"; then
+        if proceed "n" $"Do you really want to continue?"; then
             CleanUp ${deps[@]} &>/dev/null
             exit
         fi
@@ -293,7 +293,7 @@ IgnoreDepsChecks() {
     for i in "${aurdepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $noconfirm ]]; then
-                if ! proceed "y" $"${colorY}::${reset} $i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                if ! proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     CleanUp ${aurpkgs[@]} &>/dev/null
                     CleanUp ${aurdepspkgs[@]} &>/dev/null
                     msg "e" $"Unresolved dependency '${colorW}$i${reset}'"
@@ -368,7 +368,7 @@ ConflictChecks() {
                 msg "e" $"${depsAname[$i]} and $j are in conflict"
             fi
             if [[ ! $noconfirm && $j != ${depsAname[$i]} ]]; then
-                if ! proceed "n" $"${colorB}::${reset} ${colorW}${depsAname[$i]} and $j are in conflict. Remove $j?${reset}"; then
+                if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
                     depsQver[$i]=$(expac -Q %v "$j")
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
                     break
@@ -489,13 +489,13 @@ EditPkgs() {
         if [[ ! $edit ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
-                if proceed "y" $"${colorB}::${reset} View ${colorW}$i${reset} PKGBUILD?"; then
+                if proceed "y" $"View $i PKGBUILD?"; then
                     [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" $"${colorW}$i${reset} PKGBUILD viewed" || msg "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
             fi
             # edit install script
             if [[ ! $editinstall = false && -n "$installscript" ]]; then
-                if proceed "y" $"${colorB}::${reset} View ${colorW}$i${reset} .install script?"; then
+                if proceed "y" $"View $i .install script?"; then
                     [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" $"${colorW}$i${reset} install script viewed" || msg "e" $"Could not open ${colorW}$i${reset} install script"
                 fi
             fi
@@ -520,10 +520,6 @@ MakePkgs() {
 
     # reverse deps order
     deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${deps[@]} | awk -F "\n" '{print}'))
-
-    # makepkg options
-    [[ $color != true ]] && makeopts+=("--nocolor")
-    export PACMAN=$pacmanbin
 
     # check destination folder
     [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && msg "e" $"${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset or ${colorW}clean${reset} option is disabled"
@@ -655,7 +651,7 @@ CheckAur() {
 CleanCache() {
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
         [[ ! $aur ]] && echo
-        printf "${colorW}%s${reset} %s\n" $"AUR cache directory:" "$PKGDEST"
+        printf "%s %s\n" $"AUR cache directory:" "$PKGDEST"
         if [[ $count -eq 1 ]]; then
             printf "${colorW}%s${reset}\n %s\n" $"Packages to keep:" $"All locally installed packages"
             if ! proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
@@ -736,14 +732,14 @@ getjsonvar() {
 proceed() {
     Y=$"Y"; y=$"y"; N=$"N"; n=$"n"
     case "$1" in
-        y)  echo -ne $"$2 [Y/n] "
+        y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
             read -n 1 answer
             echo
             case $answer in
                 $Y|$y|'') return 0;;
                 *) return 1;;
             esac;;
-        n)  echo -ne $"$2 [y/N] "
+        n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
             read -n 1 answer
             echo
             case $answer in
@@ -884,6 +880,8 @@ while [[ -n "${!OPTIND}" ]]; do
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
+                    color) pacopts+=("--color ${!OPTIND}"); coweropts+=("--color=${!OPTIND}"); shift;;
+                    color=[a-z]*) pacopts+=("--$OPTARG"); coweropts+=("--$OPTARG");;
                     needed) needed=true; pacopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
@@ -936,7 +934,6 @@ pacmanarg=(${pacmanarg[@]/-r/})
 
 # sanity check
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" $"The ${colorW}editor${reset} variable is unset"
-[[ ! -f /usr/bin/$pacmanbin ]] && msg "e" $"The ${colorW}$pacmanbin${reset} binary is not installed"
 [[ ! -w "$builddir" ]] && msg "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && msg "e" $"target not found"

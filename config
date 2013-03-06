@@ -13,7 +13,6 @@
 #fallback=true                         # pacman fallback to the AUR
 #clean=true                            # clean up after package install
 #cleandevel=true                       # clean up devel package
-#color=false                           # color support via pacman-color
 #secure=false                          # enhanced security
 #sudoloop=false                        # prevent sudo timeout
 
