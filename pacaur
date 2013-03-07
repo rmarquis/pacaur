@@ -411,6 +411,15 @@ Prompt() {
         strname=$"Name"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
         lname=$(getlength ${deps[@]} ${repodepsSrepo[@]} "$strname")
         lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
+        lsize=$(getlength "$strsize")
+
+        # cached packages check
+        for ((i=0; i<${#depsAname[@]}; i++)); do
+            [[ ! $PKGDEST || $rebuild ]] && break
+            getcachedpkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
+            [[ $cachedpkg ]] && depsAcached[$i]=$"(cached)" || depsAcached[$i]=""
+            unset cachedpkg
+        done
 
         # local version column cleanup
         for ((i=0; i<${#deps[@]}; i++)); do
@@ -420,11 +429,10 @@ Prompt() {
         printf "\n${colorY}%s${reset}\n\n" $"AUR Packages  (${#deps[@]}):"
         printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
         for ((i=0; i<${#deps[@]}; i++)); do
-            printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
+            printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}" "${depsAcached[$i]}";
         done
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
-            lsize=$(getlength "$strsize")
             printf "\n${colorY}%s${reset}\n\n" $"Repo Packages (${#repodepspkgs[@]}):"
             printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s  %s${reset}\n\n" $"Name" $"Old Version" $"New Version" $"Download Size"
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
