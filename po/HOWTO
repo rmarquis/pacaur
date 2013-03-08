@@ -1,4 +1,5 @@
-README for translators
+README for pacaur's translators
+===============================
 
 Note:   The target locale must be available on your system.
         See https://wiki.archlinux.org/index.php/Locale
@@ -8,35 +9,46 @@ Add a new translation
 To add a new translation, generate a new <locale>.po file from the current code,
 where <locale> is one of the locales given in /usr/share/i18n/locales:
 
-cd ./pacaur
-bash --dump-po-strings pacaur > pacaur.pot
-msguniq pacaur.pot > po/<locale>.po
+$ cd ./pacaur
+$ bash --dump-po-strings pacaur > pacaur.pot
+$ msguniq pacaur.pot > po/<locale>.po
 
 If applicable, use the 'short' locale (de, es, fr, ...) to make it available to
 all sublocales. Use the regular locale (en_GB, en_AU, ..., zh_CN, zh_TW) when
 this is not applicable.
 
-Open the po/<locale>.po file with your favorite text editor, and add your
-translation in the 'msgstr' field. Do not replace the original text in the
-'msgid' field.
+Open the po/<locale>.po file and add or fill in the header entry. This can be
+done manually with your favorite text editor or automatically with a PO editor.
+
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Language: <locale>\n"
+"X-Source-Language: C\n"
+
+Then add your translation in the following 'msgstr' fields. Do not replace the
+original text in the 'msgid' fields.
 
 #: hello:5
 msgid "Hello, world!"
 msgstr "世界你好!"
 
-Note: The msgid field with the single character "y" must be changed to the single
-letter used to answer "yes" to the localized pacman prompt ("o" for "oui",
-"j" for "ja", "s" for "si", etc.)
+Note: The msgid field with the single character "y" and "n" must be changed to
+the single letter used to answer "yes" and "no" in the target language ("o" for
+"oui", "j" for "ja", "s" for "si", etc.).
 
 Update a translation
 --------------------
 To update an existing translation, generate the updated pacaur.pot file and merge
 the existing changes:
 
-cd ./pacaur
-bash --dump-po-strings pacaur > pacaur.pot
-msguniq pacaur.pot > pacaur.po
-msgmerge --update po/<locale>.po pacaur.po
+$ cd ./pacaur
+$ bash --dump-po-strings pacaur > pacaur.pot
+$ msguniq pacaur.pot > pacaur.po
+$ msgmerge --update po/<locale>.po pacaur.po
 
 Testing your translation
 ------------------------
@@ -55,3 +67,6 @@ Sending your translation
 Translation can be send through GitHub pull request on https://github.com/Spyhawk/pacaur.
 Beware of pulling the source <locale>.po file, not the compiled <locale>.po file.
 
+Resources
+---------
+http://www.gnu.org/software/gettext/manual/gettext.html
