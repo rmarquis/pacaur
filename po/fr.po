@@ -210,7 +210,7 @@ msgstr "le téléchargement"
 
 #: pacaur:472
 msgid "Proceed with $action?"
-msgstr "Poursuivre  $action ?"
+msgstr "Poursuivre $action ?"
 
 #: pacaur:488
 msgid "${colorB}::${reset} View ${colorW}$i${reset} PKGBUILD?"

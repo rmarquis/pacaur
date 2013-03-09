@@ -898,7 +898,7 @@ while [[ -n "${!OPTIND}" ]]; do
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-u"); aur='1';;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); coweropts+=("--color=never"); aur='1';;
             u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-uq"); coweropts+=("--color=never");
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
