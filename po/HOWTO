@@ -36,9 +36,10 @@ original text in the 'msgid' fields.
 msgid "Hello, world!"
 msgstr "世界你好!"
 
-Note: The msgid field with the single character "y" and "n" must be changed to
-the single letter used to answer "yes" and "no" in the target language ("o" for
-"oui", "j" for "ja", "s" for "si", etc.).
+Notes:
+- The msgid field with the single character "y","Y","n" and "N" must be changed
+to the single letter used to answer "yes" and "no" in the target language.
+- Do not use non breaking space characters to avoid problematic display issues.
 
 Update a translation
 --------------------
