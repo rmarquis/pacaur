@@ -347,7 +347,7 @@ msgstr "$2 [o/N] "
 
 #: pacaur:780
 msgid " there is nothing to do"
-msgstr "il n'y a rien à faire"
+msgstr " il n'y a rien à faire"
 
 #: pacaur:801
 msgid "usage:  pacaur <operation> [options] [package(s)]"
