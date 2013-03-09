@@ -367,6 +367,7 @@ ConflictChecks() {
             if [[ ! $noconfirm && $j != ${depsAname[$i]} ]]; then
                 if ! proceed "n" $"${colorB}::${reset} ${colorW}${depsAname[$i]} and $j are in conflict. Remove $j?${reset}"; then
                     depsQver[$i]=$(expac -Q %v "$j")
+                    conflictingpkgs+=("${depsAname[$i]}" "$j")
                     break
                 else
                     deps=(${deps[@]/${depsAname[$i]}/})
@@ -383,7 +384,7 @@ ConflictChecks() {
 ReinstallChecks() {
     depsAtmp=(${depsAname[@]})
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
-        [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
+        [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${conflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
