@@ -112,7 +112,7 @@ UpgradeAur() {
     # check foreign packages
     allforeignpkgs=($($pacmanbin -Qmq))
     downloadjson ${allforeignpkgs[@]}
-    allaurpkgs=($(getjsonvar "Name"))
+    allaurpkgs=($(getjsonvar "Name" | sort -u)) # sort with LC_COLLATE=C
     foreignpkgs=($(comm -23 <(echo "${allforeignpkgs[@]}" | sed 's/ /\n/g') <(echo "${allaurpkgs[@]}" | sed 's/ /\n/g')))
     for i in "${foreignpkgs[@]}"; do
         msg "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
