@@ -312,6 +312,8 @@ Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
 B<[de] - Deutsch> - Marco "BigBoot" Kirchner E<lt>https://github.com/BigBootE<gt>
 
+B<[es] - Español> - Germán L. Osella "gosella" Massa E<lt>https://github.com/gosellaE<gt>
+
 B<[fr] - Français> - "spider-mario" E<lt>https://github.com/spider-marioE<gt>
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
