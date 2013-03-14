@@ -721,9 +721,9 @@ downloadpkgbuild() {
 }
 
 downloadjson() {
-    arg="$(printf "&arg[]=%s" "$@")"
-    url="$(printf "https://aur.archlinux.org/rpc.php?type=multiinfo%s" "$arg")"
-    curl -sfg --compressed "$url" -o "$tmpdir/raw.json" || msg "e" $"Could not connect to the AUR"
+    urlencodedpkgs=($( (sed 's/+/%2b/g' | sed 's/@/%40/g') <<< $@)) # pkgname consists of alphanum@._+-
+    urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
+    curl -sfg --compressed "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || msg "e" $"Could not connect to the AUR"
 }
 
 getjsonvar() {
