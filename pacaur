@@ -717,13 +717,13 @@ isdevel() {
 }
 
 downloadpkgbuild() {
-    curl -sf --compressed "https://aur.archlinux.org${2%/*}/PKGBUILD" -o "$tmpdir/$1.PKGBUILD" || msg "e" $"Could not connect to the AUR"
+    curl -sf --compressed -C 0 "https://aur.archlinux.org${2%/*}/PKGBUILD" -o "$tmpdir/$1.PKGBUILD" || msg "e" $"Could not connect to the AUR"
 }
 
 downloadjson() {
     urlencodedpkgs=($( (sed 's/+/%2b/g' | sed 's/@/%40/g') <<< $@)) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
-    curl -sfg --compressed "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || msg "e" $"Could not connect to the AUR"
+    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || msg "e" $"Could not connect to the AUR"
 }
 
 getjsonvar() {
