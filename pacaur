@@ -435,7 +435,7 @@ Prompt() {
             [[ "${depsQver[$i]}" =~ '#' ]] && unset depsQver[$i]
         done
         # show detailed output
-        printf "\n${colorY}%s${reset}\n\n" $"AUR Targets  (${#deps[@]}):"
+        printf "\n${colorY}%s${reset}\n\n" $"AUR Packages  (${#deps[@]}):"
         printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
         for ((i=0; i<${#deps[@]}; i++)); do
             printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}\n" "${depsAname[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
@@ -443,7 +443,7 @@ Prompt() {
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
             lsize=$(getlength "$strsize")
-            printf "\n${colorY}%s${reset}\n\n" $"Repo Targets (${#repodepspkgs[@]}):"
+            printf "\n${colorY}%s${reset}\n\n" $"Repo Packages (${#repodepspkgs[@]}):"
             printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s  %s${reset}\n\n" $"Name" $"Old Version" $"New Version" $"Download Size"
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
                 binarysize=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "${binaryksize[$i]} 1048576")
@@ -458,8 +458,8 @@ Prompt() {
         for ((i=0; i<${#repodepspkgs[@]}; i++)); do
             repodepspkgsver="${repodepspkgsver}${repodepspkgs[$i]}-${repodepsSver[$i]}  "
         done
-        printf "\n${colorY}%-17s${reset} %s\n" $"AUR Targets  (${#deps[@]}):" "$depsver"
-        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n" $"Repo Targets (${#repodepspkgs[@]}):" "$repodepspkgsver"
+        printf "\n${colorY}%-17s${reset} %s\n" $"AUR Packages  (${#deps[@]}):" "$depsver"
+        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n" $"Repo Packages (${#repodepspkgs[@]}):" "$repodepspkgsver"
     fi
 
     if [[ -n "${repodepspkgs[@]}" ]]; then
