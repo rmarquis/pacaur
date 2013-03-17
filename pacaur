@@ -46,24 +46,6 @@ userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
 source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
-# color
-if [[ -n "$(grep '^Color' '/etc/pacman.conf')" ]]; then
-    pacopts+=("--color=always")
-    coweropts+=("--color=always")
-    reset="\e[0m"
-    colorR="\e[1;31m"
-    colorG="\e[1;32m"
-    colorY="\e[1;33m"
-    colorB="\e[1;34m"
-    colorM="\e[1;35m"
-    colorC="\e[1;36m"
-    colorW="\e[1;39m"
-else
-    pacopts+=("--color=never")
-    coweropts+=("--color=never")
-    makeopts+=("--nocolor")
-fi
-
 # set up directories
 [[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
@@ -633,7 +615,7 @@ CheckRepo() {
 }
 
 CheckAur() {
-    aurpkgsQood=($(cower ${coweropts[@]} $@ | sort -u))
+    aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g" | sort -u))
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && echo "${aurpkgsQood[@]}" | sed 's/ /\n/g' && return
         downloadjson ${aurpkgsQood[@]}
@@ -869,19 +851,18 @@ while [[ -n "${!OPTIND}" ]]; do
                     download) operation=download; ((count++));;
                     makepkg) operation=sync; coweropts+=("-f"); aur='1';;
                     sync) operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
-                    check) operation=upgrades; coweropts+=("-u"); aur='1';;
+                    check) operation=upgrades; coweropts+=("-uq"); aur='1';;
                     update) operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
                     force) coweropts+=("-f"); pacopts+=("--force");;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
-                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
+                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q");;
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
-                    color) pacopts+=("--color ${!OPTIND}"); coweropts+=("--color=${!OPTIND}"); shift;;
-                    color=[a-z]*) pacopts+=("--$OPTARG"); coweropts+=("--$OPTARG");;
+                    color) [[ ${!OPTIND} = never ]] && color=false || color=true; shift;;
                     needed) needed=true; pacopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
@@ -900,8 +881,8 @@ while [[ -n "${!OPTIND}" ]]; do
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); coweropts+=("--color=never"); aur='1';;
-            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-uq"); coweropts+=("--color=never");
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); aur='1';;
+            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-uq");
                 [[ $pacS ]] && operation=sync && upgrade=true && coweropts+=("-f");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
@@ -909,7 +890,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=cleancache && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
-            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); coweropts+=("--color=never");;
+            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q");;
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
@@ -937,6 +918,24 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ ! -w "$builddir" ]] && msg "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && msg "e" $"target not found"
+
+# color
+if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'false' ]]; then
+    pacopts+=("--color always")
+    coweropts+=("--color=always")
+    reset="\e[0m"
+    colorR="\e[1;31m"
+    colorG="\e[1;32m"
+    colorY="\e[1;33m"
+    colorB="\e[1;34m"
+    colorM="\e[1;35m"
+    colorC="\e[1;36m"
+    colorW="\e[1;39m"
+else
+    pacopts+=("--color never")
+    coweropts+=("--color=never")
+    makeopts+=("--nocolor")
+fi
 
 # operations
 case $operation in
