@@ -409,7 +409,7 @@ Prompt() {
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         strname=$"Name"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
-        lname=$(getlength ${deps[@]} ${repodepspkgs[@]} "$strname")
+        lname=$(getlength ${deps[@]} ${repodepsSrepo[@]} "$strname")
         lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
 
         # local version column cleanup
@@ -420,7 +420,7 @@ Prompt() {
         printf "\n${colorY}%s${reset}\n\n" $"AUR Packages  (${#deps[@]}):"
         printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
         for ((i=0; i<${#deps[@]}; i++)); do
-            printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}\n" "${depsAname[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
+            printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
         done
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
@@ -429,7 +429,7 @@ Prompt() {
             printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s  %s${reset}\n\n" $"Name" $"Old Version" $"New Version" $"Download Size"
             for ((i=0; i<${#repodepspkgs[@]}; i++)); do
                 binarysize=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "${binaryksize[$i]} 1048576")
-                printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${repodepspkgs[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" $"$binarysize MiB";
+                printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${repodepsSrepo[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" $"$binarysize MiB";
             done
         fi
     else
@@ -658,6 +658,7 @@ getversionedpkgs() {
     depsAname=($(getjsonvar "Name"))    # return sorted results
     depsAver=($(getjsonvar "Version"))
     depsAood=($(getjsonvar "OutOfDate"))
+    depsArepo=("${depsAname[@]/#/aur/}" )
     for ((i=0; i<${#depsAname[@]}; i++)); do
         depsQver[$i]=$(expac -Q '%v' "${depsAname[$i]}")
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
@@ -665,6 +666,7 @@ getversionedpkgs() {
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
         repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
+        repodepsSrepo=($(expac -S -1 '%r/%n' "${repodepspkgs[@]}"))
     fi
 }
 
