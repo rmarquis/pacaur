@@ -270,11 +270,20 @@ I<pacman.conf>.
 Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>,
 I<$BUILDDIR>) are fully honored. See B<makepkg>(8).
 
-=item B<development build>
+=item B<build directory>
 
-If you want to avoid cleaning up the build directory of development packages,
-disable the I<cleandevel> config option. This will speed up the update even if
-the I<clean> config option is enabled for normal packages.
+You might want to change the default build directory (set on /tmp on a temporary
+filesystem residing in volatile memory) especially when building big packages on
+a low-memory machine.
+
+=item B<build cleaning>
+
+If you want to avoid cleaning up the build directory of packages, disable the
+I<clean> config option. If you want to avoid cleaning up the build directory of
+development packages, disable the I<cleandevel> config option. This will speed
+up the update even if the I<clean> config option is enabled for normal packages.
+You might also want to change the default temporary directory which is
+automatically cleared upon reboot.
 
 =item B<secure mode>
 
