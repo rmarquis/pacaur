@@ -217,6 +217,7 @@ DownloadPkgs() {
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
+        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | sort -u))
     fi
 }
 
