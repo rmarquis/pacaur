@@ -386,7 +386,7 @@ ReinstallChecks() {
     depsAtmp=(${depsAname[@]})
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${conflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
-        [[ -z "${depsQver[$i]}" || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
+        [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ ! $needed ]]; then
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
         else
