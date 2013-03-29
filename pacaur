@@ -873,7 +873,8 @@ while [[ -n "${!OPTIND}" ]]; do
                     asroot) makeopts+=("--asroot");;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     color) [[ ${!OPTIND} = never ]] && color=false || color=true; shift;;
-                    needed) needed=true; pacopts+=("--needed");;
+                    asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
+                    needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
