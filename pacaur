@@ -109,7 +109,7 @@ UpgradeAur() {
         aurdevelpkgsQver=($(expac -Q '%v' "${aurdevelpkgs[@]}"))
         for ((i=0; i<${#aurdevelpkgs[@]}; i++)); do
             if [[ " ${ignoredpkgs[@]} " =~ " ${aurdevelpkgs[$i]} " ]]; then
-                msg "w" $"${colorW}${aurdevelpkgs[$i]} ${colorY}${aurdevelpkgsQver[$i]}${reset}: ignoring package upgrade"
+                msg "w" $"${colorW}${aurdevelpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${aurdevelpkgsQver[$i]}${reset} => ${colorG}${aurdevelpkgsSver[$i]}${reset})"
                 continue
             else
                 aurpkgs+=("${aurdevelpkgs[$i]}")
