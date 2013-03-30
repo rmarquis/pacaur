@@ -101,21 +101,18 @@ UpgradeAur() {
 
     # add devel packages
     if [[ $devel ]]; then
-        allaurpkgsQver=($(expac -Q '%v' "${allaurpkgs[@]}"))
-        allaurpkgsurl=($(getjsonvar "URLPath"))
-        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            downloadpkgbuild "${allaurpkgs[$i]}" "${allaurpkgsurl[$i]}" &
-            paraexec
+        for i in "${allaurpkgs[@]}"; do
+            [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && aurdevelpkgs+=("$i")
         done
-        wait
-        for ((i=0; i<${#allaurpkgs[@]}; i++)); do
-            if isdevel "$tmpdir/${allaurpkgs[$i]}.PKGBUILD"; then
-                if [[ " ${ignoredpkgs[@]} " =~ " ${allaurpkgs[$i]} " ]]; then
-                    msg "w" $"${colorW}${allaurpkgs[$i]} ${colorY}${allaurpkgsQver[$i]}${reset}: ignoring package upgrade"
-                    continue
-                else
-                    aurpkgs+=("${allaurpkgs[$i]}")
-                fi
+        downloadjson ${aurdevelpkgs[@]}
+        aurdevelpkgsSver=($(getjsonvar "Version"))
+        aurdevelpkgsQver=($(expac -Q '%v' "${aurdevelpkgs[@]}"))
+        for ((i=0; i<${#aurdevelpkgs[@]}; i++)); do
+            if [[ " ${ignoredpkgs[@]} " =~ " ${aurdevelpkgs[$i]} " ]]; then
+                msg "w" $"${colorW}${aurdevelpkgs[$i]} ${colorY}${aurdevelpkgsQver[$i]}${reset}: ignoring package upgrade"
+                continue
+            else
+                aurpkgs+=("${aurdevelpkgs[$i]}")
             fi
         done
     fi
@@ -582,7 +579,7 @@ CleanUp() {
         cd "$builddir"
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
-                if isdevel "$builddir/$i/PKGBUILD"; then
+                if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
                     msg "w" $"${colorW}$i${reset} cleaning skipped"
                     continue
                 fi
@@ -703,14 +700,6 @@ getcachedpkg() {
     [[ ! -f "$cachedpkg" ]] && unset cachedpkg
 }
 
-isdevel() {
-    [[ -e "$1" ]] && [[ -n "$(grep -E "_(cvsroot|svntrunk|gitroot|hgroot|bzrtrunk|darcstrunk)" "$1")" ]]
-}
-
-downloadpkgbuild() {
-    curl -sf --compressed -C 0 "https://aur.archlinux.org${2%/*}/PKGBUILD" -o "$tmpdir/$1.PKGBUILD" || msg "e" $"Could not connect to the AUR"
-}
-
 downloadjson() {
     urlencodedpkgs=($( (sed 's/+/%2b/g' | sed 's/@/%40/g') <<< $@)) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
@@ -750,13 +739,6 @@ msg() {
         e) echo -e "${colorR}::${reset} $2";    # error
            exit 1;;
     esac
-}
-
-paraexec() {
-    while (( $(jobs | wc -l) >= 10 )); do
-        sleep 0.1
-        jobs > /dev/null
-    done
 }
 
 getlength() {
@@ -832,7 +814,7 @@ fixbackend() {
     cowerexec=($(expac -Q '%n' "cower")) # cower-git compatibility
     downloadjson $cowerexec
     cowerexecurl=($(getjsonvar "URLPath"))
-    downloadpkgbuild "$cowerexec" "$cowerexecurl"
+    curl -sf --compressed -C 0 "https://aur.archlinux.org${cowerexecurl%/*}/PKGBUILD" -o "$tmpdir/$cowerexec.PKGBUILD" || msg "e" $"Could not connect to the AUR"
     mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
     makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerexec
