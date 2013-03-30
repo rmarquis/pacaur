@@ -811,13 +811,13 @@ version() {
 
 fixbackend() {
     msg "i" $"Rebuilding ${colorW}cower${reset} backend..."
-    cowerexec=($(expac -Q '%n' "cower")) # cower-git compatibility
-    downloadjson $cowerexec
-    cowerexecurl=($(getjsonvar "URLPath"))
-    curl -sf --compressed -C 0 "https://aur.archlinux.org${cowerexecurl%/*}/PKGBUILD" -o "$tmpdir/$cowerexec.PKGBUILD" || msg "e" $"Could not connect to the AUR"
-    mkdir -p "$builddir/$cowerexec" && cd "$builddir/$cowerexec"
-    makepkg -p $tmpdir/$cowerexec.PKGBUILD -sfic ${makeopts[@]} --noconfirm
-    CleanUp $cowerexec
+    cowerbin=($(expac -Q '%n' "cower")) # cower-git compatibility
+    downloadjson $cowerbin
+    cowerbinurl=($(getjsonvar "URLPath"))
+    curl -sf --compressed -C 0 "https://aur.archlinux.org${cowerbinurl%/*}/PKGBUILD" -o "$tmpdir/$cowerbin.PKGBUILD" || msg "e" $"Could not connect to the AUR"
+    mkdir -p "$builddir/$cowerbin" && cd "$builddir/$cowerbin"
+    makepkg -p $tmpdir/$cowerbin.PKGBUILD -sfic ${makeopts[@]} --noconfirm
+    CleanUp $cowerbin
 }
 
 #
