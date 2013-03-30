@@ -107,7 +107,6 @@ Core() {
 UpgradeAur() {
     msg "i" $"${colorW}Starting AUR upgrade...${reset}"
     aurpkgs+=($(cower -uq ${coweropts[@]} ${pkgs[@]} | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-    aurpkgs=($( (sed 's/ /\n/g' | sort -u) <<< ${aurpkgs[@]}))
 
     # check foreign packages
     allforeignpkgs=($($pacmanbin -Qmq))
@@ -138,6 +137,9 @@ UpgradeAur() {
             fi
         done
     fi
+
+    # avoid possible duplicate
+    aurpkgs=($( (sed 's/ /\n/g' | sort -u) <<< ${aurpkgs[@]}))
 
     nothingtodo ${aurpkgs[@]}
 }
