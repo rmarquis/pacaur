@@ -62,6 +62,7 @@ ClassifyPkgs() {
         if [[ ! $repo && ! $aur ]]; then
             getignoredgrps
             for i in "${pkgs[@]}"; do
+                [[ $i == aur/* ]] && i=${i:4} && aurpkgs+=("$i") && continue
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
                 [[ -z "$(expac -S '%n' "$i" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
