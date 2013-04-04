@@ -89,7 +89,21 @@ Core() {
 
 UpgradeAur() {
     msg "i" $"${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} ${ignoreopts[@]} 2> >(tee >&2) | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
+    [[ -e "$tmpdir/ignoretmp" ]] && rm "$tmpdir/ignoretmp"
+    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} ${ignoreopts[@]} 2>"$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
+    [[ -e "$tmpdir/ignoretmp" ]] && ignoredaurpkgs=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    if [[ -n "${ignoredaurpkgs[@]}" ]]; then
+        downloadjson ${ignoredaurpkgs[@]}
+        aurdevelpkgsAname=($(getjsonvar "Name"))    # return sorted results
+        aurdevelpkgsSver=($(getjsonvar "Version"))
+        aurdevelpkgsQver=($(expac -Q '%v' "${ignoredaurpkgs[@]}"))
+    fi
+    for ((i=0; i<${#ignoredaurpkgs[@]}; i++)); do
+        if [[ " ${ignoredpkgs[@]} " =~ " ${aurdevelpkgsAname[$i]} " ]]; then
+            msg "w" $"${colorW}${aurdevelpkgsAname[$i]}${reset}: ignoring package upgrade (${colorR}${aurdevelpkgsQver[$i]}${reset} => ${colorG}${aurdevelpkgsSver[$i]}${reset})"
+        fi
+    done
 
     # check foreign packages
     allforeignpkgs=($($pacmanbin -Qmq))
@@ -109,7 +123,7 @@ UpgradeAur() {
         aurdevelpkgsSver=($(getjsonvar "Version"))
         aurdevelpkgsQver=($(expac -Q '%v' "${aurdevelpkgs[@]}"))
         for ((i=0; i<${#aurdevelpkgs[@]}; i++)); do
-            if [[ " ${ignoredpkgs[@]} " =~ " ${aurdevelpkgs[$i]} " ]]; then
+            if [[ (" ${ignoredpkgs[@]} " =~ " ${aurdevelpkgs[$i]} ") && (! " ${ignoredaurpkgs[@]} " =~ " ${aurdevelpkgs[$i]} ") ]]; then
                 msg "w" $"${colorW}${aurdevelpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${aurdevelpkgsQver[$i]}${reset} => ${colorG}${aurdevelpkgsSver[$i]}${reset})"
                 continue
             else
