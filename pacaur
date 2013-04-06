@@ -924,6 +924,16 @@ if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
     colorM="\e[1;35m"
     colorC="\e[1;36m"
     colorW="\e[1;39m"
+elif [[ -z "$(grep '^Color' '/etc/pacman.conf')" && ($color = 'always' || $color = 'auto') ]]; then
+    pacopts+=("--color $color") && coweropts+=("--color=$color")
+    reset="\e[0m"
+    colorR="\e[1;31m"
+    colorG="\e[1;32m"
+    colorY="\e[1;33m"
+    colorB="\e[1;34m"
+    colorM="\e[1;35m"
+    colorC="\e[1;36m"
+    colorW="\e[1;39m"
 else
     [[ $color != 'always' && $color != 'auto' ]] && makeopts+=("--nocolor")
 fi
