@@ -855,7 +855,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     devel) devel=true;;
                     asroot) makeopts+=("--asroot");;
                     ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
-                    color) [[ ${!OPTIND} = never ]] && color=false || color=true; shift;;
+                    color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
@@ -914,9 +914,8 @@ pacmanarg=(${pacmanarg[@]/-r/})
 [[ $repo && $aur ]] && msg "e" $"target not found"
 
 # color
-if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'false' ]]; then
-    [[ $color = 'true' ]] && pacopts+=("--color always") # keep the log clear
-    coweropts+=("--color=always")
+if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
+    [[ $color = 'always' ]] && coweropts+=("--color=always") || coweropts+=("--color=auto")
     reset="\e[0m"
     colorR="\e[1;31m"
     colorG="\e[1;32m"
@@ -926,8 +925,7 @@ if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'false' ]]; then
     colorC="\e[1;36m"
     colorW="\e[1;39m"
 else
-    [[ $color = 'false' ]] && pacopts+=("--color never") && coweropts+=("--color=never")
-    makeopts+=("--nocolor")
+    [[ $color != 'always' && $color != 'auto' ]] && makeopts+=("--nocolor")
 fi
 
 # operations
