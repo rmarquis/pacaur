@@ -915,6 +915,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 
 # color
 if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'false' ]]; then
+    [[ $color = 'true' ]] && pacopts+=("--color always") # keep the log clear
     coweropts+=("--color=always")
     reset="\e[0m"
     colorR="\e[1;31m"
@@ -925,14 +926,8 @@ if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'false' ]]; then
     colorC="\e[1;36m"
     colorW="\e[1;39m"
 else
-    if [[ $color != 'false' ]]; then
-        pacopts+=("--color always")
-        coweropts+=("--color=always")
-    else
-        pacopts+=("--color never")
-        coweropts+=("--color=never")
-        makeopts+=("--nocolor")
-    fi
+    [[ $color = 'false' ]] && pacopts+=("--color never") && coweropts+=("--color=never")
+    makeopts+=("--nocolor")
 fi
 
 # operations
