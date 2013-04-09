@@ -11,9 +11,9 @@ version="4.1.1"
 #
 
 # internationalization
-TEXTDOMAINDIR='/usr/share/locale'
+export LC_COLLATE=C
 TEXTDOMAIN='pacaur'
-[[ -e "$TEXTDOMAINDIR/${LANG%_*}/LC_MESSAGES/${TEXTDOMAIN}.mo" || -e "$TEXTDOMAINDIR/${LANG%.*}/LC_MESSAGES/${TEXTDOMAIN}.mo" ]] && export LC_COLLATE=C || export LC_ALL=C
+TEXTDOMAINDIR='/usr/share/locale'
 
 # source makepkg variables
 source /etc/makepkg.conf
@@ -515,7 +515,7 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         msg "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes $"y" | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
+        yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
     fi
 
     # check package cache
@@ -525,7 +525,7 @@ MakePkgs() {
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
                 msg "i" $"Installing ${colorW}${depsAname[$i]}${reset} cached package..."
-                yes $"y" | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
             else
                 msg "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
@@ -539,15 +539,15 @@ MakePkgs() {
         cd "$builddir/$i"
         if [[ $installpkg ]]; then
             # install
-            yes $"y" | makepkg -sfi ${makeopts[@]}
+            yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]}
         else
             if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                 # install AUR deps
                 msg "i" $"Installing ${colorW}$i${reset} dependencies..."
-                yes $"y" | makepkg -sfi ${makeopts[@]}
+                yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]}
             else
                 # install then remove binary deps
-                yes $"y" | makepkg -sfr ${makeopts[@]}
+                yes `gettext pacman Y` | makepkg -sfr ${makeopts[@]}
             fi
         fi
         # clean
@@ -712,7 +712,8 @@ getjsonvar() {
 }
 
 proceed() {
-    Y=$"Y"; y=$"y"; N=$"N"; n=$"n"
+    Y="`gettext pacman Y`"; y="$(echo $Y | tr '[:upper:]' '[:lower:]')";
+    N="`gettext pacman N`"; n="$(echo $N | tr '[:upper:]' '[:lower:]')"
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
             read -n 1 answer
