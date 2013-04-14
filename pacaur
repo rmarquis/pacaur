@@ -11,7 +11,7 @@ version="4.1.1"
 #
 
 # internationalization
-export LC_COLLATE=C
+LC_COLLATE=C                                # getopts sorting
 TEXTDOMAIN='pacaur'
 TEXTDOMAINDIR='/usr/share/locale'
 
@@ -94,7 +94,7 @@ UpgradeAur() {
     # check foreign packages
     allforeignpkgs=($($pacmanbin -Qmq))
     downloadjson ${allforeignpkgs[@]}
-    allaurpkgs=($(getjsonvar "Name" | sort -u)) # sort with LC_COLLATE=C
+    allaurpkgs=($(getjsonvar "Name" | LC_COLLATE=C sort -u))
     foreignpkgs=($(comm -23 <(echo "${allforeignpkgs[@]}" | sed 's/ /\n/g') <(echo "${allaurpkgs[@]}" | sed 's/ /\n/g')))
     for i in "${foreignpkgs[@]}"; do
         msg "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
@@ -199,7 +199,7 @@ DownloadPkgs() {
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | sort -u))
+        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
     fi
 }
 
@@ -621,7 +621,7 @@ CheckRepo() {
 }
 
 CheckAur() {
-    aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g" | sort -u))
+    aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && echo "${aurpkgsQood[@]}" | sed 's/ /\n/g' && return
         downloadjson ${aurpkgsQood[@]}
