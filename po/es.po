@@ -171,17 +171,15 @@ msgstr "Tamaño de Descarga"
 
 #: pacaur:417
 msgid "(cached)"
-msgstr ""
+msgstr "(en caché)"
 
 #: pacaur:426 pacaur:448
-#, fuzzy
 msgid "AUR Packages  (${#deps[@]}):"
-msgstr "Objetivos de AUR (${#deps[@]}):"
+msgstr "Paquetes de AUR (${#deps[@]}):"
 
 #: pacaur:433 pacaur:449
-#, fuzzy
 msgid "Repo Packages (${#repodepspkgs[@]}):"
-msgstr "Objetivos (${#repodepspkgs[@]}):"
+msgstr "Paquetes (${#repodepspkgs[@]}):"
 
 #: pacaur:437
 msgid "$binarysize MiB"
