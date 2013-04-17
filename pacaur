@@ -908,12 +908,6 @@ pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 
-# sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" $"The ${colorW}editor${reset} variable is unset"
-[[ ! -w "$builddir" ]] && msg "e" $"${colorW}$builddir${reset} does not have write permission."
-[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" $"no targets specified (use -h for help)"
-[[ $repo && $aur ]] && msg "e" $"target not found"
-
 # color
 if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
     [[ $color = 'always' ]] && coweropts+=("--color=always") || coweropts+=("--color=auto")
@@ -938,6 +932,12 @@ elif [[ -z "$(grep '^Color' '/etc/pacman.conf')" && ($color = 'always' || $color
 else
     [[ $color != 'always' && $color != 'auto' ]] && makeopts+=("--nocolor")
 fi
+
+# sanity check
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" $"The ${colorW}editor${reset} variable is unset"
+[[ ! -w "$builddir" ]] && msg "e" $"${colorW}$builddir${reset} does not have write permission."
+[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" $"no targets specified (use -h for help)"
+[[ $repo && $aur ]] && msg "e" $"target not found"
 
 # operations
 case $operation in
