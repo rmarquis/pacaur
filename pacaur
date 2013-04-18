@@ -498,7 +498,7 @@ EditPkgs() {
 
 MakePkgs() {
     # set lock
-    [[ -e "$tmpdir/build.lock" ]] && msg e "build lock exists in $tmpdir" && exit 1
+    [[ -e "$tmpdir/build.lock" ]] && msg "e" "build lock exists in $tmpdir" && exit 1
     touch "$tmpdir/build.lock"
 
     # initialize sudo
