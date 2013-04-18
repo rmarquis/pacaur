@@ -353,7 +353,7 @@ ConflictChecks() {
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
                     break
                 else
-                    deps=(${deps[@]/${depsAname[$i]}/})
+                    deps=($( (sed 's/ /\n/g' | sed "s/^${depsAname[$i]}$//g") <<< ${deps[@]}))
                     unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
                 fi
             fi
@@ -373,7 +373,7 @@ ReinstallChecks() {
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
         else
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
-            deps=(${deps[@]/${depsAname[$i]}/})
+            deps=($( (sed 's/ /\n/g' | sed "s/^${depsAname[$i]}$//g") <<< ${deps[@]}))
             unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
     done
@@ -529,7 +529,7 @@ MakePkgs() {
             else
                 msg "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
-            deps=(${deps[@]/${depsAname[$i]}/})
+            deps=($( (sed 's/ /\n/g' | sed "s/^${depsAname[$i]}$//g") <<< ${deps[@]}))
         fi
     done
 
