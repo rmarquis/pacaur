@@ -503,7 +503,7 @@ MakePkgs() {
 
     # initialize sudo
     if sudo -v; then
-        [[ $sudoloop ]] && sudov &
+        [[ $sudoloop = true ]] && sudov &
     fi
 
     # reverse deps order
