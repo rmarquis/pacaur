@@ -245,7 +245,7 @@ PreviewPkgs() {
     done
 
     # sudo security check
-    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends')" ]] && msg "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
+    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends|^pkgdesc')" ]] && msg "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
     if [[ ! $noconfirm ]]; then
         if proceed "n" $"Do you really want to continue?"; then
             CleanUp ${deps[@]} &>/dev/null
