@@ -119,7 +119,7 @@ UpgradeAur() {
     fi
 
     # avoid possible duplicate
-    aurpkgs=($( (sed 's/ /\n/g' | sort -u) <<< ${aurpkgs[@]}))
+    aurpkgs=($(sed 's/ /\n/g' <<< ${aurpkgs[@]} | sort -u))
 
     nothingtodo ${aurpkgs[@]}
 }
@@ -187,7 +187,7 @@ DownloadPkgs() {
         deps=("${allaurdeps[@]}")
 
         # reduce root binary deps
-        repodeps=($( (sed 's/ /\n/g' | sort -u) <<< ${repodeps[@]}))
+        repodeps=($(sed 's/ /\n/g' <<< ${repodeps[@]} | sort -u))
     fi
 
     # return AUR deps pkgs only
@@ -353,7 +353,7 @@ ConflictChecks() {
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
                     break
                 else
-                    deps=($( (sed 's/ /\n/g' | sed "s/^${depsAname[$i]}$//g") <<< ${deps[@]}))
+                    deps=($(sed 's/ /\n/g' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
                     unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
                 fi
             fi
@@ -373,7 +373,7 @@ ReinstallChecks() {
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
         else
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
-            deps=($( (sed 's/ /\n/g' | sed "s/^${depsAname[$i]}$//g") <<< ${deps[@]}))
+            deps=($(sed 's/ /\n/g' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
             unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
     done
@@ -529,7 +529,7 @@ MakePkgs() {
             else
                 msg "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
-            deps=($( (sed 's/ /\n/g' | sed "s/^${depsAname[$i]}$//g") <<< ${deps[@]}))
+            deps=($(sed 's/ /\n/g' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
         fi
     done
 
@@ -702,7 +702,7 @@ getcachedpkg() {
 }
 
 downloadjson() {
-    urlencodedpkgs=($( (sed 's/+/%2b/g' | sed 's/@/%40/g') <<< $@)) # pkgname consists of alphanum@._+-
+    urlencodedpkgs=($(sed 's/+/%2b/g' <<< $@ | sed 's/@/%40/g')) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
     curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || msg "e" $"Could not connect to the AUR"
 }
