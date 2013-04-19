@@ -570,7 +570,7 @@ MakePkgs() {
     fi
 
     # remove locks
-    rm "$tmpdir/sudov.lock"
+    [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     rm "$tmpdir/build.lock"
 }
 
