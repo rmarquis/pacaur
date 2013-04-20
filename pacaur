@@ -95,7 +95,7 @@ UpgradeAur() {
     allforeignpkgs=($($pacmanbin -Qmq))
     downloadjson ${allforeignpkgs[@]}
     allaurpkgs=($(getjsonvar "Name" | LC_COLLATE=C sort -u))
-    foreignpkgs=($(LC_COLLATE=C comm -23 <(echo "${allforeignpkgs[@]}" | sed 's/ /\n/g') <(echo "${allaurpkgs[@]}" | sed 's/ /\n/g')))
+    foreignpkgs=($(LC_COLLATE=C comm -23 <(echo "${allforeignpkgs[@]}" | tr ' ' '\n') <(echo "${allaurpkgs[@]}" | tr ' ' '\n')))
     for i in "${foreignpkgs[@]}"; do
         msg "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
     done
@@ -119,7 +119,7 @@ UpgradeAur() {
     fi
 
     # avoid possible duplicate
-    aurpkgs=($(sed 's/ /\n/g' <<< ${aurpkgs[@]} | sort -u))
+    aurpkgs=($(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u))
 
     nothingtodo ${aurpkgs[@]}
 }
@@ -187,7 +187,7 @@ DownloadPkgs() {
         deps=("${allaurdeps[@]}")
 
         # reduce root binary deps
-        repodeps=($(sed 's/ /\n/g' <<< ${repodeps[@]} | sort -u))
+        repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
     fi
 
     # return AUR deps pkgs only
@@ -353,7 +353,7 @@ ConflictChecks() {
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
                     break
                 else
-                    deps=($(sed 's/ /\n/g' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
+                    deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
                     unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
                 fi
             fi
@@ -373,7 +373,7 @@ ReinstallChecks() {
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
         else
             msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
-            deps=($(sed 's/ /\n/g' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
+            deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
             unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
         fi
     done
@@ -529,7 +529,7 @@ MakePkgs() {
             else
                 msg "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
-            deps=($(sed 's/ /\n/g' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
+            deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
         fi
     done
 
@@ -604,7 +604,7 @@ SearchInfoAur() {
 CheckRepo() {
     repopkgsQood=($($pacmanbin -Quq $@))
     if [[ -n "${repopkgsQood[@]}" ]]; then
-        [[ $quiet ]] && echo "${repopkgsQood[@]}" | sed 's/ /\n/g' && return
+        [[ $quiet ]] && echo "${repopkgsQood[@]}" | tr ' ' '\n' && return
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
         repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
@@ -623,7 +623,7 @@ CheckRepo() {
 CheckAur() {
     aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     if [[ -n "${aurpkgsQood[@]}" ]]; then
-        [[ $quiet ]] && echo "${aurpkgsQood[@]}" | sed 's/ /\n/g' && return
+        [[ $quiet ]] && echo "${aurpkgsQood[@]}" | tr ' ' '\n' && return
         downloadjson ${aurpkgsQood[@]}
         aurpkgsAver=($(getjsonvar "Version"))
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsQood[@]}"))
@@ -708,7 +708,7 @@ downloadjson() {
 }
 
 getjsonvar() {
-    json_reformat < "$tmpdir/raw.json" | tr -d "\" "| grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | sed -r 's/,//g' | awk -F "#" '{print $2}'
+    json_reformat < "$tmpdir/raw.json" | tr -d "\" " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | tr -d ',' | awk -F "#" '{print $2}'
 }
 
 proceed() {
