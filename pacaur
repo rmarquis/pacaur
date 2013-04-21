@@ -647,14 +647,11 @@ CleanCache() {
                 exit
             fi
             printf "%s\n" $"removing old packages from cache..."
-            for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
-                pkgname=$(sed "s#\(.*\)-.*-.*#\1#g" <<< $i)
-                [[ $i != $(expac -Q '%n-%v' "$pkgname") ]] && rm $PKGDEST/$i-*
-            done
+            paccache -ru -k0 -c $PKGDEST &>/dev/null
         else
             if ! proceed "n" $"Do you want to remove ALL files from AUR cache?"; then
                 printf "%s\n" $"removing all files from AUR cache..."
-                rm $PKGDEST/* &>/dev/null
+                paccache -r -k0 -c $PKGDEST &>/dev/null
             fi
         fi
     fi
