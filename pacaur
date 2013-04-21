@@ -90,20 +90,8 @@ Core() {
 UpgradeAur() {
     msg "i" $"${colorW}Starting AUR upgrade...${reset}"
     [[ -e "$tmpdir/ignoretmp" ]] && rm "$tmpdir/ignoretmp"
-    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} ${ignoreopts[@]} 2>"$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
-    [[ -e "$tmpdir/ignoretmp" ]] && ignoredaurpkgs=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
-
-    if [[ -n "${ignoredaurpkgs[@]}" ]]; then
-        downloadjson ${ignoredaurpkgs[@]}
-        aurdevelpkgsAname=($(getjsonvar "Name"))    # return sorted results
-        aurdevelpkgsSver=($(getjsonvar "Version"))
-        aurdevelpkgsQver=($(expac -Q '%v' "${ignoredaurpkgs[@]}"))
-    fi
-    for ((i=0; i<${#ignoredaurpkgs[@]}; i++)); do
-        if [[ " ${ignoredpkgs[@]} " =~ " ${aurdevelpkgsAname[$i]} " ]]; then
-            msg "w" $"${colorW}${aurdevelpkgsAname[$i]}${reset}: ignoring package upgrade (${colorR}${aurdevelpkgsQver[$i]}${reset} => ${colorG}${aurdevelpkgsSver[$i]}${reset})"
-        fi
-    done
+    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} 2>"$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
+    [[ -e "$tmpdir/ignoretmp" ]] && aurpkgs+=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # check foreign packages
     allforeignpkgs=($($pacmanbin -Qmq))
@@ -117,18 +105,7 @@ UpgradeAur() {
     # add devel packages
     if [[ $devel ]]; then
         for i in "${allaurpkgs[@]}"; do
-            [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && aurdevelpkgs+=("$i")
-        done
-        downloadjson ${aurdevelpkgs[@]}
-        aurdevelpkgsSver=($(getjsonvar "Version"))
-        aurdevelpkgsQver=($(expac -Q '%v' "${aurdevelpkgs[@]}"))
-        for ((i=0; i<${#aurdevelpkgs[@]}; i++)); do
-            if [[ (" ${ignoredpkgs[@]} " =~ " ${aurdevelpkgs[$i]} ") && (! " ${ignoredaurpkgs[@]} " =~ " ${aurdevelpkgs[$i]} ") ]]; then
-                msg "w" $"${colorW}${aurdevelpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${aurdevelpkgsQver[$i]}${reset} => ${colorG}${aurdevelpkgsSver[$i]}${reset})"
-                continue
-            else
-                aurpkgs+=("${aurdevelpkgs[$i]}")
-            fi
+            [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && aurpkgs+=("$i")
         done
     fi
 
@@ -145,18 +122,23 @@ IgnoreChecks() {
     unset aurpkgs
 
     # check targets
-    for i in "${checkaurpkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+    downloadjson ${checkaurpkgs[@]}
+    checkaurpkgsAname=($(getjsonvar "Name"))    # return sorted results
+    checkaurpkgsSver=($(getjsonvar "Version"))
+    checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgsAname[@]}"))
+    for ((i=0; i<${#checkaurpkgs[@]}; i++)); do
+        if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
-                if ! proceed "y" $"$i is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    msg "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                if ! proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    msg "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
                     continue
                 fi
             else
+                msg "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsSver[$i]}${reset})"
                 continue
             fi
         fi
-        aurpkgs+=("$i")
+        aurpkgs+=("${checkaurpkgs[$i]}")
     done
 
     nothingtodo ${aurpkgs[@]}
