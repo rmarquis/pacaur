@@ -37,8 +37,6 @@ msgid "Hello, world!"
 msgstr "世界你好!"
 
 Notes:
-- The msgid field with the single character "y","Y","n" and "N" must be changed
-to the single letter used to answer "yes" and "no" in the target language.
 - Do not use non breaking space characters to avoid problematic display issues.
 
 Update a translation
@@ -50,6 +48,8 @@ $ cd ./pacaur
 $ bash --dump-po-strings pacaur > pacaur.pot
 $ msguniq pacaur.pot > pacaur.po
 $ msgmerge --update po/<locale>.po pacaur.po
+
+Open the po/<locale>.po file and check for new or 'fuzzy' strings.
 
 Testing your translation
 ------------------------
