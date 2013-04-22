@@ -621,13 +621,14 @@ CheckAur() {
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && echo "${aurpkgsQood[@]}" | tr ' ' '\n' && return
         downloadjson ${aurpkgsQood[@]}
+        aurpkgsAname=($(getjsonvar "Name"))    # return sorted results
         aurpkgsAver=($(getjsonvar "Version"))
-        aurpkgsQver=($(expac -Q '%v' "${aurpkgsQood[@]}"))
-        [[ ! $lname ]] && lname=$(getlength ${aurpkgsQood[@]})
+        aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
+        [[ ! $lname ]] && lname=$(getlength ${aurpkgsAname[@]})
         [[ ! $lver ]] && lver=$(getlength ${aurpkgsQver[@]} ${aurpkgSver[@]})
         [[ ! $lrepo ]] && lrepo=3
-        for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
-            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "aur" "${aurpkgsQood[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}"
+        for ((i=0; i<${#aurpkgsAname[@]}; i++)); do
+            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}"
         done
     fi
 }
