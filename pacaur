@@ -105,8 +105,34 @@ UpgradeAur() {
     # add devel packages
     if [[ $devel ]]; then
         for i in "${allaurpkgs[@]}"; do
-            [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && aurpkgs+=("$i")
+            [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && allaurdevelpkgs+=("$i")
         done
+        if [[ ! $rebuild ]]; then
+            if [[ -n "${allaurdevelpkgs[@]}" ]]; then
+                msg "i" $"pulling new commits..."
+                DownloadAur ${allaurdevelpkgs[@]}   # TODO: avoid duplicating DownloadAur()
+            fi
+            for i in "${deps[@]}"; do
+                if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "$builddir/$i/PKGBUILD")" && ! $rebuild ]]; then
+                    cd "$builddir/$i"
+                    makepkg -o &>/dev/null
+                    aurdevelpkgsQver=$(expac -Q '%v' "$i")
+                    aurdevelpkgsAver=$(grep '^pkgver=' "$builddir/$i/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+                    aurdevelpkgsArel=$(grep '^pkgrel=' "$builddir/$i/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+                    if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver-$aurdevelpkgsArel") -eq 0 ]]; then
+                        msg "w" "${colorW}$i${reset} is up-to-date -- skipping"
+                    else
+                        aurpkgs+=("$i")
+                        aurdevelpkgs+=("$i")
+                    fi
+                else
+                    aurpkgs+=("$i")
+                fi
+            done
+            unset deps
+        else
+            aurpkgs+=("${allaurdevelpkgs[@]}")
+        fi
     fi
 
     # avoid possible duplicate
@@ -537,6 +563,13 @@ MakePkgs() {
     for i in "${deps[@]}"; do
         msg "i" $"Building ${colorW}$i${reset} package..."
         cd "$builddir/$i"
+
+        # avoid pulling devel again
+        if [[ $devel && ! $rebuild ]]; then
+            makeopts=(${makeopts[@]/-e/})
+            [[ " ${aurdevelpkgs[@]} " =~ " $i " ]] && makeopts+=('-e')
+        fi
+
         if [[ $installpkg ]]; then
             # install
             yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]}
