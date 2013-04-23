@@ -608,10 +608,10 @@ CheckRepo() {
         lver=$(getlength ${repopkgsQver[@]} ${repopkgSver[@]})
         lrepo=$(getlength ${repopkgsSrepo[@]})
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
-            repopkgsQgrp[$i]=$(expac -Q -l " " '%G' "${repopkgsQood[$i]}")
+            repopkgsQgrp[$i]=$(expac -Q -l " " '(%G)' "${repopkgsQood[$i]}" | sed 's/()//g')
         done
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
-            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}(%s)${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" | sed 's/()//g'
+            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}"
         done
     fi
 }
