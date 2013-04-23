@@ -169,15 +169,13 @@ msgstr "ダウンロード容量"
 
 #: pacaur:414
 msgid "(cached)"
-msgstr ""
+msgstr "(キャッシュに在庫)"
 
 #: pacaur:423 pacaur:445
-#, fuzzy
 msgid "AUR Packages  (${#deps[@]}):"
 msgstr "対象AURパッケージ　(${#deps[@]}):"
 
 #: pacaur:430 pacaur:446
-#, fuzzy
 msgid "Repo Packages (${#repodepspkgs[@]}):"
 msgstr "対象リポジトリパッケージ　(${#repodepspkgs[@]}):"
 
