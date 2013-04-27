@@ -149,7 +149,7 @@ DownloadAur() {
         case $flag in
             S)  [[ $operation = download && -n "$info" ]] && msg "i" $"$pkg downloaded to $builddir";
                 [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && msg "w" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
+            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && msg "s" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
             E)  [[ $operation = download ]] && msg "f" $"\`$builddir/$pkg' already exists. Use -f to overwrite." || msg "f" $"no results found for $pkg";
             errdeps+=("$pkg");;
         esac
@@ -191,6 +191,7 @@ DownloadPkgs() {
 
     # return binary deps
     if [[ -n "${repodeps[@]}" ]]; then
+        [[ $operation = download && $count -ge 2 ]] && expac -S -1 $"${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodeps[@]}
         for i in "${repodeps[@]}"; do
             allrepopkgs+=($(pactree -su "$i"))
         done
@@ -202,7 +203,7 @@ DownloadPkgs() {
 FindPkgsDeps() {
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
-    [[ $operation != download ]] && coweropts+=("--ignorerepo")
+    coweropts+=("--ignorerepo")
     DownloadAur ${depspkgsaur[@]}
     [[ $operation = download && $count -lt 2 ]] && return
 
@@ -944,7 +945,7 @@ case $operation in
     download)
         # download (-d) handling
         ClassifyPkgs ${pkgs[@]}
-        [[ $count -ge 2 ]] && coweropts+=("-d")
+        DownloadAur ${repopkgs[@]}
         DownloadPkgs
         EditPkgs ${deps[@]}
         exit;;
