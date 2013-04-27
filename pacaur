@@ -149,7 +149,7 @@ DownloadAur() {
         case $flag in
             S)  [[ $operation = download && -n "$info" ]] && msg "i" $"$pkg downloaded to $builddir";
                 [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download ]] && repo=$(echo $info | awk -F " " '{print $6}') && msg "w" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
+            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && msg "w" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
             E)  [[ $operation = download ]] && msg "f" $"\`$builddir/$pkg' already exists. Use -f to overwrite." || msg "f" $"no results found for $pkg";
             errdeps+=("$pkg");;
         esac
@@ -202,7 +202,7 @@ DownloadPkgs() {
 FindPkgsDeps() {
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
-    coweropts+=("--ignorerepo")
+    [[ $operation != download ]] && coweropts+=("--ignorerepo")
     DownloadAur ${depspkgsaur[@]}
     [[ $operation = download && $count -lt 2 ]] && return
 
@@ -944,7 +944,7 @@ case $operation in
     download)
         # download (-d) handling
         ClassifyPkgs ${pkgs[@]}
-        DownloadAur ${repopkgs[@]}
+        [[ $count -ge 2 ]] && coweropts+=("-d")
         DownloadPkgs
         EditPkgs ${deps[@]}
         exit;;
