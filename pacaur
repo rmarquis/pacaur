@@ -539,7 +539,7 @@ MakePkgs() {
         cd "$builddir/$i"
 
         # build devel if necessary only
-        if [[ $devel && ! $rebuild && -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
+        if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" && ! $rebuild ]]; then
             makeopts=(${makeopts[@]/-e/})
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 makepkg -o
