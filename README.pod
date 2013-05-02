@@ -315,6 +315,7 @@ B<cower>(1), B<pacman>(8), B<makepkg>(8), B<sudoers>(5)
 
 Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
+All credits go to all direct or indirect contributors. Many thanks to all of you!
 
 =head1 TRANSLATORS
 
