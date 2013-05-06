@@ -132,6 +132,8 @@ Overwrite existing files when downloading.
 
 When used with update operations, also upgrade AUR development packages
 (supported are cvs, svn, git, hg, bzr and darcs development packages).
+The build of development packages that are found up-to-date after the source
+checkout will be skipped.
 
 =item B<--ignore> I<package(s)>
 
@@ -149,7 +151,8 @@ Perform commands without editing any installation files. Bypass --edit option.
 
 =item B<--rebuild>
 
-Always rebuild package(s) regardless of any existing file in $PKGDEST directory.
+Always rebuild package(s) regardless of any existing file in $PKGDEST directory,
+and regardless of up-to-date status of development packages.
 
 =item B<--insecure>
 
