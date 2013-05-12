@@ -355,8 +355,14 @@ ConflictChecks() {
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
                     break
                 else
-                    deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
-                    unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+                    if [[ ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
+                        deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
+                        unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+                    else
+                        msg "f" $"unresolvable package conflicts detected"
+                        msg "f" $"failed to prepare transaction (conflicting dependencies)"
+                        msg "e" $"${depsAname[$i]} and $j are in conflict"
+                    fi
                 fi
             fi
         done
