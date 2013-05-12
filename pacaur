@@ -349,7 +349,7 @@ ConflictChecks() {
                 msg "f" $"failed to prepare transaction (conflicting dependencies)"
                 msg "e" $"${depsAname[$i]} and $j are in conflict"
             fi
-            if [[ ! $noconfirm && $j != ${depsAname[$i]} ]]; then
+            if [[ ! $noconfirm && $j != ${depsAname[$i]} && ! " ${conflictingpkgs[@]} " =~ " $j " ]]; then
                 if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
                     depsQver[$i]=$(expac -Q %v "$j")
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
