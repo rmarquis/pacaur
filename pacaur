@@ -237,9 +237,11 @@ FindPkgsDeps() {
 PreviewPkgs() {
     # sanitize
     cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
-    while [[ -n "$(grep -Po '^depends=\([^)].*[^)]$|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]] ; do
-        sed -i -e '/^depends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-        sed -i -e '/^optdepends=*[^)]/N' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+    while [[ -n "$(grep -Po '^depends=\($|^depends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
+        sed -i -e '/^depends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+    done
+    while [[ -n "$(grep -Po '^optdepends=\($|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
+        sed -i -e '/^optdepends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
     done
 
     # sudo security check
