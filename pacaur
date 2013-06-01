@@ -380,12 +380,16 @@ ReinstallChecks() {
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${conflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
-        if [[ ! $needed ]]; then
-            msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
+        if [[ -n "$(echo "${depsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
+            msg "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else
-            msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
-            deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
-            unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+            if [[ ! $needed ]]; then
+                msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
+            else
+                msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+                deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
+                unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+            fi
         fi
     done
     [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
@@ -697,6 +701,7 @@ getversionedpkgs() {
     for ((i=0; i<${#depsAname[@]}; i++)); do
         depsQver[$i]=$(expac -Q '%v' "${depsAname[$i]}")
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
+        [[ -n "$(echo "${depsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && depsAver[$i]=$"latest"
     done
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
