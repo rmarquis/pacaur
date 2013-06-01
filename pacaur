@@ -228,7 +228,8 @@ FindPkgsDeps() {
             depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
         done
         for i in "${depspkgsaur[@]}"; do
-            [[ " ${allaurdeps[@]} " =~ " $i " ]] && continue || allaurdeps+=("$i")
+            [[ " ${allaurdeps[@]} " =~ " $i " ]] && allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^$i$//g"))
+            allaurdeps+=("$i")
         done
         FindPkgsDeps ${depspkgsaur[@]}
     fi
