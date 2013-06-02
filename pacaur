@@ -227,10 +227,17 @@ FindPkgsDeps() {
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
             depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
         done
-        for i in "${depspkgsaur[@]}"; do
-            [[ " ${allaurdeps[@]} " =~ " $i " ]] && allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^$i$//g"))
-            allaurdeps+=("$i")
+        # ensure correct dependency order
+        depspkgsaurtmp=(${depspkgsaur[@]})
+        for ((i=0; i<${#depspkgsaurtmp[@]}; i++)); do
+            if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaurtmp[$i]} " ]]; then
+                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && allaurdeps+=("${depspkgsaurtmp[$i]}")
+            fi
         done
+    fi
+
+    if [[ -n "${depspkgsaur[@]}" ]]; then
+        allaurdeps+=("${depspkgsaur[@]}")
         FindPkgsDeps ${depspkgsaur[@]}
     fi
 }
