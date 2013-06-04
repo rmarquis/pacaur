@@ -65,7 +65,7 @@ $ LANG=<locale> pacaur -S package
 
 Sending your translation
 ------------------------
-Translation can be send through GitHub pull request on https://github.com/Spyhawk/pacaur.
+Translation can be sent through GitHub pull request on https://github.com/Spyhawk/pacaur.
 Beware of pulling the source <locale>.po file, not the compiled <locale>.po file.
 
 Resources
