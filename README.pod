@@ -329,3 +329,5 @@ B<[es] - Español> - Germán "gosella" Osella Massa E<lt>https://github.com/gose
 B<[fr] - Français> - "spider-mario" E<lt>https://github.com/spider-marioE<gt>
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
+
+B<[ru] - Русский> - "kyak" E<lt>https://github.com/kyakE<gt>
