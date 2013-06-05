@@ -126,6 +126,9 @@ IgnoreChecks() {
     checkaurpkgsAname=($(getjsonvar "Name"))    # return sorted results
     checkaurpkgsSver=($(getjsonvar "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgsAname[@]}"))
+    for ((i=0; i<${#checkaurpkgsAname[@]}; i++)); do
+        [[ -n "$(echo "${checkaurpkgsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && checkaurpkgsSver[$i]=$"latest"
+    done
     for ((i=0; i<${#checkaurpkgs[@]}; i++)); do
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
