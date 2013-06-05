@@ -124,10 +124,10 @@ IgnoreChecks() {
     # check targets
     downloadjson ${checkaurpkgs[@]}
     checkaurpkgsAname=($(getjsonvar "Name"))    # return sorted results
-    checkaurpkgsSver=($(getjsonvar "Version"))
+    checkaurpkgsAver=($(getjsonvar "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgsAname[@]}"))
     for ((i=0; i<${#checkaurpkgsAname[@]}; i++)); do
-        [[ -n "$(echo "${checkaurpkgsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && checkaurpkgsSver[$i]=$"latest"
+        [[ -n "$(echo "${checkaurpkgsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && checkaurpkgsAver[$i]=$"latest"
     done
     for ((i=0; i<${#checkaurpkgs[@]}; i++)); do
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
@@ -137,7 +137,7 @@ IgnoreChecks() {
                     continue
                 fi
             else
-                msg "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsSver[$i]}${reset})"
+                msg "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
                 continue
             fi
         fi
