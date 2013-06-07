@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 #
 # pacaur: a fast workflow AUR helper using cower as backend
