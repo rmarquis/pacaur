@@ -18,14 +18,15 @@ usually one or more targets.
 
 =head1 USERBASE TARGET
 
-Pacaur provides two sets of command line options: commands which call the pacman
+Pacaur is targeted at B<advanced users> who want some degree of automation for
+repetitive tasks. As such, the user is expected to be familiar with the AUR
+manual build process with makepkg.
+
+Two sets of command line options are provided: commands which call the pacman
 binary and extend for AUR functions B<(-S, -Q)>, and commands which are AUR
 specific B<(-s, -i, -d, -m, -y, -k, -u)>. As such, pacaur can be used by users
 who prefer to have a single tool to manage officials and AUR repositories, or by
 users who prefer to keep their AUR frontend separated from pacman.
-
-Fundamental knowledge of the AUR manual build process with makepkg is assumed to
-be known.
 
 =head1 OPERATIONS
 
