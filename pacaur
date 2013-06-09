@@ -78,8 +78,8 @@ Core() {
     IgnoreChecks
     DownloadPkgs
     IgnoreDepsChecks
-    getversionedpkgs
     ProviderChecks
+    getversionedpkgs
     ConflictChecks
     ReinstallChecks
     OutofdateChecks
@@ -199,7 +199,6 @@ DownloadPkgs() {
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
     fi
 }
 
@@ -346,7 +345,25 @@ ProviderChecks() {
             local nb=0
         fi
         providerpkgs+=(${providers[$nb]})
-   done
+        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providers[0]})
+    done
+
+    # pactree always return default choice so update binary deps list
+    if [[ -n "${rmproviderpkgs[@]}" ]]; then
+        # remove deps of default providers
+        for i in "${rmproviderpkgs[@]}"; do
+            providerpkgsrm+=($(pactree -su "$i"))
+        done
+        providerpkgsrm=($($pacmanbin -T "${providerpkgsrm[@]}" | sort -u))
+        repodepspkgs=($(LC_COLLATE=C comm -23 <(echo "${repodepspkgs[@]}" | tr ' ' '\n') <(echo "${providerpkgsrm[@]}" | tr ' ' '\n')))
+
+        # add deps of selected providers instead
+        for i in "${providerpkgs[@]}"; do
+            providerdeps+=($(pactree -su "$i"))
+        done
+        repodepspkgs+=($($pacmanbin -T "${providerdeps[@]}" | sort -u))
+    fi
+    repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
 }
 
 ConflictChecks() {
