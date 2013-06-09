@@ -330,7 +330,7 @@ ProviderChecks() {
             providersnb=$(( ${#providers[@]} -1 )) # count from 0
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
-                printf "\n%s" $"Enter a number (default=0):"
+                printf "\n%s " $"Enter a number (default=0):"
                 nbchar=$(wc -l <<< ${#providers[@]})
                 read -n ${#nbchar} nb
                 echo
