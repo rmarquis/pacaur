@@ -306,6 +306,8 @@ ProviderChecks() {
     allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
     # remove installed providers
     providersdeps=($($pacmanbin -T "${allproviders[@]}" | sort -u))
+    [[ -n "${providersdeps[@]}" ]] && providersdeps=($(expac -Q '%n' "${providersdeps[@]}")) || return
+    providersdeps=($($pacmanbin -T "${providersdeps[@]}"))
     # remove package versioning
     for ((i=0; i<${#providersdeps[@]}; i++)); do
         providersdeps[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${providersdeps[$i]})
