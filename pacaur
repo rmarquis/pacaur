@@ -365,7 +365,6 @@ ProviderChecks() {
         done
         repodepspkgs+=($($pacmanbin -T "${providerdeps[@]}" | sort -u))
     fi
-    repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
 }
 
 ConflictChecks() {
@@ -735,6 +734,7 @@ getversionedpkgs() {
         [[ -n "$(echo "${depsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]] && depsAver[$i]=$"latest"
     done
     if [[ -n "${repodepspkgs[@]}" ]]; then
+        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
         repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
         repodepsSrepo=($(expac -S -1 '%r/%n' "${repodepspkgs[@]}"))
