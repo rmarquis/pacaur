@@ -752,12 +752,10 @@ getignoredpkgs() {
 }
 
 getinstallscript() {
-    [[ ! -e "$builddir/$1/PKGBUILD" ]] && return
-    installscript="$(grep "^install=" "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")"
-    if [[ -n "$(grep -E '\$[{]*pkgname[}]*' <<< $installscript)" ]]; then
-        Apkgname=$(grep '^pkgname' "$builddir/$1/PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-        installscript=$(sed -e "s/\$[{]*pkgname[}]*/$Apkgname/g" <<< $installscript)
-    fi
+    [[ ! -d "$builddir/$1" ]] && return
+    unset installscriptpath installscript
+    installscriptpath=$(find "$builddir/$1/" -name "*.install")
+    [[ $installscriptpath ]] && installscript=$(basename $installscriptpath)
 }
 
 getcachedpkg() {
