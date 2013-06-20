@@ -341,7 +341,7 @@ ProviderChecks() {
             local nb=0
         fi
         providerpkgs+=(${providers[$nb]})
-        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providers[0]})
+        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
     done
 
     # pactree always return default choice so update binary deps list
