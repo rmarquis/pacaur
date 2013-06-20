@@ -303,13 +303,9 @@ IgnoreDepsChecks() {
 
 ProviderChecks() {
     [[ -z "${repodepspkgs[@]}" ]] && return
-    allproviders=($(expac -S '%P' "${repodepspkgs[@]}" | uniq))
+    allproviders=($(expac -S '%S' "${repodepspkgs[@]}" | sort -u))
     # remove installed providers
     providersdeps=($($pacmanbin -T "${allproviders[@]}" | sort -u))
-    # remove package versioning
-    for ((i=0; i<${#providersdeps[@]}; i++)); do
-        providersdeps[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${providersdeps[$i]})
-    done
 
     for ((i=0; i<${#providersdeps[@]}; i++)); do
         providers=($(expac -Ss '%n' "^${providersdeps[$i]}$"))
