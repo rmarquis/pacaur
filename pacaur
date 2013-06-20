@@ -396,6 +396,26 @@ ConflictChecks() {
     done
     depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
+    for ((i=0; i<${#repodepspkgs[@]}; i++)); do
+        unset repoconflicts
+        repoconflicts=($(expac -S '%C' "${repodepspkgs[$i]}"))
+        [[ -z "${repoconflicts[@]}" ]] && repoconflicts=($(expac -Q '%n' "${repodepspkgs[$i]}")) || [[ -n "${repoconflicts[@]}" ]] && repoconflicts=($(expac -Q '%n' "${repoconflicts[@]}"))
+        # return when no conflict
+        [[ " ${repoconflicts[@]} " =~ " ${repodepspkgs[$i]} " ]] && continue || repoconflictspkgs=("${repoconflicts[@]}")
+
+        for j in "${repoconflictspkgs[@]}"; do
+            if [[ ! $noconfirm && $j != ${repodepspkgs[$i]} && ! " ${repoconflictingpkgs[@]} " =~ " $j " ]]; then
+                if ! proceed "n" $"${repodepspkgs[$i]} and $j are in conflict. Remove $j?"; then
+                    repoconflictingpkgs+=("${repodepspkgs[$i]}" "$j")
+                    break
+                else
+                    msg "f" $"unresolvable package conflicts detected"
+                    msg "f" $"failed to prepare transaction (conflicting dependencies)"
+                    msg "e" $"${repodepspkgs[$i]} and $j are in conflict"
+                fi
+            fi
+        done
+    done
     nothingtodo ${deps[@]}
 }
 
