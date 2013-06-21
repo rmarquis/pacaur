@@ -196,7 +196,7 @@ DownloadPkgs() {
     if [[ -n "${repodeps[@]}" ]]; then
         [[ $operation = download && $count -ge 2 ]] && expac -S -1 $"${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodeps[@]}
         for i in "${repodeps[@]}"; do
-            allrepopkgs+=($(pactree -su "$i"))
+            allrepopkgs+=($(pactree -su "$i" | awk -F " " '{print $NF}'))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
     fi
