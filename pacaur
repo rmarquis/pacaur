@@ -318,7 +318,7 @@ ProviderChecks() {
         [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
 
         if [[ ! $noconfirm ]]; then
-            msg "i" $"${colorW} There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
+            msg "i" $"${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
             expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
 
             local nb=-1
