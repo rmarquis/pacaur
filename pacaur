@@ -363,6 +363,8 @@ ProviderChecks() {
 
 ConflictChecks() {
     note "i" $"looking for inter-conflicts..."
+
+    # AUR conflicts
     for ((i=0; i<${#depsAname[@]}; i++)); do
         unset conflicts
         conflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
@@ -380,6 +382,13 @@ ConflictChecks() {
                 if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
                     depsQver[$i]=$(expac -Q %v "$j")
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
+
+                    # check installed pkgs requirement
+                    reporequires=$(expac -Q '%n %D' | grep -E " $j[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
+                    if [[ -n "${reporequires[@]}" ]]; then
+                        note "f" $"failed to prepare transaction (could not satisfy dependencies)"
+                        note "e" $"${reporequires[@]}: requires $j"
+                    fi
                     break
                 else
                     if [[ ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
@@ -396,27 +405,48 @@ ConflictChecks() {
     done
     depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
-    for ((i=0; i<${#repodepspkgs[@]}; i++)); do
-        unset repoconflicts
-        repoconflicts=($(expac -S '%C' "${repodepspkgs[$i]}"))
-        [[ -z "${repoconflicts[@]}" ]] && repoconflicts=($(expac -Q '%n' "${repodepspkgs[$i]}")) || [[ -n "${repoconflicts[@]}" ]] && repoconflicts=($(expac -Q '%n' "${repoconflicts[@]}"))
-        # return when no conflict
-        [[ " ${repoconflicts[@]} " =~ " ${repodepspkgs[$i]} " ]] && continue || repoconflictspkgs=("${repoconflicts[@]}")
+    nothingtodo ${deps[@]}
 
-        for j in "${repoconflictspkgs[@]}"; do
-            if [[ ! $noconfirm && $j != ${repodepspkgs[$i]} && ! " ${repoconflictingpkgs[@]} " =~ " $j " ]]; then
-                if ! proceed "n" $"${repodepspkgs[$i]} and $j are in conflict. Remove $j?"; then
-                    repoconflictingpkgs+=("${repodepspkgs[$i]}" "$j")
+    # repo conflicts
+    if [[ -n "${repodepspkgs[@]}" ]]; then
+        repodepsprovides=(${repodepspkgs[@]})
+        repodepsprovides+=($(expac -S '%S' "${repodepspkgs[@]}")) # no versioning
+        repodepsprovides=($(echo "${repodepsprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        repodepsconflicts=($(expac -S '%C' "${repodepspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        allQprovides=($(expac -Q '%n'))
+        allQprovides+=($(expac -Q '%S')) # no versioning
+        allQprovides=($(echo "${allQprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        allQconflicts=($(expac -Q '%C' | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        repoconflicts+=($(LC_COLLATE=C comm -12 <(echo "${repodepsprovides[@]}" | tr ' ' '\n') <(echo "${allQconflicts[@]}" | tr ' ' '\n')))
+        repoconflicts+=($(LC_COLLATE=C comm -12 <(echo "${repodepsconflicts[@]}" | tr ' ' '\n') <(echo "${allQprovides[@]}" | tr ' ' '\n')))
+        repoconflicts=($(echo "${repoconflicts[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+    fi
+
+    for i in "${repoconflicts[@]}"; do
+        repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]+[\+]*$i" | grep -E "$i[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}'))
+        for j in "${repoSconflicts[@]}"; do
+            unset k && k=$(expac -Q '%n' $i)
+            [[ -z "$k" ]] && continue # skip when no conflict with repopkgs
+
+            if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
+                if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
+                    repoconflictingpkgs+=("$j" "$k")
+
+                    # check installed pkgs requirement
+                    reporequires=$(expac -Q '%n %D' | grep -E " $k[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
+                    if [[ -n "${reporequires[@]}" ]]; then
+                        note "f" $"failed to prepare transaction (could not satisfy dependencies)"
+                        note "e" $"${reporequires[@]}: requires $k"
+                    fi
                     break
                 else
-                    msg "f" $"unresolvable package conflicts detected"
-                    msg "f" $"failed to prepare transaction (conflicting dependencies)"
-                    msg "e" $"${repodepspkgs[$i]} and $j are in conflict"
+                    note "f" $"unresolvable package conflicts detected"
+                    note "f" $"failed to prepare transaction (conflicting dependencies)"
+                    note "e" "$j and $k are in conflict"
                 fi
             fi
         done
     done
-    nothingtodo ${deps[@]}
 }
 
 ReinstallChecks() {
