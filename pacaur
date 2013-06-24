@@ -94,7 +94,7 @@ UpgradeAur() {
     [[ -e "$tmpdir/ignoretmp" ]] && aurpkgs+=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
     # check foreign packages
-    allforeignpkgs=($($pacmanbin -Qmq))
+    allforeignpkgs=($($pacmanbin -Qmq | LC_COLLATE=C sort -u))
     downloadjson ${allforeignpkgs[@]}
     allaurpkgs=($(getjsonvar "Name" | LC_COLLATE=C sort -u))
     foreignpkgs=($(LC_COLLATE=C comm -23 <(echo "${allforeignpkgs[@]}" | tr ' ' '\n') <(echo "${allaurpkgs[@]}" | tr ' ' '\n')))
