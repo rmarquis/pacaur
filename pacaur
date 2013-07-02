@@ -748,7 +748,7 @@ getignoredpkgs() {
 getinstallscript() {
     [[ ! -d "$builddir/$1" ]] && return
     unset installscriptpath installscript
-    installscriptpath=$(find "$builddir/$1/" -name "*.install")
+    installscriptpath=$(find "$builddir/$1/" -maxdepth 1 -name "*.install")
     [[ $installscriptpath ]] && installscript=$(basename $installscriptpath)
 }
 
