@@ -800,6 +800,10 @@ msg() {
     esac
 }
 
+msg2() {
+    msg i "${@}"
+}
+
 getlength() {
     local length=0
     for i in "$@"; do
