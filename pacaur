@@ -920,6 +920,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
                     insecure) secure=false;;
+                    root) pacopts+=("--root ${!OPTIND}"); shift;;
                     fixbackend|allanbrokeit) fixbackend; exit;;
                     version) version; exit;;
                     help) usage; exit;;
