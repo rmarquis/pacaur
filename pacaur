@@ -88,7 +88,7 @@ Core() {
 }
 
 UpgradeAur() {
-    msg "i" $"${colorW}Starting AUR upgrade...${reset}"
+    note "i" $"${colorW}Starting AUR upgrade...${reset}"
     [[ -e "$tmpdir/ignoretmp" ]] && rm "$tmpdir/ignoretmp"
     aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} 2>"$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
     [[ -e "$tmpdir/ignoretmp" ]] && aurpkgs+=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
@@ -99,7 +99,7 @@ UpgradeAur() {
     allaurpkgs=($(getjsonvar "Name" | LC_COLLATE=C sort -u))
     foreignpkgs=($(LC_COLLATE=C comm -23 <(echo "${allforeignpkgs[@]}" | tr ' ' '\n') <(echo "${allaurpkgs[@]}" | tr ' ' '\n')))
     for i in "${foreignpkgs[@]}"; do
-        msg "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+        note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
     done
 
     # add devel packages
@@ -133,11 +133,11 @@ IgnoreChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
             if [[ ! $upgrade && ! $noconfirm ]]; then
                 if ! proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    msg "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                    note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
                     continue
                 fi
             else
-                msg "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
+                note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
                 continue
             fi
         fi
@@ -150,17 +150,17 @@ IgnoreChecks() {
 DownloadAur() {
     while read -r flag pkg info; do
         case $flag in
-            S)  [[ $operation = download && -n "$info" ]] && msg "i" $"$pkg downloaded to $builddir";
+            S)  [[ $operation = download && -n "$info" ]] && note "i" $"$pkg downloaded to $builddir";
                 [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && msg "s" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
-            E)  [[ $operation = download ]] && msg "f" $"\`$builddir/$pkg' already exists. Use -f to overwrite." || msg "f" $"no results found for $pkg";
+            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && note "s" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
+            E)  [[ $operation = download ]] && note "f" $"\`$builddir/$pkg' already exists. Use -f to overwrite." || note "f" $"no results found for $pkg";
             errdeps+=("$pkg");;
         esac
     done < <(cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
 
     # PKGBUILDs check
     for i in "${deps[@]}"; do
-        [[ ! -e "$builddir/$i/PKGBUILD" ]] && errdeps+=("$i") && msg "f" $"Could not read ${colorW}$i${reset} PKGBUILD: badly packaged tarball"
+        [[ ! -e "$builddir/$i/PKGBUILD" ]] && errdeps+=("$i") && note "f" $"Could not read ${colorW}$i${reset} PKGBUILD: badly packaged tarball"
     done
     [[ -n "${errdeps[@]}" ]] && exit 1
 }
@@ -170,17 +170,17 @@ DownloadPkgs() {
         if [[ $operation = download && $count -lt 2 ]]; then
             DownloadAur ${aurpkgs[@]} && return
         else
-            [[ $operation != download ]] && msg "i" $"resolving dependencies..."
+            [[ $operation != download ]] && note "i" $"resolving dependencies..."
             coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
         fi
 
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
-            [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && msg "e" $"${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
+            [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && note "e" $"${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
         done
         [[ -n "${repodeps[@]}" ]] && repodeps=($(expac -S -1 '%n' "${repodeps[@]}"))
     else
-        [[ $operation != download ]] && msg "i" $"resolving dependencies..."
+        [[ $operation != download ]] && note "i" $"resolving dependencies..."
         allaurdeps+=("${aurpkgs[@]}")
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
@@ -257,7 +257,7 @@ PreviewPkgs() {
     done
 
     # sudo security check
-    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends|^pkgdesc')" ]] && msg "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
+    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends|^pkgdesc')" ]] && note "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
     if [[ ! $noconfirm ]]; then
         if proceed "n" $"Do you really want to continue?"; then
             CleanUp ${deps[@]} &>/dev/null
@@ -276,10 +276,10 @@ IgnoreDepsChecks() {
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            msg "w" $"${colorW}$i${reset}: ignoring package upgrade"
+            note "w" $"${colorW}$i${reset}: ignoring package upgrade"
             CleanUp ${aurpkgs[@]} &>/dev/null
             CleanUp ${aurdepspkgs[@]} &>/dev/null
-            msg "e" $"Unresolved dependency '${colorW}$i${reset}'"
+            note "e" $"Unresolved dependency '${colorW}$i${reset}'"
         fi
     done
     for i in "${aurdepspkgs[@]}"; do
@@ -288,13 +288,13 @@ IgnoreDepsChecks() {
                 if ! proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     CleanUp ${aurpkgs[@]} &>/dev/null
                     CleanUp ${aurdepspkgs[@]} &>/dev/null
-                    msg "e" $"Unresolved dependency '${colorW}$i${reset}'"
+                    note "e" $"Unresolved dependency '${colorW}$i${reset}'"
                 fi
             else
-                msg "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                note "w" $"${colorW}$i${reset}: ignoring package upgrade"
                 CleanUp ${aurpkgs[@]} &>/dev/null
                 CleanUp ${aurdepspkgs[@]} &>/dev/null
-                msg "e" $"Unresolved dependency '${colorW}$i${reset}'"
+                note "e" $"Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
         deps+=("$i")
@@ -318,7 +318,7 @@ ProviderChecks() {
         [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
 
         if [[ ! $noconfirm ]]; then
-            msg "i" $"${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
+            note "i" $"${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
             expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
 
             local nb=-1
@@ -331,9 +331,9 @@ ProviderChecks() {
                 echo
 
                 case $nb in
-                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo && msg "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
+                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo && note "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
                     '') nb=0;;
-                    *) msg "f" $"invalid number: $nb";;
+                    *) note "f" $"invalid number: $nb";;
                 esac
 
             done
@@ -362,7 +362,7 @@ ProviderChecks() {
 }
 
 ConflictChecks() {
-    msg "i" $"looking for inter-conflicts..."
+    note "i" $"looking for inter-conflicts..."
     for ((i=0; i<${#depsAname[@]}; i++)); do
         unset conflicts
         conflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
@@ -372,9 +372,9 @@ ConflictChecks() {
 
         for j in "${conflictspkgs[@]}"; do
             if [[ " ${aurpkgs[@]} " =~ " $j " && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
-                msg "f" $"unresolvable package conflicts detected"
-                msg "f" $"failed to prepare transaction (conflicting dependencies)"
-                msg "e" $"${depsAname[$i]} and $j are in conflict"
+                note "f" $"unresolvable package conflicts detected"
+                note "f" $"failed to prepare transaction (conflicting dependencies)"
+                note "e" $"${depsAname[$i]} and $j are in conflict"
             fi
             if [[ ! $noconfirm && $j != ${depsAname[$i]} && ! " ${conflictingpkgs[@]} " =~ " $j " ]]; then
                 if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
@@ -386,9 +386,9 @@ ConflictChecks() {
                         deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
                         unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
                     else
-                        msg "f" $"unresolvable package conflicts detected"
-                        msg "f" $"failed to prepare transaction (conflicting dependencies)"
-                        msg "e" $"${depsAname[$i]} and $j are in conflict"
+                        note "f" $"unresolvable package conflicts detected"
+                        note "f" $"failed to prepare transaction (conflicting dependencies)"
+                        note "e" $"${depsAname[$i]} and $j are in conflict"
                     fi
                 fi
             fi
@@ -405,12 +405,12 @@ ReinstallChecks() {
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${conflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ -n "$(echo "${depsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
-            msg "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
+            note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else
             if [[ ! $needed ]]; then
-                msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
+                note "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
             else
-                msg "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+                note "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
                 deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
                 unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
             fi
@@ -423,7 +423,7 @@ ReinstallChecks() {
 
 OutofdateChecks() {
     for ((i=0; i<${#depsAname[@]}; i++)); do
-        [[ "${depsAood[$i]}" -gt 0 ]] && msg "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
+        [[ "${depsAood[$i]}" -gt 0 ]] && note "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
     done
 }
 
@@ -519,19 +519,19 @@ EditPkgs() {
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
                 if proceed "y" $"View $i PKGBUILD?"; then
-                    [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" $"${colorW}$i${reset} PKGBUILD viewed" || msg "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+                    [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
             fi
             # edit install script
             if [[ ! $editinstall = false && -n "$installscript" ]]; then
                 if proceed "y" $"View $i .install script?"; then
-                    [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" $"${colorW}$i${reset} install script viewed" || msg "e" $"Could not open ${colorW}$i${reset} install script"
+                    [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && note "s" $"${colorW}$i${reset} install script viewed" || note "e" $"Could not open ${colorW}$i${reset} install script"
                 fi
             fi
         else
-            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && msg "s" $"${colorW}$i${reset} PKGBUILD viewed" || msg "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
             if [[ -n "$installscript" ]]; then
-                [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && msg "s" $"${colorW}$i${reset} install script viewed" || msg "e" $"Could not open ${colorW}$i${reset} install script"
+                [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && note "s" $"${colorW}$i${reset} install script viewed" || note "e" $"Could not open ${colorW}$i${reset} install script"
             fi
         fi
     done
@@ -539,7 +539,7 @@ EditPkgs() {
 
 MakePkgs() {
     # set lock
-    [[ -e "$tmpdir/build.lock" ]] && msg "e" "build lock exists in $tmpdir" && exit 1
+    [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
     touch "$tmpdir/build.lock"
 
     # initialize sudo
@@ -551,11 +551,11 @@ MakePkgs() {
     deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${deps[@]} | awk -F "\n" '{print}'))
 
     # check destination folder
-    [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && msg "e" $"${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset or ${colorW}clean${reset} option is disabled"
+    [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && note "e" $"${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset or ${colorW}clean${reset} option is disabled"
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
-        msg "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
+        note "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
         yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
     fi
 
@@ -565,10 +565,10 @@ MakePkgs() {
         [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
         if [[ $cachedpkg ]]; then
             if [[ $installpkg ]]; then
-                msg "i" $"Installing ${colorW}${depsAname[$i]}${reset} cached package..."
+                note "i" $"Installing ${colorW}${depsAname[$i]}${reset} cached package..."
                 yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
             else
-                msg "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
+                note "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
             deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
         fi
@@ -576,7 +576,7 @@ MakePkgs() {
 
     # build
     for i in "${deps[@]}"; do
-        msg "i" $"Building ${colorW}$i${reset} package..."
+        note "i" $"Building ${colorW}$i${reset} package..."
         cd "$builddir/$i"
 
         # build devel if necessary only
@@ -588,7 +588,7 @@ MakePkgs() {
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsQver=$(expac -Q '%v' "$i")
                 if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver-$aurdevelpkgsArel") -eq 0 ]]; then
-                    msg "w" "${colorW}$i${reset} is up-to-date -- skipping"
+                    note "w" "${colorW}$i${reset} is up-to-date -- skipping"
                     continue
                 else
                     makeopts+=('-e')
@@ -602,7 +602,7 @@ MakePkgs() {
         else
             if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                 # install AUR deps
-                msg "i" $"Installing ${colorW}$i${reset} dependencies..."
+                note "i" $"Installing ${colorW}$i${reset} dependencies..."
                 yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]}
             else
                 # install then remove binary deps
@@ -624,7 +624,7 @@ MakePkgs() {
 
     # remove AUR deps
     if [[ ! $installpkg && -n "${aurdepspkgs[@]}" ]]; then
-        msg "i" $"Removing installed AUR dependencies..."
+        note "i" $"Removing installed AUR dependencies..."
         sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
     fi
 
@@ -640,19 +640,19 @@ CleanUp() {
         for i in "$@"; do
             if [[ ! $cleandevel = true && $count -lt 2 ]]; then
                 if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
-                    msg "w" $"${colorW}$i${reset} cleaning skipped"
+                    note "w" $"${colorW}$i${reset} cleaning skipped"
                     continue
                 fi
             else
                 # hack for vcs protected files
                 chmod -R 755 $i &>/dev/null
-                rm -r $i &>/dev/null && msg "s" $"${colorW}$i${reset} cleaned" || msg "w" $"Could not clean ${colorW}$i${reset}"
+                rm -r $i &>/dev/null && note "s" $"${colorW}$i${reset} cleaned" || note "w" $"Could not clean ${colorW}$i${reset}"
             fi
         done
     else
         # hack for vcs protected files
         chmod -R 755 $builddir/* &>/dev/null
-        rm -r $builddir/* &>/dev/null && msg "s" $"Build directory cleaned" || msg "w" $"Build directory already cleaned"
+        rm -r $builddir/* &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
     fi
 }
 
@@ -761,7 +761,7 @@ getcachedpkg() {
 downloadjson() {
     urlencodedpkgs=($(sed 's/+/%2b/g' <<< $@ | sed 's/@/%40/g')) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
-    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || msg "e" $"Could not connect to the AUR"
+    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || note "e" $"Could not connect to the AUR"
 }
 
 getjsonvar() {
@@ -789,7 +789,7 @@ proceed() {
     esac
 }
 
-msg() {
+note() {
     case "$1" in
         i) echo -e "${colorB}::${reset} $2";;   # info
         s) echo -e "${colorG}::${reset} $2";;   # success
@@ -869,11 +869,11 @@ version() {
 }
 
 fixbackend() {
-    msg "i" $"Rebuilding ${colorW}cower${reset} backend..."
+    note "i" $"Rebuilding ${colorW}cower${reset} backend..."
     cowerbin=($(expac -Q '%n' "cower")) # cower-git compatibility
     downloadjson $cowerbin
     cowerbinurl=($(getjsonvar "URLPath"))
-    curl -sf --compressed -C 0 "https://aur.archlinux.org${cowerbinurl%/*}/PKGBUILD" -o "$tmpdir/$cowerbin.PKGBUILD" || msg "e" $"Could not connect to the AUR"
+    curl -sf --compressed -C 0 "https://aur.archlinux.org${cowerbinurl%/*}/PKGBUILD" -o "$tmpdir/$cowerbin.PKGBUILD" || note "e" $"Could not connect to the AUR"
     mkdir -p "$builddir/$cowerbin" && cd "$builddir/$cowerbin"
     makepkg -p $tmpdir/$cowerbin.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerbin
@@ -992,10 +992,10 @@ else
 fi
 
 # sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && msg "e" $"The ${colorW}editor${reset} variable is unset"
-[[ ! -w "$builddir" ]] && msg "e" $"${colorW}$builddir${reset} does not have write permission."
-[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && msg "e" $"no targets specified (use -h for help)"
-[[ $repo && $aur ]] && msg "e" $"target not found"
+[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"The ${colorW}editor${reset} variable is unset"
+[[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
+[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
+[[ $repo && $aur ]] && note "e" $"target not found"
 
 # operations
 case $operation in
@@ -1024,7 +1024,7 @@ case $operation in
         [[ -z "${pkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
         [[ -n "${repopkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
         if [[ -n "${aurpkgs[@]}" ]]; then
-            [[ $fallback = true && ! $aur ]] && msg "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             SearchInfoAur ${aurpkgs[@]}
         fi
         exit;;
@@ -1035,13 +1035,13 @@ case $operation in
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-                [[ $fallback = true && ! $aur ]] && msg "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 Core ${aurpkgs[@]}
             fi
         else
             [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
             [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && msg "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
         fi
         exit;;
