@@ -394,12 +394,19 @@ ConflictChecks() {
                     if [[ ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
                         deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
                         unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+                        break
                     else
                         note "f" $"unresolvable package conflicts detected"
                         note "f" $"failed to prepare transaction (conflicting dependencies)"
                         note "e" $"${depsAname[$i]} and $j are in conflict"
                     fi
                 fi
+            fi
+            # check installed pkgs requirement
+            reporequires=$(expac -Q '%n %D' | grep -E " $j[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
+            if [[ -n "${reporequires[@]}" ]]; then
+                note "f" $"failed to prepare transaction (could not satisfy dependencies)"
+                note "e" $"${reporequires[@]}: requires $j"
             fi
         done
     done
@@ -444,6 +451,12 @@ ConflictChecks() {
                     note "f" $"failed to prepare transaction (conflicting dependencies)"
                     note "e" "$j and $k are in conflict"
                 fi
+            fi
+            # check installed pkgs requirement
+            reporequires=$(expac -Q '%n %D' | grep -E " $k[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
+            if [[ -n "${reporequires[@]}" ]]; then
+                note "f" $"failed to prepare transaction (could not satisfy dependencies)"
+                note "e" $"${reporequires[@]}: requires $k"
             fi
         done
     done
