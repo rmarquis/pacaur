@@ -984,6 +984,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     rebuild) rebuild=true;;
                     insecure) secure=false;;
                     fixbackend|allanbrokeit) fixbackend; exit;;
+                    root) root=true;;
                     version) version; exit;;
                     help) usage; exit;;
                     *) pacopts+=("--$OPTARG");;
@@ -1058,6 +1059,7 @@ fi
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && note "e" $"target not found"
+[[ $root ]] && note "e" $"alternative installation root option not supported"
 
 # operations
 case $operation in
