@@ -382,13 +382,7 @@ ConflictChecks() {
                 if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
                     depsQver[$i]=$(expac -Q %v "$j")
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
-
-                    # check installed pkgs requirement
-                    reporequires=$(expac -Q '%n %D' | grep -E " $j[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
-                    if [[ -n "${reporequires[@]}" ]]; then
-                        note "f" $"failed to prepare transaction (could not satisfy dependencies)"
-                        note "e" $"${reporequires[@]}: requires $j"
-                    fi
+                    checkrepopkgsrequire $j
                     break
                 else
                     if [[ ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
@@ -402,12 +396,7 @@ ConflictChecks() {
                     fi
                 fi
             fi
-            # check installed pkgs requirement
-            reporequires=$(expac -Q '%n %D' | grep -E " $j[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
-            if [[ -n "${reporequires[@]}" ]]; then
-                note "f" $"failed to prepare transaction (could not satisfy dependencies)"
-                note "e" $"${reporequires[@]}: requires $j"
-            fi
+            checkrepopkgsrequire $j
         done
     done
     depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
@@ -438,13 +427,7 @@ ConflictChecks() {
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
                     repoconflictingpkgs+=("$j" "$k")
-
-                    # check installed pkgs requirement
-                    reporequires=$(expac -Q '%n %D' | grep -E " $k[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
-                    if [[ -n "${reporequires[@]}" ]]; then
-                        note "f" $"failed to prepare transaction (could not satisfy dependencies)"
-                        note "e" $"${reporequires[@]}: requires $k"
-                    fi
+                    checkrepopkgsrequire $k
                     break
                 else
                     note "f" $"unresolvable package conflicts detected"
@@ -452,12 +435,7 @@ ConflictChecks() {
                     note "e" "$j and $k are in conflict"
                 fi
             fi
-            # check installed pkgs requirement
-            reporequires=$(expac -Q '%n %D' | grep -E " $k[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
-            if [[ -n "${reporequires[@]}" ]]; then
-                note "f" $"failed to prepare transaction (could not satisfy dependencies)"
-                note "e" $"${reporequires[@]}: requires $k"
-            fi
+            checkrepopkgsrequire $k
         done
     done
 }
@@ -829,6 +807,14 @@ downloadjson() {
 
 getjsonvar() {
     json_reformat < "$tmpdir/raw.json" | tr -d "\" " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | tr -d ',' | awk -F "#" '{print $2}'
+}
+
+checkrepopkgsrequire() {
+    reporequire=$(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
+    if [[ -n "${reporequire[@]}" ]]; then
+        note "f" $"failed to prepare transaction (could not satisfy dependencies)"
+        note "e" $"${reporequire[@]}: requires $@"
+    fi
 }
 
 proceed() {
