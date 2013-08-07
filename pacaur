@@ -373,6 +373,7 @@ ConflictChecks() {
         [[ " ${conflicts[@]} " =~ " ${depsAname[$i]} " ]] && continue || conflictspkgs=("${conflicts[@]}")
 
         for j in "${conflictspkgs[@]}"; do
+            unset provides
             if [[ " ${aurpkgs[@]} " =~ " $j " && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
                 note "f" $"unresolvable package conflicts detected"
                 note "f" $"failed to prepare transaction (conflicting dependencies)"
@@ -382,7 +383,8 @@ ConflictChecks() {
                 if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
                     depsQver[$i]=$(expac -Q %v "$j")
                     conflictingpkgs+=("${depsAname[$i]}" "$j")
-                    checkrepopkgsrequire $j
+                    provides=("$(grep "^provides=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+                    [[ ! " ${provides[@]} " =~ " $j " ]] && checkrepopkgsrequire $j
                     break
                 else
                     if [[ ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
@@ -396,7 +398,8 @@ ConflictChecks() {
                     fi
                 fi
             fi
-            checkrepopkgsrequire $j
+            provides=("$(grep "^provides=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+            [[ ! " ${provides[@]} " =~ " $j " ]] && checkrepopkgsrequire $j
         done
     done
     depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
@@ -419,6 +422,7 @@ ConflictChecks() {
     fi
 
     for i in "${repoconflicts[@]}"; do
+        unset provides
         repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]+[\+]*$i" | grep -E "$i[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}'))
         for j in "${repoSconflicts[@]}"; do
             unset k && k=$(expac -Q '%n' $i)
@@ -427,6 +431,8 @@ ConflictChecks() {
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
                     repoconflictingpkgs+=("$j" "$k")
+                    provides=("$(expac -S '%S' "$k")")
+                    [[ ! " ${provides[@]} " =~ " $k " ]] && checkrepopkgsrequire $k
                     checkrepopkgsrequire $k
                     break
                 else
@@ -435,7 +441,8 @@ ConflictChecks() {
                     note "e" "$j and $k are in conflict"
                 fi
             fi
-            checkrepopkgsrequire $k
+            provides=("$(expac -S '%S' "$k")")
+            [[ ! " ${provides[@]} " =~ " $k " ]] && checkrepopkgsrequire $k
         done
     done
 }
