@@ -817,7 +817,7 @@ getjsonvar() {
 }
 
 checkrepopkgsrequire() {
-    reporequire=$(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}')
+    reporequire=$(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}' | tr '\n' ' ')
     if [[ -n "${reporequire[@]}" ]]; then
         note "f" $"failed to prepare transaction (could not satisfy dependencies)"
         note "e" $"${reporequire[@]}: requires $@"
