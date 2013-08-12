@@ -366,11 +366,11 @@ ConflictChecks() {
 
     # AUR conflicts
     for ((i=0; i<${#depsAname[@]}; i++)); do
-        unset conflicts
-        conflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-        [[ -z "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${depsAname[$i]}")) || [[ -n "${conflicts[@]}" ]] && conflicts=($(expac -Q '%n' "${conflicts[@]}"))
+        unset Aconflicts
+        Aconflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+        [[ -z "${Aconflicts[@]}" ]] && Aconflicts=($(expac -Q '%n' "${depsAname[$i]}")) || [[ -n "${Aconflicts[@]}" ]] && Aconflicts=($(expac -Q '%n' "${Aconflicts[@]}"))
         # return when no conflict
-        [[ " ${conflicts[@]} " =~ " ${depsAname[$i]} " ]] && continue || conflictspkgs=("${conflicts[@]}")
+        [[ " ${Aconflicts[@]} " =~ " ${depsAname[$i]} " ]] && continue || conflictspkgs=("${Aconflicts[@]}")
 
         for j in "${conflictspkgs[@]}"; do
             unset Aprovides
