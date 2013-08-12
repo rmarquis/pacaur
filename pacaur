@@ -366,13 +366,16 @@ ConflictChecks() {
 
     # AUR conflicts
     for ((i=0; i<${#depsAname[@]}; i++)); do
-        unset Aconflicts
+        unset Aconflicts Adepends
         Aconflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+        Adepends=("$(grep "^depends=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()<>")")
         [[ -z "${Aconflicts[@]}" ]] && Aconflicts=($(expac -Q '%n' "${depsAname[$i]}")) || [[ -n "${Aconflicts[@]}" ]] && Aconflicts=($(expac -Q '%n' "${Aconflicts[@]}"))
         # return when no conflict
         [[ " ${Aconflicts[@]} " =~ " ${depsAname[$i]} " ]] && continue || conflictspkgs=("${Aconflicts[@]}")
 
         for j in "${conflictspkgs[@]}"; do
+            # skip when depending on conflicting packages
+            [[ " ${Adepends[@]} " =~ " $j " ]] && continue
             unset Aprovides
             if [[ " ${aurpkgs[@]} " =~ " $j " && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
                 note "f" $"unresolvable package conflicts detected"
