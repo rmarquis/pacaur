@@ -364,48 +364,55 @@ ProviderChecks() {
 ConflictChecks() {
     note "i" $"looking for inter-conflicts..."
 
-    # AUR conflicts
-    for ((i=0; i<${#depsAname[@]}; i++)); do
-        unset Aconflicts Adepends
-        Aconflicts=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-        Adepends=("$(grep "^depends=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()<>")")
-        [[ -z "${Aconflicts[@]}" ]] && Aconflicts=($(expac -Q '%n' "${depsAname[$i]}")) || [[ -n "${Aconflicts[@]}" ]] && Aconflicts=($(expac -Q '%n' "${Aconflicts[@]}"))
-        # return when no conflict
-        [[ " ${Aconflicts[@]} " =~ " ${depsAname[$i]} " ]] && continue || conflictspkgs=("${Aconflicts[@]}")
+    allQprovides=($(expac -Q '%n'))
+    allQprovides+=($(expac -Q '%S')) # no versioning
+    allQprovides=($(echo "${allQprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+    allQconflicts=($(expac -Q '%C' | tr ' ' '\n' | LC_COLLATE=C sort -u))
 
-        for j in "${conflictspkgs[@]}"; do
-            # skip when depending on conflicting packages
-            [[ " ${Adepends[@]} " =~ " $j " ]] && continue
-            unset Aprovides
-            if [[ " ${aurpkgs[@]} " =~ " $j " && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
-                note "f" $"unresolvable package conflicts detected"
-                note "f" $"failed to prepare transaction (conflicting dependencies)"
-                note "e" $"${depsAname[$i]} and $j are in conflict"
-            fi
-            if [[ ! $noconfirm && $j != ${depsAname[$i]} && ! " ${conflictingpkgs[@]} " =~ " $j " ]]; then
-                if ! proceed "n" $"${depsAname[$i]} and $j are in conflict. Remove $j?"; then
-                    depsQver[$i]=$(expac -Q %v "$j")
-                    conflictingpkgs+=("${depsAname[$i]}" "$j")
-                    Aprovides=("$(grep "^provides=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-                    [[ ! " ${Aprovides[@]} " =~ " $j " ]] && checkQrequires $j
+    # AUR conflicts
+    Aprovides=(${depsAname[@]})
+    for ((i=0; i<${#depsAname[@]}; i++)); do
+        Aprovides+=("$(grep "^provides=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+        Aconflicts+=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+    done
+    Aprovides=($(echo "${Aprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+    Aconflicts=($(echo "${Aconflicts[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+    aurconflicts+=($(LC_COLLATE=C comm -12 <(echo "${Aprovides[@]}" | tr ' ' '\n') <(echo "${allQconflicts[@]}" | tr ' ' '\n')))
+    aurconflicts+=($(LC_COLLATE=C comm -12 <(echo "${Aconflicts[@]}" | tr ' ' '\n') <(echo "${allQprovides[@]}" | tr ' ' '\n')))
+    aurconflicts=($(echo "${aurconflicts[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+
+    for i in "${aurconflicts[@]}"; do
+        unset aurAconflicts
+        [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=("$i")
+        for ((k=0; k<${#depsAname[@]}; k++)); do
+            [[ " $(grep "^conflicts=" "$builddir/${depsAname[$k]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()") " =~ " $i " ]] && aurAconflicts+=("${depsAname[$k]}")
+        done
+
+        for j in "${aurAconflicts[@]}"; do
+            unset k Aprovides
+            k=$(expac -Q '%n' $i)
+            [[ $j = $k ]] && continue # skip if reinstalling
+
+            Aprovides=("$j")
+            if [[ ! $noconfirm && ! " ${aurconflictingpkgs[@]} " =~ " $k " ]]; then
+                if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
+                    aurconflictingpkgs+=("$j" "$k")
+                    for ((l=0; l<${#depsAname[@]}; l++)); do
+                        [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Q %v "$k")
+                    done
+                    Aprovides+=("$(grep "^provides=" "$builddir/$j/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+                    [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
                     break
                 else
-                    if [[ ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]]; then
-                        deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
-                        unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
-                        break
-                    else
-                        note "f" $"unresolvable package conflicts detected"
-                        note "f" $"failed to prepare transaction (conflicting dependencies)"
-                        note "e" $"${depsAname[$i]} and $j are in conflict"
-                    fi
+                    note "f" $"unresolvable package conflicts detected"
+                    note "f" $"failed to prepare transaction (conflicting dependencies)"
+                    note "e" "$j and $k are in conflict"
                 fi
             fi
-            Aprovides=("$(grep "^provides=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-            [[ ! " ${Aprovides[@]} " =~ " $j " ]] && checkQrequires $j
+            Aprovides+=("$(grep "^provides=" "$builddir/$j/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+            [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
         done
     done
-    depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
 
@@ -415,10 +422,6 @@ ConflictChecks() {
         repodepsprovides+=($(expac -S '%S' "${repodepspkgs[@]}")) # no versioning
         repodepsprovides=($(echo "${repodepsprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
         repodepsconflicts=($(expac -S '%C' "${repodepspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-        allQprovides=($(expac -Q '%n'))
-        allQprovides+=($(expac -Q '%S')) # no versioning
-        allQprovides=($(echo "${allQprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-        allQconflicts=($(expac -Q '%C' | tr ' ' '\n' | LC_COLLATE=C sort -u))
         repoconflicts+=($(LC_COLLATE=C comm -12 <(echo "${repodepsprovides[@]}" | tr ' ' '\n') <(echo "${allQconflicts[@]}" | tr ' ' '\n')))
         repoconflicts+=($(LC_COLLATE=C comm -12 <(echo "${repodepsconflicts[@]}" | tr ' ' '\n') <(echo "${allQprovides[@]}" | tr ' ' '\n')))
         repoconflicts=($(echo "${repoconflicts[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
@@ -452,7 +455,7 @@ ConflictChecks() {
 ReinstallChecks() {
     depsAtmp=(${depsAname[@]})
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
-        [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${conflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
+        [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         if [[ -n "$(echo "${depsAname[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
             note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
