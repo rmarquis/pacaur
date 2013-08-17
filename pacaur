@@ -436,7 +436,6 @@ ConflictChecks() {
                     repoconflictingpkgs+=("$j" "$k")
                     Qprovides=("$(expac -S '%S' "$k")")
                     [[ ! " ${Qprovides[@]} " =~ " $k " ]] && checkQrequires $k
-                    checkQrequires $k
                     break
                 else
                     note "f" $"unresolvable package conflicts detected"
