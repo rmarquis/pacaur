@@ -720,25 +720,29 @@ SearchInfoAur() {
 }
 
 CheckRepo() {
+    getignoredpkgs
     repopkgsQood=($($pacmanbin -Quq $@))
     if [[ -n "${repopkgsQood[@]}" ]]; then
         [[ $quiet ]] && echo "${repopkgsQood[@]}" | tr ' ' '\n' && return
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
         repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
+        for ((i=0; i<${#repopkgsQood[@]}; i++)); do
+            repopkgsQgrp[$i]=$(expac -Q -l " " '(%G)' "${repopkgsQood[$i]}" | sed 's/()//g')
+            [[ " ${ignoredpkgs[@]} " =~ " ${repopkgsQood[$i]} " ]] && repopkgsQignore[$i]=$"[ ignored ]"
+        done
         lname=$(getlength ${repopkgsQood[@]})
         lver=$(getlength ${repopkgsQver[@]} ${repopkgSver[@]})
         lrepo=$(getlength ${repopkgsSrepo[@]})
+        lgrp=$(getlength ${repopkgsQgrp[@]})
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
-            repopkgsQgrp[$i]=$(expac -Q -l " " '(%G)' "${repopkgsQood[$i]}" | sed 's/()//g')
-        done
-        for ((i=0; i<${#repopkgsQood[@]}; i++)); do
-            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}"
+            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" "${repopkgsQignore[$i]}"
         done
     fi
 }
 
 CheckAur() {
+    getignoredpkgs
     aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && echo "${aurpkgsQood[@]}" | tr ' ' '\n' && return
@@ -746,11 +750,14 @@ CheckAur() {
         aurpkgsAname=($(getjsonvar "Name"))    # return sorted results
         aurpkgsAver=($(getjsonvar "Version"))
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
+        for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
+            [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsQood[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
+        done
         [[ ! $lname ]] && lname=$(getlength ${aurpkgsAname[@]})
         [[ ! $lver ]] && lver=$(getlength ${aurpkgsQver[@]} ${aurpkgSver[@]})
         [[ ! $lrepo ]] && lrepo=3
         for ((i=0; i<${#aurpkgsAname[@]}; i++)); do
-            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}"
+            printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lver}s${reset}  ->  ${colorG}%-${lver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" " " "${aurpkgsQignore[$i]}"
         done
     fi
 }
