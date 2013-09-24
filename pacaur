@@ -620,6 +620,7 @@ MakePkgs() {
             if [[ $installpkg ]]; then
                 note "i" $"Installing ${colorW}${depsAname[$i]}${reset} cached package..."
                 yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " ${depsAname[$i]} " ]] && sudo $pacmanbin -D ${depsAname[$i]} --asdeps ${pacopts[@]} &>/dev/null
             else
                 note "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
