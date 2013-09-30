@@ -340,4 +340,6 @@ B<[it] - Italiano> - Demenico "NoMore201" Lezzi E<lt>https://github.com/NoMore20
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
 
+B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
+
 B<[ru] - Русский> - "kyak" E<lt>https://github.com/kyakE<gt>
