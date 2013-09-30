@@ -383,7 +383,7 @@ msgstr "Tylko AUR"
 
 #: pacaur:901
 msgid "   -s, --search     search AUR repository for matching strings"
-msgstr "   -s, --search     poszukuje pasujących ciągów tesktu w AUR"
+msgstr "   -s, --search     poszukuje pasujących ciągów tekstu w AUR"
 
 #: pacaur:902
 msgid "   -i, --info       view package information -- pass twice for details"
@@ -457,7 +457,7 @@ msgstr ""
 #: pacaur:918
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
-"   -e, --edit       edycja pliku/ów PKGBUILD oraz podgląd skryptu/ów .install"
+"   -e, --edit       edycja plików PKGBUILD oraz podgląd skryptów .install"
 
 #: pacaur:919
 msgid ""
