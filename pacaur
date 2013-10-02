@@ -634,8 +634,8 @@ MakePkgs() {
         cd "$builddir/$i"
 
         # build devel if necessary only
+        makeopts=(${makeopts[@]/-e/})
         if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" && ! $rebuild ]]; then
-            makeopts=(${makeopts[@]/-e/})
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 makepkg -o
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
