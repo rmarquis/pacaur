@@ -637,7 +637,7 @@ MakePkgs() {
         makeopts=(${makeopts[@]/-e/})
         if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" && ! $rebuild ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
-                makepkg -o
+                makepkg -o ${makeopts[@]}
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsQver=$(expac -Q '%v' "$i")
