@@ -391,7 +391,7 @@ ConflictChecks() {
         for j in "${aurAconflicts[@]}"; do
             unset k Aprovides
             k=$(expac -Q '%n' $i)
-            [[ $j = $k ]] && continue # skip if reinstalling
+            [[ $j = $k || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
             Aprovides=("$j")
             if [[ ! $noconfirm && ! " ${aurconflictingpkgs[@]} " =~ " $k " ]]; then
