@@ -148,11 +148,11 @@ Perform commands without confirmation from the user.
 
 =item B<--noedit>
 
-Perform commands without editing any installation files. Bypass --edit option.
+Perform commands without editing any installation files. Bypass I<--edit> option.
 
 =item B<--rebuild>
 
-Always rebuild package(s) regardless of any existing file in $PKGDEST directory,
+Always rebuild package(s) regardless of any existing file in I<$PKGDEST> directory,
 and regardless of up-to-date status of development packages.
 
 =item B<--ignore-ood>
@@ -167,7 +167,7 @@ over the I<IgnoreOOD> option of the cower config file.
 =item B<--insecure>
 
 When using the secure mode, temporarily enable the full bash dependency solver
-to allow full $CARCH bash magic compatibility.
+to allow full I<$CARCH> bash magic compatibility.
 
 =item B<--asroot>
 
@@ -300,7 +300,7 @@ automatically cleared upon reboot.
 =item B<secure mode>
 
 The I<secure> mode uses cower's internal dependency solver instead of the full
-bash solver to enhance security. The PKGBUILDs using the $CARCH makepkg
+bash solver to enhance security. The PKGBUILDs using the B<$CARCH> makepkg
 variable will not be correctly handled anymore. In normal mode, a notice will
 however be shown before sourcing if potentially harmful pseudo code is detected.
 
@@ -319,7 +319,7 @@ queries speed. Using Google primary DNS (8.8.8.8 and 8.8.4.4) might also help.
 
 =item B<alternative installation root>
 
-The alternative installation root option of pacman (--root /path) is not
+The alternative installation root I<--root /path> option of pacman is not
 supported. You might want to chroot to the new path and use pacaur from there
 instead.
 
