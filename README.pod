@@ -155,6 +155,15 @@ Perform commands without editing any installation files. Bypass --edit option.
 Always rebuild package(s) regardless of any existing file in $PKGDEST directory,
 and regardless of up-to-date status of development packages.
 
+=item B<--ignore-ood>
+
+When searching, ignore all results marked as out of date.
+
+=item B<--no-ignore-ood>
+
+When searching, also show results marked as out of date. This take precedence
+over the I<IgnoreOOD> option of the cower config file.
+
 =item B<--insecure>
 
 When using the secure mode, temporarily enable the full bash dependency solver
