@@ -157,12 +157,16 @@ and regardless of up-to-date status of development packages.
 
 =item B<--ignore-ood>
 
-When searching, ignore all results marked as out of date.
+When searching the AUR, ignore all results marked as out of date.
 
 =item B<--no-ignore-ood>
 
-When searching, also show results marked as out of date. This take precedence
-over the I<IgnoreOOD> option of the cower config file.
+When searching the AUR, also show results marked as out of date. This take
+precedence over the I<IgnoreOOD> option of the cower config file.
+
+=item B<--votes>
+
+When searching the AUR, sort the results by decreasing number of votes.
 
 =item B<--insecure>
 

@@ -978,6 +978,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
+                    votes) coweropts+=("--rsort=votes");;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
