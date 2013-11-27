@@ -30,6 +30,7 @@ clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
 secure=false                                # enhanced security
 sudoloop=false                              # prevent sudo timeout
+sortbyvotes=true                            # sort search results by votes
 
 # set pacman binary
 pacmanbin="${PACMAN:-pacman}"
@@ -770,6 +771,7 @@ CleanUp() {
 }
 
 SearchInfoAur() {
+    [[ $sortbyvotes = true ]] && coweropts+=("--rsort=votes")
     cower ${coweropts[@]} $@
 }
 
@@ -1047,7 +1049,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
-                    votes) coweropts+=("--rsort=votes");;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;

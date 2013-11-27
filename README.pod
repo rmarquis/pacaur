@@ -164,10 +164,6 @@ When searching the AUR, ignore all results marked as out of date.
 When searching the AUR, also show results marked as out of date. This take
 precedence over the I<IgnoreOOD> option of the cower config file.
 
-=item B<--votes>
-
-When searching the AUR, sort the results by decreasing number of votes.
-
 =item B<--insecure>
 
 When using the secure mode, temporarily enable the full bash dependency solver
@@ -257,6 +253,11 @@ Default is B<false>.
 
 Prevent sudo timeout. This option overrides the system-wide sudo configuration.
 Default is B<false>.
+
+=item B<sortbyvotes>
+
+When searching the AUR, sort the results by decreasing number of votes. Default
+is B<true>.
 
 =back
 
