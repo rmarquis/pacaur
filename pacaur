@@ -640,8 +640,14 @@ MakePkgs() {
                 makepkg -o ${makeopts[@]}
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+                aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsQver=$(expac -Q '%v' "$i")
-                if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver-$aurdevelpkgsArel") -eq 0 ]]; then
+                if [[ -n "$aurdevelpkgsAepo" ]]; then
+                    aurdevelpkgsAall="$aurdevelpkgsAepo:$aurdevelpkgsAver-$aurdevelpkgsArel"
+                else
+                    aurdevelpkgsAall="$aurdevelpkgsAver-$aurdevelpkgsArel"
+                fi
+                if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
                     note "w" "${colorW}$i${reset} is up-to-date -- skipping"
                     continue
                 else
