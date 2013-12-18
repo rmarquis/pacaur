@@ -1,0 +1,107 @@
+#compdef pacaur
+
+# 
+# /usr/share/zsh/site-functions/_pacaur
+# 
+
+typeset -A opt_args
+
+_pacaur_opts_operations=(
+  {-Q,-S}'[Extend pacman operations to the AUR]'
+  {-s,--search}'[Search AUR for matching strings]'
+  {-i,--info}'[Show info for target(s)]'
+  {-d,--download}'[Download target(s)]'
+  {-m,--makepkg}'[Download and make target(s)]'
+  {-y,--sync}'[Download, make and install target(s)]'
+  {-k,--check}'[Check for AUR update(s)]'
+  {-u,--update}'[Update AUR package(s)]'
+  {-h,--help}'[Display usage]'
+  {-v,--version}'[Display version]'
+  '--fixbackend[Quickly rebuild backend]'
+)
+
+_pacaur_opts_options=(
+  {-a,--aur}'[Only search, install or clean packages from the AUR]'
+  {-r,--repo}'[Only search, install or clean packages from the repositories]'
+  {-e,--edit}'[Edit target(s) PKGBUILD and view install script]'
+  {-c,--clean}'[Clean target(s) build files]'
+  {-q,--quiet}'[Show less information for query and search]'
+  '--devel[Consider AUR development packages upgrade]'
+  '*--ignore[Ignore a package upgrade]:package:
+          _pacaur_completions_installed_packages'
+  '--noconfirm[Do not prompt for any confirmation]'
+  '--noedit[Do not prompt to edit files]'
+  '--rebuild[Always rebuild package(s)]'
+)
+
+# copied from cower completion definition
+# provides completions for installed packages
+_pacaur_completions_installed_packages() {
+  local -a cmd packages packages_long
+  packages_long=(/var/lib/pacman/local/*(/))
+  packages=( ${${packages_long#/var/lib/pacman/local/}%-*-*} )
+  compadd "$@" -a packages
+}
+
+_pacaur_completions_aur() {
+  local -a aur_packages
+  aur_packages=($(_call_program packages $service -sq $words[CURRENT] 2>/dev/null))
+  compadd "$@" -a aur_packages
+}
+
+_pacaur_comp_operation() {
+}
+
+_pacaur() {
+  #TODO: pacman completion
+  #case $words[2] in
+  #  -[QS]*)
+  #    ;;
+  #esac
+  
+  integer i
+  for (( i = CURRENT; i > 1; --i )); do
+    case $words[$i] in
+      -(*[smy]*|-search|-makepkg|-sync))
+        _arguments -s -w : \
+          "$_pacaur_opts_operations[@]" \
+          "$_pacaur_opts_options[@]" \
+          '*:package:_pacaur_completions_aur'
+        return
+        ;;
+      -(*i*|-info))
+        _arguments -s -w : \
+          "$_pacaur_opts_operations[@]" \
+          "$_pacaur_opts_options[@]" \
+          '*-i[Show more info]' \
+          '*--info[Show more info]' \
+          '*:package:_pacaur_completions_aur'
+        return
+        ;;
+      -(*d*|-download))
+        _arguments -s -w : \
+          "$_pacaur_opts_operations[@]" \
+          "$_pacaur_opts_options[@]" \
+          '*-d[Download AUR dependencies]' \
+          '*--download[Download AUR dependencies]' \
+          '*:package:_pacaur_completions_aur'
+        return
+        ;;
+      -*[ku]*)
+        _arguments -s -w : \
+          "$_pacaur_opts_operations[@]" \
+          "$_pacaur_opts_options[@]"
+        return
+        ;;
+      *)
+        _arguments -s -w : \
+          "$_pacaur_opts_operations[@]" \
+          "$_pacaur_opts_options[@]"
+        ;;
+    esac
+  done
+}
+
+_pacaur "$@"
+
+# vim: set et sw=2 ts=2 ft=zsh :
