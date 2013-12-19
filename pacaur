@@ -698,11 +698,9 @@ CleanUp() {
     if [[ -n "$@" ]]; then
         cd "$builddir"
         for i in "$@"; do
-            if [[ ! $cleandevel = true && $count -lt 2 ]]; then
-                if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" ]]; then
-                    note "w" $"${colorW}$i${reset} cleaning skipped"
-                    continue
-                fi
+            if [[ ! $cleandevel = true && -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" && $count -lt 2 ]]; then
+                note "w" $"${colorW}$i${reset} cleaning skipped"
+                continue
             else
                 # hack for vcs protected files
                 chmod -R 755 $i &>/dev/null
