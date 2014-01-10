@@ -6,6 +6,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Language: de\n"
 "X-Source-Language: C\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Patryk Szalanski <patryk.szalanski@gmail.com>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.5.7\n"
+"Language: de\n"
 
 #: pacaur:91
 msgid "${colorW}Starting AUR upgrade...${reset}"
@@ -76,7 +83,8 @@ msgstr ""
 #: pacaur:197
 msgid ""
 "${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}"
-msgstr "${colorY}::${reset} ${colorW}%n${reset} ist verfügbar in ${colorM}%r${reset}"
+msgstr ""
+"${colorY}::${reset} ${colorW}%n${reset} ist verfügbar in ${colorM}%r${reset}"
 
 #: pacaur:260
 msgid ""
@@ -106,8 +114,8 @@ msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
 msgstr ""
-"${colorW}Es sind ${#providers[@]} Anbieter für ${providersdeps[$i]}:"
-"${reset} verfügbar"
+"${colorW}Es sind ${#providers[@]} Anbieter für ${providersdeps[$i]}:${reset} "
+"verfügbar"
 
 #: pacaur:328
 msgid "Enter a number (default=0):"
@@ -142,9 +150,8 @@ msgid "${depsAname[$i]} and $j are in conflict. Remove $j?"
 msgstr "${depsAname[$i]} und $j stehen im Konflikt. Entferne $j?${reset}"
 
 #: pacaur:408
-#, fuzzy
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
-msgstr "Paket ${colorW}${depsAname[$i]}${reset} ist bereits verfügbar im Cache"
+msgstr "Paket ${colorW}${depsAname[$i]}${reset} aktuelle Revision -- Rufe ab"
 
 #: pacaur:411
 msgid ""
@@ -166,6 +173,9 @@ msgid ""
 "out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
 "\")${reset}"
 msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} wurde als ${colorR}veraltet"
+"${reset} markiert am ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"\")${reset}"
 
 #: pacaur:448 pacaur:477
 msgid "Name"
@@ -261,7 +271,7 @@ msgstr ""
 
 #: pacaur:558
 msgid "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-msgstr ""
+msgstr "Installiere Abhängigkeiten von ${colorW}${providerpkgs[@]}${reset} ..."
 
 #: pacaur:568
 msgid "Installing ${colorW}${depsAname[$i]}${reset} cached package..."
