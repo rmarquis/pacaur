@@ -343,16 +343,16 @@ All credits go to all direct or indirect contributors. Many thanks to all of you
 
 =head1 TRANSLATORS
 
-B<[de] - Deutsch> - Marco "BigBoot" Kirchner E<lt>https://github.com/BigBootE<gt>
+B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "pszalanski"
 
-B<[es] - Español> - Germán "gosella" Osella Massa E<lt>https://github.com/gosellaE<gt>
+B<[es] - Español> - Germán "gosella" Osella Massa
 
-B<[fr] - Français> - "spider-mario" E<lt>https://github.com/spider-marioE<gt>
+B<[fr] - Français> - "spider-mario"
 
-B<[it] - Italiano> - Demenico "NoMore201" Lezzi E<lt>https://github.com/NoMore201E<gt>
+B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
-B<[ja] - 日本語> - Colin "fosskers" Woodbury E<lt>https://github.com/fosskersE<gt>
+B<[ja] - 日本語> - Colin "fosskers" Woodbury
 
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
-B<[ru] - Русский> - "kyak" E<lt>https://github.com/kyakE<gt>
+B<[ru] - Русский> - "kyak"
