@@ -893,7 +893,7 @@ ctrlc() {
     echo
     [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
-    [[ $operation = sync ]] && CleanUp ${deps[@]}
+    [[ $operation = sync ]] && CleanUp $(echo "${pkgs[@]} ${deps[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u)
     exit
 }
 
