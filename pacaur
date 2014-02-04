@@ -93,12 +93,12 @@ UpgradeAur() {
     aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} 2>"$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
     [[ -e "$tmpdir/ignoretmp" ]] && aurpkgs+=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
 
-    # check foreign packages
-    allforeignpkgs=($($pacmanbin -Qmq | LC_COLLATE=C sort -u))
-    downloadjson ${allforeignpkgs[@]}
+    # foreign packages check
+    foreignpkgs=($($pacmanbin -Qmq | LC_COLLATE=C sort -u))
+    downloadjson ${foreignpkgs[@]}
     allaurpkgs=($(getjsonvar "Name" | LC_COLLATE=C sort -u))
-    foreignpkgs=($(LC_COLLATE=C comm -23 <(echo "${allforeignpkgs[@]}" | tr ' ' '\n') <(echo "${allaurpkgs[@]}" | tr ' ' '\n')))
-    for i in "${foreignpkgs[@]}"; do
+    aurforeignpkgs=($(LC_COLLATE=C comm -23 <(echo "${foreignpkgs[@]}" | tr ' ' '\n') <(echo "${allaurpkgs[@]}" | tr ' ' '\n')))
+    for i in "${aurforeignpkgs[@]}"; do
         note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
     done
 
@@ -592,6 +592,9 @@ EditPkgs() {
 }
 
 MakePkgs() {
+    # current orphan packages
+    oldorphanpkgs=($($pacmanbin -Qdtq | LC_COLLATE=C sort -u))
+
     # set lock
     [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
     touch "$tmpdir/build.lock"
@@ -692,6 +695,13 @@ MakePkgs() {
     # remove locks
     [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     rm "$tmpdir/build.lock"
+
+    # new orphan packages check
+    orphanpkgs=($($pacmanbin -Qdtq | LC_COLLATE=C sort -u))
+    neworphanpkgs=($(LC_COLLATE=C comm -23 <(echo "${orphanpkgs[@]}" | tr ' ' '\n') <(echo "${oldorphanpkgs[@]}" | tr ' ' '\n')))
+    for i in "${neworphanpkgs[@]}"; do
+        note "w" $"${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+    done
 }
 
 CleanUp() {
