@@ -990,7 +990,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     sync) operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
                     check) operation=upgrades; coweropts+=("-uq"); aur='1';;
                     update) operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
-                    force) coweropts+=("-f"); pacopts+=("--force");;
+                    force) coweropts+=("-f"); pacopts+=("--force"); makeopts+=("--force");;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q");;
