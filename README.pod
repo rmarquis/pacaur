@@ -169,10 +169,6 @@ precedence over the I<IgnoreOOD> option of the cower config file.
 When using the secure mode, temporarily enable the full bash dependency solver
 to allow full I<$CARCH> bash magic compatibility.
 
-=item B<--asroot>
-
-When building AUR package(s) as root, allow makepkg to run as root user.
-
 =back
 
 
