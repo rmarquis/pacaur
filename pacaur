@@ -573,19 +573,19 @@ EditPkgs() {
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
                 if proceed "y" $"View $i PKGBUILD?"; then
-                    [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+                    [[ -e "$builddir/$i/PKGBUILD" ]] && $EDITOR "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
             fi
             # edit install script
             if [[ ! $editinstall = false && -n "$installscript" ]]; then
                 if proceed "y" $"View $i .install script?"; then
-                    [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && note "s" $"${colorW}$i${reset} install script viewed" || note "e" $"Could not open ${colorW}$i${reset} install script"
+                    [[ -e "$builddir/$i/$installscript" ]] && $EDITOR "$builddir/$i/$installscript" && note "s" $"${colorW}$i${reset} install script viewed" || note "e" $"Could not open ${colorW}$i${reset} install script"
                 fi
             fi
         else
-            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            [[ -e "$builddir/$i/PKGBUILD" ]] && $EDITOR "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
             if [[ -n "$installscript" ]]; then
-                [[ -e "$builddir/$i/$installscript" ]] && $editor "$builddir/$i/$installscript" && note "s" $"${colorW}$i${reset} install script viewed" || note "e" $"Could not open ${colorW}$i${reset} install script"
+                [[ -e "$builddir/$i/$installscript" ]] && $EDITOR "$builddir/$i/$installscript" && note "s" $"${colorW}$i${reset} install script viewed" || note "e" $"Could not open ${colorW}$i${reset} install script"
             fi
         fi
     done
@@ -1081,7 +1081,7 @@ else
 fi
 
 # sanity check
-[[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
+[[ ! $EDITOR ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && note "e" $"target not found"
