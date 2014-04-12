@@ -324,7 +324,7 @@ ProviderChecks() {
 
         # skip if already provided
         for j in "${providerpkgs[@]}"; do
-            provided+=($(expac -Ss '%P' "^$j$"))
+            provided+=($(expac -Ss '%S' "^$j$"))
         done
         [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
 
