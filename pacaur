@@ -440,7 +440,7 @@ ConflictChecks() {
 
     for i in "${repoconflicts[@]}"; do
         unset Qprovides
-        repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]+[\+]*$i" | grep -E "$i[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk -F " " '{print $1}'))
+        repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]$i" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk -F " " '{print $1}'))
         for j in "${repoSconflicts[@]}"; do
             unset k && k=$(expac -Qs '%n' "^$i$")
             [[ -z "$k" ]] && continue # skip when no conflict with repopkgs
