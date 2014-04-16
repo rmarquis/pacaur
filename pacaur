@@ -64,7 +64,7 @@ ClassifyPkgs() {
             for i in "${pkgs[@]}"; do
                 [[ $i == aur/* ]] && i=${i:4} && aurpkgs+=("$i") && continue
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$(expac -Ss '%n' "^$i$" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+                [[ -z "$($pacmanbin -Sp "$i" 2>/dev/null)" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
     else
@@ -224,15 +224,14 @@ FindPkgsDeps() {
     depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}" | sort -u))
 
     # split binary and AUR depends pkgs
-    [[ -e "$tmpdir/tmpdeps" ]] && rm "$tmpdir/tmpdeps" || unset depspkgsaur
-    [[ -n "${depspkgs[@]}" ]] && repodeps+=($(expac -S -1 -v '%n' "${depspkgs[@]}" 2>"$tmpdir/tmpdeps"))
-    if [[ -e "$tmpdir/tmpdeps" ]]; then
-        depspkgstmp=($(awk -F " " '{print $3}' "$tmpdir/tmpdeps" | tr -d "'\`"))
-        for i in "${depspkgstmp[@]}"; do
-            [[ -z "$(expac -Ss '%n' "^$i$")" ]] && depspkgsaur+=("$i") || repodeps+=("$i")
-        done
+    unset deps depends makedepends sourcedpkgs depspkgsaur
+    if [[ -n "${depspkgs[@]}" ]]; then
+        depspkgsaur+=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $5}'))
+        depspkgs=($(echo "${depspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        depspkgsaur=($(echo "${depspkgsaur[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        repodeps=($(LC_COLLATE=C comm -23 <(echo "${depspkgs[@]}" | tr ' ' '\n') <(echo "${depspkgsaur[@]}" | tr ' ' '\n')))
     fi
-    unset deps depends makedepends sourcedpkgs depspkgs depspkgstmp
+    unset depspkgs
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # remove AUR package versioning
