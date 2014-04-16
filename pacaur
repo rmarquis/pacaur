@@ -229,7 +229,7 @@ FindPkgsDeps() {
         depspkgsaur+=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $5}'))
         depspkgs=($(echo "${depspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
         depspkgsaur=($(echo "${depspkgsaur[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-        repodeps=($(LC_COLLATE=C comm -23 <(echo "${depspkgs[@]}" | tr ' ' '\n') <(echo "${depspkgsaur[@]}" | tr ' ' '\n')))
+        repodeps+=($(LC_COLLATE=C comm -23 <(echo "${depspkgs[@]}" | tr ' ' '\n') <(echo "${depspkgsaur[@]}" | tr ' ' '\n')))
     fi
     unset depspkgs
 
