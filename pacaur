@@ -178,12 +178,6 @@ DownloadPkgs() {
         for i in "${deps[@]}"; do
             [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && note "e" $"${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
         done
-        if [[ -n "${repodeps[@]}" ]]; then
-            for i in "${repodeps[@]}"; do
-                repodepstmp+=($(expac -Ss '%n' "^$i$"))
-            done
-            repodeps=("${repodepstmp[@]}") && unset repodepstmp
-        fi
     else
         [[ $operation != download ]] && note "i" $"resolving dependencies..."
         allaurdeps+=("${aurpkgs[@]}")
