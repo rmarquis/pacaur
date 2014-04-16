@@ -152,7 +152,7 @@ DownloadAur() {
         case $flag in
             S)  [[ $operation = download && -n "$info" ]] && note "i" $"$pkg downloaded to $builddir";
                 [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && note "s" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
+            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && note "w" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
             E)  [[ $operation = download && -e "$builddir/$pkg/PKGBUILD" ]] && note "f" $"\`$builddir/$pkg' already exists. Use -f to overwrite." || note "f" $"no results found for $pkg";
                 errdeps+=("$pkg");;
         esac
