@@ -191,13 +191,21 @@ DownloadPkgs() {
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
 
-    # return binary deps
+    # return binary providers
+    if [[ $operation = download && $count -ge 2 ]]; then
+        repodepstmp+=($(expac -S -1 -v '%n' "${repodeps[@]}" 2>&1 >/dev/null | awk -F " " '{print $3}' | tr -d "\'\`"))
+        for i in "${repodepstmp[@]}"; do
+            repodeps+=($(expac -Ss '%n %S' "^$i$" | awk -F " " '{print $1}'))
+        done
+    fi
+
+    # return all binary deps
     if [[ -n "${repodeps[@]}" ]]; then
-        [[ $operation = download && $count -ge 2 ]] && expac -S -1 $"${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodeps[@]}
         for i in "${repodeps[@]}"; do
             allrepopkgs+=($(pactree -su "$i"))
         done
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
+        [[ $operation = download && $count -ge 2 ]] && expac -S -1 $"${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepspkgs[@]}
     fi
 }
 
