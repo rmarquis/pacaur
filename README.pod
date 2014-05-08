@@ -20,7 +20,8 @@ usually one or more targets.
 
 Pacaur is targeted at B<advanced users> who want some degree of automation for
 repetitive tasks. As such, the user is expected to be familiar with the AUR
-manual build process with makepkg.
+manual build process with makepkg as well as being knownledgeable about sudo
+configuration.
 
 Two sets of command line options are provided: commands which call the pacman
 binary and extend for AUR functions B<(-S, -Q)>, and commands which are AUR
