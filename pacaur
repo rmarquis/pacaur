@@ -1068,9 +1068,9 @@ while [[ -n "${!OPTIND}" ]]; do
                     help) usage; exit;;
                     *) pacopts+=("--$OPTARG");;
                 esac;;
-            s)  [[ $pacS ]] && operation=search && coweropts+=("-s");
+            s)  [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=search; coweropts+=("-s"); aur='1';;
-            i)  [[ $pacS ]] && operation=info && coweropts+=("-i");
+            i)  [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=info; coweropts+=("-i"); aur='1';;
             d)  [[ $pacS ]] && nodeps=true && pacopts+=("--nodeps") && makeopts+=("--nodeps") && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=download; ((count++));;
@@ -1107,6 +1107,7 @@ done
 
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
+pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 
 # color
@@ -1173,8 +1174,34 @@ case $operation in
         fi
         exit;;
     sync)
-        # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy), sysupgrade (-Su, -u) handling
-        if [[ ! $upgrade ]]; then
+        # search (-Ss, -s) handling
+        if [[ $search ]]; then
+            if [[ ! $aur ]]; then
+                [[ $refresh ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+                [[ ! $refresh ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
+            fi
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchInfoAur ${pkgs[@]}
+        # info (-Si, -i) handling
+        elif [[ $info ]]; then
+            [[ -z "${pkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            if [[ -n "${repopkgs[@]}" ]]; then
+                [[ $refresh ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+                [[ ! $refresh ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            fi
+            if [[ -n "${aurpkgs[@]}" ]]; then
+                [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
+                [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                SearchInfoAur ${aurpkgs[@]}
+            fi
+        # sysupgrade (-Su, -u) handling
+        elif [[ $upgrade ]]; then
+            [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
+            [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $repo ]] && [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
+            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
+        # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy)
+        else
             [[ -z "${pkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
@@ -1182,11 +1209,6 @@ case $operation in
                 [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 Core ${aurpkgs[@]}
             fi
-        else
-            [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
-            [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
         fi
         exit;;
     upgrades)
