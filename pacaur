@@ -966,7 +966,7 @@ ctrlc() {
     echo
     [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
-    [[ $operation = sync ]] && CleanUp $(echo "${pkgs[@]} ${deps[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u)
+    [[ $operation = sync ]] && [[ ! $search && ! $info ]] && CleanUp $(echo "${pkgs[@]} ${deps[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u)
     exit
 }
 
@@ -1037,8 +1037,8 @@ while [[ -n "${!OPTIND}" ]]; do
         case "$OPT" in
             -)
                 case "$OPTARG" in
-                    search) operation=search; coweropts+=("-s"); aur='1';;
-                    info) operation=info; coweropts+=("-i"); aur='1';;
+                    search) operation=sync; search=true; coweropts+=("-s"); aur='1';;
+                    info) operation=sync; info=true; coweropts+=("-i"); aur='1';;
                     download) operation=download; ((count++));;
                     makepkg) operation=sync; coweropts+=("-f"); aur='1';;
                     sync) operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
@@ -1069,9 +1069,9 @@ while [[ -n "${!OPTIND}" ]]; do
                     *) pacopts+=("--$OPTARG");;
                 esac;;
             s)  [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=search; coweropts+=("-s"); aur='1';;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; coweropts+=("-s"); aur='1';;
             i)  [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=info; coweropts+=("-i"); aur='1';;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
             d)  [[ $pacS ]] && nodeps=true && pacopts+=("--nodeps") && makeopts+=("--nodeps") && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=download; ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
@@ -1158,20 +1158,6 @@ case $operation in
     editpkg)
         # edit (-e) handling
         EditPkgs ${pkgs[@]}
-        exit;;
-    search)
-        # search (-Ss, -s) handling
-        [[ ! $aur ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
-        [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchInfoAur ${pkgs[@]}
-        exit;;
-    info)
-        # info (-Si, -i) handling
-        [[ -z "${pkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
-        [[ -n "${repopkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        if [[ -n "${aurpkgs[@]}" ]]; then
-            [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-            SearchInfoAur ${aurpkgs[@]}
-        fi
         exit;;
     sync)
         # search (-Ss, -s) handling
