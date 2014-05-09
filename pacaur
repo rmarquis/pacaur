@@ -1105,11 +1105,6 @@ while [[ -n "${!OPTIND}" ]]; do
     OPTIND=1
 done
 
-pacmanarg=(${pacmanarg[@]/--/})
-pacmanarg=(${pacmanarg[@]/-r/})
-pacmanarg=(${pacmanarg[@]/-a/})
-[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
-
 # color
 if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
     [[ $color = 'always' ]] && coweropts+=("--color=always") || coweropts+=("--color=auto")
@@ -1136,6 +1131,10 @@ else
 fi
 
 # sanity check
+pacmanarg=(${pacmanarg[@]/--/})
+pacmanarg=(${pacmanarg[@]/-r/})
+pacmanarg=(${pacmanarg[@]/-a/})
+[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
