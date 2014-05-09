@@ -1084,7 +1084,7 @@ while [[ -n "${!OPTIND}" ]]; do
             f)  [[ $pac || $pacQ || $pacS ]] && continue || coweropts+=("-f");;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
-            c)  [[ $pacS ]] && operation=cleancache && ((count++));
+            c)  [[ $pacS ]] && operation=sync && cleancache=true && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
             q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q");;
             r)  repo='1';;
@@ -1136,6 +1136,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
+[[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
@@ -1179,6 +1180,10 @@ case $operation in
                 [[ $fallback = true && ! $aur ]] && note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 SearchInfoAur ${aurpkgs[@]}
             fi
+        # clean (-Sc) handling
+        elif [[ $cleancache ]]; then
+            [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         # sysupgrade (-Su, -u) handling
         elif [[ $upgrade ]]; then
             [[ ! $selective ]] && ClassifyPkgs ${pkgs[@]} && unset pkgs # selective upgrade switch
@@ -1201,11 +1206,6 @@ case $operation in
         # upgrades (-Qu, -k) handling
         [[ ! $aur ]] && CheckRepo ${pkgs[@]}
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CheckAur ${pkgs[@]}
-        exit;;
-    cleancache)
-        # clean (-Sc) handling
-        [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
-        [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         exit;;
     *)  # others operations handling
         if [[ -z "${pkgs[@]}" || -n "$(grep -e "-[QTglp]" <<< ${pacmanarg[@]})" ]]; then
