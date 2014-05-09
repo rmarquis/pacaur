@@ -1135,6 +1135,7 @@ pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
 pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
+[[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
