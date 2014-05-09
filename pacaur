@@ -1095,7 +1095,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ "${opts[@]}" =~ "g" || "${opts[@]}" =~ "l" || "${opts[@]}" =~ "p" ]] && unset operation;;
             [A-Z]) pac='1';;
             h)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && unset operation && continue || usage; exit;;
-            v)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && unset operation && continue || version; exit;;
+            v)  [[ "${opts[@]}" =~ ^-[A-Z] ]] && continue || version; exit;;
             *)  continue;;
         esac
     done
