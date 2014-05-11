@@ -64,7 +64,7 @@ ClassifyPkgs() {
             for i in "${pkgs[@]}"; do
                 [[ $i == aur/* ]] && i=${i:4} && aurpkgs+=("$i") && continue
                 [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$($pacmanbin -Sp "$i" 2>/dev/null)" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+                [[ -z "$(expac -Ss '%n' "^$i$" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
             done
         fi
     else
