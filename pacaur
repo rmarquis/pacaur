@@ -184,17 +184,17 @@ DownloadPkgs() {
         allaurdeps+=("${aurpkgs[@]}")
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
-
-        # reduce root binary deps
-        repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
     fi
 
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
 
+    # reduce root binary deps
+    repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
+
     # return binary providers
     if [[ $operation = download && $count -ge 2 ]]; then
-        repodepstmp+=($(expac -S -1 -v '%n' "${repodeps[@]}" 2>&1 >/dev/null | awk -F " " '{print $3}' | tr -d "\'\`"))
+        repodepstmp=($(expac -S -1 -v '%n' "${repodeps[@]}" 2>&1 >/dev/null | awk -F " " '{print $3}' | tr -d "\'\`"))
         for i in "${repodepstmp[@]}"; do
             repodeps+=($(expac -Ss '%n %S' "^$i$" | awk -F " " '{print $1}'))
         done
@@ -888,7 +888,7 @@ downloadjson() {
 }
 
 getjsonvar() {
-    json_reformat < "$tmpdir/raw.json" | tr -d "\" " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | tr -d ',' | awk -F "#" '{print $2}'
+    json_reformat < "$tmpdir/raw.json" | tr -d "\", " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | awk -F "#" '{print $2}'
 }
 
 checkQrequires() {
