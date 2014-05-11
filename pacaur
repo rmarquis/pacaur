@@ -1139,7 +1139,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
-[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade ]] && note "e" $"no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && note "e" $"target not found"
 [[ $root ]] && note "e" $"alternative installation root option not supported"
 
