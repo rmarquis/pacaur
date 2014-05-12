@@ -228,7 +228,7 @@ FindPkgsDeps() {
     # split binary and AUR depends pkgs
     unset deps depends makedepends sourcedpkgs depspkgsaur
     if [[ -n "${depspkgs[@]}" ]]; then
-        depspkgsaur+=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $5}'))
+        depspkgsaur=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $5}'))
         depspkgs=($(echo "${depspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
         depspkgsaur=($(echo "${depspkgsaur[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
         repodeps+=($(LC_COLLATE=C comm -23 <(echo "${depspkgs[@]}" | tr ' ' '\n') <(echo "${depspkgsaur[@]}" | tr ' ' '\n')))
