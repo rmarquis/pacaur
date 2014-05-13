@@ -209,6 +209,7 @@ DownloadPkgs() {
         # pactree always return default choice so update binary deps list
         if [[ -n "${providersrepopkgs[@]}" ]]; then
             # remove deps of default providers if already installed
+            providersrepopkgs=($(echo "${providersrepopkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
             for i in "${providersrepopkgs[@]}"; do
                 [[ -n "$(expac -Qs '%n' "^$i$")" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
             done
