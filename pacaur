@@ -202,8 +202,21 @@ DownloadPkgs() {
     # return all binary deps
     if [[ -n "${repodeps[@]}" ]]; then
         for i in "${repodeps[@]}"; do
-            allrepopkgs+=($(pactree -su "$i"))
+            allrepopkgs+=($(pactree -su "$i" | awk -F " " '{print $NF}'))
+            providersrepopkgs+=($(pactree -su "$i" | awk -F " " '{print $2}'))
         done
+
+        # pactree always return default choice so update binary deps list
+        if [[ -n "${providersrepopkgs[@]}" ]]; then
+            # remove deps of default providers if already installed
+            for i in "${providersrepopkgs[@]}"; do
+                [[ -n "$(expac -Qs '%n' "^$i$")" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
+            done
+            providersrepopkgsrm=($($pacmanbin -T "${providersrepopkgsrm[@]}" | sort -u))
+            allrepopkgs=($(echo "${allrepopkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+            allrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "${providersrepopkgsrm[@]}" | tr ' ' '\n')))
+        fi
+
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
         [[ $operation = download && $count -ge 2 ]] && expac -S -1 $"${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepspkgs[@]}
     fi
