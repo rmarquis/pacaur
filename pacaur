@@ -202,7 +202,7 @@ DownloadPkgs() {
     # return all binary deps
     if [[ -n "${repodeps[@]}" ]]; then
         for i in "${repodeps[@]}"; do
-            allrepopkgs+=($(pactree -su "$i" | awk -F " " '{print $NF}'))
+            allrepopkgs+=($(pactree -su "$i"))
             providersrepopkgs+=($(pactree -su "$i" | awk -F " " '{print $2}'))
         done
 
