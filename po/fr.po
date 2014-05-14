@@ -127,7 +127,6 @@ msgid "looking for inter-conflicts..."
 msgstr "recherche de conflits..."
 
 #: pacaur:426 pacaur:466
-#, fuzzy
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j et $k sont en conflit ($i). Supprimer $k ?"
 
@@ -285,7 +284,6 @@ msgid "Removing installed AUR dependencies..."
 msgstr "Suppression des dépendances installées depuis l'AUR..."
 
 #: pacaur:731
-#, fuzzy
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "${colorW}$i${reset} est un ${colorY}nouveau paquet orphelin${reset}"
 
@@ -346,7 +344,6 @@ msgid "Could not connect to the AUR"
 msgstr "Impossible de se connecter à l'AUR"
 
 #: pacaur:880
-#, fuzzy
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr "échec de la préparation de la transaction (impossible de satisfaire les dépendances)"
 
@@ -512,7 +509,6 @@ msgid "Rebuilding ${colorW}cower${reset} backend..."
 msgstr "Reconstruction du moteur d'arrière-plan ${colorW}cower${reset}..."
 
 #: pacaur:1112
-#, fuzzy
 msgid "${colorW}editor${reset} variable unset"
 msgstr "La variable ${colorW}editor${reset} n'est pas définie"
 
