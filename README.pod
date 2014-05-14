@@ -347,7 +347,7 @@ B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "pszalanski"
 
 B<[es] - Español> - Germán "gosella" Osella Massa
 
-B<[fr] - Français> - "spider-mario"
+B<[fr] - Français> - "spider-mario", "Neitsab"
 
 B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
