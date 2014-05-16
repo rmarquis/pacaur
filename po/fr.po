@@ -15,7 +15,7 @@ msgstr "${colorW}Début de la mise à jour depuis l'AUR...${reset}"
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr "${colorW}$i${reset} n'est ${colorY}pas${reset} dans l'AUR -- sauté"
 
-#: pacaur:130 pacaur:834
+#: pacaur:130 pacaur:845
 msgid "latest"
 msgstr "dernière"
 
@@ -275,125 +275,136 @@ msgstr "Paquet ${colorW}${depsAname[$i]}${reset} déjà disponible dans le cache
 msgid "Building ${colorW}$i${reset} package..."
 msgstr "Construction du paquet ${colorW}$i${reset}..."
 
-#: pacaur:697
+#: pacaur:690
+msgid "Installing ${colorW}$i${reset} cached package..."
+msgstr ""
+"Installation du paquet dans le cache ${colorW}$i${reset}..."
+
+#: pacaur:695
+msgid "Package ${colorW}$i${reset} already available in cache"
+msgstr "Paquet ${colorW}$i${reset} déjà disponible dans le cache"
+
+#: pacaur:710
 msgid "Installing ${colorW}$i${reset} dependencies..."
 msgstr "Installation des dépendances de ${colorW}$i${reset}..."
 
-#: pacaur:719
+#: pacaur:730
 msgid "Removing installed AUR dependencies..."
 msgstr "Suppression des dépendances installées depuis l'AUR..."
 
-#: pacaur:731
+#: pacaur:742
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "${colorW}$i${reset} est un ${colorY}nouveau paquet orphelin${reset}"
 
-#: pacaur:741
+#: pacaur:752
 msgid "${colorW}$i${reset} cleaning skipped"
 msgstr "nettoyage de ${colorW}$i${reset} sauté"
 
-#: pacaur:746
+#: pacaur:757
 msgid "${colorW}$i${reset} cleaned"
 msgstr "${colorW}$i${reset} nettoyé"
 
-#: pacaur:746
+#: pacaur:757
 msgid "Could not clean ${colorW}$i${reset}"
 msgstr "Impossible de nettoyer ${colorW}$i${reset}"
 
-#: pacaur:752
+#: pacaur:763
 msgid "Build directory cleaned"
 msgstr "Répertoire de construction nettoyé"
 
-#: pacaur:752
+#: pacaur:763
 msgid "Build directory already cleaned"
 msgstr "Répertoire de construction déjà nettoyé"
 
-#: pacaur:770 pacaur:793
+#: pacaur:781 pacaur:804
 msgid "[ ignored ]"
 msgstr "[ ignoré ]"
 
-#: pacaur:808
+#: pacaur:819
 msgid "AUR cache directory:"
 msgstr "Répertoire du cache de l'AUR :"
 
-#: pacaur:810
+#: pacaur:821
 msgid "Packages to keep:"
 msgstr "Paquets à conserver :"
 
-#: pacaur:810
+#: pacaur:821
 msgid "All locally installed packages"
 msgstr "Tous les paquets localement installés"
 
-#: pacaur:811
+#: pacaur:822
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Souhaitez-vous supprimer tous les autres paquets du cache de l'AUR ?"
 
-#: pacaur:814
+#: pacaur:825
 msgid "removing old packages from cache..."
 msgstr "suppression des anciens paquets du cache..."
 
-#: pacaur:817
+#: pacaur:828
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "Souhaitez-vous supprimer TOUS les fichier du cache de l'AUR ?"
 
-#: pacaur:818
+#: pacaur:829
 msgid "removing all files from AUR cache..."
 msgstr "suppressiom de tous les fichiers du cache de l'AUR..."
 
-#: pacaur:870 pacaur:990
+#: pacaur:881 pacaur:1001
 msgid "Could not connect to the AUR"
 msgstr "Impossible de se connecter à l'AUR"
 
-#: pacaur:880
+#: pacaur:891
 msgid "failed to prepare transaction (could not satisfy dependencies)"
-msgstr "échec de la préparation de la transaction (impossible de satisfaire les dépendances)"
+msgstr ""
+"échec de la préparation de la transaction (impossible de satisfaire les "
+"dépendances)"
 
-#: pacaur:881
+#: pacaur:892
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: requiert $@"
 
-#: pacaur:889
+#: pacaur:900
 msgid "$2 [Y/n] "
 msgstr "$2 [O/n] "
 
-#: pacaur:896
+#: pacaur:907
 msgid "$2 [y/N] "
 msgstr "$2 [o/N] "
 
-#: pacaur:927
+#: pacaur:938
 msgid " there is nothing to do"
 msgstr " il n'y a rien à faire"
 
-#: pacaur:948
+#: pacaur:959
 msgid "usage:  pacaur <operation> [options] [package(s)]"
 msgstr "utilisation :  pacaur <operation> [options] [paquet(s)]"
 
-#: pacaur:949
+#: pacaur:960
 msgid "operations:"
 msgstr "opérations :"
 
-#: pacaur:950
+#: pacaur:961
 msgid " pacman extension"
 msgstr " extensions de pacman"
 
-#: pacaur:951
+#: pacaur:962
 msgid "   -S, -Q           extend pacman operations to the AUR"
 msgstr "   -S, -Q           opérations de pacman étendues à l'AUR"
 
-#: pacaur:952
+#: pacaur:963
 msgid " AUR only"
 msgstr " AUR seulement"
 
-#: pacaur:953
+#: pacaur:964
 msgid "   -s, --search     search AUR repository for matching strings"
 msgstr "   -s, --search     recherche de chaînes correspondantes dans l'AUR"
 
-#: pacaur:954
+#: pacaur:965
 msgid "   -i, --info       view package information -- pass twice for details"
 msgstr ""
 "   -i, --info       voir les informations du paquet -- passez deux fois pour "
 "les détails"
 
-#: pacaur:955
+#: pacaur:966
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -401,43 +412,43 @@ msgstr ""
 "   -d, --download   télécharger les cibles -- passez deux fois pour "
 "télécharger les dépendances de l'AUR"
 
-#: pacaur:956
+#: pacaur:967
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    télécharger et construire les cibles"
 
-#: pacaur:957
+#: pacaur:968
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       télécharger, construire et installer les cibles"
 
-#: pacaur:958
+#: pacaur:969
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      vérifier les mises à jour depuis l'AUR"
 
-#: pacaur:959
+#: pacaur:970
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     mettre à jour les paquets de l'AUR"
 
-#: pacaur:960 pacaur:969
+#: pacaur:971 pacaur:980
 msgid " general"
 msgstr " général"
 
-#: pacaur:961
+#: pacaur:972
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    afficher les informations de version"
 
-#: pacaur:962
+#: pacaur:973
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       afficher l'aide"
 
-#: pacaur:963
+#: pacaur:974
 msgid "   --fixbackend     quickly rebuild backend"
 msgstr "   --fixbackend     reconstruire rapidement le moteur d'arrière-plan"
 
-#: pacaur:965
+#: pacaur:976
 msgid "options:"
 msgstr "options :"
 
-#: pacaur:966
+#: pacaur:977
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
@@ -445,13 +456,13 @@ msgstr ""
 " extensions de pacman - peuvent être utilisées avec les opérations -S, -Ss, -"
 "Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc"
 
-#: pacaur:967
+#: pacaur:978
 msgid "   -a, --aur        only search, install or clean packages from the AUR"
 msgstr ""
 "   -a, --aur        ne rechercher, n'installer ou ne nettoyer que des "
 "paquets de l'AUR"
 
-#: pacaur:968
+#: pacaur:979
 msgid ""
 "   -r, --repo       only search, install or clean packages from the "
 "repositories"
@@ -459,13 +470,13 @@ msgstr ""
 "   -r, --repo       ne rechercher, n'installer ou ne nettoyer que des "
 "paquets des dépôts"
 
-#: pacaur:970
+#: pacaur:981
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
 "   -e, --edit       modifier le PKGBUILD des cibles et en voir le script ."
 "install"
 
-#: pacaur:971
+#: pacaur:982
 msgid ""
 "   -c, --clean      clean target(s) build files -- can be combined with the -"
 "m, -y, -u operations"
@@ -473,62 +484,62 @@ msgstr ""
 "   -c, --clean      nettoyer les fichiers de construction des cibles -- peut "
 "être combiné avec les opérations -m, -y, -u"
 
-#: pacaur:972
+#: pacaur:983
 msgid "   -q, --quiet      show less information for query and search"
 msgstr ""
 "   -q, --quiet      afficher moins d'informations avec -Q et pendant la "
 "recherche"
 
-#: pacaur:973
+#: pacaur:984
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr ""
 "   --devel          envisager les mises à jour de paquets de développement "
 "de l'AUR"
 
-#: pacaur:974
+#: pacaur:985
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         ignorer les mises à jour d'un paquet (peut être utilisé "
 "plusieurs fois)"
 
-#: pacaur:975
+#: pacaur:986
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      ne demander aucune confirmation"
 
-#: pacaur:976
+#: pacaur:987
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         ne pas proposer la modification des fichiers"
 
-#: pacaur:977
+#: pacaur:988
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        reconstruire systématiquement les paquets"
 
-#: pacaur:986
+#: pacaur:997
 msgid "Rebuilding ${colorW}cower${reset} backend..."
 msgstr "Reconstruction du moteur d'arrière-plan ${colorW}cower${reset}..."
 
-#: pacaur:1112
+#: pacaur:1123
 msgid "${colorW}editor${reset} variable unset"
 msgstr "La variable ${colorW}editor${reset} n'est pas définie"
 
-#: pacaur:1113
+#: pacaur:1124
 msgid "${colorW}$builddir${reset} does not have write permission."
 msgstr "${colorW}$builddir${reset} n'est pas accessible en écriture."
 
-#: pacaur:1114
+#: pacaur:1125
 msgid "no targets specified (use -h for help)"
 msgstr "aucune cible indiquée (utilisez -h pour l'aide)"
 
-#: pacaur:1115
+#: pacaur:1126
 msgid "target not found"
 msgstr "cible non trouvée"
 
-#: pacaur:1116
+#: pacaur:1127
 msgid "alternative installation root option not supported"
 msgstr "option de racine d'installation alternative non supportée"
 
-#: pacaur:1145 pacaur:1156 pacaur:1162
+#: pacaur:1156 pacaur:1167 pacaur:1173
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."
@@ -536,5 +547,3 @@ msgstr ""
 "Impossible de trouver ${colorW}${aurpkgs[*]}${reset} dans les dépôts, essai "
 "de l'${colorM}AUR${reset}..."
 
-#~ msgid "${depsAname[$i]} and $j are in conflict"
-#~ msgstr "${depsAname[$i]} et $j sont en conflit"
