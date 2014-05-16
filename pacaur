@@ -709,8 +709,6 @@ MakePkgs() {
             [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
             [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
             [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $i --asexplicit ${pacopts[@]} &>/dev/null
-        else
-            sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
         fi
     done
 
