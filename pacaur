@@ -683,6 +683,19 @@ MakePkgs() {
                     note "w" "${colorW}$i${reset} is up-to-date -- skipping"
                     continue
                 else
+                    unset cachedpkg
+                    [[ $PKGDEST ]] && getcachedpkg "$i-$aurdevelpkgsAall" "$PKGDEST"
+                    if [[ $cachedpkg ]]; then
+                        if [[ " ${aurdepspkgs[@]} " =~ " $i " || $installpkg ]]; then
+                            note "i" $"Installing ${colorW}$i${reset} cached package..."
+                            yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                            [[ " ${aurdepspkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
+                            continue
+                        else
+                            note "i" $"Package ${colorW}$i${reset} already available in cache"
+                            continue
+                        fi
+                    fi
                     makeopts+=('-e')
                 fi
             fi
