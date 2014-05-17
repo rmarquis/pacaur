@@ -206,7 +206,7 @@ DownloadPkgs() {
         done
 
         allrepopkgs=($(echo "${allrepopkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-        providersrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "$(expac -S '%n' "${allrepopkgs[@]}")" | tr ' ' '\n')))
+        providersrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "$(expac -S '%n' "${allrepopkgs[@]}" | LC_COLLATE=C sort -u)" | tr ' ' '\n')))
 
         # remove pactree deps of default providers if non default provider is already installed
         if [[ -n "${providersrepopkgs[@]}" ]]; then
