@@ -344,10 +344,11 @@ ProviderChecks() {
         [[ ! ${#providers[@]} -gt 1 ]] && continue
 
         # skip if already provided
-        for j in "${providerpkgs[@]}"; do
-            provided+=($(expac -Ss '%S' "^$j$"))
-        done
-        [[ -n "${provided[@]}" ]] && [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
+        if [[ -n "${providerspkgs[@]}" ]]; then
+            providerspkgs=($(echo "${providerspkgs[@]}" | tr ' ' '|'))
+            provided+=($(expac -Ss '%S' "^(${providerspkgs[@]})$"))
+            [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
+        fi
 
         if [[ ! $noconfirm ]]; then
             note "i" $"${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
@@ -780,8 +781,9 @@ CheckRepo() {
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
         repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
+        repopkgsQgrp=($(expac -Qv -l "#" '(%G)' "${repopkgsQood[@]}"))
         for ((i=0; i<${#repopkgsQood[@]}; i++)); do
-            repopkgsQgrp[$i]=$(expac -Q -l " " '(%G)' "${repopkgsQood[$i]}" | sed 's/()//g')
+            [[ "${repopkgsQgrp[$i]}" = '(None)' ]] && unset repopkgsQgrp[$i] || repopkgsQgrp[$i]=$(echo "${repopkgsQgrp[$i]}" | tr '#' ' ')
             [[ " ${ignoredpkgs[@]} " =~ " ${repopkgsQood[$i]} " ]] && repopkgsQignore[$i]=$"[ ignored ]"
         done
         lname=$(getlength "${repopkgsQood[@]}")
