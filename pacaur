@@ -76,7 +76,7 @@ Core() {
     getignoredpkgs
     [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
-    DownloadPkgs
+    DepsSolver
     IgnoreDepsChecks
     ProviderChecks
     getversionedpkgs
@@ -84,6 +84,7 @@ Core() {
     ReinstallChecks
     OutofdateChecks
     Prompt
+    EditPkgs ${deps[@]}
     MakePkgs
 }
 
@@ -147,10 +148,10 @@ IgnoreChecks() {
     nothingtodo ${aurpkgs[@]}
 }
 
-DownloadPkgs() {
+DepsSolver() {
     note "i" $"resolving dependencies..."
     allaurdeps+=("${aurpkgs[@]}")
-    FindPkgsDeps ${aurpkgs[@]}
+    FindDepsSolver ${aurpkgs[@]}
     deps=("${allaurdeps[@]}")
 
     # return AUR deps pkgs only
@@ -186,8 +187,58 @@ DownloadPkgs() {
     fi
 }
 
-FindPkgsDeps() {
+FindDepsSolver() {
+    [[ $nodeps && $count -ge 2 ]] && return
+    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
+    # TODO:
+    # - versioning check
+    # - not found error
+    downloadjson ${depspkgsaur[@]}
+
+    depspkgs=($(getjsonarray "Depends"))
+    depspkgs+=($(getjsonarray "MakeDepends"))
+
+    # remove installed deps
+    depspkgs=($($pacmanbin -T "${depspkgs[@]}" | sort -u))
+
+    # split binary and AUR depends pkgs
+    unset deps depspkgsaur
+    if [[ -n "${depspkgs[@]}" ]]; then
+        # remove package versioning for --nodeps
+        if [[ $nodeps && $count -eq 1 ]]; then
+            for ((i=0; i<${#depspkgs[@]}; i++)); do
+                depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
+            done
+        fi
+        depspkgsaur=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+        depspkgs=($(echo "${depspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        depspkgsaur=($(echo "${depspkgsaur[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        repodeps+=($(LC_COLLATE=C comm -23 <(echo "${depspkgs[@]}" | tr ' ' '\n') <(echo "${depspkgsaur[@]}" | tr ' ' '\n')))
+    fi
+    unset depspkgs
+
+    if [[ -n "${depspkgsaur[@]}" ]]; then
+        # remove AUR package versioning
+        for ((i=0; i<${#depspkgsaur[@]}; i++)); do
+            depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
+        done
+        # ensure correct dependency order
+        depspkgsaurtmp=(${depspkgsaur[@]})
+        for ((i=0; i<${#depspkgsaurtmp[@]}; i++)); do
+            if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaurtmp[$i]} " ]]; then
+                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && allaurdeps+=("${depspkgsaurtmp[$i]}")
+                # avoid duplicated download
+                depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && deps+=("${depspkgsaurtmp[$i]}")
+            fi
+        done
+        depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
+    fi
+
+    if [[ -n "${depspkgsaur[@]}" ]]; then
+        allaurdeps+=("${depspkgsaur[@]}")
+        FindDepsSolver ${depspkgsaur[@]}
+    fi
 }
 
 IgnoreDepsChecks() {
@@ -297,12 +348,8 @@ ConflictChecks() {
 
     # AUR conflicts
     Aprovides=(${depsAname[@]})
-    for ((i=0; i<${#depsAname[@]}; i++)); do
-        Aprovides+=("$(grep "^provides=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-        Aconflicts+=("$(grep "^conflicts=" "$builddir/${depsAname[$i]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
-    done
-    Aprovides=($(echo "${Aprovides[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-    Aconflicts=($(echo "${Aconflicts[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+    Aprovides=($(getjsonarray "Provides" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+    Aconflicts=($(getjsonarray "Conflicts" | tr ' ' '\n' | LC_COLLATE=C sort -u))
     aurconflicts+=($(LC_COLLATE=C comm -12 <(echo "${Aprovides[@]}" | tr ' ' '\n') <(echo "${allQconflicts[@]}" | tr ' ' '\n')))
     aurconflicts+=($(LC_COLLATE=C comm -12 <(echo "${Aconflicts[@]}" | tr ' ' '\n') <(echo "${allQprovides[@]}" | tr ' ' '\n')))
     aurconflicts=($(echo "${aurconflicts[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
@@ -310,8 +357,8 @@ ConflictChecks() {
     for i in "${aurconflicts[@]}"; do
         unset aurAconflicts
         [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=("$i")
-        for ((k=0; k<${#depsAname[@]}; k++)); do
-            [[ " $(grep "^conflicts=" "$builddir/${depsAname[$k]}/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()") " =~ " $i " ]] && aurAconflicts+=("${depsAname[$k]}")
+        for i in "${depsAname[@]}"; do
+            [[ " $(getjsonarrayvar "Conflicts" "$i") " =~ " $i " ]] && aurAconflicts+=("$i")
         done
 
         for j in "${aurAconflicts[@]}"; do
@@ -326,7 +373,7 @@ ConflictChecks() {
                     for ((l=0; l<${#depsAname[@]}; l++)); do
                         [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
                     done
-                    Aprovides+=("$(grep "^provides=" "$builddir/$j/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+                    Aprovides+=($(getjsonarrayvar "Provides" "$j"))
                     [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
                     break
                 else
@@ -335,7 +382,7 @@ ConflictChecks() {
                     note "e" "$j and $k are in conflict"
                 fi
             fi
-            Aprovides+=("$(grep "^provides=" "$builddir/$j/PKGBUILD" | cut -d '=' -f2 | tr -d "'\"()")")
+            Aprovides+=($(getjsonarrayvar "Provides" "$j"))
             [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
         done
     done
@@ -486,8 +533,6 @@ Prompt() {
             exit
         fi
     fi
-
-    EditPkgs ${deps[@]}
 }
 
 EditPkgs() {
@@ -790,11 +835,19 @@ getcachedpkg() {
 downloadjson() {
     urlencodedpkgs=($(sed 's/+/%2b/g' <<< $@ | sed 's/@/%40/g')) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
-    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs" -o "$tmpdir/raw.json" || note "e" $"Could not connect to the AUR"
+    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs&v=2" -o "$tmpdir/rpc.json" || note "e" $"Could not connect to the AUR"
 }
 
 getjsonvar() {
-    json_reformat < "$tmpdir/raw.json" | tr -d "\", " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | awk -F "#" '{print $2}'
+    json_reformat < "$tmpdir/rpc.json" | tr -d "\", " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | awk -F "#" '{print $2}'
+}
+
+getjsonarray() {
+    json_reformat < "$tmpdir/rpc.json" | tr -d "\", " | sed -e "/^$1/,/]/!d" | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n'
+}
+
+getjsonarrayvar() {
+    json_reformat < "$tmpdir/rpc.json" | tr -d "\", " | sed -e "/Name:$2/,/}/!d" | sed -e "/^$1/,/]/!d" | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]'
 }
 
 checkQrequires() {
@@ -910,7 +963,7 @@ fixbackend() {
     cowerbin=$(expac -Qs '%n' "^cower$") # cower-git compatibility
     downloadjson $cowerbin
     cowerbinurl=($(getjsonvar "URLPath"))
-    curl -sf --compressed -C 0 "https://aur.archlinux.org${cowerbinurl%/*}/PKGBUILD" -o "$tmpdir/$cowerbin.PKGBUILD" || note "e" $"Could not connect to the AUR"
+    curl -sf --compressed -C 0 "$aururl${cowerbinurl%/*}/PKGBUILD" -o "$tmpdir/$cowerbin.PKGBUILD" || note "e" $"Could not connect to the AUR"
     mkdir -p "$builddir/$cowerbin" && cd "$builddir/$cowerbin"
     makepkg -p $tmpdir/$cowerbin.PKGBUILD -sfic ${makeopts[@]} --noconfirm
     CleanUp $cowerbin
