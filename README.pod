@@ -165,11 +165,6 @@ When searching the AUR, ignore all results marked as out of date.
 When searching the AUR, also show results marked as out of date. This take
 precedence over the I<IgnoreOOD> option of the cower config file.
 
-=item B<--insecure>
-
-When using the secure mode, temporarily enable the full bash dependency solver
-to allow full I<$CARCH> bash magic compatibility.
-
 =back
 
 
@@ -240,12 +235,6 @@ Clean build directory after operation. Default is B<true>.
 When clean config option is enabled, clean build directory of development
 packages. Default is B<true>.
 
-=item B<secure>
-
-Use cower's internal dependency solver instead of the full bash solver to
-enhance security. This option breaks compatibility with I<$CARCH> bash magic.
-Default is B<false>.
-
 =item B<sudoloop>
 
 Prevent sudo timeout. This option overrides the system-wide sudo configuration.
@@ -298,13 +287,6 @@ development packages, disable the I<cleandevel> config option. This will speed
 up the update even if the I<clean> config option is enabled for normal packages.
 You might also want to change the default temporary directory which is
 automatically cleared upon reboot.
-
-=item B<secure mode>
-
-The I<secure> mode uses cower's internal dependency solver instead of the full
-bash solver to enhance security. The PKGBUILDs using the B<$CARCH> makepkg
-variable will not be correctly handled anymore. In normal mode, a notice will
-however be shown before sourcing if potentially harmful pseudo code is detected.
 
 =item B<broken backend>
 

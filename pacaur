@@ -28,7 +28,6 @@ editinstall=true                            # edit install script
 fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
-secure=false                                # enhanced security
 sudoloop=false                              # prevent sudo timeout
 sortbyvotes=true                            # sort search results by votes
 
@@ -148,40 +147,11 @@ IgnoreChecks() {
     nothingtodo ${aurpkgs[@]}
 }
 
-DownloadAur() {
-    while read -r flag pkg info; do
-        case $flag in
-            S)  [[ $operation = download && -n "$info" ]] && note "i" $"$pkg downloaded to $builddir";
-                [[ -n "$info" ]] && deps+=("$pkg");;
-            W)  [[ $operation = download && -n "$info" ]] && repo=$(echo $info | awk -F " " '{print $6}') && note "w" $"${colorW}$pkg${reset} is available in ${colorM}$repo${reset}" || repodeps+=("$pkg");;
-            E)  [[ $operation = download && -e "$builddir/$pkg/PKGBUILD" ]] && note "f" $"\`$builddir/$pkg' already exists. Use -f to overwrite." || note "f" $"no results found for $pkg";
-                errdeps+=("$pkg");;
-        esac
-    done < <(cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
-    wait
-
-    # PKGBUILDs check
-    for i in "${deps[@]}"; do
-        [[ ! -e "$builddir/$i/PKGBUILD" ]] && errdeps+=("$i") && note "f" $"Could not read ${colorW}$i${reset} PKGBUILD: badly packaged tarball"
-    done
-    [[ -n "${errdeps[@]}" ]] && exit 1
-}
-
 DownloadPkgs() {
-    if [[ $secure = true ]]; then
-        note "i" $"resolving dependencies..."
-        coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
-
-        # check for CARCH 32/64bits bash magic
-        for i in "${deps[@]}"; do
-            [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && note "e" $"${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
-        done
-    else
-        note "i" $"resolving dependencies..."
-        allaurdeps+=("${aurpkgs[@]}")
-        FindPkgsDeps ${aurpkgs[@]}
-        deps=("${allaurdeps[@]}")
-    fi
+    note "i" $"resolving dependencies..."
+    allaurdeps+=("${aurpkgs[@]}")
+    FindPkgsDeps ${aurpkgs[@]}
+    deps=("${allaurdeps[@]}")
 
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
@@ -217,78 +187,7 @@ DownloadPkgs() {
 }
 
 FindPkgsDeps() {
-    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
-    coweropts+=("--ignorerepo")
-    DownloadAur ${depspkgsaur[@]}
-    [[ $nodeps && $count -ge 2 ]] && return
-
-    # source pkgs
-    for i in "${deps[@]}"; do
-        PreviewPkgs $i
-        source "$builddir/$i/PKGBUILD" && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
-    done
-
-    # remove installed deps
-    depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}" | sort -u))
-
-    # split binary and AUR depends pkgs
-    unset deps depends makedepends sourcedpkgs depspkgsaur
-    if [[ -n "${depspkgs[@]}" ]]; then
-        # remove package versioning for --nodeps
-        if [[ $nodeps && $count -eq 1 ]]; then
-            for ((i=0; i<${#depspkgs[@]}; i++)); do
-                depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-            done
-        fi
-        depspkgsaur=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
-        depspkgs=($(echo "${depspkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-        depspkgsaur=($(echo "${depspkgsaur[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-        repodeps+=($(LC_COLLATE=C comm -23 <(echo "${depspkgs[@]}" | tr ' ' '\n') <(echo "${depspkgsaur[@]}" | tr ' ' '\n')))
-    fi
-    unset depspkgs
-
-    if [[ -n "${depspkgsaur[@]}" ]]; then
-        # remove AUR package versioning
-        for ((i=0; i<${#depspkgsaur[@]}; i++)); do
-            depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
-        done
-        # ensure correct dependency order
-        depspkgsaurtmp=(${depspkgsaur[@]})
-        for ((i=0; i<${#depspkgsaurtmp[@]}; i++)); do
-            if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaurtmp[$i]} " ]]; then
-                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && allaurdeps+=("${depspkgsaurtmp[$i]}")
-                # avoid duplicated download
-                depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && deps+=("${depspkgsaurtmp[$i]}")
-            fi
-        done
-        depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
-    fi
-
-    if [[ -n "${depspkgsaur[@]}" ]]; then
-        allaurdeps+=("${depspkgsaur[@]}")
-        FindPkgsDeps ${depspkgsaur[@]}
-    fi
-}
-
-PreviewPkgs() {
-    # sanitize
-    cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
-    while [[ -n "$(grep -Po '^depends=\($|^depends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
-        sed -i -e '/^depends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-    done
-    while [[ -n "$(grep -Po '^optdepends=\($|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
-        sed -i -e '/^optdepends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-    done
-
-    # sudo security check
-    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends|^pkgdesc')" ]] && note "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
-    if [[ ! $noconfirm ]]; then
-        if proceed "n" $"Do you really want to continue?"; then
-            CleanUp ${deps[@]} &>/dev/null
-            exit
-        fi
-    fi
 }
 
 IgnoreDepsChecks() {
@@ -763,7 +662,7 @@ CleanUp() {
     fi
 }
 
-DownloadFromAur() {
+DownloadAur() {
     [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
     while read -r flag pkg info; do
         case $flag in
@@ -1059,7 +958,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
-                    insecure) secure=false;;
                     fixbackend|allanbrokeit) fixbackend; exit;;
                     root) root=true;;
                     version) version; exit;;
@@ -1145,7 +1043,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 case $operation in
     download)
         # download (-d) handling
-        DownloadFromAur ${pkgs[@]}
+        DownloadAur ${pkgs[@]}
         EditPkgs ${deps[@]}
         exit;;
     cleanpkg)

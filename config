@@ -14,7 +14,6 @@
 #fallback=true                         # pacman fallback to the AUR
 #clean=true                            # clean up after package install
 #cleandevel=true                       # clean up devel package
-#secure=false                          # enhanced security
 #sudoloop=false                        # prevent sudo timeout
 #sortbyvotes=true                      # sort search results by votes
 
