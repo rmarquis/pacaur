@@ -60,12 +60,12 @@ ClassifyPkgs() {
         [[ $repo ]] && repopkgs=("${pkgs[@]}")
         [[ $aur ]] && aurpkgs=("${pkgs[@]}")
         if [[ ! $repo && ! $aur ]]; then
-            getignoredgrps
             for i in "${pkgs[@]}"; do
-                [[ $i == aur/* ]] && i=${i:4} && aurpkgs+=("$i") && continue
-                [[ " ${ignoredgrps[@]} " =~ " $i " ]] && repopkgs+=("$i") && continue
-                [[ -z "$(expac -Ss '%n' "^$i$" || expac -Sg '%n' "$i")" ]] && aurpkgs+=("$i") || repopkgs+=("$i")
+                [[ $i == aur/* ]] && aurpkgs+=("${i:4}") && continue
+                aurpkgs+=($($pacmanbin -Sp "$i" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
             done
+            pkgs=(${pkgs[@]/aur\//})
+            repopkgs=($(LC_COLLATE=C comm -23 <(echo "${pkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u) <(echo "${aurpkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u)))
         fi
     else
         [[ ! $aur ]] && repopkgs=("${pkgs[@]}") || aurpkgs=("${pkgs[@]}")
@@ -191,9 +191,11 @@ FindDepsSolver() {
     [[ $nodeps && $count -ge 2 ]] && return
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
-    # TODO:
-    # - versioning check
-    # - not found error
+    # remove AUR package versioning
+    for ((i=0; i<${#depspkgsaur[@]}; i++)); do
+        depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
+    done
+
     downloadjson ${depspkgsaur[@]}
 
     depspkgs=($(getjsonarray "Depends"))
@@ -223,6 +225,7 @@ FindDepsSolver() {
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
             depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
         done
+
         # ensure correct dependency order
         depspkgsaurtmp=(${depspkgsaur[@]})
         for ((i=0; i<${#depspkgsaurtmp[@]}; i++)); do
@@ -807,10 +810,6 @@ getversionedpkgs() {
         repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
         repodepsSrepo=($(expac -S -1 '%r/%n' "${repodepspkgs[@]}"))
     fi
-}
-
-getignoredgrps() {
-    ignoredgrps+=($(grep '^IgnoreGroup' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
 }
 
 getignoredpkgs() {
