@@ -169,19 +169,15 @@ DownloadAur() {
 
 DownloadPkgs() {
     if [[ $secure = true ]]; then
-        if [[ $operation = download && $count -lt 2 ]]; then
-            DownloadAur ${aurpkgs[@]} && return
-        else
-            [[ $operation != download ]] && note "i" $"resolving dependencies..."
-            coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
-        fi
+        note "i" $"resolving dependencies..."
+        coweropts+=("-d") && DownloadAur ${aurpkgs[@]} # recursive here
 
         # check for CARCH 32/64bits bash magic
         for i in "${deps[@]}"; do
             [[ -n "$(grep 'CARCH' "$builddir/$i/PKGBUILD")" ]] && note "e" $"${colorW}CARCH${reset} variable detected in ${colorW}$i${reset}. Enable the full bash dependency solver with the --insecure option."
         done
     else
-        [[ $operation != download && $count -lt 2 ]] && note "i" $"resolving dependencies..."
+        note "i" $"resolving dependencies..."
         allaurdeps+=("${aurpkgs[@]}")
         FindPkgsDeps ${aurpkgs[@]}
         deps=("${allaurdeps[@]}")
@@ -192,14 +188,6 @@ DownloadPkgs() {
 
     # reduce root binary deps
     repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
-
-    # return binary providers
-    if [[ $operation = download && $count -ge 2 ]]; then
-        repodepstmp=($(expac -S -1 -v '%n' "${repodeps[@]}" 2>&1 >/dev/null | awk -F " " '{print $3}' | tr -d "\'\`"))
-        for i in "${repodepstmp[@]}"; do
-            repodeps+=($(expac -Ss '%n %S' "^$i$" | awk -F " " '{print $1}'))
-        done
-    fi
 
     # return all binary deps
     if [[ -n "${repodeps[@]}" ]]; then
@@ -225,7 +213,6 @@ DownloadPkgs() {
         fi
 
         repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-        [[ $operation = download && $count -ge 2 ]] && expac -S -1 $"${colorY}::${reset} ${colorW}%n${reset} is available in ${colorM}%r${reset}" ${repodepspkgs[@]}
     fi
 }
 
@@ -234,7 +221,6 @@ FindPkgsDeps() {
 
     coweropts+=("--ignorerepo")
     DownloadAur ${depspkgsaur[@]}
-    [[ $operation = download && $count -lt 2 ]] && return
     [[ $nodeps && $count -ge 2 ]] && return
 
     # source pkgs
@@ -777,6 +763,18 @@ CleanUp() {
     fi
 }
 
+DownloadFromAur() {
+    [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
+    while read -r flag pkg info; do
+        case $flag in
+            S)  echo "$info" && deps+=("$pkg");;
+            W)  echo "$info";;
+            E)  echo "$info";;
+        esac
+    done < <(cower ${coweropts[@]} -b $@ ${ignoreopts[@]} -t $builddir 2>&1)
+    wait
+}
+
 SearchInfoAur() {
     [[ $sortbyvotes = true ]] && coweropts+=("--rsort=votes")
     cower ${coweropts[@]} $@
@@ -1039,7 +1037,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 case "$OPTARG" in
                     search) operation=sync; search=true; coweropts+=("-s"); aur='1';;
                     info) operation=sync; info=true; coweropts+=("-i"); aur='1';;
-                    download) operation=download; ((count++));;
+                    download) operation=download; coweropts+=("-d");;
                     makepkg) operation=sync; coweropts+=("-f"); aur='1';;
                     sync) operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
                     check) operation=upgrades; coweropts+=("-uq"); aur='1';;
@@ -1073,7 +1071,7 @@ while [[ -n "${!OPTIND}" ]]; do
             i)  [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
             d)  [[ $pacS ]] && nodeps=true && pacopts+=("--nodeps") && makeopts+=("--nodeps") && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=download; ((count++));;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=download; coweropts+=("-d");;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
@@ -1147,9 +1145,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 case $operation in
     download)
         # download (-d) handling
-        ClassifyPkgs ${pkgs[@]}
-        DownloadAur ${repopkgs[@]}
-        DownloadPkgs
+        DownloadFromAur ${pkgs[@]}
         EditPkgs ${deps[@]}
         exit;;
     cleanpkg)
