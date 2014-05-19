@@ -84,7 +84,7 @@ Core() {
     ReinstallChecks
     OutofdateChecks
     Prompt
-    EditPkgs ${deps[@]}
+    DownloadPkgs
     MakePkgs
 }
 
@@ -547,6 +547,15 @@ Prompt() {
     fi
 }
 
+DownloadPkgs() {
+    # download and extract
+    basedeps=($(echo "$(getjsonvar "PackageBase")" | tr ' ' '\n' | uniq))
+    coweropts+=("-d") && DownloadAur ${basedeps[@]} &>/dev/null
+
+    # edit
+    EditPkgs ${basedeps[@]}
+}
+
 EditPkgs() {
     [[ $noedit ]] && return
     for i in "$@"; do
@@ -723,7 +732,7 @@ DownloadAur() {
     [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
     while read -r flag pkg info; do
         case $flag in
-            S)  echo "$info" && deps+=("$pkg");;
+            S)  echo "$info" && pkgs+=("$pkg");;
             W)  echo "$info";;
             E)  echo "$info";;
         esac
@@ -1105,7 +1114,7 @@ case $operation in
     download)
         # download (-d) handling
         DownloadAur ${pkgs[@]}
-        EditPkgs ${deps[@]}
+        EditPkgs ${pkgs[@]}
         exit;;
     cleanpkg)
         # clean (-c) handling
