@@ -87,11 +87,6 @@ Display version and quit.
 
 Display the help message and quit.
 
-=item B<--fixbackend>
-
-When I<cower> backend breaks following an update, attempt to fix it by quickly
-rebuilding it.
-
 =back
 
 
@@ -287,12 +282,6 @@ development packages, disable the I<cleandevel> config option. This will speed
 up the update even if the I<clean> config option is enabled for normal packages.
 You might also want to change the default temporary directory which is
 automatically cleared upon reboot.
-
-=item B<broken backend>
-
-When I<cower> backend breaks following an update of one of the library it is
-based on, the I<--fixbackend> option attempts to fix it by quickly rebuilding
-it. Note that I<--allanbrokeit> is an alias to this option.
 
 =item B<host name error>
 

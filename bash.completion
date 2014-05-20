@@ -19,7 +19,7 @@ _pacaur() {
             _pacman_file; return 0;
         else
             _pacman &> /dev/null
-            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help --fixbackend"
+            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help"
             return 0
         fi
     fi

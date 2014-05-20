@@ -57,7 +57,6 @@ _pacaur_opts_commands=(
     '-V[Display pacman version]'
     {-v,--version}'[Display pacaur version]'
     '(-h --help)'{-h,--help}'[Display usage]'
-    '--fixbackend[Quickly rebuild backend]'
 )
 
 _pacaur_opts_standalone=(

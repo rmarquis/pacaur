@@ -947,7 +947,6 @@ usage() {
     printf "%s\n" $" general"
     printf "%s\n" $"   -v, --version    display version information"
     printf "%s\n" $"   -h, --help       display help information"
-    printf "%s\n" $"   --fixbackend     quickly rebuild backend"
     echo
     printf "%s\n" $"options:"
     printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
@@ -967,17 +966,6 @@ usage() {
 
 version() {
     echo "pacaur $version"
-}
-
-fixbackend() {
-    note "i" $"Rebuilding ${colorW}cower${reset} backend..."
-    cowerbin=$(expac -Qs '%n' "^cower$") # cower-git compatibility
-    downloadjson $cowerbin
-    cowerbinurl=($(getjsonvar "URLPath"))
-    curl -sf --compressed -C 0 "$aururl${cowerbinurl%/*}/PKGBUILD" -o "$tmpdir/$cowerbin.PKGBUILD" || note "e" $"Could not connect to the AUR"
-    mkdir -p "$builddir/$cowerbin" && cd "$builddir/$cowerbin"
-    makepkg -p $tmpdir/$cowerbin.PKGBUILD -sfic ${makeopts[@]} --noconfirm
-    CleanUp $cowerbin
 }
 
 #
@@ -1022,7 +1010,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
-                    fixbackend|allanbrokeit) fixbackend; exit;;
                     root) root=true;;
                     version) version; exit;;
                     help) usage; exit;;
