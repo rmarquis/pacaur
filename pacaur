@@ -599,8 +599,18 @@ MakePkgs() {
         [[ $sudoloop = true ]] && sudov &
     fi
 
+    # split packages support
+    for ((i=0; i<${#pkgsbase[@]}; i++)); do
+        for ((j=0; j<${#deps[@]}; j++)); do
+            [[ "${pkgsbase[$i]}" = "${pkgsbase[$j]}" ]] && [[ ! " ${pkgsdeps[@]} " =~ " ${deps[$j]} " ]] && pkgsdeps+=("${deps[$j]}")
+        done
+        pkgsdeps+=("#")
+    done
+    pkgsdeps=($(echo ${pkgsdeps[@]} | sed 's/ # /\n/g' | tr -d '#' | sed '/^ $/d' | tr ' ' ',' | sed 's/^,//g' | sed 's/,$//g'))
+
     # reverse deps order
-    deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${deps[@]} | awk -F "\n" '{print}'))
+    basepkgs=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< "${basepkgs[@]}" | awk -F "\n" '{print}'))
+    pkgsdeps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< "${pkgsdeps[@]}" | awk -F "\n" '{print}'))
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
@@ -625,67 +635,76 @@ MakePkgs() {
     done
 
     # build
-    for i in "${deps[@]}"; do
-        note "i" $"Building ${colorW}$i${reset} package..."
-        cd "$builddir/$i"
+    for ((i=0; i<${#basepkgs[@]}; i++)); do
+        # get splitted packages list
+        pkgsdepslist=($(echo "${pkgsdeps[$i]}" | awk -F "," '{for (k=1;k<=NF;k++) print $k}'))
+
+        note "i" $"Building ${colorW}${pkgsdepslist[*]}${reset} package(s)..."
+        cd "$builddir/${basepkgs[$i]}"
 
         # build devel if necessary only
         makeopts=(${makeopts[@]/-e/})
-        if [[ -n "$(echo "$i" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" && ! $rebuild ]]; then
+        if [[ -n "$(echo "${basepkgs[$i]}" | grep -E "\-(cvs|svn|git|hg|bzr|darcs)$")" && ! $rebuild ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 makepkg -o ${makeopts[@]}
+
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-                aurdevelpkgsQver=$(expac -Qs '%v' "^$i$")
+                aurdevelpkgsQver=$(expac -Qs '%v' "^${basepkgs[$i]}$")
                 if [[ -n "$aurdevelpkgsAepo" ]]; then
                     aurdevelpkgsAall="$aurdevelpkgsAepo:$aurdevelpkgsAver-$aurdevelpkgsArel"
                 else
                     aurdevelpkgsAall="$aurdevelpkgsAver-$aurdevelpkgsArel"
                 fi
-                if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
-                    note "w" "${colorW}$i${reset} is up-to-date -- skipping"
-                    continue
-                else
-                    unset cachedpkg
-                    [[ $PKGDEST ]] && getcachedpkg "$i-$aurdevelpkgsAall" "$PKGDEST"
-                    if [[ $cachedpkg ]]; then
-                        if [[ " ${aurdepspkgs[@]} " =~ " $i " || $installpkg ]]; then
-                            note "i" $"Installing ${colorW}$i${reset} cached package..."
-                            yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
-                            [[ " ${aurdepspkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
-                            continue
-                        else
-                            note "i" $"Package ${colorW}$i${reset} already available in cache"
-                            continue
+
+                for j in "${pkgsdepslist[@]}"; do
+                    if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
+                        note "w" "${colorW}$j${reset} is up-to-date -- skipping"
+                        continue
+                    else
+                        unset cachedpkg
+                        [[ $PKGDEST ]] && getcachedpkg "$j-$aurdevelpkgsAall" "$PKGDEST"
+                        if [[ $cachedpkg ]]; then
+                            if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
+                                note "i" $"Installing ${colorW}$j${reset} cached package..."
+                                yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                                [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                                continue
+                            else
+                                note "i" $"Package ${colorW}$j${reset} already available in cache"
+                                continue
+                            fi
                         fi
+                        makeopts+=('-e')
                     fi
-                    makeopts+=('-e')
-                fi
+                done
             fi
         fi
 
         if [[ $installpkg ]]; then
             # install
-            yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]}
+            yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
         else
             if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
                 # install AUR deps
                 note "i" $"Installing ${colorW}$i${reset} dependencies..."
-                yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]}
+                yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             else
                 # install then remove binary deps
-                yes `gettext pacman Y` | makepkg -sfr ${makeopts[@]}
+                yes `gettext pacman Y` | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             fi
         fi
         # clean
-        CleanUp $i
+        CleanUp ${basepkgs[$i]}
 
         # set dep status
         if [[ $installpkg ]]; then
-            [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $i " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $i --asdeps ${pacopts[@]} &>/dev/null
-            [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $i --asexplicit ${pacopts[@]} &>/dev/null
+            for j in "${pkgsdepslist[@]}"; do
+                [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $j --asexplicit ${pacopts[@]} &>/dev/null
+            done
         fi
     done
 
