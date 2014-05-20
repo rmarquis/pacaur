@@ -546,8 +546,17 @@ DownloadPkgs() {
     basedeps=($(echo "$(getjsonvar "PackageBase")" | tr ' ' '\n' | uniq))
     coweropts+=("-d") && DownloadAur ${basedeps[@]} &>/dev/null
 
+    # get packages base list
+    for i in "${deps[@]}"; do
+        pkgsbase+=("$(getjsonvarvar "PackageBase" "$i")")
+    done
+
     # edit
-    EditPkgs ${basedeps[@]}
+    for i in "${pkgsbase[@]}"; do
+        [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
+        basepkgs+=("$i")
+    done
+    EditPkgs ${basepkgs[@]}
 }
 
 EditPkgs() {
@@ -853,12 +862,16 @@ getjsonvar() {
     json_reformat < "$tmpdir/rpc.json" | tr -d "\", " | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | awk -F "#" '{print $2}'
 }
 
+getjsonvarvar() {
+    json_reformat < "$tmpdir/rpc.json" | tr -d ", " | sed -e "/\"Name\":\"$2\"/,/}/!d" | tr -d "\"" | grep -Po "$1:.*" | sed -r "s/$1:/$1#/g" | awk -F "#" '{print $2}'
+}
+
 getjsonarray() {
-    json_reformat < "$tmpdir/rpc.json" | tr -d "\", " | sed -e "/^$1/,/]/!d" | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n'
+    json_reformat < "$tmpdir/rpc.json" | tr -d ", " | sed -e "/^\"$1\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n'
 }
 
 getjsonarrayvar() {
-    json_reformat < "$tmpdir/rpc.json" | tr -d "\", " | sed -e "/Name:$2/,/}/!d" | sed -e "/^$1/,/]/!d" | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]'
+    json_reformat < "$tmpdir/rpc.json" | tr -d ", " | sed -e "/\"Name\":\"$2\"/,/}/!d" | sed -e "/^\"$1\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]'
 }
 
 checkQrequires() {
