@@ -549,6 +549,7 @@ Prompt() {
 
 DownloadPkgs() {
     # download and extract
+    note "i" $"${colorW}Retrieving package(s)...${reset}"
     basedeps=($(echo "$(getjsonvar "PackageBase")" | tr ' ' '\n' | uniq))
     coweropts+=("-d") && DownloadAur ${basedeps[@]} &>/dev/null
 
