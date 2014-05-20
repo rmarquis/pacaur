@@ -264,8 +264,6 @@ IgnoreDepsChecks() {
     for i in "${repodepspkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             note "w" $"${colorW}$i${reset}: ignoring package upgrade"
-            CleanUp ${aurpkgs[@]} &>/dev/null
-            CleanUp ${aurdepspkgs[@]} &>/dev/null
             note "e" $"Unresolved dependency '${colorW}$i${reset}'"
         fi
     done
@@ -273,14 +271,10 @@ IgnoreDepsChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $noconfirm ]]; then
                 if ! proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    CleanUp ${aurpkgs[@]} &>/dev/null
-                    CleanUp ${aurdepspkgs[@]} &>/dev/null
                     note "e" $"Unresolved dependency '${colorW}$i${reset}'"
                 fi
             else
                 note "w" $"${colorW}$i${reset}: ignoring package upgrade"
-                CleanUp ${aurpkgs[@]} &>/dev/null
-                CleanUp ${aurdepspkgs[@]} &>/dev/null
                 note "e" $"Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
@@ -541,7 +535,6 @@ Prompt() {
     if [[ ! $noconfirm ]]; then
         [[ $installpkg ]] && action=$"installation" || action=$"download"
         if ! proceed "y" $"Proceed with $action?"; then
-            CleanUp ${deps[@]} &>/dev/null
             exit
         fi
     fi
@@ -934,7 +927,7 @@ ctrlc() {
     echo
     [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
-    [[ $operation = sync ]] && [[ ! $search && ! $info ]] && CleanUp $(echo "${pkgs[@]} ${deps[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u)
+    [[ $operation = sync ]] && [[ ! $search && ! $info ]] && [[ -n "${basedeps[@]}" ]] && CleanUp "${basedeps[@]}"
     exit
 }
 
