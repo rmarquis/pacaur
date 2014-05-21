@@ -602,9 +602,6 @@ MakePkgs() {
     # reverse deps order
     deps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${deps[@]} | awk -F "\n" '{print}'))
 
-    # check destination folder
-    [[ ! $installpkg ]] && [[ ! $PKGDEST ]] && [[ $clean = true ]] && note "e" $"${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset or ${colorW}clean${reset} option is disabled"
-
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         note "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
@@ -1102,6 +1099,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && note "e" $"target not found"
 [[ $root ]] && note "e" $"alternative installation root option not supported"
+[[ $operation = sync ]] && [[ ! $search && ! $info && ! $installpkg && ! $PKGDEST ]] && [[ $clean = true ]] && note "e" $"${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset or ${colorW}clean${reset} option is disabled"
 
 # operations
 case $operation in
