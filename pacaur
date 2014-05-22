@@ -157,6 +157,7 @@ DownloadAur() {
                 errdeps+=("$pkg");;
         esac
     done < <(cower ${coweropts[@]} -db $@ ${ignoreopts[@]} -t $builddir 2>&1)
+    wait
 
     # PKGBUILDs check
     for i in "${deps[@]}"; do
