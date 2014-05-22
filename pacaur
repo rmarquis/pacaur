@@ -154,6 +154,12 @@ DepsSolver() {
     FindDepsSolver ${aurpkgs[@]}
     deps=("${allaurdeps[@]}")
 
+    # no results check
+    for i in "${errdeps[@]}"; do
+        note "f" "no results found for $i"
+    done
+    [[ -n "${errdeps[@]}" ]] && exit 1
+
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
 
@@ -197,6 +203,9 @@ FindDepsSolver() {
     done
 
     downloadjson ${depspkgsaur[@]}
+
+    # no results check
+    errdeps+=($(LC_COLLATE=C comm -3 <(echo "$(getjsonvar "Name")" | tr ' ' '\n' | sort -u) <(echo "${depspkgsaur[@]}" | tr ' ' '\n' | sort -u)))
 
     depspkgs=($(getjsonarray "Depends"))
     depspkgs+=($(getjsonarray "MakeDepends"))
