@@ -265,6 +265,7 @@ FindPkgsDeps() {
                 depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && deps+=("${depspkgsaurtmp[$i]}")
             fi
         done
+        depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
     fi
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
