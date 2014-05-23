@@ -157,7 +157,7 @@ DepsSolver() {
     done
     allaurdeps+=("${aurpkgs[@]}")
 
-    FindDepsSolver ${aurpkgs[@]}
+    FindDepsAur ${aurpkgs[@]}
     deps=("${allaurdeps[@]}")
 
     # no results check
@@ -169,37 +169,11 @@ DepsSolver() {
     # return AUR deps pkgs only
     aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
 
-    # reduce root binary deps
-    repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
-
     # return all binary deps
-    if [[ -n "${repodeps[@]}" ]]; then
-        for i in "${repodeps[@]}"; do
-            allrepopkgs+=($(pactree -su "$i"))
-        done
-
-        if [[ -n "${allrepopkgs[@]}" ]]; then
-            allrepopkgs=($(echo "${allrepopkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
-            providersrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "$(expac -S '%n' "${allrepopkgs[@]}")" | tr ' ' '\n')))
-        fi
-
-        # remove pactree deps of default providers if non default provider is already installed
-        if [[ -n "${providersrepopkgs[@]}" ]]; then
-            for i in "${providersrepopkgs[@]}"; do
-                j=$(expac -Qs '%n' "^$i$")
-                [[ -n "$j" ]] && [[ "$j" != "$(expac -Ss '%n' "^$i$" | tr '\n' ' ' | awk -F " " '{print $1}')" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
-            done
-            if [[ -n "${providersrepopkgsrm[@]}" ]]; then
-                providersrepopkgsrm=($($pacmanbin -T "${providersrepopkgsrm[@]}" | sort -u))
-                allrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "${providersrepopkgsrm[@]}" | tr ' ' '\n')))
-            fi
-        fi
-
-        repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-    fi
+    FindDepsRepo ${repodeps[@]}
 }
 
-FindDepsSolver() {
+FindDepsAur() {
     [[ $nodeps && $count -ge 2 ]] && return
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
@@ -250,8 +224,38 @@ FindDepsSolver() {
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         allaurdeps+=("${depspkgsaur[@]}")
-        FindDepsSolver ${depspkgsaur[@]}
+        FindDepsAur ${depspkgsaur[@]}
     fi
+}
+
+FindDepsRepo() {
+    [[ -z "${repodeps[@]}" ]] && return
+
+    # reduce root binary deps
+    repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
+
+    for i in "${repodeps[@]}"; do
+        allrepopkgs+=($(pactree -su "$i"))
+    done
+
+    if [[ -n "${allrepopkgs[@]}" ]]; then
+        allrepopkgs=($(echo "${allrepopkgs[@]}" | tr ' ' '\n' | LC_COLLATE=C sort -u))
+        providersrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "$(expac -S '%n' "${allrepopkgs[@]}")" | tr ' ' '\n')))
+    fi
+
+    # remove pactree deps of default providers if non default provider is already installed
+    if [[ -n "${providersrepopkgs[@]}" ]]; then
+        for i in "${providersrepopkgs[@]}"; do
+            j=$(expac -Qs '%n' "^$i$")
+            [[ -n "$j" ]] && [[ "$j" != "$(expac -Ss '%n' "^$i$" | tr '\n' ' ' | awk -F " " '{print $1}')" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
+        done
+        if [[ -n "${providersrepopkgsrm[@]}" ]]; then
+            providersrepopkgsrm=($($pacmanbin -T "${providersrepopkgsrm[@]}" | sort -u))
+            allrepopkgs=($(LC_COLLATE=C comm -23 <(echo "${allrepopkgs[@]}" | tr ' ' '\n') <(echo "${providersrepopkgsrm[@]}" | tr ' ' '\n')))
+        fi
+    fi
+
+    repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
 }
 
 IgnoreDepsChecks() {
