@@ -150,7 +150,13 @@ IgnoreChecks() {
 
 DepsSolver() {
     note "i" $"resolving dependencies..."
+
+    # remove AUR pkgs versioning
+    for ((i=0; i<${#aurpkgs[@]}; i++)); do
+        aurpkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
+    done
     allaurdeps+=("${aurpkgs[@]}")
+
     FindDepsSolver ${aurpkgs[@]}
     deps=("${allaurdeps[@]}")
 
@@ -197,11 +203,6 @@ FindDepsSolver() {
     [[ $nodeps && $count -ge 2 ]] && return
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
 
-    # remove AUR package versioning
-    for ((i=0; i<${#depspkgsaur[@]}; i++)); do
-        depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
-    done
-
     downloadjson ${depspkgsaur[@]}
 
     # no results check
@@ -216,7 +217,7 @@ FindDepsSolver() {
     # split binary and AUR depends pkgs
     unset deps depspkgsaur
     if [[ -n "${depspkgs[@]}" ]]; then
-        # remove package versioning for --nodeps
+        # remove all pkgs versioning
         if [[ $nodeps && $count -eq 1 ]]; then
             for ((i=0; i<${#depspkgs[@]}; i++)); do
                 depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
@@ -230,7 +231,7 @@ FindDepsSolver() {
     unset depspkgs
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
-        # remove AUR package versioning
+        # remove AUR pkgs versioning
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
             depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
         done
