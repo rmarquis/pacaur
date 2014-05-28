@@ -62,7 +62,7 @@ ClassifyPkgs() {
         if [[ ! $repo && ! $aur ]]; then
             for i in "${pkgs[@]}"; do
                 [[ $i == aur/* ]] && aurpkgs+=("${i:4}") && continue
-                aurpkgs+=($($pacmanbin -Sp "$i" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+                aurpkgs+=($($pacmanbin -Sp "$i" 2>&1 >/dev/null | grep "target not found" | awk -F " " '{print $NF}'))
             done
             pkgs=(${pkgs[@]/aur\//})
             repopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${pkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | LC_COLLATE=C sort -u)))
@@ -197,7 +197,7 @@ FindDepsAur() {
                 depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
             done
         fi
-        depspkgsaur=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+        depspkgsaur=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | grep "target not found" | awk -F " " '{print $NF}'))
         repodeps+=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u)  <(tr ' ' '\n' <<< ${depspkgsaur[@]} | LC_COLLATE=C sort -u)))
     fi
     unset depspkgs
