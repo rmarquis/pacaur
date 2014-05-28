@@ -171,6 +171,13 @@ DepsSolver() {
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
     done
 
+    # hard check for AURINFO metadata
+    depsAlastmodified=($(getjsonvar "LastModified"))
+    for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
+        # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
+        [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && note "f" $"Package ${colorR}${depsAname[$i]}${reset} does not provide AUR metadata"
+    done
+
     # no results check
     for i in "${errdeps[@]}"; do
         note "f" "no results found for $i"
