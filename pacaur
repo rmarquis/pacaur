@@ -79,7 +79,6 @@ Core() {
     DepsSolver
     IgnoreDepsChecks
     ProviderChecks
-    getversionedpkgs
     ConflictChecks
     ReinstallChecks
     OutofdateChecks
@@ -159,6 +158,18 @@ DepsSolver() {
 
     FindDepsAur ${aurpkgs[@]}
     deps=("${allaurdeps[@]}")
+
+    # get AUR packages info
+    downloadjson ${deps[@]}
+    depsAname=($(getjsonvar "Name"))    # return sorted results
+    depsAver=($(getjsonvar "Version"))
+    depsAood=($(getjsonvar "OutOfDate"))
+    depsArepo=("${depsAname[@]/#/aur/}" )
+    for ((i=0; i<${#depsAname[@]}; i++)); do
+        depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
+        [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
+        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
+    done
 
     # no results check
     for i in "${errdeps[@]}"; do
@@ -343,6 +354,14 @@ ProviderChecks() {
             providerdeps+=($(pactree -su "$i"))
         done
         repodepspkgs+=($($pacmanbin -T "${providerdeps[@]}" | sort -u))
+    fi
+
+    # get binary packages info
+    if [[ -n "${repodepspkgs[@]}" ]]; then
+        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
+        repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
+        repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
+        repodepsSrepo=($(expac -S -1 '%r/%n' "${repodepspkgs[@]}"))
     fi
 }
 
@@ -831,25 +850,6 @@ CleanCache() {
                 paccache -r -k0 -c $PKGDEST &>/dev/null
             fi
         fi
-    fi
-}
-
-getversionedpkgs() {
-    downloadjson ${deps[@]}
-    depsAname=($(getjsonvar "Name"))    # return sorted results
-    depsAver=($(getjsonvar "Version"))
-    depsAood=($(getjsonvar "OutOfDate"))
-    depsArepo=("${depsAname[@]/#/aur/}" )
-    for ((i=0; i<${#depsAname[@]}; i++)); do
-        depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
-        [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
-    done
-    if [[ -n "${repodepspkgs[@]}" ]]; then
-        repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
-        repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
-        repodepsQver=($(expac -Q '%v' "${repodepspkgs[@]}"))
-        repodepsSrepo=($(expac -S -1 '%r/%n' "${repodepspkgs[@]}"))
     fi
 }
 
