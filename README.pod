@@ -160,6 +160,15 @@ When searching the AUR, ignore all results marked as out of date.
 When searching the AUR, also show results marked as out of date. This take
 precedence over the I<IgnoreOOD> option of the cower config file.
 
+=item B<--insecure>
+Temporarily enable the bash dependency solver for packages that do not have AUR
+metadata info and which may not provide correct dependencies information through
+the extended AUR API. All packages uploaded to the AUR before 2014-05-27 18:35 UTC
+(AUR 3.0.0 release) are concerned and should be reuploaded by their respective
+maintainers. A notice will however be shown before sourcing if potentially harmful
+pseudo code is detected. In normal mode, a warning will be displayed if packages
+are missing AUR metadata.
+
 =back
 
 

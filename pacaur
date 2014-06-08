@@ -30,6 +30,7 @@ clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
 sudoloop=false                              # prevent sudo timeout
 sortbyvotes=true                            # sort search results by votes
+hybridsolver=false                          # hybrid rpc/parsing solver
 
 # set pacman binary
 pacmanbin="${PACMAN:-pacman}"
@@ -172,11 +173,13 @@ DepsSolver() {
     done
 
     # hard check for AURINFO metadata
-    depsAlastmodified=($(getjsonvar "LastModified"))
-    for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
-        # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
-        [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && note "f" $"Package ${colorR}${depsAname[$i]}${reset} does not provide AUR metadata"
-    done
+    if [[ $hybridsolver = false ]]; then
+        depsAlastmodified=($(getjsonvar "LastModified"))
+        for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
+            # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
+            [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
+        done
+    fi
 
     # no results check
     for i in "${errdeps[@]}"; do
@@ -202,6 +205,20 @@ FindDepsAur() {
 
     depspkgs=($(getjsonarray "Depends"))
     depspkgs+=($(getjsonarray "MakeDepends"))
+
+    # hybrid solver
+    if [[ $hybridsolver = true ]]; then
+        # check for AURINFO metadata
+        depsAname=($(getjsonvar "Name"))    # return sorted results
+        depsAlastmodified=($(getjsonvar "LastModified"))
+        for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
+            # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
+            [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && nometadatapkgs+=("${depsAname[$i]}") && note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- switching to parsing mode"
+        done
+
+        [[ -n "${nometadatapkgs[@]}" ]] && FindDepsParseAur ${nometadatapkgs[@]}
+        unset nometadatapkgs
+    fi
 
     # remove installed deps
     depspkgs=($($pacmanbin -T "${depspkgs[@]}" | sort -u))
@@ -271,6 +288,43 @@ FindDepsRepo() {
     fi
 
     repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
+}
+
+FindDepsParseAur() {
+    local i depends makedepends sourcedpkgs
+
+    # download
+    coweropts=(${coweropts[@]/-d/}) && coweropts+=("-d") && DownloadAur $@
+
+    # source pkgs
+    [[ $preview ]] && EditPkgs $@
+    for i in "$@"; do
+        PreviewPkgs $i
+        source "$builddir/$i/PKGBUILD" && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
+    done
+
+    # remove installed deps
+    depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}" | sort -u))
+}
+
+PreviewPkgs() {
+    # sanitize
+    cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
+    while [[ -n "$(grep -Po '^depends=\($|^depends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
+        sed -i -e '/^depends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+    done
+    while [[ -n "$(grep -Po '^optdepends=\($|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
+        sed -i -e '/^optdepends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
+    done
+
+    # sudo security check
+    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends|^pkgdesc')" ]] && note "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
+    if [[ ! $noconfirm ]]; then
+        if proceed "n" $"Do you really want to continue?"; then
+            CleanUp ${deps[@]} &>/dev/null
+            exit
+        fi
+    fi
 }
 
 IgnoreDepsChecks() {
@@ -1063,6 +1117,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     root) root=true;;
                     version) version; exit;;
                     help) usage; exit;;
+                    insecure) hybridsolver=true;;
                     *) pacopts+=("--$OPTARG");;
                 esac;;
             s)  [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
