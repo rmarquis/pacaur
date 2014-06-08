@@ -660,7 +660,7 @@ MakePkgs() {
             else
                 note "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
-            deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
+            pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^${depsAname[$i]}$//g" | sed 's/^,//g' | sed 's/,$//g' | tr ',,' ','))
         fi
     done
 
@@ -668,6 +668,8 @@ MakePkgs() {
     for ((i=0; i<${#basepkgs[@]}; i++)); do
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
+
+        [[ -z "${pkgsdepslist[@]}" ]] && continue
 
         note "i" $"Building ${colorW}${pkgsdepslist[*]}${reset} package(s)..."
         cd "$builddir/${basepkgs[$i]}"
