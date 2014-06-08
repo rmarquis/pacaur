@@ -718,9 +718,13 @@ MakePkgs() {
             # install
             yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
         else
-            if [[ " ${aurdepspkgs[@]} " =~ " $i " ]]; then
+            unset isaurdeps
+            for j in "${pkgsdepslist[@]}"; do
+                [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && isaurdeps=true
+            done
+            if [[ $isaurdeps = true ]]; then
                 # install AUR deps
-                note "i" $"Installing ${colorW}$i${reset} dependencies..."
+                note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
                 yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             else
                 # install then remove binary deps
