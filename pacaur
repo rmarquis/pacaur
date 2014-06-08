@@ -760,6 +760,7 @@ MakePkgs() {
 
 CleanUp() {
     [[ ! $clean = true ]] && return
+    local i
     if [[ -n "$@" ]]; then
         cd "$builddir"
         for i in "$@"; do
