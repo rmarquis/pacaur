@@ -746,8 +746,11 @@ MakePkgs() {
 
     # remove AUR deps
     if [[ ! $installpkg && -n "${aurdepspkgs[@]}" ]]; then
-        note "i" $"Removing installed AUR dependencies..."
-        sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
+        aurdepspkgs=($(expac -Q '%n' "${aurdepspkgs[@]}"))
+        if [[ -n "${aurdepspkgs[@]}" ]]; then
+            note "i" $"Removing installed AUR dependencies..."
+            sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
+        fi
     fi
 
     # remove locks
