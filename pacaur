@@ -915,8 +915,8 @@ downloadPackagesFromAur() {
     COUNTER=$from
     entries=()
     while [[ $COUNTER -lt $length && $COUNTER -lt $to ]]  ; do
-      COUNTER=$[COUNTER + 1]
       entries+=(${urlencodedpkgs[$COUNTER]})
+      COUNTER=$[COUNTER + 1]
     done
     urlargs="$(printf "&arg[]=%s" "${entries[@]}")"
     curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs&v=2" -o "$tmpdir/rpc_multiple.json" || note "e" $"Could not connect to the AUR"
