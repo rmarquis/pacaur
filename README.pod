@@ -169,6 +169,10 @@ maintainers. A notice will however be shown before sourcing if potentially harmf
 pseudo code is detected. In normal mode, a warning will be displayed if packages
 are missing AUR metadata.
 
+=item B<--preview>
+When using the bash dependency solver, allow to preview PKGBUILDs before sourcing
+for dependency information. Use in conjunction with the I<--insecure> option.
+
 =back
 
 

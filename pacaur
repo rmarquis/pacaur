@@ -644,7 +644,7 @@ EditPkgs() {
     for i in "$@"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
         getinstallscripts $i
-        if [[ ! $edit ]]; then
+        if [[ ! $edit && ! $preview ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
                 if proceed "y" $"View $i PKGBUILD?"; then
@@ -1118,6 +1118,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     version) version; exit;;
                     help) usage; exit;;
                     insecure) hybridsolver=true;;
+                    preview) preview=true;;
                     *) pacopts+=("--$OPTARG");;
                 esac;;
             s)  [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
