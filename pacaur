@@ -945,8 +945,57 @@ getcachedpkg() {
 
 downloadjson() {
     urlencodedpkgs=($(sed 's/+/%2b/g' <<< $@ | sed 's/@/%40/g')) # pkgname consists of alphanum@._+-
-    urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
-    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs&v=2" -o "$tmpdir/rpc.json" || note "e" $"Could not connect to the AUR"
+    length=${#urlencodedpkgs[@]}
+
+    # as the AUR RPC limits the max URI length, we start to download in parts
+    partsLength=100;
+
+    # as we check this file for append, remove it at first
+    rm "$tmpdir/rpc.json" 2> /dev/null
+
+    from=0
+    downloadPackagesFromAur $from $[ $from + $partsLength ]
+    while [ $(( $from + $partsLength )) -lt $length ] ; do 
+      from=$[$from+ $partsLength]
+      downloadPackagesFromAur $from $[ $from + $partsLength ]
+    done
+}
+
+downloadPackagesFromAur() {
+    from=$1
+    to=$2
+    length=${#urlencodedpkgs[@]}
+
+    COUNTER=$from
+    entries=()
+    while [[ $COUNTER -lt $length && $COUNTER -lt $to ]]  ; do
+      entries+=(${urlencodedpkgs[$COUNTER]})
+      COUNTER=$[COUNTER + 1]
+    done
+    urlargs="$(printf "&arg[]=%s" "${entries[@]}")"
+    curl -sfg --compressed -C 0 "https://aur.archlinux.org/rpc.php?type=multiinfo$urlargs&v=2" -o "$tmpdir/rpc_multiple.json" || note "e" $"Could not connect to the AUR"
+    appendToJson
+}
+
+appendToJson(){
+
+    # either append or first
+    if [ -e "$tmpdir/rpc.json" ] ; then
+      sed -i -r -e 's/^.*,[\"]results[\"]\s*:\s*\[(.*)\]\s*}/\1/g' "$tmpdir/rpc_multiple.json"
+
+      # awk removes the esacping - therefore add it
+      sed -i -e 's/\\"/\\\\"/g' "$tmpdir/rpc_multiple.json"
+
+      
+      # hack for ampersands
+      sed -i -r -e 's/\&/\\&/g' "$tmpdir/rpc_multiple.json"
+      #sed -r -i -e "s/results\"\s*:\s*\[(.*)\]/results\":\[\1,$newResult\]/" "$tmpdir/rpc.json"
+      awk -v in_file="$tmpdir/rpc_multiple.json" 'BEGIN {RS="" ; getline res < in_file; close(in_file) ; RS="\n";}{print gensub(/,\"results\"\s*:\s*\[(.*)\]/, ",\"results\":["res", \\1]", 1 , $0); }' "$tmpdir/rpc.json" > "$tmpdir/rpc_tmp.json"
+      mv "$tmpdir/rpc_tmp.json" "$tmpdir/rpc.json"
+    else
+      # first time called
+      mv "$tmpdir/rpc_multiple.json" "$tmpdir/rpc.json"
+    fi
 }
 
 getjsonvar() {
