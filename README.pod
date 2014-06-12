@@ -161,6 +161,7 @@ When searching the AUR, also show results marked as out of date. This take
 precedence over the I<IgnoreOOD> option of the cower config file.
 
 =item B<--insecure>
+
 Temporarily enable the bash dependency solver for packages that do not have AUR
 metadata info and which may not provide correct dependencies information through
 the extended AUR API. All packages uploaded to the AUR before 2014-05-27 18:35 UTC
@@ -170,6 +171,7 @@ pseudo code is detected. In normal mode, a warning will be displayed if packages
 are missing AUR metadata.
 
 =item B<--preview>
+
 When using the bash dependency solver, allow to preview PKGBUILDs before sourcing
 for dependency information. Use in conjunction with the I<--insecure> option.
 
