@@ -339,4 +339,6 @@ B<[ja] - 日本語> - Colin "fosskers" Woodbury
 
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
+B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
+
 B<[ru] - Русский> - "kyak"
