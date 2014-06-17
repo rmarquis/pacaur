@@ -1042,11 +1042,11 @@ sudov() {
 
 trap ctrlc INT
 ctrlc() {
+    echo
     [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
     [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
     [[ $operation = sync ]] && [[ ! $search && ! $info ]] && [[ -n "${basedeps[@]}" ]] && CleanUp "${basedeps[@]}"
-    echo -e "\n"
-    note "e" $"Interrupt signal received\n"
+    exit
 }
 
 usage() {
