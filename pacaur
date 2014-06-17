@@ -437,6 +437,13 @@ ConflictChecks() {
     Aprovides=(${depsAname[@]})
     Aprovides+=($(getjsonarray "Provides"))
     Aconflicts=($(getjsonarray "Conflicts"))
+    # remove AUR versioning
+    for ((i=0; i<${#Aprovides[@]}; i++)); do
+        Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
+    done
+    for ((i=0; i<${#Aconflicts[@]}; i++)); do
+        Aconflicts[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aconflicts[$i]})
+    done
     aurconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${Aprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
     aurconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${Aconflicts[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQprovides[@]} | LC_COLLATE=C sort -u)))
     aurconflicts=($(tr ' ' '\n' <<< ${aurconflicts[@]} | LC_COLLATE=C sort -u))
@@ -461,6 +468,10 @@ ConflictChecks() {
                         [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
                     done
                     Aprovides+=($(getjsonarrayvar "Provides" "$j"))
+                    # remove AUR versioning
+                    for ((i=0; i<${#Aprovides[@]}; i++)); do
+                        Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
+                    done
                     [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
                     break
                 else
@@ -470,6 +481,10 @@ ConflictChecks() {
                 fi
             fi
             Aprovides+=($(getjsonarrayvar "Provides" "$j"))
+            # remove AUR versioning
+            for ((i=0; i<${#Aprovides[@]}; i++)); do
+                Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
+            done
             [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
         done
     done
