@@ -435,7 +435,7 @@ ConflictChecks() {
 
     # AUR conflicts
     Aprovides=(${depsAname[@]})
-    Aprovides=($(getjsonarray "Provides"))
+    Aprovides+=($(getjsonarray "Provides"))
     Aconflicts=($(getjsonarray "Conflicts"))
     aurconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${Aprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
     aurconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${Aconflicts[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQprovides[@]} | LC_COLLATE=C sort -u)))
@@ -444,8 +444,8 @@ ConflictChecks() {
     for i in "${aurconflicts[@]}"; do
         unset aurAconflicts
         [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=("$i")
-        for i in "${depsAname[@]}"; do
-            [[ " $(getjsonarrayvar "Conflicts" "$i") " =~ " $i " ]] && aurAconflicts+=("$i")
+        for j in "${depsAname[@]}"; do
+            [[ " $(getjsonarrayvar "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=("$j")
         done
 
         for j in "${aurAconflicts[@]}"; do
