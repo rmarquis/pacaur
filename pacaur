@@ -464,6 +464,7 @@ ConflictChecks() {
             if [[ ! $noconfirm && ! " ${aurconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
                     aurconflictingpkgs+=("$j" "$k")
+                    aurconflictingpkgsrm+=("$k")
                     for ((l=0; l<${#depsAname[@]}; l++)); do
                         [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
                     done
@@ -472,7 +473,7 @@ ConflictChecks() {
                     for ((i=0; i<${#Aprovides[@]}; i++)); do
                         Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
                     done
-                    [[ ! " ${Aprovides[@]} " =~ " $k " ]] && checkQrequires $k
+                    [[ ! " ${Aprovides[@]} " =~ " $k " && ! " ${aurconflictingpkgsrm[@]} " =~ " $k " ]] && checkQrequires $k
                     break
                 else
                     note "f" $"unresolvable package conflicts detected"
@@ -511,8 +512,9 @@ ConflictChecks() {
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
                     repoconflictingpkgs+=("$j" "$k")
+                    repoconflictingpkgsrm+=("$k")
                     Qprovides=("$(expac -Ss '%S' "^$k$")")
-                    [[ ! " ${Qprovides[@]} " =~ " $k " ]] && checkQrequires $k
+                    [[ ! " ${Qprovides[@]} " =~ " $k " && ! " ${repoconflictingpkgsrm[@]} " =~ " $k " ]] && checkQrequires $k
                     break
                 else
                     note "f" $"unresolvable package conflicts detected"
