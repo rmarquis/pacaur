@@ -731,7 +731,7 @@ MakePkgs() {
             else
                 note "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
             fi
-            pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^${depsAname[$i]}$//g" | sed 's/^,//g' | sed 's/,$//g' | tr ',,' ','))
+            pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^${depsAname[$i]},//g" | sed "s/,${depsAname[$i]}$//g" | sed "s/,${depsAname[$i]},/,/g" | sed "s/^${depsAname[$i]}$//g"))
         fi
     done
 
