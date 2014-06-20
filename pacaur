@@ -742,7 +742,6 @@ MakePkgs() {
 
         [[ -z "${pkgsdepslist[@]}" ]] && continue
 
-        note "i" $"Building ${colorW}${pkgsdepslist[*]}${reset} package(s)..."
         cd "$builddir/${basepkgs[$i]}"
 
         # build devel if necessary only
@@ -761,11 +760,13 @@ MakePkgs() {
                     aurdevelpkgsAall="$aurdevelpkgsAver-$aurdevelpkgsArel"
                 fi
 
-                for j in "${pkgsdepslist[@]}"; do
-                    if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
+                if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
+                    for j in "${pkgsdepslist[@]}"; do
                         note "w" "${colorW}$j${reset} is up-to-date -- skipping"
-                        continue
-                    else
+                    done
+                    continue
+                else
+                    for j in "${pkgsdepslist[@]}"; do
                         unset cachedpkg
                         [[ $PKGDEST ]] && getcachedpkg "$j-$aurdevelpkgsAall" "$PKGDEST"
                         if [[ $cachedpkg ]]; then
@@ -780,10 +781,12 @@ MakePkgs() {
                             fi
                         fi
                         makeopts+=('-e')
-                    fi
-                done
+                    done
+                fi
             fi
         fi
+
+        note "i" $"Building ${colorW}${pkgsdepslist[*]}${reset} package(s)..."
 
         if [[ $installpkg ]]; then
             # install
