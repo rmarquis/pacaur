@@ -719,32 +719,16 @@ MakePkgs() {
         yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
     fi
 
-    # check package cache
-    for ((i=0; i<${#depsAname[@]}; i++)); do
-        unset cachedpkg
-        [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
-        if [[ $cachedpkg ]]; then
-            if [[ $installpkg ]]; then
-                note "i" $"Installing ${colorW}${depsAname[$i]}${reset} cached package..."
-                yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
-                [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " ${depsAname[$i]} " ]] && sudo $pacmanbin -D ${depsAname[$i]} --asdeps ${pacopts[@]} &>/dev/null
-            else
-                note "i" $"Package ${colorW}${depsAname[$i]}${reset} already available in cache"
-            fi
-            pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^${depsAname[$i]},//g" | sed "s/,${depsAname[$i]}$//g" | sed "s/,${depsAname[$i]},/,/g" | sed "s/^${depsAname[$i]}$//g"))
-        fi
-    done
-
-    # build
+    # main
     for ((i=0; i<${#basepkgs[@]}; i++)); do
+
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
-
-        [[ -z "${pkgsdepslist[@]}" ]] && continue
 
         cd "$builddir/${basepkgs[$i]}"
 
         # build devel if necessary only
+        unset aurdevelpkgsAall
         makeopts=(${makeopts[@]/-e/})
         if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
@@ -766,27 +750,31 @@ MakePkgs() {
                     done
                     continue
                 else
-                    for j in "${pkgsdepslist[@]}"; do
-                        unset cachedpkg
-                        [[ $PKGDEST ]] && getcachedpkg "$j-$aurdevelpkgsAall" "$PKGDEST"
-                        if [[ $cachedpkg ]]; then
-                            if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
-                                note "i" $"Installing ${colorW}$j${reset} cached package..."
-                                yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
-                                [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
-                            else
-                                note "i" $"Package ${colorW}$j${reset} already available in cache"
-                            fi
-                            pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^$j,//g" | sed "s/,$j$//g" | sed "s/,$j,/,/g" | sed "s/^$j$//g"))
-                            continue
-                        fi
-                    done
                     makeopts+=('-e')
                 fi
             fi
         fi
 
-        [[ -z "${pkgsdeps[$i]}" ]] && continue
+        # check package cache
+        for j in "${pkgsdepslist[@]}"; do
+            unset cachedpkg
+            [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(getjsonvarvar "Version" "$j")"
+            [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
+            if [[ $cachedpkg ]]; then
+                if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
+                    note "i" $"Installing ${colorW}$j${reset} cached package..."
+                    yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                    [[ ! $upgrade ]] && [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                else
+                    note "i" $"Package ${colorW}$j${reset} already available in cache"
+                fi
+                pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^$j,//g" | sed "s/,$j$//g" | sed "s/,$j,/,/g" | sed "s/^$j$/#/g"))
+                continue
+            fi
+        done
+        [[ "${pkgsdeps[$i]}" = '#' ]] && continue
+
+        # build
         note "i" $"Building ${colorW}${pkgsdeps[*]}${reset} package(s)..."
 
         if [[ $installpkg ]]; then
