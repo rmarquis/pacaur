@@ -774,19 +774,20 @@ MakePkgs() {
                                 note "i" $"Installing ${colorW}$j${reset} cached package..."
                                 yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
                                 [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
-                                continue
                             else
                                 note "i" $"Package ${colorW}$j${reset} already available in cache"
-                                continue
                             fi
+                            pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^$j,//g" | sed "s/,$j$//g" | sed "s/,$j,/,/g" | sed "s/^$j$//g"))
+                            continue
                         fi
-                        makeopts+=('-e')
                     done
+                    makeopts+=('-e')
                 fi
             fi
         fi
 
-        note "i" $"Building ${colorW}${pkgsdepslist[*]}${reset} package(s)..."
+        [[ -z "${pkgsdeps[$i]}" ]] && continue
+        note "i" $"Building ${colorW}${pkgsdeps[*]}${reset} package(s)..."
 
         if [[ $installpkg ]]; then
             # install
