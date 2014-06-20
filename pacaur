@@ -643,22 +643,22 @@ DownloadPkgs() {
     basedeps=($(tr ' ' '\n' <<< $(getjsonvar "PackageBase") | uniq))
     coweropts+=("-d") && DownloadAur ${basedeps[@]}
 
-    # get packages base list
-    for i in "${deps[@]}"; do
-        pkgsbase+=("$(getjsonvarvar "PackageBase" "$i")")
-    done
-
-    # edit
-    for i in "${pkgsbase[@]}"; do
-        [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
-        basepkgs+=("$i")
-    done
-    EditPkgs ${basepkgs[@]}
+    EditPkgs ${pkgsedit[@]}
 }
 
 EditPkgs() {
     [[ $noedit ]] && return
+
+    # get packages base list
     for i in "$@"; do
+        pkgsbase+=("$(getjsonvarvar "PackageBase" "$i")")
+    done
+    for i in "${pkgsbase[@]}"; do
+        [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
+        basepkgs+=("$i")
+    done
+
+    for i in "${pkgsbase[@]}"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
         getinstallscripts $i
         if [[ ! $edit && ! $preview ]]; then
@@ -854,7 +854,7 @@ DownloadAur() {
     [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
     while read -r flag pkg info; do
         case $flag in
-            S)  [[ $operation = download && -n "$info" ]] && echo "$info" && pkgsedit+=("$pkg");;
+            S)  [[ $operation = download && -n "$info" ]] && echo "$info"; pkgsedit+=("$pkg");;
             W)  [[ $operation = download && -n "$info" ]] && echo "$info";;
             E)  [[ -n "$info" ]] && echo "$info";;
         esac
@@ -1225,6 +1225,7 @@ case $operation in
     download)
         # download (-d) handling
         DownloadAur ${pkgs[@]}
+        downloadjson ${pkgsedit[@]}
         EditPkgs ${pkgsedit[@]}
         exit;;
     cleanpkg)
@@ -1233,6 +1234,7 @@ case $operation in
         exit;;
     editpkg)
         # edit (-e) handling
+        downloadjson ${pkgs[@]}
         EditPkgs ${pkgs[@]}
         exit;;
     sync)
