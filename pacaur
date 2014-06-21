@@ -643,16 +643,7 @@ DownloadPkgs() {
     basedeps=($(tr ' ' '\n' <<< $(getjsonvar "PackageBase") | uniq))
     coweropts+=("-d") && DownloadAur ${basedeps[@]}
 
-    # get packages base list
-    for i in "${deps[@]}"; do
-        pkgsbase+=("$(getjsonvarvar "PackageBase" "$i")")
-    done
-
-    # edit
-    for i in "${pkgsbase[@]}"; do
-        [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
-        basepkgs+=("$i")
-    done
+    getpackagebase ${deps[@]}
     EditPkgs ${basepkgs[@]}
 }
 
@@ -952,6 +943,16 @@ getcachedpkg() {
     [[ ! -f "$cachedpkg" ]] && unset cachedpkg
 }
 
+getpackagebase() {
+    for i in "$@"; do
+        pkgsbase+=("$(getjsonvarvar "PackageBase" "$i")")
+    done
+    for i in "${pkgsbase[@]}"; do
+        [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
+        basepkgs+=("$i")
+    done
+}
+
 downloadjson() {
     aururl="https://aur.archlinux.org/rpc.php?type=multiinfo&v=2"
     urlencodedpkgs=($(sed 's/+/%2b/g' <<< $@ | sed 's/@/%40/g')) # pkgname consists of alphanum@._+-
@@ -1225,7 +1226,9 @@ case $operation in
     download)
         # download (-d) handling
         DownloadAur ${pkgs[@]}
-        EditPkgs ${pkgsedit[@]}
+        downloadjson ${pkgsedit[@]}
+        getpackagebase ${pkgsedit[@]}
+        EditPkgs ${pkgsbase[@]}
         exit;;
     cleanpkg)
         # clean (-c) handling
@@ -1233,7 +1236,9 @@ case $operation in
         exit;;
     editpkg)
         # edit (-e) handling
-        EditPkgs ${pkgs[@]}
+        downloadjson ${pkgs[@]}
+        getpackagebase ${pkgs[@]}
+        EditPkgs ${pkgsbase[@]}
         exit;;
     sync)
         # search (-Ss, -s) handling
