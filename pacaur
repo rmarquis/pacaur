@@ -775,7 +775,7 @@ MakePkgs() {
         [[ "${pkgsdeps[$i]}" = '#' ]] && continue
 
         # build
-        note "i" $"Building ${colorW}${pkgsdeps[*]}${reset} package(s)..."
+        note "i" $"Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 
         if [[ $installpkg ]]; then
             # install
