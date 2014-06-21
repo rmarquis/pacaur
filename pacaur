@@ -764,7 +764,7 @@ MakePkgs() {
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     note "i" $"Installing ${colorW}$j${reset} cached package..."
                     yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
-                    [[ ! $upgrade ]] && [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                    [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     note "i" $"Package ${colorW}$j${reset} already available in cache"
                 fi
@@ -800,7 +800,7 @@ MakePkgs() {
         # set dep status
         if [[ $installpkg ]]; then
             for j in "${pkgsdepslist[@]}"; do
-                [[ ! $upgrade ]] && ! [[ " ${pkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $j --asexplicit ${pacopts[@]} &>/dev/null
             done
