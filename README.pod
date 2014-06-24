@@ -49,7 +49,7 @@ results. Extended regex patterns as defined by POSIX are allowed.
 
 =item B<-i, --info>
 
-Show info for I<target>. Pass this option twice to fetch more detailed info.
+Show info for I<target>.
 
 =item B<-d, --download>
 
