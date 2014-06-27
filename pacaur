@@ -4,7 +4,7 @@
 # pacaur: a fast workflow AUR helper using cower as backend
 #
 
-version="4.2.3"
+version="4.2.4"
 
 #
 # Config
