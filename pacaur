@@ -329,10 +329,9 @@ PreviewPkgs() {
 
 IgnoreDepsChecks() {
     [[ -z "${ignoredpkgs[@]}" ]] && return
-    unset deps
 
     # add checked targets
-    deps+=("${aurpkgs[@]}")
+    deps=(${deps[@]:0:${#aurpkgs[@]}})
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
