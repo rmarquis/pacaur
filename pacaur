@@ -165,7 +165,6 @@ DepsSolver() {
     depsAname=($(getjsonvar "Name"))    # return sorted results
     depsAver=($(getjsonvar "Version"))
     depsAood=($(getjsonvar "OutOfDate"))
-    depsArepo=("${depsAname[@]/#/aur/}" )
     for ((i=0; i<${#depsAname[@]}; i++)); do
         depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
@@ -582,6 +581,7 @@ Prompt() {
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         strname=$"Name"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
+        depsArepo=("${depsAname[@]/#/aur/}")
         lname=$(getlength ${depsArepo[@]} ${repodepsSrepo[@]} "$strname")
         lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
         lsize=$(getlength "$strsize")
