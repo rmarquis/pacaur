@@ -312,6 +312,12 @@ up the update even if the I<clean> config option is enabled for normal packages.
 You might also want to change the default temporary directory which is
 automatically cleared upon reboot.
 
+=item B<build without installing>
+
+If you want to build packages without installing them, you should ensure that
+the makepkg I<$PKGDEST> variable is set or that the clean option is disabled
+in order to avoid the packages to be deleted after being built.
+
 =item B<host name error>
 
 If a lot of "Couldn't resolve host name" and "Timeout was reached" messages are

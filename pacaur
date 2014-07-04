@@ -1217,7 +1217,6 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && note "e" $"target not found"
 [[ $root ]] && note "e" $"alternative installation root option not supported"
-[[ $operation = sync ]] && [[ ! $search && ! $info && ! $installpkg && ! $PKGDEST ]] && [[ $clean = true ]] && note "e" $"${colorW}PKGDEST${reset} variable in /etc/makepkg.conf is unset and ${colorW}clean${reset} option is enabled"
 
 # operations
 case $operation in
