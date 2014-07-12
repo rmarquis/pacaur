@@ -726,20 +726,29 @@ MakePkgs() {
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-                aurdevelpkgsQver=$(expac -Qs '%v' "^${basepkgs[$i]}$")
                 if [[ -n "$aurdevelpkgsAepo" ]]; then
                     aurdevelpkgsAall="$aurdevelpkgsAepo:$aurdevelpkgsAver-$aurdevelpkgsArel"
                 else
                     aurdevelpkgsAall="$aurdevelpkgsAver-$aurdevelpkgsArel"
                 fi
 
-                if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
-                    for j in "${pkgsdepslist[@]}"; do
+                # check split packages update
+                unset basepkgsupdate checkpkgsdepslist
+                for j in "${pkgsdepslist[@]}"; do
+                    aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
+                    if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -eq 0 ]]; then
                         note "w" "${colorW}$j${reset} is up-to-date -- skipping"
-                    done
-                    continue
-                else
+                        continue
+                    else
+                        basepkgsupdate='true'
+                        checkpkgsdepslist+=("$j")
+                    fi
+                done
+                if [[ $basepkgsupdate ]]; then
+                    pkgsdepslist=("${checkpkgsdepslist[@]}")
                     makeopts+=('-e')
+                else
+                    continue
                 fi
             fi
         fi
