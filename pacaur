@@ -719,7 +719,7 @@ MakePkgs() {
         # build devel if necessary only
         unset aurdevelpkgsAall
         makeopts=(${makeopts[@]/-e/})
-        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
+        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${basepkgs[$i]})" && -n "$(expac -Q '%n' "${basepkgs[$i]}")" && ! $rebuild ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 makepkg -o ${makeopts[@]}
 
