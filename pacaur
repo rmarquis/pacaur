@@ -246,9 +246,7 @@ FindDepsAur() {
         depspkgsaurtmp=(${depspkgsaur[@]})
         for ((i=0; i<${#depspkgsaurtmp[@]}; i++)); do
             if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaurtmp[$i]} " ]]; then
-                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && allaurdeps+=("${depspkgsaurtmp[$i]}")
-                # avoid duplicated download
-                depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g")) && deps+=("${depspkgsaurtmp[$i]}")
+                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g"))
             fi
         done
         depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
