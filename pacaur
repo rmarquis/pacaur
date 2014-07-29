@@ -243,13 +243,12 @@ FindDepsAur() {
         done
 
         # ensure correct dependency order
-        depspkgsaurtmp=(${depspkgsaur[@]})
-        for ((i=0; i<${#depspkgsaurtmp[@]}; i++)); do
-            if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaurtmp[$i]} " ]]; then
-                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaurtmp[$i]}$//g"))
+        depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
+        for ((i=0; i<${#depspkgsaur[@]}; i++)); do
+            if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaur[$i]} " ]]; then
+                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
             fi
         done
-        depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
     fi
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
