@@ -244,7 +244,8 @@ packages. Default is B<true>.
 
 =item B<sudoloop>
 
-Prevent sudo timeout. This option overrides the system-wide sudo configuration.
+Prevent sudo timeout. This option overrides the system-wide sudo configuration
+and refresh the sudo timestamp automatically in a loop when building packages.
 Default is B<false>.
 
 =item B<sortbyvotes>
@@ -279,8 +280,7 @@ Both of these options are temporary only and will be removed in the near future.
 
 To be used with minimal password prompting, I<sudo> should be configured
 accordingly. See B<sudoers>(5). Alternatively, enable the I<sudoloop> config
-option. This option will override the system-wide sudo configuration and
-refresh the sudo timestamp automatically when building packages.
+option.
 
 =item B<colored output>
 
