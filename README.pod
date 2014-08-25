@@ -6,15 +6,17 @@ pacaur - a fast workflow AUR helper using cower as backend
 
 =head1 SYNOPSIS
 
-Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ package(s) ]
+Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ target(s) ]
 
 =head1 DESCRIPTION
 
 Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
 designed to minimize user prompt interaction and to use an uncluttered
 interface. It is built upon the well designed cower and expac C backends.
+
 Invoking pacaur consists of supplying an operation, any applicable options, and
-usually one or more targets.
+usually one or more targets. A I<target> is usually a package name or a search
+string.
 
 =head1 USERBASE TARGET
 
@@ -43,41 +45,41 @@ binary.
 
 =item B<-s, --search>
 
-Search for packages with the I<target>(s) as the search term(s). Queries with
+Search for packages with the I<target(s)> as the search term(s). Queries with
 multiple targets will return the result of the intersection of all query
 results. Extended regex patterns as defined by POSIX are allowed.
 
 =item B<-i, --info>
 
-Show info for I<target>.
+Show info for I<target(s)>.
 
 =item B<-d, --download>
 
-Download I<target>(s) PKGBUILD. Pass this option twice to fetch dependencies
+Download I<target(s)> PKGBUILD. Pass this option twice to fetch dependencies
 (done recursively).
 
 =item B<-m, --makepkg>
 
-Download I<target>(s) PKGBUILD and build target(s). Missing dependencies will be
-installed as required to ensure the build to succeed, before being automatically
+Download PKGBUILD and build I<target(s)>. Missing dependencies will be installed
+as required to ensure the build to succeed, before being automatically
 uninstalled.
 
 =item B<-y, --sync>
 
-Download I<target>(s) PKGBUILD, build and install target(s). Missing
-dependencies will be automatically installed as required.
+Download PKGBUILD, build and install I<target(s)>. Missing dependencies will be
+automatically installed as required.
 
 =item B<-k, --check>
 
 Check foreign packages for updates in the AUR. Without any arguments, all
-manually installed packages will be checked. If targets are supplied, only
-those targets will be checked.
+manually installed packages will be checked. If I<target(s)> are supplied, only
+those packages will be checked.
 
 =item B<-u, --update>
 
 Update foreign packages in the AUR. Without any arguments, all manually
-installed packages will be updated. If targets are supplied, only those targets
-will be updated.
+installed packages will be updated. If I<target(s)> are supplied, only those
+packages will be updated.
 
 =item B<-v, --version>
 
@@ -96,13 +98,13 @@ Display the help message and quit.
 
 =item B<-e, --edit>
 
-Edit I<target>(s) PKGBUILD and view install script when downloading or building
-target(s). Can also be used as a standalone command.
+Edit PKGBUILD and view install script when downloading or building I<target(s)>.
+Can also be used as a standalone command.
 
 =item B<-c, --clean>
 
-Remove I<target>(s) build files after building target(s). Pass this option twice
-to force cleaning when the cleandevel option is disabled. Can also be used as a
+Remove build files after building I<target(s)>. Pass this option twice to force
+cleaning when the cleandevel option is disabled. Can also be used as a
 standalone command. When passed twice without any arguments, clean the entire
 build directory.
 
@@ -113,17 +115,17 @@ package names and not version, group, and description information.
 
 =item B<-a, --aur>
 
-When used with pacman extended operations, only search or install packages from
+When used with pacman extended operations, only search or install target(s) from
 the AUR.
 
 =item B<-r, --repo>
 
-When used with pacman extended operations, only search or install packages from
+When used with pacman extended operations, only search or install target(s) from
 the repositories.
 
 =item B<-f, --force>
 
-Overwrite existing files when downloading.
+Overwrite existing files when downloading I<target(s)> PKGBUILD.
 
 =item B<--devel>
 
@@ -132,15 +134,15 @@ When used with update operations, also upgrade AUR development packages
 The build of development packages that are found up-to-date after the source
 checkout will be skipped.
 
-=item B<--ignore> I<package(s)>
+=item B<--ignore> I<target(s)>
 
-Ignore a package upgrade. Can be used more than once. Also accepts a comma
+Ignore a I<target> upgrade. Can be used more than once. Also accepts a comma
 delimited list as a single argument. Packages listed in pacman and cower's
 IgnorePkg directive are honored.
 
 =item B<--needed>
 
-Do not reinstall targets that are already up to date.
+Do not reinstall I<target(s)> that are already up to date.
 
 =item B<--noconfirm>
 
@@ -148,11 +150,12 @@ Perform commands without confirmation from the user.
 
 =item B<--noedit>
 
-Perform commands without editing any installation files. Bypass I<--edit> option.
+Perform commands without editing any installation files. Bypass the I<--edit>
+option.
 
 =item B<--rebuild>
 
-Always rebuild package(s) regardless of any existing file in I<$PKGDEST> directory,
+Always rebuild I<target(s)> regardless of any existing file in I<$PKGDEST> directory,
 and regardless of up-to-date status of development packages.
 
 =item B<--ignore-ood>
@@ -218,12 +221,12 @@ The available options are:
 
 =item B<builddir>
 
-Define the build directory. Default is B<$BUILDDIR>, with a fallback on
-I</tmp/pacaurtmp-$USER>.
+Define the build directory. Default is I<$BUILDDIR>, with a fallback on
+B</tmp/pacaurtmp-$USER>.
 
 =item B<editor>
 
-Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
+Define the editor. Default is I<$EDITOR>, with a fallback on B<vi>.
 
 =item B<editpkgbuild>
 
@@ -246,16 +249,16 @@ Clean build directory after operation. Default is B<true>.
 When clean config option is enabled, clean build directory of development
 packages. Default is B<true>.
 
+=item B<sortbyvotes>
+
+When searching the AUR, sort the results by decreasing number of votes. Default
+is B<true>.
+
 =item B<sudoloop>
 
 Prevent sudo timeout. This option overrides the system-wide sudo configuration
 and refresh the sudo timestamp automatically in a loop when building packages.
 Default is B<false>.
-
-=item B<sortbyvotes>
-
-When searching the AUR, sort the results by decreasing number of votes. Default
-is B<true>.
 
 =back
 
@@ -275,7 +278,7 @@ encounter such packages, please notify their maintainer about their missing AUR
 metadata status.
 
 It is however possible to temporarily enable the old parsing dependency solver
-for such packages with the B<--insecure> option, while the additional B<--preview>
+for such packages with the I<--insecure> option, while the additional I<--preview>
 option allows to preview PKGBUILDs before sourcing for dependency information.
 
 Both of these options are temporary only and will be removed in the near future.
@@ -289,9 +292,9 @@ option.
 =item B<pacman misc options>
 
 Miscellaneous options enabled in I<pacman.conf> are taken into account. Thus,
-I<colored output> can be enabled with the B<Color> option, while a
-I<detailed interface> displaying name, version and size of target packages
-formatted as a table can be enabled with the B<VerbosePkgLists> option.
+colored output can be enabled with the I<Color> option, while a detailed interface
+displaying name, version and size of packages formatted as a table is available
+through the I<VerbosePkgLists> option.
 
 =item B<environment variables>
 
@@ -312,7 +315,7 @@ development packages, disable the I<cleandevel> config option. This will speed
 up the update even if the I<clean> config option is enabled for normal packages.
 You might also want to change the default temporary directory which is
 automatically cleared upon reboot. Alternatively, you can enable source caching
-with the makepkg I<SRCDEST> environment variable.
+with the makepkg I<$SRCDEST> environment variable.
 
 =item B<build without installing>
 
