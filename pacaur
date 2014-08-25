@@ -1128,7 +1128,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     force) coweropts+=("-f"); pacopts+=("--force");;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     clean) operation=cleanpkg; clean=true; ((count++));;
-                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q");;
+                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); color=never;;
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
@@ -1167,7 +1167,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=sync && cleancache=true && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
-            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q");;
+            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); color=never;;
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
