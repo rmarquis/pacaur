@@ -453,6 +453,7 @@ ConflictChecks() {
         for j in "${aurAconflicts[@]}"; do
             unset k Aprovides
             k=$(expac -Qs '%n' "^$i$")
+            [[ ! $installpkg && " ${aurpkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
             [[ $j = $k || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
             Aprovides=("$j")
@@ -528,6 +529,7 @@ ReinstallChecks() {
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
+        [[ ! $installpkg && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]]; then
             note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else
