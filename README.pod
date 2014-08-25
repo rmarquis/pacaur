@@ -282,15 +282,12 @@ To be used with minimal password prompting, I<sudo> should be configured
 accordingly. See B<sudoers>(5). Alternatively, enable the I<sudoloop> config
 option.
 
-=item B<colored output>
+=item B<pacman misc options>
 
-Colored output can be enabled with the I<Color> misc option in I<pacman.conf>.
-
-=item B<detailed interface>
-
-An interface which displays name, version and size of target packages formatted
-as a table can be enabled with the I<VerbosePkgLists> misc option in
-I<pacman.conf>.
+Miscellaneous options enabled in I<pacman.conf> are taken into account. Thus,
+I<colored output> can be enabled with the B<Color> option, while a
+I<detailed interface> displaying name, version and size of target packages
+formatted as a table can be enabled with the B<VerbosePkgLists> option.
 
 =item B<environment variables>
 
