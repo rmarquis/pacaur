@@ -1090,6 +1090,7 @@ usage() {
     printf "%s\n" $"   -q, --quiet      show less information for query and search"
     printf "%s\n" $"   --devel          consider AUR development packages upgrade"
     printf "%s\n" $"   --ignore         ignore a package upgrade (can be used more than once)"
+    printf "%s\n" $"   --needed         do not reinstall already up to date target(s)"
     printf "%s\n" $"   --noconfirm      do not prompt for any confirmation"
     printf "%s\n" $"   --noedit         do not prompt to edit files"
     printf "%s\n" $"   --rebuild        always rebuild package(s)"

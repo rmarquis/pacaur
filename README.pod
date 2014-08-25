@@ -138,6 +138,10 @@ Ignore a package upgrade. Can be used more than once. Also accepts a comma
 delimited list as a single argument. Packages listed in pacman and cower's
 IgnorePkg directive are honored.
 
+=item B<--needed>
+
+Do not reinstall targets that are already up to date.
+
 =item B<--noconfirm>
 
 Perform commands without confirmation from the user.
