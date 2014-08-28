@@ -186,9 +186,6 @@ DepsSolver() {
     done
     [[ -n "${errdeps[@]}" ]] && exit 1
 
-    # return AUR deps pkgs only
-    aurdepspkgs=(${deps[@]:${#aurpkgs[@]}:${#deps[@]}})
-
     # return all binary deps
     FindDepsRepo ${repodeps[@]}
 }
@@ -252,6 +249,7 @@ FindDepsAur() {
     fi
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
+        aurdepspkgs+=("${depspkgsaur[@]}")
         allaurdeps+=("${depspkgsaur[@]}")
         FindDepsAur ${depspkgsaur[@]}
     fi
@@ -453,7 +451,7 @@ ConflictChecks() {
         for j in "${aurAconflicts[@]}"; do
             unset k Aprovides
             k=$(expac -Qs '%n' "^$i$")
-            [[ ! $installpkg && " ${aurpkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
+            [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
             [[ $j = $k || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
             Aprovides=("$j")
@@ -529,7 +527,7 @@ ReinstallChecks() {
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
-        [[ ! $installpkg && " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
+        [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]]; then
             note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else
@@ -761,7 +759,7 @@ MakePkgs() {
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     note "i" $"Installing ${colorW}$j${reset} cached package..."
                     yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
-                    [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                    [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     note "i" $"Package ${colorW}$j${reset} already available in cache"
                 fi
@@ -797,7 +795,7 @@ MakePkgs() {
         # set dep status
         if [[ $installpkg ]]; then
             for j in "${pkgsdepslist[@]}"; do
-                [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $j --asexplicit ${pacopts[@]} &>/dev/null
             done
