@@ -135,10 +135,12 @@ IgnoreChecks() {
             if [[ ! $upgrade && ! $noconfirm ]]; then
                 if ! proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                    rmaurpkgs+=("${checkaurpkgs[$i]}")
                     continue
                 fi
             else
                 note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
+                rmaurpkgs+=("${checkaurpkgs[$i]}")
                 continue
             fi
         fi
@@ -325,7 +327,7 @@ IgnoreDepsChecks() {
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     # add checked targets
-    deps=(${deps[@]:0:${#aurpkgs[@]}})
+    deps=("${aurpkgs[@]}")
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
@@ -335,6 +337,10 @@ IgnoreDepsChecks() {
         fi
     done
     for i in "${aurdepspkgs[@]}"; do
+        # skip already checked dependencies
+        [[ " ${aurpkgs[@]} " =~ " $i " ]] && continue
+        [[ " ${rmaurpkgs[@]} " =~ " $i " ]] && note "e" $"Unresolved dependency '${colorW}$i${reset}'"
+
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             if [[ ! $noconfirm ]]; then
                 if ! proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
