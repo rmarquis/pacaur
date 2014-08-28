@@ -157,10 +157,9 @@ DepsSolver() {
     for ((i=0; i<${#aurpkgs[@]}; i++)); do
         aurpkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
-    allaurdeps+=("${aurpkgs[@]}")
+    deps+=("${aurpkgs[@]}")
 
     FindDepsAur ${aurpkgs[@]}
-    deps=("${allaurdeps[@]}")
 
     # get AUR packages info
     downloadjson ${deps[@]}
@@ -222,7 +221,7 @@ FindDepsAur() {
     depspkgs=($($pacmanbin -T "${depspkgs[@]}" | sort -u))
 
     # split binary and AUR depends pkgs
-    unset deps depspkgsaur
+    unset depspkgsaur
     if [[ -n "${depspkgs[@]}" ]]; then
         # remove all pkgs versioning
         if [[ $nodeps && $count -eq 1 ]]; then
@@ -244,15 +243,15 @@ FindDepsAur() {
         # ensure correct dependency order
         depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
-            if [[ " ${allaurdeps[@]} " =~ " ${depspkgsaur[$i]} " ]]; then
-                allaurdeps=($(tr ' ' '\n' <<< ${allaurdeps[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
+            if [[ " ${deps[@]} " =~ " ${depspkgsaur[$i]} " ]]; then
+                deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
             fi
         done
     fi
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         aurdepspkgs+=("${depspkgsaur[@]}")
-        allaurdeps+=("${depspkgsaur[@]}")
+        deps+=("${depspkgsaur[@]}")
         FindDepsAur ${depspkgsaur[@]}
     fi
 }
