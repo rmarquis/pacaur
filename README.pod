@@ -168,18 +168,6 @@ When searching the AUR, ignore all results marked as out of date.
 When searching the AUR, also show results marked as out of date. This take
 precedence over the I<IgnoreOOD> option of the cower config file.
 
-=item B<--insecure (temporary)>
-
-Temporarily enable the bash dependency solver for packages that do not have AUR
-metadata and which may not provide correct dependencies information through the
-extended AUR API. A notice will however be shown before sourcing if potentially
-harmful pseudo code is detected.
-
-=item B<--preview (temporary)>
-
-When using the bash dependency solver, allow to preview PKGBUILDs before sourcing
-for dependency information. Use in conjunction with the I<--insecure> option.
-
 =back
 
 
@@ -266,23 +254,6 @@ Default is B<false>.
 =head1 NOTES
 
 =over 4
-
-=item B<secure solver vs hybrid solver>
-
-Since version 4.2, pacaur solves the dependency tree using the full secured
-extended RPC AUR interface. Packages which are missing AUR metadata may however
-not provide correct dependencies information and a warning will be displayed.
-
-All packages uploaded to the AUR before 2014-05-27 18:35 UTC (AUR 3.0.0 release)
-are concerned and should be reuploaded by their respective maintainers. If you
-encounter such packages, please notify their maintainer about their missing AUR
-metadata status.
-
-It is however possible to temporarily enable the old parsing dependency solver
-for such packages with the I<--insecure> option, while the additional I<--preview>
-option allows to preview PKGBUILDs before sourcing for dependency information.
-
-Both of these options are temporary only and will be removed in the near future.
 
 =item B<sudo configuration>
 

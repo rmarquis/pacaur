@@ -30,7 +30,6 @@ clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
 sudoloop=false                              # prevent sudo timeout
 sortbyvotes=true                            # sort search results by votes
-hybridsolver=false                          # hybrid rpc/parsing solver
 
 # set pacman binary
 pacmanbin="${PACMAN:-pacman}"
@@ -173,13 +172,11 @@ DepsSolver() {
     done
 
     # hard check for AURINFO metadata
-    if [[ $hybridsolver = false ]]; then
-        depsAlastmodified=($(getjsonvar "LastModified"))
-        for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
-            # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
-            [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
-        done
-    fi
+    depsAlastmodified=($(getjsonvar "LastModified"))
+    for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
+        # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
+        [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
+    done
 
     # no results check
     for i in "${errdeps[@]}"; do
@@ -202,23 +199,6 @@ FindDepsAur() {
 
     depspkgs=($(getjsonarray "Depends"))
     depspkgs+=($(getjsonarray "MakeDepends"))
-
-    # hybrid solver
-    if [[ $hybridsolver = true ]]; then
-        # check for AURINFO metadata
-        depsAname=($(getjsonvar "Name"))    # return sorted results
-        depsAlastmodified=($(getjsonvar "LastModified"))
-        for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
-            # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
-            if [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]]; then
-                nometadatapkgs+=("${depsAname[$i]}") && Anometadatapkgs+=("${depsAname[$i]}")
-                note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- switching to parsing mode"
-            fi
-        done
-
-        [[ -n "${nometadatapkgs[@]}" ]] && FindDepsParseAur ${nometadatapkgs[@]}
-        unset nometadatapkgs
-    fi
 
     # remove installed deps
     depspkgs=($($pacmanbin -T "${depspkgs[@]}" | sort -u))
@@ -287,45 +267,6 @@ FindDepsRepo() {
     fi
 
     repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
-}
-
-FindDepsParseAur() {
-    local i depends makedepends sourcedpkgs
-
-    # download
-    coweropts=(${coweropts[@]/-d/}) && coweropts+=("-d") && DownloadAur $@
-
-    # source pkgs
-    [[ $preview ]] && EditPkgs $@
-    for i in "$@"; do
-        PreviewPkgs $i
-        source "$builddir/$i/PKGBUILD" && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
-        Aconflicts+=(${conflicts[*]})
-        Aprovides+=(${provides[*]})
-    done
-
-    # remove installed deps
-    depspkgs=($($pacmanbin -T "${sourcedpkgs[@]}" | sort -u))
-}
-
-PreviewPkgs() {
-    # sanitize
-    cp "$builddir/$i/PKGBUILD" "$builddir/$i/PKGBUILD.sudocheck"
-    while [[ -n "$(grep -Po '^depends=\($|^depends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
-        sed -i -e '/^depends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-    done
-    while [[ -n "$(grep -Po '^optdepends=\($|^optdepends=\([^)].*[^)]$' "$builddir/$i/PKGBUILD.sudocheck")" ]]; do
-        sed -i -e '/^optdepends=*[^)]/N' -e 's/ \+/ /' -e 's/\t/ /' -e 's/\n//' "$builddir/$i/PKGBUILD.sudocheck"
-    done
-
-    # sudo security check
-    [[ -n "$(grep -w 'sudo' "$builddir/$i/PKGBUILD.sudocheck" | grep -Ev '^depends|^optdepends|^pkgdesc')" ]] && note "w" $"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}" && EditPkgs $i || return
-    if [[ ! $noconfirm ]]; then
-        if proceed "n" $"Do you really want to continue?"; then
-            CleanUp ${deps[@]} &>/dev/null
-            exit
-        fi
-    fi
 }
 
 IgnoreDepsChecks() {
@@ -438,9 +379,9 @@ ConflictChecks() {
     allQconflicts=($(expac -Q '%C'))
 
     # AUR conflicts
-    Aprovides+=(${depsAname[@]})
+    Aprovides=(${depsAname[@]})
     Aprovides+=($(getjsonarray "Provides"))
-    Aconflicts+=($(getjsonarray "Conflicts"))
+    Aconflicts=($(getjsonarray "Conflicts"))
     # remove AUR versioning
     for ((i=0; i<${#Aprovides[@]}; i++)); do
         Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
@@ -457,16 +398,6 @@ ConflictChecks() {
         [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=("$i")
         for j in "${depsAname[@]}"; do
             [[ " $(getjsonarrayvar "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=("$j")
-            if [[ $hybridsolver = true ]]; then
-                [[ ! " ${Anometadatapkgs[@]} " =~ " $j " ]] && continue
-                unset conflicts
-                source "$builddir/$j/PKGBUILD"
-                # remove AUR versioning
-                for ((k=0; k<${#conflicts[@]}; k++)); do
-                    conflicts[$k]=$(awk -F ">|<|=" '{print $1}' <<< ${conflicts[$k]})
-                done
-                [[ " ${conflicts[@]} " =~ " $i " ]] && aurAconflicts+=("$j")
-            fi
         done
 
         for j in "${aurAconflicts[@]}"; do
@@ -668,7 +599,7 @@ EditPkgs() {
     for i in "$@"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
         getinstallscripts $i
-        if [[ ! $edit && ! $preview ]]; then
+        if [[ ! $edit ]]; then
             # edit pkgbuild
             if [[ ! $editpkgbuild = false ]]; then
                 if proceed "y" $"View $i PKGBUILD?"; then
@@ -1180,8 +1111,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     root) root=true;;
                     version) version; exit;;
                     help) usage; exit;;
-                    insecure) hybridsolver=true;;
-                    preview) preview=true;;
                     *) pacopts+=("--$OPTARG");;
                 esac;;
             s)  [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
