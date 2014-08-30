@@ -245,6 +245,7 @@ FindDepsAur() {
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
             if [[ " ${deps[@]} " =~ " ${depspkgsaur[$i]} " ]]; then
                 deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
+                aurdepspkgs=($(tr ' ' '\n' <<< ${aurdepspkgs[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
             fi
         done
     fi
