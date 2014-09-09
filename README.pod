@@ -22,8 +22,8 @@ string.
 
 Pacaur is targeted at B<advanced users> who want some degree of automation for
 repetitive tasks. As such, the user is expected to be familiar with the AUR
-manual build process with makepkg as well as being knownledgeable about sudo
-configuration.
+manual build process with makepkg and its configuration options, as well as
+being knownledgeable about sudo configuration.
 
 Two sets of command line options are provided: commands which call the pacman
 binary and extend for AUR functions B<(-S, -Q)>, and commands which are AUR
@@ -115,13 +115,13 @@ package names and not version, group, and description information.
 
 =item B<-a, --aur>
 
-When used with pacman extended operations, only search or install target(s) from
-the AUR.
+When used with pacman extended operations, only search or install I<target(s)>
+from the AUR.
 
 =item B<-r, --repo>
 
-When used with pacman extended operations, only search or install target(s) from
-the repositories.
+When used with pacman extended operations, only search or install I<target(s)>
+from the repositories.
 
 =item B<-f, --force>
 
@@ -155,7 +155,7 @@ option.
 
 =item B<--rebuild>
 
-Always rebuild I<target(s)> regardless of any existing file in I<$PKGDEST> directory,
+Always rebuild packages regardless of any existing file in I<$PKGDEST> directory,
 and regardless of up-to-date status of development packages.
 
 =item B<--ignore-ood>
@@ -320,15 +320,15 @@ with the makepkg I<$SRCDEST> environment variable.
 =item B<build without installing>
 
 If you want to build packages without installing them, you should ensure that
-the makepkg I<$PKGDEST> environment variable is set or that the clean option is
-disabled in order to avoid the packages to be deleted after being built.
+the makepkg I<$PKGDEST> environment variable is set or that the I<clean> option
+is disabled in order to avoid the packages to be deleted after being built.
 
 =item B<interactive PKGBUILDs>
 
 Packages requiring user input while building are not supported and might fail
 to install properly. There are currently no official directive about these
 interactives PKGBUILDs, but some of the official pacman developers expressed
-the opinion that PKGBUILDs should always propose default compilation options.
+the opinion that PKGBUILDs should always provide default compilation options.
 
 =item B<host name error>
 
