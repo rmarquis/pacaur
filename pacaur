@@ -767,7 +767,7 @@ MakePkgs() {
                     yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
                     [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
-                    note "i" $"Package ${colorW}$j${reset} already available in cache"
+                    note "w" $"Package ${colorW}$j${reset} already available in cache"
                 fi
                 pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^$j,//g" | sed "s/,$j$//g" | sed "s/,$j,/,/g" | sed "s/^$j$/#/g"))
                 continue
