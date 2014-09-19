@@ -815,6 +815,9 @@ MakePkgs() {
             note "i" $"Removing installed AUR dependencies..."
             sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
         fi
+        # readd removed conflicting packages
+        [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --noconfirm
+        [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --noconfirm
     fi
 
     # remove locks
