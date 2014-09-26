@@ -1,0 +1,510 @@
+msgid ""
+msgstr ""
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Project-Id-Version: pacaur\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Alex Henrie <alexhenrie24@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: ca\n"
+"X-Generator: Poedit 1.6.9\n"
+
+#: pacaur:92
+msgid "${colorW}Starting AUR upgrade...${reset}"
+msgstr "${colorW}Començant actualització AUR...${reset}"
+
+#: pacaur:103
+msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+msgstr ""
+"${colorW}$i${reset} ${colorY}no està present${reset} en l'AUR -- saltant"
+
+#: pacaur:131 pacaur:172
+msgid "latest"
+msgstr "últim"
+
+#: pacaur:136
+msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+"${checkaurpkgs[$i]} està en IgnorePkg/IgnoreGroup. Instal·lar de totes "
+"maneres?"
+
+#: pacaur:137
+msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+msgstr "${colorW}${checkaurpkgs[$i]}${reset}: ignorant actualització de paquet"
+
+#: pacaur:142
+msgid ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+msgstr ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignorant actualització de paquet "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+
+#: pacaur:154
+msgid "resolving dependencies..."
+msgstr "resolent dependències..."
+
+#: pacaur:180
+msgid "no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
+msgstr "no hi ha metadades AUR per al paquet ${colorR}${depsAname[$i]}${reset}"
+
+#: pacaur:213
+msgid ""
+"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- switching "
+"to parsing mode"
+msgstr ""
+"no hi ha metadades AUR per al paquet ${colorR}${depsAname[$i]}${reset} -- "
+"canviant al mode d'anàlisis"
+
+#: pacaur:317
+msgid ""
+"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}"
+msgstr ""
+"'${colorR}sudo${reset}' potencialment perillós detectat en ${colorW}$i"
+"${reset}"
+
+#: pacaur:319
+msgid "Do you really want to continue?"
+msgstr "Realment voleu continuar?"
+
+#: pacaur:335 pacaur:350
+msgid "${colorW}$i${reset}: ignoring package upgrade"
+msgstr "${colorW}$i${reset}: ignorant actualització de paquet"
+
+#: pacaur:336 pacaur:342 pacaur:347 pacaur:351
+msgid "Unresolved dependency '${colorW}$i${reset}'"
+msgstr "Dependència no resolta '${colorW}$i${reset}'"
+
+#: pacaur:346
+msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+"La dependència $i està en IgnorePkg/IgnoreGroup. Instal·lar de totes maneres?"
+
+#: pacaur:377
+msgid ""
+"${colorW}There are ${#providers[@]} providers available for "
+"${providersdeps[$i]}:${reset}"
+msgstr ""
+"${colorW}Hi ha ${#providers[@]} proveïdors disponibles per a "
+"${providersdeps[$i]}:${reset}"
+
+#: pacaur:384
+msgid "Enter a number (default=0):"
+msgstr "Introduïu un nombre (per defecte 0)"
+
+#: pacaur:390
+msgid "invalid value: $nb is not between 0 and $providersnb"
+msgstr "valor invàlid: $nb no està entre 0 i $providersnb"
+
+#: pacaur:392
+msgid "invalid number: $nb"
+msgstr "nombre invàlid: $nb"
+
+#: pacaur:429
+msgid "looking for inter-conflicts..."
+msgstr "cercant interconflictes..."
+
+#: pacaur:465 pacaur:513
+msgid "$j and $k are in conflict ($i). Remove $k?"
+msgstr "$j i $k estan en conflicte ($i). Treure $k?"
+
+#: pacaur:479 pacaur:520
+msgid "unresolvable package conflicts detected"
+msgstr "conflictes de paquet irresolubles detectats"
+
+#: pacaur:480 pacaur:521
+msgid "failed to prepare transaction (conflicting dependencies)"
+msgstr "s'ha fallat al preparar la transacció (dependències conflictives)"
+
+#: pacaur:538
+msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
+msgstr "última revisió de ${colorW}${depsAname[$i]}${reset} -- obtenint"
+
+#: pacaur:541
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
+"reinstalling"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} està al dia -- "
+"reinstal·lant"
+
+#: pacaur:543
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} està al dia -- saltant"
+
+#: pacaur:556
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"\")${reset}"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} s'ha marcat com ${colorR}"
+"fora de data${reset} en ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"\")${reset}"
+
+#: pacaur:581
+msgid "(cached)"
+msgstr "(en memòria cau)"
+
+#: pacaur:586 pacaur:608
+msgid "Name"
+msgstr "Nom"
+
+#: pacaur:586 pacaur:608
+msgid "Old Version"
+msgstr "Versió antigua"
+
+#: pacaur:586 pacaur:608
+msgid "New Version"
+msgstr "Versió nova"
+
+#: pacaur:586 pacaur:608
+msgid "Download Size"
+msgstr "Mida de baixada"
+
+#: pacaur:597 pacaur:621
+msgid "AUR Packages  (${#deps[@]}):"
+msgstr "Paquets AUR         (${#deps[@]}):"
+
+#: pacaur:607 pacaur:622
+msgid "Repo Packages (${#repodepspkgs[@]}):"
+msgstr "Paquets de dipòsits (${#repodepspkgs[@]}):"
+
+#: pacaur:610
+msgid "${binarysize[$i]} MiB"
+msgstr "${binarysize[$i]} MiB"
+
+#: pacaur:626
+msgid "Repo Download Size:"
+msgstr "Mida de baixada des de dipòsits:"
+
+#: pacaur:626
+msgid "Repo Installed Size:"
+msgstr "Mida instal·lada des de dipòsits:"
+
+#: pacaur:626
+msgid "$sumk MiB"
+msgstr "$sumk MiB"
+
+#: pacaur:626
+msgid "$summ MiB"
+msgstr "$summ MiB"
+
+#: pacaur:635
+msgid "installation"
+msgstr "instal·lació"
+
+#: pacaur:635
+msgid "download"
+msgstr "baixada"
+
+#: pacaur:636
+msgid "Proceed with $action?"
+msgstr "Procedir amb la $action?"
+
+#: pacaur:644
+msgid "${colorW}Retrieving package(s)...${reset}"
+msgstr "${colorW}Obtenint paquet(s)...${reset}"
+
+#: pacaur:659
+msgid "View $i PKGBUILD?"
+msgstr "Veure el PKGBUILD de $i?"
+
+#: pacaur:660 pacaur:672
+msgid "${colorW}$i${reset} PKGBUILD viewed"
+msgstr "PKGBUILD de ${colorW}$i${reset} vist"
+
+#: pacaur:660 pacaur:672
+msgid "Could not open ${colorW}$i${reset} PKGBUILD"
+msgstr "No s'ha pogut obrir el PKGBUILD de ${colorW}$i${reset}"
+
+#: pacaur:666
+msgid "View $j script?"
+msgstr "Veure l'script de $j?"
+
+#: pacaur:667 pacaur:675
+msgid "${colorW}$j${reset} script viewed"
+msgstr "Script de ${colorW}$j${reset} vist"
+
+#: pacaur:667 pacaur:675
+msgid "Could not open ${colorW}$j${reset} script"
+msgstr "No s'ha pogut obrir l'script de ${colorW}$j${reset}"
+
+#: pacaur:710
+msgid "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
+msgstr "Instal·lant ${colorW}${providerpkgs[@]}${reset} dependències..."
+
+#: pacaur:766
+msgid "Installing ${colorW}$j${reset} cached package..."
+msgstr "Instal·lant el paquet ${colorW}$j${reset} des de la memòria cau..."
+
+#: pacaur:770
+msgid "Package ${colorW}$j${reset} already available in cache"
+msgstr "El paquet ${colorW}$j${reset} ja està disponible en la memòria cau"
+
+#: pacaur:779
+msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr "Construint ${colorW}${pkgsdeps[$i]}${reset} paquet(s)..."
+
+#: pacaur:791
+msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
+msgstr "Instal·lant ${colorW}${pkgsdeps[$i]}${reset} dependències..."
+
+#: pacaur:815
+msgid "Removing installed AUR dependencies..."
+msgstr "Traient les dependències AUR instal·lades..."
+
+#: pacaur:828
+msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+msgstr "${colorW}$i${reset} es un ${colorY}nou paquet orfe${reset}"
+
+#: pacaur:839
+msgid "${colorW}$i${reset} cleaning skipped"
+msgstr "Neteja de ${colorW}$i${reset} saltada"
+
+#: pacaur:844
+msgid "${colorW}$i${reset} cleaned"
+msgstr "${colorW}$i${reset} netejat"
+
+#: pacaur:844
+msgid "Could not clean ${colorW}$i${reset}"
+msgstr "No s'ha pogut netejar ${colorW}$i${reset}"
+
+#: pacaur:850
+msgid "Build directory cleaned"
+msgstr "S'ha netejat el directori de construcció"
+
+#: pacaur:850
+msgid "Build directory already cleaned"
+msgstr "Ja s'ha netejat el directori de construcció"
+
+#: pacaur:882 pacaur:905
+msgid "[ ignored ]"
+msgstr "[ ignorat ]"
+
+#: pacaur:920
+msgid "AUR cache directory:"
+msgstr "Directori de memòria cau AUR:"
+
+#: pacaur:922
+msgid "Packages to keep:"
+msgstr "Paquets que retenir:"
+
+#: pacaur:922
+msgid "All locally installed packages"
+msgstr "Tots els paquets instal·lats localment"
+
+#: pacaur:923
+msgid "Do you want to remove all other packages from AUR cache?"
+msgstr "Voleu treure tots els altres paquets de la memòria cau AUR?"
+
+#: pacaur:926
+msgid "removing old packages from cache..."
+msgstr "traient els paquets antics de la memòria cau..."
+
+#: pacaur:929
+msgid "Do you want to remove ALL files from AUR cache?"
+msgstr "Voleu treure TOTS els fitxers del memòria cau AUR?"
+
+#: pacaur:930
+msgid "removing all files from AUR cache..."
+msgstr "traient tots els fitxers de la memòria cau AUR..."
+
+#: pacaur:972 pacaur:979
+msgid "Could not connect to the AUR"
+msgstr "No s'ha pogut connectar a l'AUR"
+
+#: pacaur:1005
+msgid "failed to prepare transaction (could not satisfy dependencies)"
+msgstr ""
+"s'ha fallat al preparar la transacció (no s'ha pogut satisfer les "
+"dependències)"
+
+#: pacaur:1006
+msgid "${Qrequires[@]}: requires $@"
+msgstr "${Qrequires[@]}: requereix $@"
+
+#: pacaur:1014
+msgid "$2 [Y/n] "
+msgstr "$2 [S/n] "
+
+#: pacaur:1021
+msgid "$2 [y/N] "
+msgstr "$2 [s/N] "
+
+#: pacaur:1052
+msgid " there is nothing to do"
+msgstr " no hi ha res que fer"
+
+#: pacaur:1073
+msgid "usage:  pacaur <operation> [options] [target(s)]"
+msgstr "ús:  pacaur <operació> [opcions] [objectiu(s)]"
+
+#: pacaur:1074
+msgid "operations:"
+msgstr "operacions:"
+
+#: pacaur:1075
+msgid " pacman extension"
+msgstr " extensió del pacman"
+
+#: pacaur:1076
+msgid "   -S, -Q           extend pacman operations to the AUR"
+msgstr "   -S, -Q           estén les operacions del pacman a l'AUR"
+
+#: pacaur:1077
+msgid " AUR only"
+msgstr " només AUR"
+
+#: pacaur:1078
+msgid "   -s, --search     search AUR repository for matching strings"
+msgstr "   -s, --search     cerca el dipòsit AUR per cadenes coincidints"
+
+#: pacaur:1079
+msgid "   -i, --info       view package information -- pass twice for details"
+msgstr ""
+"   -i, --info       veu la informació de paquet -- passa'l dos vegades per "
+"detalls"
+
+#: pacaur:1080
+msgid ""
+"   -d, --download   download target(s) -- pass twice to download AUR "
+"dependencies"
+msgstr ""
+"   -d, --download   baixa objectiu(s) -- passa'l dos vegades per baixar les "
+"dependències AUR"
+
+#: pacaur:1081
+msgid "   -m, --makepkg    download and make target(s)"
+msgstr "   -m, --makepkg    baixa i fes objectiu(s)"
+
+#: pacaur:1082
+msgid "   -y, --sync       download, make and install target(s)"
+msgstr "   -y, --sync       baixa, fes i instal·la objectiu(s)"
+
+#: pacaur:1083
+msgid "   -k, --check      check for AUR update(s)"
+msgstr "   -k, --check      cerca actualitzacio(ns) AUR"
+
+#: pacaur:1084
+msgid "   -u, --update     update AUR package(s)"
+msgstr "   -u, --update     actualitza paquet(s) AUR"
+
+#: pacaur:1085 pacaur:1093
+msgid " general"
+msgstr " general"
+
+#: pacaur:1086
+msgid "   -v, --version    display version information"
+msgstr "   -v, --version    mostra informació de versió"
+
+#: pacaur:1087
+msgid "   -h, --help       display help information"
+msgstr "   -h, --help       mostra informació d'ajuda"
+
+#: pacaur:1089
+msgid "options:"
+msgstr "opcions:"
+
+#: pacaur:1090
+msgid ""
+" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
+"Sc, -Scc operations"
+msgstr ""
+" extensió del pacman - es pot utilitzar amb les operacions -S, -Ss, -Si, -"
+"Sii, -Sw, -Su, -Qu, -Sc, -Scc"
+
+#: pacaur:1091
+msgid ""
+"   -a, --aur        only search, install or clean target(s) from the AUR"
+msgstr ""
+"   -a, --aur        només cerca, instal·la o neteja objectiu(s) de l'AUR"
+
+#: pacaur:1092
+msgid ""
+"   -r, --repo       only search, install or clean target(s) from the "
+"repositories"
+msgstr ""
+"   -r, --repo       només cerca, instal·la o neteja objectiu(s) dels dipòsits"
+
+#: pacaur:1094
+msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
+msgstr ""
+"   -e, --edit       edita el PKGBUILD del(s) objectiu(s) i veu l'script "
+"d'instal·lació"
+
+#: pacaur:1095
+msgid ""
+"   -c, --clean      clean target(s) build files -- can be combined with the -"
+"m, -y, -u operations"
+msgstr ""
+"   -c, --clean      neteja els fitxers de construcció del(s) objectiu(s) -- "
+"es pot combinar amb les operacions -m, -y, -u"
+
+#: pacaur:1096
+msgid "   -q, --quiet      show less information for query and search"
+msgstr "   -q, --quiet      mostra menys informació de consulta i cerca"
+
+#: pacaur:1097
+msgid "   --devel          consider AUR development packages upgrade"
+msgstr ""
+"   --devel          considera una actualització de paquets de "
+"desenvolupament AUR"
+
+#: pacaur:1098
+msgid ""
+"   --ignore         ignore a package upgrade (can be used more than once)"
+msgstr ""
+"   --ignore         ignora una actualització de paquet (es pot utilitzar més "
+"d'una vegada)"
+
+#: pacaur:1099
+msgid "   --needed         do not reinstall already up to date target(s)"
+msgstr "   --needed         no reinstal·lis objectiu(s) que ja estan al dia"
+
+#: pacaur:1100
+msgid "   --noconfirm      do not prompt for any confirmation"
+msgstr "   --noconfirm      no demanis cap confirmació"
+
+#: pacaur:1101
+msgid "   --noedit         do not prompt to edit files"
+msgstr "   --noedit         no demanis editar els fitxers"
+
+#: pacaur:1102
+msgid "   --rebuild        always rebuild package(s)"
+msgstr "   --rebuild        sempre reconstrueix el(s) paquet(s)"
+
+#: pacaur:1228
+msgid "${colorW}editor${reset} variable unset"
+msgstr "variable ${colorW}editor${reset} no establert"
+
+#: pacaur:1229
+msgid "${colorW}$builddir${reset} does not have write permission."
+msgstr "${colorW}$builddir${reset} no té permís d'escriptura."
+
+#: pacaur:1230
+msgid "no targets specified (use -h for help)"
+msgstr "cap objectiu especificat (utilitzeu -h per ajuda)"
+
+#: pacaur:1231
+msgid "target not found"
+msgstr "objectiu no trobat"
+
+#: pacaur:1232
+msgid "alternative installation root option not supported"
+msgstr "opció d'arrel d'instal·lació alternatiu no suportada"
+
+#: pacaur:1270 pacaur:1282 pacaur:1290
+msgid ""
+"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"Els paquet(s) ${colorW}${aurpkgs[*]}${reset} no es troba(n) en els dipòsits, "
+"intentant amb l'${colorM}AUR${reset}..."
