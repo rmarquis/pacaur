@@ -130,14 +130,12 @@ msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
 msgstr ""
-"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} està al dia -- "
-"reinstal·lant"
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} és al dia -- reinstal·lant"
 
 #: pacaur:543
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
-msgstr ""
-"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} està al dia -- saltant"
+msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} és al dia -- saltant"
 
 #: pacaur:556
 msgid ""
@@ -263,7 +261,7 @@ msgstr "Traient les dependències AUR instal·lades..."
 
 #: pacaur:828
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
-msgstr "${colorW}$i${reset} es un ${colorY}nou paquet orfe${reset}"
+msgstr "${colorW}$i${reset} és un ${colorY}nou paquet orfe${reset}"
 
 #: pacaur:839
 msgid "${colorW}$i${reset} cleaning skipped"
@@ -311,7 +309,7 @@ msgstr "traient els paquets antics de la memòria cau..."
 
 #: pacaur:929
 msgid "Do you want to remove ALL files from AUR cache?"
-msgstr "Voleu treure TOTS els fitxers del memòria cau AUR?"
+msgstr "Voleu treure TOTS els fitxers de la memòria cau AUR?"
 
 #: pacaur:930
 msgid "removing all files from AUR cache..."
@@ -370,7 +368,7 @@ msgstr "   -s, --search     cerca el dipòsit AUR per cadenes coincidints"
 #: pacaur:1079
 msgid "   -i, --info       view package information -- pass twice for details"
 msgstr ""
-"   -i, --info       veu la informació de paquet -- passa'l dos vegades per "
+"   -i, --info       ves la informació de paquet -- passa'l dos vegades per "
 "detalls"
 
 #: pacaur:1080
@@ -437,7 +435,7 @@ msgstr ""
 #: pacaur:1094
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
-"   -e, --edit       edita el PKGBUILD del(s) objectiu(s) i veu l'script "
+"   -e, --edit       edita el PKGBUILD del(s) objectiu(s) i ves l'script "
 "d'instal·lació"
 
 #: pacaur:1095
@@ -467,7 +465,8 @@ msgstr ""
 
 #: pacaur:1099
 msgid "   --needed         do not reinstall already up to date target(s)"
-msgstr "   --needed         no reinstal·lis objectiu(s) que ja estan al dia"
+msgstr ""
+"   --needed         no reinstal·lis objectiu(s) que ja estigui(n) al dia"
 
 #: pacaur:1100
 msgid "   --noconfirm      do not prompt for any confirmation"
