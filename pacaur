@@ -816,8 +816,8 @@ MakePkgs() {
             sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
         fi
         # readd removed conflicting packages
-        [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --noconfirm
-        [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --noconfirm
+        [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --needed --noconfirm
+        [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --needed --noconfirm
     fi
 
     # remove locks
