@@ -130,7 +130,8 @@ Overwrite existing files when downloading I<target(s)> PKGBUILD.
 =item B<--devel>
 
 When used with update operations, also upgrade AUR development packages
-(supported are cvs, svn, git, hg, bzr and darcs development packages).
+(supported are cvs, svn, git, hg, bzr and darcs development packages, as well
+as nightly build packages).
 
 =item B<--ignore> I<target(s)>
 
@@ -142,7 +143,7 @@ IgnorePkg directive are honored.
 
 Do not reinstall I<target(s)> that are already up to date. The build of
 development packages that are found up-to-date after the source checkout will
-also be skipped.
+also be skipped. Does not apply to nightly build packages.
 
 =item B<--noconfirm>
 

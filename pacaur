@@ -106,7 +106,7 @@ UpgradeAur() {
     # add devel packages
     if [[ $devel ]]; then
         for i in "${allaurpkgs[@]}"; do
-            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< $i)" ]] && aurpkgs+=("$i")
+            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgs+=("$i")
         done
     fi
 
@@ -128,7 +128,7 @@ IgnoreChecks() {
     checkaurpkgsAver=($(getjsonvar "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgsAname[@]}"))
     for ((i=0; i<${#checkaurpkgsAname[@]}; i++)); do
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${checkaurpkgsAname[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
+        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgsAname[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
     for ((i=0; i<${#checkaurpkgs[@]}; i++)); do
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
@@ -169,7 +169,7 @@ DepsSolver() {
     for ((i=0; i<${#depsAname[@]}; i++)); do
         depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
+        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
     done
 
     # hard check for AURINFO metadata
@@ -534,7 +534,7 @@ ReinstallChecks() {
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
-        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${depsAname[$i]})" ]]; then
+        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]]; then
             note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else
             if [[ ! $needed ]]; then
@@ -719,7 +719,7 @@ MakePkgs() {
 
         cd "$builddir/${basepkgs[$i]}"
 
-        # build devel if necessary only
+        # build devel if necessary only (no nightly here)
         unset aurdevelpkgsAall
         makeopts=(${makeopts[@]/-e/})
         if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${basepkgs[$i]})" && -n "$(expac -Q '%n' "${basepkgs[$i]}")" && ! $rebuild ]]; then
@@ -838,6 +838,7 @@ CleanUp() {
     if [[ -n "$@" ]]; then
         cd "$builddir"
         for i in "$@"; do
+            # skip devel (no nightly here)
             if [[ ! $cleandevel = true && -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< $i)" && $count -lt 2 ]]; then
                 note "w" $"${colorW}$i${reset} cleaning skipped"
                 continue
