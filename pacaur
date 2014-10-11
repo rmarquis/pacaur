@@ -210,7 +210,10 @@ FindDepsAur() {
         depsAlastmodified=($(getjsonvar "LastModified"))
         for ((i=0; i<${#depsAlastmodified[@]}; i++)); do
             # first package submitted to AUR 3.0.0 on 2014-05-27 18:35
-            [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]] && nometadatapkgs+=("${depsAname[$i]}") && note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- switching to parsing mode"
+            if [[ "${depsAlastmodified[$i]}" -lt 1401215749 ]]; then
+                nometadatapkgs+=("${depsAname[$i]}") && Anometadatapkgs+=("${depsAname[$i]}")
+                note "f" $"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- switching to parsing mode"
+            fi
         done
 
         [[ -n "${nometadatapkgs[@]}" ]] && FindDepsParseAur ${nometadatapkgs[@]}
@@ -297,6 +300,8 @@ FindDepsParseAur() {
     for i in "$@"; do
         PreviewPkgs $i
         source "$builddir/$i/PKGBUILD" && sourcedpkgs+=(${depends[*]} ${makedepends[*]})
+        Aconflicts+=(${conflicts[*]})
+        Aprovides+=(${provides[*]})
     done
 
     # remove installed deps
@@ -433,9 +438,9 @@ ConflictChecks() {
     allQconflicts=($(expac -Q '%C'))
 
     # AUR conflicts
-    Aprovides=(${depsAname[@]})
+    Aprovides+=(${depsAname[@]})
     Aprovides+=($(getjsonarray "Provides"))
-    Aconflicts=($(getjsonarray "Conflicts"))
+    Aconflicts+=($(getjsonarray "Conflicts"))
     # remove AUR versioning
     for ((i=0; i<${#Aprovides[@]}; i++)); do
         Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
@@ -452,6 +457,16 @@ ConflictChecks() {
         [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=("$i")
         for j in "${depsAname[@]}"; do
             [[ " $(getjsonarrayvar "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=("$j")
+            if [[ $hybridsolver = true ]]; then
+                [[ ! " ${Anometadatapkgs[@]} " =~ " $j " ]] && continue
+                unset conflicts
+                source "$builddir/$j/PKGBUILD"
+                # remove AUR versioning
+                for ((k=0; k<${#conflicts[@]}; k++)); do
+                    conflicts[$k]=$(awk -F ">|<|=" '{print $1}' <<< ${conflicts[$k]})
+                done
+                [[ " ${conflicts[@]} " =~ " $i " ]] && aurAconflicts+=("$j")
+            fi
         done
 
         for j in "${aurAconflicts[@]}"; do
