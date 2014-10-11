@@ -142,8 +142,8 @@ IgnorePkg directive are honored.
 =item B<--needed>
 
 Do not reinstall I<target(s)> that are already up to date. The build of
-development packages that are found up-to-date after the source checkout will
-be skipped. Does not apply to nightly build packages.
+development packages (supported are svn, git, hg and bzr development packages)
+that are found up-to-date after the source checkout will be skipped.
 
 =item B<--noconfirm>
 

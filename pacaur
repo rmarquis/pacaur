@@ -734,10 +734,19 @@ MakePkgs() {
 
         cd "$builddir/${basepkgs[$i]}"
 
-        # build devel if necessary only (no nightly here)
+        # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAall
         makeopts=(${makeopts[@]/-e/})
-        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
+        if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
+
+            # prevent source fetching failure
+            vcs=$(echo ${basepkgs[$i]} | awk -F "-" '{print $NF}')
+            case $vcs in
+                svn)vcs="subversion";;
+                hg) vcs="mercurial";;
+            esac
+            [[ -z "$(expac -Qs '%n' "^$vcs$")" ]] && sudo $pacmanbin -S $vcs --asdeps --noconfirm
+
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 makepkg -o ${makeopts[@]}
 
