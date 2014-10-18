@@ -377,3 +377,5 @@ B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
 
 B<[ru] - Русский> - "kyak"
+
+B<[tr] - Türkçe> - Volkan "wakeup" Gezer
