@@ -1104,7 +1104,7 @@ usage() {
     printf "%s\n" $"   -S, -Q           extend pacman operations to the AUR"
     printf "%s\n" $" AUR only"
     printf "%s\n" $"   -s, --search     search AUR repository for matching strings"
-    printf "%s\n" $"   -i, --info       view package information -- pass twice for details"
+    printf "%s\n" $"   -i, --info       view package information"
     printf "%s\n" $"   -d, --download   download target(s) -- pass twice to download AUR dependencies"
     printf "%s\n" $"   -m, --makepkg    download and make target(s)"
     printf "%s\n" $"   -y, --sync       download, make and install target(s)"
