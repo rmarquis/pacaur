@@ -171,7 +171,7 @@ msgstr "Wielkość pobrania"
 
 #: pacaur:612 pacaur:636
 msgid "AUR Packages  (${#deps[@]}):"
-msgstr "Pakiety z AUR"
+msgstr "Pakiety z AUR  (${#deps[@]}):"
 
 #: pacaur:622 pacaur:637
 msgid "Repo Packages (${#repodepspkgs[@]}):"
@@ -227,15 +227,15 @@ msgstr "Nie można otworzyć pliku PKGBUILD pakietu ${colorW}$i${reset}"
 
 #: pacaur:681
 msgid "View $j script?"
-msgstr "Chcesz przejrzeć skrypt .install pakietu $i?"
+msgstr "Chcesz przejrzeć skrypt .install pakietu $j?"
 
 #: pacaur:682 pacaur:690
 msgid "${colorW}$j${reset} script viewed"
-msgstr "Przejrzano skrypt .install pakietu ${colorW}$i${reset}"
+msgstr "Przejrzano skrypt .install pakietu ${colorW}$j${reset}"
 
 #: pacaur:682 pacaur:690
 msgid "Could not open ${colorW}$j${reset} script"
-msgstr "Nie można otworzyć skryptu .install pakietu ${colorW}$i${reset}"
+msgstr "Nie można otworzyć skryptu .install pakietu ${colorW}$j${reset}"
 
 #: pacaur:725
 msgid "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
@@ -339,7 +339,7 @@ msgstr "$2 [t/N] "
 
 #: pacaur:1080
 msgid " there is nothing to do"
-msgstr "nie ma nic do zrobienia"
+msgstr " nie ma nic do zrobienia"
 
 #: pacaur:1101
 msgid "usage:  pacaur <operation> [options] [target(s)]"
