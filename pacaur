@@ -1174,6 +1174,7 @@ fi
 pacmanarg=(${pacmanarg[@]/--/})
 pacmanarg=(${pacmanarg[@]/-r/})
 pacmanarg=(${pacmanarg[@]/-a/})
+[[ $operation = sync && ! $search && ! $info && ! $clean ]] && [[ "$EUID" -eq 0 ]] && note "e" $"you cannot perform this operation as root"
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
