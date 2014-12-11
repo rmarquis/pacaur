@@ -179,6 +179,7 @@ DepsSolver() {
     done
 
     # no results check
+    errdeps=($(tr ' ' '\n' <<< ${errdeps[@]} | sort -u))
     for i in "${errdeps[@]}"; do
         note "f" "no results found for $i"
     done
