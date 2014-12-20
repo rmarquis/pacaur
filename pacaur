@@ -816,7 +816,7 @@ DownloadAur() {
 }
 
 SearchInfoAur() {
-    [[ $sortbyvotes = true ]] && coweropts+=("--rsort=votes")
+    [[ $sortbyvotes = true && -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]] && coweropts+=("--rsort=votes")
     cower ${coweropts[@]} $@
 }
 
@@ -1095,6 +1095,8 @@ while [[ -n "${!OPTIND}" ]]; do
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
+                    asort) coweropts+=("--sort=name");;
+                    vsort) coweropts+=("--rsort=votes");;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     nodeps) nodeps=true; pacopts+=("--nodeps"); makeopts+=("--nodeps"); ((count++));;

@@ -168,6 +168,14 @@ When searching the AUR, ignore all results marked as out of date.
 When searching the AUR, also show results marked as out of date. This take
 precedence over the I<IgnoreOOD> option of the cower config file.
 
+=item B<--asort>
+
+When searching the AUR, sort the results by alphabetical order.
+
+=item B<--vsort>
+
+When searching the AUR, sort the results by decreasing number of votes.
+
 =back
 
 
