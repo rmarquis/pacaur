@@ -263,6 +263,20 @@ Default is B<false>.
 
 =over 4
 
+=item B<dependency solver and missing metadata>
+
+The dependency tree is solved using the full secured RPC AUR interface. Packages
+which are missing AUR metadata may however not provide correct dependencies
+information.
+
+All packages uploaded to the AUR before 2014-05-27 18:35 UTC (AUR 3.0.0 release)
+and packages that use architecture-specific fields uploaded to the AUR before
+2014-12-29 02:37 UTC (pacman 4.2 release in [core]) are concerned and should be
+reuploaded by their respective maintainers. If you encounter such packages, please
+notify their maintainer about their missing AUR metadata status.
+
+Enforced reupload of all packages to the AUR is currently planned for AUR 4.0.0.
+
 =item B<sudo configuration>
 
 To be used with minimal password prompting, I<sudo> should be configured
