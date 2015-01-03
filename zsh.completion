@@ -72,6 +72,7 @@ _pacaur_opts_extended=(
     {-r,--repo}'[Only search, install or clean packages from the repositories]'
     '--noedit[Do not prompt to edit files]'
     '--rebuild[Always rebuild package(s)]'
+    '--skippgpcheck[Do not verify PGP signature(s) of source files]'
 )
 
 _pacaur_opts_extended_update=(
