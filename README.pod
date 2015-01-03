@@ -159,6 +159,10 @@ option.
 Always rebuild packages regardless of any existing file in I<$PKGDEST> directory,
 and regardless of up-to-date status of development packages.
 
+=item B<--skippgpcheck>
+
+Do not verify PGP signatures of source files when running makepkg.
+
 =item B<--ignore-ood>
 
 When searching the AUR, ignore all results marked as out of date.
