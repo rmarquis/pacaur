@@ -786,7 +786,7 @@ MakePkgs() {
 
     # makepkg failure check
     for i in "${errmakepkg[@]}"; do
-        note "f" "failed to build ${colorY}$i${reset} package(s)"
+        note "f" "failed to build ${colorW}$i${reset} package(s)"
     done
     [[ -n "${errmakepkg[@]}" ]] && exit 1
 }
