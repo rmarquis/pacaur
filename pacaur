@@ -635,6 +635,11 @@ MakePkgs() {
     # current orphan packages
     oldorphanpkgs=($($pacmanbin -Qdtq))
 
+    # initialize sudo
+    if sudo -v; then
+        [[ $sudoloop = true ]] && sudov &
+    fi
+
     # split packages support
     for ((i=0; i<${#pkgsbase[@]}; i++)); do
         for ((j=0; j<${#deps[@]}; j++)); do
@@ -677,11 +682,6 @@ MakePkgs() {
     # set lock
     [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
     touch "$tmpdir/build.lock"
-
-    # initialize sudo
-    if sudo -v; then
-        [[ $sudoloop = true ]] && sudov &
-    fi
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
