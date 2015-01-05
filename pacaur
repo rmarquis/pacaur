@@ -648,14 +648,13 @@ MakePkgs() {
     basepkgs=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${basepkgs[@]} | awk -F "\n" '{print}'))
     pkgsdeps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${pkgsdeps[@]} | awk -F "\n" '{print}'))
 
-    # check pgp signature
+    # integrity check
     for ((i=0; i<${#basepkgs[@]}; i++)); do
         # skip devel packages
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && continue
+
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
-
-        cd "$builddir/${basepkgs[$i]}"
 
         # cache check
         unset cachedpkg
@@ -664,15 +663,16 @@ MakePkgs() {
             [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
         done
         if [[ ! $cachedpkg ]]; then
-            note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} signature..."
+            cd "$builddir/${basepkgs[$i]}"
+            note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
             makepkg -f --verifysource
             (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
         fi
     done
     for i in "${errmakepkg[@]}"; do
-        note "f" "failed to verify ${colorW}$i${reset} signature"
+        note "f" "failed to verify ${colorW}$i${reset} integrity"
     done
-    [[ -n "${errmakepkg[@]}" ]] && note "f" "import missing keys with \"gpg --recv-key <KEYID>\"" && exit 1
+    [[ -n "${errmakepkg[@]}" ]] && exit 1
 
     # set lock
     [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
