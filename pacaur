@@ -744,7 +744,11 @@ MakePkgs() {
             fi
         fi
         # clean
-        CleanUp ${basepkgs[$i]}
+        if (( $? > 0)); then
+            note "w" $"${colorW}${pkgsdeps[$i]}${reset} cleaning skipped"
+        else
+            CleanUp ${basepkgs[$i]}
+        fi
 
         # set dep status
         if [[ $installpkg ]]; then
