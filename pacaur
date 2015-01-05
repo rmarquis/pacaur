@@ -635,15 +635,6 @@ MakePkgs() {
     # current orphan packages
     oldorphanpkgs=($($pacmanbin -Qdtq))
 
-    # set lock
-    [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
-    touch "$tmpdir/build.lock"
-
-    # initialize sudo
-    if sudo -v; then
-        [[ $sudoloop = true ]] && sudov &
-    fi
-
     # split packages support
     for ((i=0; i<${#pkgsbase[@]}; i++)); do
         for ((j=0; j<${#deps[@]}; j++)); do
@@ -656,6 +647,31 @@ MakePkgs() {
     # reverse deps order
     basepkgs=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${basepkgs[@]} | awk -F "\n" '{print}'))
     pkgsdeps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${pkgsdeps[@]} | awk -F "\n" '{print}'))
+
+    # check pgp signature
+    for ((i=0; i<${#basepkgs[@]}; i++)); do
+        # get splitted packages list
+        pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
+
+        cd "$builddir/${basepkgs[$i]}"
+
+        note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} signature..."
+        makepkg -f --verifysource
+        (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
+    done
+    for i in "${errmakepkg[@]}"; do
+        note "f" "failed to verify ${colorW}$i${reset} signature"
+    done
+    [[ -n "${errmakepkg[@]}" ]] && note "f" "import missing keys with \"gpg --recv-key <KEYID>\"" && exit 1
+
+    # set lock
+    [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
+    touch "$tmpdir/build.lock"
+
+    # initialize sudo
+    if sudo -v; then
+        [[ $sudoloop = true ]] && sudov &
+    fi
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
