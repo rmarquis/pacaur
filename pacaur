@@ -655,9 +655,17 @@ MakePkgs() {
 
         cd "$builddir/${basepkgs[$i]}"
 
-        note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} signature..."
-        makepkg -f --verifysource
-        (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
+        # cache check
+        unset cachedpkg
+        for j in "${pkgsdepslist[@]}"; do
+            depsAver="$(getjsonvarvar "Version" "$j")"
+            [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
+        done
+        if [[ ! $cachedpkg ]]; then
+            note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} signature..."
+            makepkg -f --verifysource
+            (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
+        fi
     done
     for i in "${errmakepkg[@]}"; do
         note "f" "failed to verify ${colorW}$i${reset} signature"
