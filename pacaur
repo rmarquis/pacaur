@@ -746,7 +746,7 @@ MakePkgs() {
         # clean
         if (( $? > 0)); then
             errmakepkg+=("${pkgsdeps[$i]}")
-            note "w" $"${colorW}${pkgsdeps[$i]}${reset} cleaning skipped"
+            note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
         else
             CleanUp ${basepkgs[$i]}
         fi
@@ -786,7 +786,7 @@ MakePkgs() {
 
     # makepkg failure check
     for i in "${errmakepkg[@]}"; do
-        note "f" "failed to build ${colorY}$i${reset} package"
+        note "f" "failed to build ${colorY}$i${reset} package(s)"
     done
     [[ -n "${errmakepkg[@]}" ]] && exit 1
 }
