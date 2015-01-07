@@ -656,7 +656,7 @@ MakePkgs() {
     # integrity check
     for ((i=0; i<${#basepkgs[@]}; i++)); do
         # skip devel packages
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && continue
+        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${basepkgs[$i]})" ]] && continue
 
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
