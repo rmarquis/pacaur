@@ -655,9 +655,6 @@ MakePkgs() {
 
     # integrity check
     for ((i=0; i<${#basepkgs[@]}; i++)); do
-        # skip devel packages
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${basepkgs[$i]})" ]] && continue
-
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
@@ -670,7 +667,7 @@ MakePkgs() {
         if [[ ! $cachedpkg ]]; then
             cd "$builddir/${basepkgs[$i]}"
             note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
-            makepkg -f --verifysource
+            makepkg -o -d
             (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
         fi
     done
@@ -678,7 +675,6 @@ MakePkgs() {
         note "f" "failed to verify ${colorW}$i${reset} integrity"
     done
     [[ -n "${errmakepkg[@]}" ]] && exit 1
-    makepkgopts+=('--skipinteg')
 
     # set lock
     [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
@@ -756,7 +752,7 @@ MakePkgs() {
 
         if [[ $installpkg ]]; then
             # install
-            yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+            yes `gettext pacman Y` | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
         else
             unset isaurdeps
             for j in "${pkgsdepslist[@]}"; do
@@ -765,10 +761,10 @@ MakePkgs() {
             if [[ $isaurdeps = true ]]; then
                 # install AUR deps
                 note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
-                yes `gettext pacman Y` | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                yes `gettext pacman Y` | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             else
                 # install then remove binary deps
-                yes `gettext pacman Y` | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                yes `gettext pacman Y` | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             fi
         fi
         # clean
