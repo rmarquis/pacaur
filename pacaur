@@ -812,7 +812,9 @@ MakePkgs() {
     for i in "${errmakepkg[@]}"; do
         note "f" "failed to build ${colorW}$i${reset} package(s)"
     done
-    [[ -n "${errmakepkg[@]}" ]] && exit 1
+
+    # exit error code
+    [[ -z "${errmakepkg[@]}" ]] && exit
 }
 
 CleanUp() {
