@@ -9,7 +9,7 @@ msgstr ""
 
 #: pacaur:92
 msgid "${colorW}Starting AUR upgrade...${reset}"
-msgstr "${colorW}Starte AUR upgrade...${reset}"
+msgstr "${colorW}Starte AUR Upgrade...${reset}"
 
 #: pacaur:103
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
@@ -104,7 +104,7 @@ msgstr "Suche nach Zwischenkonflikten..."
 
 #: pacaur:463 pacaur:511
 msgid "$j and $k are in conflict ($i). Remove $k?"
-msgstr "$j und $k stehen im Konflikt ($i). Entferne $k?"
+msgstr "$j und $k stehen in Konflikt ($i). Entferne $k?"
 
 #: pacaur:477 pacaur:518
 msgid "unresolvable package conflicts detected"
@@ -112,7 +112,7 @@ msgstr "Unlösbarer Paketkonflikt gefunden"
 
 #: pacaur:478 pacaur:519
 msgid "failed to prepare transaction (conflicting dependencies)"
-msgstr "Vorbereitungen fehlgeschlagen (Abhängigkeitskonflikt)"
+msgstr "Vorbereitung der Transaktion fehlgeschlagen (Abhängigkeitskonflikt)"
 
 #: pacaur:535
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
@@ -260,7 +260,7 @@ msgstr "${colorW}$i${reset} ist ein ${colorY}neues verwaistes${reset} Paket"
 
 #: pacaur:827
 msgid "${colorW}$i${reset} cleaning skipped"
-msgstr "${colorW}$i${reset} Aufräumen übersprungen"
+msgstr "Aufräumen von ${colorW}$i${reset} übersprungen"
 
 #: pacaur:832
 msgid "${colorW}$i${reset} cleaned"
@@ -276,7 +276,7 @@ msgstr "Build Verzeichnis aufgeräumt"
 
 #: pacaur:838
 msgid "Build directory already cleaned"
-msgstr "Build Verzeichnis ist schon aufgeräumt"
+msgstr "Build Verzeichnis ist bereits aufgeräumt"
 
 #: pacaur:870 pacaur:893
 msgid "[ ignored ]"
@@ -292,7 +292,7 @@ msgstr "Zu behaltende Pakete:"
 
 #: pacaur:910
 msgid "All locally installed packages"
-msgstr "Alle lokal installierte Pakete"
+msgstr "Alle lokal installierten Pakete"
 
 #: pacaur:911
 msgid "Do you want to remove all other packages from AUR cache?"
@@ -316,7 +316,8 @@ msgstr "Konnte keine Verbindung zum AUR herstellen"
 
 #: pacaur:993
 msgid "failed to prepare transaction (could not satisfy dependencies)"
-msgstr "Vorbereitungen fehlgeschlagen (konnte Abhängigkeiten nicht auflösen)"
+msgstr "Vorbereitungen der Transaktion fehlgeschlagen (konnte "
+"Abhängigkeiten nicht erfüllen)"
 
 #: pacaur:994
 msgid "${Qrequires[@]}: requires $@"
@@ -348,14 +349,14 @@ msgstr " pacman Erweiterung"
 
 #: pacaur:1064
 msgid "   -S, -Q           extend pacman operations to the AUR"
-msgstr "   -S, -Q           Erweitere pacmans Operationen auf das AUR"
+msgstr "   -S, -Q           Erweitere pacman Operationen auf das AUR"
 
 #: pacaur:1065
 msgid " AUR only"
 msgstr " nur AUR"
 
 #: pacaur:1066
-msgid "   -s, --search     search AUR repository for matching strings"
+msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     Durchsuche das AUR nach Treffern"
 
 #: pacaur:1067
@@ -385,7 +386,7 @@ msgstr "   -k, --check      Überprüfe das AUR auf Updates"
 
 #: pacaur:1072
 msgid "   -u, --update     update AUR package(s)"
-msgstr "   -u, --update     Aktualisiere Pakete aus dem AUR"
+msgstr "   -u, --update     Aktualisiere AUR Pakete"
 
 #: pacaur:1073 pacaur:1081
 msgid " general"
@@ -422,7 +423,7 @@ msgid ""
 "   -r, --repo       only search, install or clean packages from the "
 "repositories"
 msgstr ""
-"   -r, --repo       Nur Pakete aus den Paketquellen suchen, installieren "
+"   -r, --repo       Pakete nur aus den offiziellen Paketquellen suchen, installieren "
 "oder aufräumen"
 
 #: pacaur:1082
@@ -488,6 +489,6 @@ msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."
 msgstr ""
-"Paket(e) ${colorW}${aurpkgs[*]}${reset} wurde in den Paketquellen nicht "
-"gefunden, suche im ${colorM}AUR${reset}..."
+"Paket(e) ${colorW}${aurpkgs[*]}${reset} wurde in den offiziellen Paketquellen "
+"nicht gefunden, suche im ${colorM}AUR${reset}..."
 
