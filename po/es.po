@@ -357,7 +357,7 @@ msgid " AUR only"
 msgstr " solo AUR"
 
 #: pacaur:1066
-msgid "   -s, --search     search AUR repository for matching strings"
+msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     buscar en AUR por las cadenas coincidentes"
 
 #: pacaur:1067
