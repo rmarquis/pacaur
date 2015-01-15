@@ -360,7 +360,7 @@ msgid " AUR only"
 msgstr " только AUR"
 
 #: pacaur:1081
-msgid "   -s, --search     search AUR repository for matching strings"
+msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     поиск совпадающих строк в репозитории AUR"
 
 #: pacaur:1082

@@ -362,7 +362,7 @@ msgid " AUR only"
 msgstr " només AUR"
 
 #: pacaur:1078
-msgid "   -s, --search     search AUR repository for matching strings"
+msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     cerca el dipòsit AUR per cadenes coincidints"
 
 #: pacaur:1079

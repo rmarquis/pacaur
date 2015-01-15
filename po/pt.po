@@ -357,7 +357,7 @@ msgid " AUR only"
 msgstr "Somente para o AUR"
 
 #: pacaur:1068
-msgid "   -s, --search     search AUR repository for matching strings"
+msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     procurar no repositório do AUR"
 
 #: pacaur:1069
