@@ -396,7 +396,7 @@ msgid " AUR only"
 msgstr " AURだけ"
 
 #: pacaur:964
-msgid "   -s, --search     search AUR repository for matching strings"
+msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     ユーザーからの文字列でAURを検索"
 
 #: pacaur:965
