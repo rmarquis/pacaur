@@ -355,7 +355,7 @@ All credits go to all direct or indirect contributors. Many thanks to all of you
 
 B<[ca] - Català> - Alex "alexhenrie" Henrie
 
-B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "pszalanski", Stefan "rumpelsepp" Tatschner
+B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "HerrNieschnell", "pszalanski", Stefan "rumpelsepp" Tatschner
 
 B<[es] - Español> - Germán "gosella" Osella Massa
 
