@@ -667,7 +667,7 @@ MakePkgs() {
         if [[ ! $cachedpkg ]]; then
             cd "$builddir/${basepkgs[$i]}"
             note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
-            makepkg -o -d
+            makepkg -od ${makeopts[@]}
             (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
         fi
     done
