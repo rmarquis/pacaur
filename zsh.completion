@@ -358,7 +358,7 @@ _pacaur_completions_all_packages() {
 _pacaur_completions_aur_packages() {
     zstyle -T ":completion:${curcontext}:" remote-access || return 1
     local -a aur_packages
-    aur_packages=($(_call_program packages cower -sq $words[CURRENT] 2>/dev/null))
+    aur_packages=($(_call_program packages cower -sq -cnever $words[CURRENT] 2>/dev/null))
     _wanted aur_packages expl "aur packages" compadd - "${(@)aur_packages}"
 }
 
