@@ -315,7 +315,7 @@ ProviderChecks() {
     providersdeps=($($pacmanbin -T "${allproviders[@]}" | sort -u))
 
     for ((i=0; i<${#providersdeps[@]}; i++)); do
-        providers=($(expac -Ss '%n' "^${providersdeps[$i]}$"))
+        providers=($(expac -Ss '%n' "^${providersdeps[$i]}$" | sort -u))
         [[ ! ${#providers[@]} -gt 1 ]] && continue
 
         # skip if already provided
