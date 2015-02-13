@@ -789,7 +789,11 @@ MakePkgs() {
             note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
             [[ $silent ]] && note "f" $"check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
         else
-            CleanUp ${basepkgs[$i]}
+            if [[ ! $installpkg && ! $PKGDEST ]]; then
+                note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
+            else
+                CleanUp ${basepkgs[$i]}
+            fi
         fi
 
         # set dep status
