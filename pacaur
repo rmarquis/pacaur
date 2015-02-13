@@ -681,8 +681,8 @@ MakePkgs() {
     [[ -n "${errmakepkg[@]}" ]] && exit 1
 
     # set lock
-    [[ -e "$tmpdir/build.lock" ]] && note "e" "build lock exists in $tmpdir" && exit 1
-    touch "$tmpdir/build.lock"
+    [[ -e "$tmpdir/build.lck" ]] && note "e" "build.lck exists in $tmpdir" && exit 1
+    touch "$tmpdir/build.lck"
 
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
@@ -819,8 +819,8 @@ MakePkgs() {
     fi
 
     # remove locks
-    [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
-    rm "$tmpdir/build.lock"
+    [[ -e "$tmpdir/sudov.lck" ]] && rm "$tmpdir/sudov.lck"
+    rm "$tmpdir/build.lck"
 
     # new orphan packages check
     orphanpkgs=($($pacmanbin -Qdtq))
@@ -1063,8 +1063,8 @@ nothingtodo() {
 }
 
 sudov() {
-    touch "$tmpdir/sudov.lock"
-    while [[ -e "$tmpdir/sudov.lock" ]]; do
+    touch "$tmpdir/sudov.lck"
+    while [[ -e "$tmpdir/sudov.lck" ]]; do
         sudo -n -v
         sleep 2
     done
@@ -1073,8 +1073,8 @@ sudov() {
 trap ctrlc INT
 ctrlc() {
     echo
-    [[ -e "$tmpdir/sudov.lock" ]] && rm "$tmpdir/sudov.lock"
-    [[ -e "$tmpdir/build.lock" ]] && rm "$tmpdir/build.lock"
+    [[ -e "$tmpdir/sudov.lck" ]] && rm "$tmpdir/sudov.lck"
+    [[ -e "$tmpdir/build.lck" ]] && rm "$tmpdir/build.lck"
     [[ $operation = sync ]] && [[ ! $search && ! $info ]] && [[ -n "${basepkgs[@]}" ]] && CleanUp "${basepkgs[@]}"
     exit
 }
