@@ -687,7 +687,11 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerpkgs[@]}" ]]; then
         note "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
+        if [[ $silent ]]; then
+            yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps &>/dev/null
+        else
+            yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
+        fi
     fi
 
     # main
@@ -740,7 +744,11 @@ MakePkgs() {
             if [[ $cachedpkg ]]; then
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     note "i" $"Installing ${colorW}$j${reset} cached package..."
-                    yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                    if [[ $silent ]]; then
+                        yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]} &>/dev/null
+                    else
+                        yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                    fi
                     [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     note "w" $"Package ${colorW}$j${reset} already available in cache"
@@ -811,11 +819,20 @@ MakePkgs() {
         aurdepspkgs=($(expac -Q '%n' "${aurdepspkgs[@]}"))
         if [[ -n "${aurdepspkgs[@]}" ]]; then
             note "i" $"Removing installed AUR dependencies..."
-            sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
+            if [[ $silent ]]; then
+                sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm &>/dev/null
+            else
+                sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
+            fi
         fi
         # readd removed conflicting packages
-        [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --needed --noconfirm
-        [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --needed --noconfirm
+        if [[ $silent ]]; then
+            [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --needed --noconfirm &>/dev/null
+            [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --needed --noconfirm &>/dev/null
+        else
+            [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --needed --noconfirm
+            [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --needed --noconfirm
+        fi
     fi
 
     # remove locks
