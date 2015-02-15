@@ -1035,8 +1035,8 @@ checkQrequires() {
 }
 
 proceed() {
-    Y="`gettext pacman Y`"; y="$(tr '[:upper:]' '[:lower:]' <<< $Y)";
-    N="`gettext pacman N`"; n="$(tr '[:upper:]' '[:lower:]' <<< $N)"
+    Y="$(gettext pacman Y)"; y="${Y,,}";
+    N="$(gettext pacman N)"; n="${N,,}"
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
             read -n 1 answer
