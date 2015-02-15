@@ -647,11 +647,11 @@ MakePkgs() {
         done
         pkgsdeps+=("#")
     done
-    pkgsdeps=($(sed 's/ # /\n/g' <<< ${pkgsdeps[@]} | tr -d '#' | sed '/^ $/d' | tr ' ' ',' | sed 's/^,//g' | sed 's/,$//g'))
+    pkgsdeps=($(sed 's/ # /\n/g' <<< ${pkgsdeps[@]} | tr -d '#' | sed '/^ $/d' | tr ' ' ',' | sed 's/^,//g;s/,$//g'))
 
     # reverse deps order
-    basepkgs=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${basepkgs[@]} | awk -F "\n" '{print}'))
-    pkgsdeps=($(awk -F " " '{for (i=NF;i>=1;i--) print $i}' <<< ${pkgsdeps[@]} | awk -F "\n" '{print}'))
+    basepkgs=($(awk '{for (i=NF;i>=1;i--) print $i}' <<< ${basepkgs[@]} | awk -F "\n" '{print}'))
+    pkgsdeps=($(awk '{for (i=NF;i>=1;i--) print $i}' <<< ${pkgsdeps[@]} | awk -F "\n" '{print}'))
 
     # integrity check
     for ((i=0; i<${#basepkgs[@]}; i++)); do
@@ -688,9 +688,9 @@ MakePkgs() {
     if [[ -n "${providerpkgs[@]}" ]]; then
         note "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
         if [[ $silent ]]; then
-            yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps &>/dev/null
+            yes $(gettext pacman Y) | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps &>/dev/null
         else
-            yes `gettext pacman Y` | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
+            yes $(gettext pacman Y) | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
         fi
     fi
 
@@ -745,15 +745,15 @@ MakePkgs() {
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     note "i" $"Installing ${colorW}$j${reset} cached package..."
                     if [[ $silent ]]; then
-                        yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]} &>/dev/null
+                        yes $(gettext pacman Y) | sudo $pacmanbin -U $cachedpkg ${pacopts[@]} &>/dev/null
                     else
-                        yes `gettext pacman Y` | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                        yes $(gettext pacman Y) | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
                     fi
                     [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     note "w" $"Package ${colorW}$j${reset} already available in cache"
                 fi
-                pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^$j,//g" | sed "s/,$j$//g" | sed "s/,$j,/,/g" | sed "s/^$j$/#/g"))
+                pkgsdeps=($(tr ' ' '\n' <<< ${pkgsdeps[@]} | sed "s/^$j,//g;s/,$j$//g;s/,$j,/,/g;s/^$j$/#/g"))
                 continue
             fi
         done
@@ -765,9 +765,9 @@ MakePkgs() {
         if [[ $installpkg ]]; then
             # install
             if [[ $silent ]]; then
-                yes `gettext pacman Y` | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
             else
-                yes `gettext pacman Y` | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             fi
         else
             unset isaurdeps
@@ -778,16 +778,16 @@ MakePkgs() {
                 # install AUR deps
                 note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
                 if [[ $silent ]]; then
-                    yes `gettext pacman Y` | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
                 else
-                    yes `gettext pacman Y` | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
                 fi
             else
                 # install then remove binary deps
                 if [[ $silent ]]; then
-                    yes `gettext pacman Y` | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    yes $(gettext pacman Y) | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
                 else
-                    yes `gettext pacman Y` | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    yes $(gettext pacman Y) | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
                 fi
             fi
         fi
