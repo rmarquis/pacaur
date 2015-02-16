@@ -159,6 +159,13 @@ option.
 Always rebuild packages regardless of any existing file in I<$PKGDEST> directory,
 and regardless of up-to-date status of development packages.
 
+=item B<--silent>
+
+Enable silent output. This will send the output of the makepkg build() function
+to a text file in the build directory named I<pkgname-pkgver-pkgrel-arch.log>.
+Additional pacman output for providers and cached packages installation will also
+be hidden.
+
 =item B<--ignore-ood>
 
 When searching the AUR, ignore all results marked as out of date.
