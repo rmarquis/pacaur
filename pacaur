@@ -706,6 +706,13 @@ MakePkgs() {
         unset aurdevelpkgsAall
         if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
 
+            # update pkgver
+            if [[ $silent ]]; then
+                makepkg -o ${makeopts[@]} &>/dev/null
+            else
+                makepkg -o ${makeopts[@]}
+            fi
+
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
