@@ -668,9 +668,9 @@ MakePkgs() {
             cd "$builddir/${basepkgs[$i]}"
             note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
             if [[ $silent ]]; then
-                makepkg -od ${makeopts[@]} &>/dev/null
+                makepkg --verifysource ${makeopts[@]} &>/dev/null
             else
-                makepkg -od ${makeopts[@]}
+                makepkg --verifysource ${makeopts[@]}
             fi
             (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
         fi
@@ -765,9 +765,9 @@ MakePkgs() {
         if [[ $installpkg ]]; then
             # install
             if [[ $silent ]]; then
-                yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
             else
-                yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             fi
         else
             unset isaurdeps
@@ -778,16 +778,16 @@ MakePkgs() {
                 # install AUR deps
                 note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
                 if [[ $silent ]]; then
-                    yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
                 else
-                    yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
                 fi
             else
                 # install then remove binary deps
                 if [[ $silent ]]; then
-                    yes $(gettext pacman Y) | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    yes $(gettext pacman Y) | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
                 else
-                    yes $(gettext pacman Y) | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    yes $(gettext pacman Y) | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
                 fi
             fi
         fi
