@@ -184,7 +184,6 @@ DepsSolver() {
     done
 
     # no results check
-    errdeps=($(tr ' ' '\n' <<< ${errdeps[@]} | sort -u))
     for i in "${errdeps[@]}"; do
         note "f" "no results found for $i"
     done
@@ -200,8 +199,39 @@ FindDepsAur() {
 
     downloadjson ${depspkgsaur[@]}
 
-    # no results check
-    errdeps+=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< $(getjsonvar "Name") | sort -u) <(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u)))
+    # target check
+    [[ -z "${prevdepspkgsaur[@]}" ]] && errdeps+=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< $(getjsonvar "Name") | sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u)))
+
+    # AUR versioning check
+    if [[ -n "${prevdepspkgsaur[@]}" ]]; then
+        for ((i=0; i<${#prevdepspkgsaur[@]}; i++)); do
+            case "${prevdepspkgsaur[$i]}" in
+                *">"*|*"<"*|*"="*)
+                    unset prevname prevver prevaurver
+                    prevname=$(awk -F ">|<|=" '{print $1}' <<< ${prevdepspkgsaur[$i]})
+                    prevver=$(awk -F ">=|<=|>|<|=" '{print $2}' <<< ${prevdepspkgsaur[$i]})
+                    prevaurver=($(getjsonvarvar "Version" "$prevname"))
+
+                    # not found in AUR nor repo
+                    if [[ -z "$prevaurver" ]]; then
+                        [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                        continue
+                    fi
+
+                    # found in AUR but version not correct
+                    case "${prevdepspkgsaur[$i]}" in
+                        *">="*) [[ $(vercmp "$prevaurver" "$prevver") -ge 0 ]] && continue;;
+                        *"<="*) [[ $(vercmp "$prevaurver" "$prevver") -le 0 ]] && continue;;
+                        *">"*)  [[ $(vercmp "$prevaurver" "$prevver") -gt 0 ]] && continue;;
+                        *"<"*)  [[ $(vercmp "$prevaurver" "$prevver") -lt 0 ]] && continue;;
+                        *"="*)  [[ $(vercmp "$prevaurver" "$prevver") -eq 0 ]] && continue;;
+                    esac
+                    [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                ;;
+                *) continue;;
+            esac
+        done
+    fi
 
     depspkgs=($(getjsonarray "Depends"))
     depspkgs+=($(getjsonarray "MakeDepends"))
@@ -224,6 +254,9 @@ FindDepsAur() {
     unset depspkgs
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
+        # store for AUR version check
+        prevdepspkgsaur=("${depspkgsaur[@]}")
+
         # remove AUR pkgs versioning
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
             depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
