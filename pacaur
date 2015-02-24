@@ -208,8 +208,8 @@ FindDepsAur() {
             case "${prevdepspkgsaur[$i]}" in
                 *">"*|*"<"*|*"="*)
                     unset prevname prevver prevaurver
-                    prevname=$(awk -F ">|<|=" '{print $1}' <<< ${prevdepspkgsaur[$i]})
-                    prevver=$(awk -F ">=|<=|>|<|=" '{print $2}' <<< ${prevdepspkgsaur[$i]})
+                    prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
+                    prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
                     prevaurver=($(getjsonvarvar "Version" "$prevname"))
 
                     # not found in AUR nor repo
