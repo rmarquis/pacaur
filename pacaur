@@ -209,8 +209,8 @@ FindDepsAur() {
                 *">"*|*"<"*|*"="*)
                     unset prevname prevver prevaurver
                     prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
-                    prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
-                    prevaurver=($(getjsonvarvar "Version" "$prevname"))
+                    prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]} && prevver=${prevver%-*}
+                    prevaurver=($(getjsonvarvar "Version" "$prevname")) && prevaurver=${prevaurver%-*}
 
                     # not found in AUR nor repo
                     if [[ -z "$prevaurver" ]]; then
