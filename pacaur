@@ -701,9 +701,9 @@ MakePkgs() {
             cd "$builddir/${basepkgs[$i]}"
             note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
             if [[ $silent ]]; then
-                makepkg -f --verifysource ${makeopts[@]} &>/dev/null
+                makepkg -od ${makeopts[@]} &>/dev/null
             else
-                makepkg -f --verifysource ${makeopts[@]}
+                makepkg -od ${makeopts[@]}
             fi
             (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
         fi
@@ -734,14 +734,6 @@ MakePkgs() {
         # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAall
         if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
-
-            # update pkgver
-            if [[ $silent ]]; then
-                makepkg -o ${makeopts[@]} &>/dev/null
-            else
-                makepkg -o ${makeopts[@]}
-            fi
-
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
@@ -797,9 +789,9 @@ MakePkgs() {
         if [[ $installpkg ]]; then
             # install
             if [[ $silent ]]; then
-                yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
             else
-                yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
             fi
         else
             unset isaurdeps
@@ -810,16 +802,16 @@ MakePkgs() {
                 # install AUR deps
                 note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
                 if [[ $silent ]]; then
-                    yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
                 else
-                    yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    yes $(gettext pacman Y) | makepkg -esfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
                 fi
             else
                 # install then remove binary deps
                 if [[ $silent ]]; then
-                    yes $(gettext pacman Y) | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    yes $(gettext pacman Y) | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
                 else
-                    yes $(gettext pacman Y) | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    yes $(gettext pacman Y) | makepkg -esfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
                 fi
             fi
         fi
