@@ -255,7 +255,7 @@ FindDepsAur() {
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # store for AUR version check
-        prevdepspkgsaur=("${depspkgsaur[@]}")
+        [[ ! $nodeps ]] && prevdepspkgsaur=("${depspkgsaur[@]}")
 
         # remove AUR pkgs versioning
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
