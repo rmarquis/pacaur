@@ -693,11 +693,13 @@ MakePkgs() {
 
         # cache check
         unset cachedpkg
-        for j in "${pkgsdepslist[@]}"; do
-            depsAver="$(getjsonvarvar "Version" "$j")"
-            [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
-        done
-        if [[ ! $cachedpkg ]]; then
+        if [[ -z "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
+            for j in "${pkgsdepslist[@]}"; do
+                depsAver="$(getjsonvarvar "Version" "$j")"
+                [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
+            done
+        fi
+        if [[ ! $cachedpkg || $rebuild ]]; then
             cd "$builddir/${basepkgs[$i]}"
             note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
             if [[ $silent ]]; then
