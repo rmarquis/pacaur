@@ -752,7 +752,7 @@ MakePkgs() {
                 unset basepkgsupdate checkpkgsdepslist
                 for j in "${pkgsdepslist[@]}"; do
                     aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
-                    if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -ge 0 ]] && [[ $needed ]]; then
+                    if [[ -n $aurdevelpkgsQver && $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -ge 0 ]] && [[ $needed ]]; then
                         note "w" "${colorW}$j${reset} is up-to-date -- skipping"
                         continue
                     else
