@@ -66,7 +66,7 @@ ClassifyPkgs() {
                 noaurpkgs+=("$i")
             done
             pkgs=(${noaurpkgs[@]})
-            norepopkgs=($($pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+            [[ -n "${pkgs[@]}" ]] && norepopkgs=($($pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
             for i in "${norepopkgs[@]}"; do
                 [[ ! " ${pkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=("$i") # do not search repo/pkgs in AUR
             done
