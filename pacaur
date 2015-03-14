@@ -65,12 +65,11 @@ ClassifyPkgs() {
                 [[ $i == aur/* ]] && aurpkgs+=("${i:4}") && continue # search aur/pkgs in AUR
                 noaurpkgs+=("$i")
             done
-            pkgs=(${noaurpkgs[@]})
-            [[ -n "${pkgs[@]}" ]] && norepopkgs=($($pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+            [[ -n "${noaurpkgs[@]}" ]] && norepopkgs=($($pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
             for i in "${norepopkgs[@]}"; do
-                [[ ! " ${pkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=("$i") # do not search repo/pkgs in AUR
+                [[ ! " ${noaurpkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=("$i") # do not search repo/pkgs in AUR
             done
-            repopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${pkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | LC_COLLATE=C sort -u)))
+            repopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${noaurpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | LC_COLLATE=C sort -u)))
         fi
     else
         [[ ! $aur ]] && repopkgs=("${pkgs[@]}") || aurpkgs=("${pkgs[@]}")
