@@ -12,8 +12,6 @@ version="4.2.21"
 
 # internationalization
 LC_COLLATE=C                                # getopts sorting
-TEXTDOMAIN='pacaur'
-TEXTDOMAINDIR='/usr/share/locale'
 
 # source makepkg variables
 source /etc/makepkg.conf
@@ -353,7 +351,7 @@ ProviderChecks() {
         # skip if already provided
         if [[ -n "${providerspkgs[@]}" ]]; then
             providerspkgs=($(tr ' ' '|' <<< ${providerspkgs[@]}))
-            provided+=($(expac -Ss '%S' "^(${providerspkgs[@]})$"))
+            provided+=($(expac -Ss '%S' "^(${providerspkgs[*]})$"))
             [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
         fi
 
@@ -551,8 +549,8 @@ Prompt() {
         for ((i=0; i<${#repodepspkgs[@]}; i++)); do
             getcachedpkg "${repodepspkgs[$i]}-${repodepsSver[$i]}" '/var/cache/pacman/pkg'
             [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
-            sumk=$(($sumk + ${binaryksize[$i]}))
-            summ=$(($summ + ${binarymsize[$i]}))
+            sumk=$((sumk + ${binaryksize[$i]}))
+            summ=$((summ + ${binarymsize[$i]}))
         done
         sumk=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "$sumk 1048576")
         summ=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "$summ 1048576")
@@ -891,8 +889,8 @@ CleanUp() {
         done
     else
         # hack for vcs protected files
-        chmod -R 755 $builddir/* &>/dev/null
-        rm -r $builddir/* &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
+        chmod -R 755 "${builddir:?}/*" &>/dev/null
+        rm -r "${builddir:?}/*" &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
     fi
 }
 
@@ -951,7 +949,7 @@ CheckAur() {
         done
         [[ ! $lname ]] && lname=$(getlength "${aurpkgsAname[@]}")
         [[ ! $lQver ]] && lQver=$(getlength "${aurpkgsQver[@]}")
-        [[ ! $lSver ]] && lSver=$(getlength "${aurpkgSver[@]}")
+        [[ ! $lSver ]] && lSver=$(getlength "${aurpkgsAver[@]}")
         [[ ! $lrepo ]] && lrepo=3
         for ((i=0; i<${#aurpkgsAname[@]}; i++)); do
             printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lQver}s${reset}  ->  ${colorG}%-${lSver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" " " "${aurpkgsQignore[$i]}"
