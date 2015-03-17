@@ -211,7 +211,7 @@ FindDepsAur() {
 
                     # not found in AUR nor repo
                     if [[ ! $prevaurver ]]; then
-                        [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                        [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=("${prevdepspkgsaur[$i]}")
                         continue
                     fi
 
@@ -223,7 +223,7 @@ FindDepsAur() {
                         *"<"*)  [[ $(vercmp "$prevaurver" "$prevver") -lt 0 ]] && continue;;
                         *"="*)  [[ $(vercmp "$prevaurver" "$prevver") -eq 0 ]] && continue;;
                     esac
-                    [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                    [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=("${prevdepspkgsaur[$i]}")
                 ;;
                 *) continue;;
             esac
@@ -378,8 +378,8 @@ ProviderChecks() {
         else
             local nb=0
         fi
-        providerpkgs+=(${providers[$nb]})
-        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
+        providerpkgs+=("${providers[$nb]}")
+        [[ $nb -ne 0 ]] && rmproviderpkgs+=("${providersdeps[$i]}")
     done
 
     # pactree always return default choice so update binary deps list
@@ -415,7 +415,7 @@ ConflictChecks() {
     allQconflicts=($(expac -Q '%C'))
 
     # AUR conflicts
-    Aprovides=(${depsAname[@]})
+    Aprovides=("${depsAname[@]}")
     Aprovides+=($(getjsonarray "Provides"))
     Aconflicts=($(getjsonarray "Conflicts"))
     # remove AUR versioning
@@ -440,7 +440,7 @@ ConflictChecks() {
             unset k Aprovides
             k=$(expac -Qs '%n' "^$i$")
             [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
-            [[ $j = $k || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
+            [[ "$j" == "$k" || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
             Aprovides=("$j")
             if [[ ! $noconfirm && ! " ${aurconflictingpkgs[@]} " =~ " $k " ]]; then
@@ -476,7 +476,7 @@ ConflictChecks() {
 
     # repo conflicts
     if [[ -n "${repodepspkgs[@]}" ]]; then
-        repodepsprovides=(${repodepspkgs[@]})
+        repodepsprovides=("${repodepspkgs[@]}")
         repodepsprovides+=($(expac -S '%S' "${repodepspkgs[@]}")) # no versioning
         repodepsconflicts=($(expac -S '%C' "${repodepspkgs[@]}"))
         repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${repodepsprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
@@ -511,7 +511,7 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
-    depsAtmp=(${depsAname[@]})
+    depsAtmp=("${depsAname[@]}")
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
@@ -528,7 +528,7 @@ ReinstallChecks() {
             fi
         fi
     done
-    [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
+    [[ $needed ]] && depsAname=("${depsAname[@]}") && depsQver=("${depsQver[@]}") && depsAver=("${depsAver[@]}") && depsAood=("${depsAood[@]}")
 
     nothingtodo ${deps[@]}
 }
@@ -548,7 +548,7 @@ Prompt() {
         summ=0
         for ((i=0; i<${#repodepspkgs[@]}; i++)); do
             getcachedpkg "${repodepspkgs[$i]}-${repodepsSver[$i]}" '/var/cache/pacman/pkg'
-            [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
+            [[ $cachedpkg ]] && binaryksize=("${binaryksize[@]/${binaryksize[$i]}/0}")
             sumk=$((sumk + ${binaryksize[$i]}))
             summ=$((summ + ${binarymsize[$i]}))
         done
@@ -560,7 +560,7 @@ Prompt() {
     for ((i=0; i<${#depsAname[@]}; i++)); do
         [[ ! $PKGDEST || $rebuild ]] && break
         getcachedpkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
-        [[ $cachedpkg ]] && cachedpkgs+=(${depsAname[$i]}) && depsAcached[$i]=$"(cached)" || depsAcached[$i]=""
+        [[ $cachedpkg ]] && cachedpkgs+=("${depsAname[$i]}") && depsAcached[$i]=$"(cached)" || depsAcached[$i]=""
         unset cachedpkg
     done
 
@@ -895,7 +895,7 @@ CleanUp() {
 }
 
 DownloadAur() {
-    [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
+    [[ $color != 'never' ]] && coweropts=("${coweropts[@]/auto/always}")
     while read -r flag pkg info; do
         case $flag in
             S)  [[ $operation = download && -n "$info" ]] && echo "$info" && pkgsedit+=("$pkg");;
@@ -980,7 +980,7 @@ CleanCache() {
 getignoredpkgs() {
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2- | tr -d "'\""))
-    ignoredpkgs=(${ignoredpkgs[@]//,/ })
+    ignoredpkgs=("${ignoredpkgs[@]//,/ }")
 }
 
 getinstallscripts() {
@@ -1261,12 +1261,12 @@ else
 fi
 
 # sanity check
-pacmanarg=(${pacmanarg[@]/--/})
-pacmanarg=(${pacmanarg[@]/-r/})
-pacmanarg=(${pacmanarg[@]/-a/})
+pacmanarg=("${pacmanarg[@]/--/}")
+pacmanarg=("${pacmanarg[@]/-r/}")
+pacmanarg=("${pacmanarg[@]/-a/}")
 [[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ "$EUID" -eq 0 ]] && note "e" $"you cannot perform this operation as root"
-[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
-[[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
+[[ $pacS ]] && pacmanarg=("${pacmanarg[@]/-e/}")
+[[ $pacS ]] && [[ $search && $info ]] && coweropts=("${coweropts[@]/-i/}")
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
