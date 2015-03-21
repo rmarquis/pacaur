@@ -695,7 +695,17 @@ MakePkgs() {
                 depsAver="$(getjsonvarvar "Version" "$j")"
                 [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
             done
+        # install vcs client
+        else
+            vcspkg=$(awk -F "-" '{print $NF}' <<< ${basepkgs[$i]})
+            for j in "${VCSCLIENTS[@]}"; do
+                if [[ ! "${vcschecked[@]}" =~ "$vcspkg" && $(awk -F "::" '{print $1}' <<< $j) == "$vcspkg" ]]; then
+                    vcsclient=$(awk -F "::" '{print $NF}' <<< $j) && vcschecked+=("$vcspkg")
+                    [[ -z "$(expac -Qs '%n' "^$vcsclient$")" ]] && yes $(gettext pacman Y) | sudo $pacmanbin -S $vcsclient --asdeps
+                fi
+            done
         fi
+
         if [[ ! $cachedpkg || $rebuild ]]; then
             cd "$builddir/${basepkgs[$i]}"
             note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
