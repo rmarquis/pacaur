@@ -12,6 +12,8 @@ version="4.2.22"
 
 # internationalization
 LC_COLLATE=C                                # getopts sorting
+TEXTDOMAIN='pacaur'
+TEXTDOMAINDIR='/usr/share/locale'
 
 # source makepkg variables
 source /etc/makepkg.conf
