@@ -366,21 +366,19 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 printf "\n%s " $"Enter a number (default=0):"
-                nbchar=$(wc -l <<< ${#providers[@]})
-                read -n ${#nbchar} nb
+                read -n $(echo -n $providersnb | wc -m) nb
                 echo
 
                 case $nb in
-                    [0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo && note "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
+                    [0-9]|[0-9][0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo && note "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
                     '') nb=0;;
                     *) note "f" $"invalid number: $nb";;
                 esac
-
             done
         else
             local nb=0
         fi
-        providerpkgs+=("${providers[$nb]}")
+        providerpkgs+=(${providers[$nb]})
         [[ $nb -ne 0 ]] && rmproviderpkgs+=("${providersdeps[$i]}")
     done
 
