@@ -184,7 +184,7 @@ DepsSolver() {
 
     # no results check
     for i in "${errdeps[@]}"; do
-        note "f" "no results found for $i"
+        note "f" $"no results found for $i"
     done
     [[ -n "${errdeps[@]}" ]] && exit 1
 
