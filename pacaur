@@ -65,7 +65,7 @@ ClassifyPkgs() {
                 [[ $i == aur/* ]] && aurpkgs+=("${i:4}") && continue # search aur/pkgs in AUR
                 noaurpkgs+=("$i")
             done
-            [[ -n "${noaurpkgs[@]}" ]] && norepopkgs=($($pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+            [[ -n "${noaurpkgs[@]}" ]] && norepopkgs=($(LANG=C $pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
             for i in "${norepopkgs[@]}"; do
                 [[ ! " ${noaurpkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=("$i") # do not search repo/pkgs in AUR
             done
@@ -247,7 +247,7 @@ FindDepsAur() {
                 depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
             done
         fi
-        depspkgsaur=($($pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+        depspkgsaur=($(LANG=C $pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
         repodeps+=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u)  <(tr ' ' '\n' <<< ${depspkgsaur[@]} | LC_COLLATE=C sort -u)))
     fi
     unset depspkgs
