@@ -460,7 +460,7 @@ ConflictChecks() {
                 else
                     note "f" $"unresolvable package conflicts detected"
                     note "f" $"failed to prepare transaction (conflicting dependencies)"
-                    note "e" "$j and $k are in conflict"
+                    note "e" $"$j and $k are in conflict"
                 fi
             fi
             Aprovides+=($(getjsonarrayvar "Provides" "$j"))
@@ -501,7 +501,7 @@ ConflictChecks() {
                 else
                     note "f" $"unresolvable package conflicts detected"
                     note "f" $"failed to prepare transaction (conflicting dependencies)"
-                    note "e" "$j and $k are in conflict"
+                    note "e" $"$j and $k are in conflict"
                 fi
             fi
             Qprovides=("$(expac -Ss '%S' "^$k$")")
@@ -720,12 +720,12 @@ MakePkgs() {
         fi
     done
     for i in "${errmakepkg[@]}"; do
-        note "f" "failed to verify ${colorW}$i${reset} integrity"
+        note "f" $"failed to verify ${colorW}$i${reset} integrity"
     done
     [[ -n "${errmakepkg[@]}" ]] && exit 1
 
     # set lock
-    [[ -e "$tmpdir/build.lck" ]] && note "e" "build.lck exists in $tmpdir" && exit 1
+    [[ -e "$tmpdir/build.lck" ]] && note "e" $"build.lck exists in $tmpdir" && exit 1
     touch "$tmpdir/build.lck"
 
     # install provider packages
@@ -760,7 +760,7 @@ MakePkgs() {
                 for j in "${pkgsdepslist[@]}"; do
                     aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
                     if [[ -n $aurdevelpkgsQver && $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -ge 0 ]] && [[ $needed ]]; then
-                        note "w" "${colorW}$j${reset} is up-to-date -- skipping"
+                        note "w" $"${colorW}$j${reset} is up-to-date -- skipping"
                         continue
                     else
                         basepkgsupdate='true'
@@ -874,7 +874,7 @@ MakePkgs() {
 
     # makepkg failure check
     for i in "${errmakepkg[@]}"; do
-        note "f" "failed to build ${colorW}$i${reset} package(s)"
+        note "f" $"failed to build ${colorW}$i${reset} package(s)"
     done
 
     # exit error code
