@@ -57,22 +57,22 @@ source "$configdir/config"
 
 ClassifyPkgs() {
     if [[ $fallback = true ]]; then
-        [[ $repo ]] && repopkgs=("${pkgs[@]}")
-        [[ $aur ]] && aurpkgs=("${pkgs[@]}")
+        [[ $repo ]] && repopkgs=(${pkgs[@]})
+        [[ $aur ]] && aurpkgs=(${pkgs[@]})
         if [[ ! $repo && ! $aur ]]; then
             unset noaurpkgs
             for i in "${pkgs[@]}"; do
-                [[ $i == aur/* ]] && aurpkgs+=("${i:4}") && continue # search aur/pkgs in AUR
-                noaurpkgs+=("$i")
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) && continue # search aur/pkgs in AUR
+                noaurpkgs+=($i)
             done
-            [[ -n "${noaurpkgs[@]}" ]] && norepopkgs=($(LANG=C $pacmanbin -Sp "${noaurpkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+            [[ -n "${noaurpkgs[@]}" ]] && norepopkgs=($(LANG=C $pacmanbin -Sp ${noaurpkgs[@]} 2>&1 >/dev/null | awk -F " " '{print $NF}'))
             for i in "${norepopkgs[@]}"; do
-                [[ ! " ${noaurpkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=("$i") # do not search repo/pkgs in AUR
+                [[ ! " ${noaurpkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=($i) # do not search repo/pkgs in AUR
             done
             repopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${noaurpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | LC_COLLATE=C sort -u)))
         fi
     else
-        [[ ! $aur ]] && repopkgs=("${pkgs[@]}") || aurpkgs=("${pkgs[@]}")
+        [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
     fi
 }
 
@@ -109,7 +109,7 @@ UpgradeAur() {
     # add devel packages
     if [[ $devel ]]; then
         for i in "${allaurpkgs[@]}"; do
-            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgs+=("$i")
+            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgs+=($i)
         done
     fi
 
@@ -122,7 +122,7 @@ UpgradeAur() {
 IgnoreChecks() {
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
-    checkaurpkgs=("${aurpkgs[@]}")
+    checkaurpkgs=(${aurpkgs[@]})
     unset aurpkgs
 
     # check targets
@@ -138,16 +138,16 @@ IgnoreChecks() {
             if [[ ! $upgrade && ! $noconfirm ]]; then
                 if ! proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
-                    rmaurpkgs+=("${checkaurpkgs[$i]}")
+                    rmaurpkgs+=(${checkaurpkgs[$i]})
                     continue
                 fi
             else
                 note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
-                rmaurpkgs+=("${checkaurpkgs[$i]}")
+                rmaurpkgs+=(${checkaurpkgs[$i]})
                 continue
             fi
         fi
-        aurpkgs+=("${checkaurpkgs[$i]}")
+        aurpkgs+=(${checkaurpkgs[$i]})
     done
 
     nothingtodo ${aurpkgs[@]}
@@ -160,7 +160,7 @@ DepsSolver() {
     for ((i=0; i<${#aurpkgs[@]}; i++)); do
         aurpkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
-    deps+=("${aurpkgs[@]}")
+    deps+=(${aurpkgs[@]})
 
     FindDepsAur ${aurpkgs[@]}
 
@@ -194,7 +194,7 @@ DepsSolver() {
 
 FindDepsAur() {
     [[ $nodeps && $count -ge 2 ]] && return
-    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=("${aurpkgs[@]}")
+    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=(${aurpkgs[@]})
 
     downloadjson ${depspkgsaur[@]}
 
@@ -213,7 +213,7 @@ FindDepsAur() {
 
                     # not found in AUR nor repo
                     if [[ ! $prevaurver ]]; then
-                        [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=("${prevdepspkgsaur[$i]}")
+                        [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
                         continue
                     fi
 
@@ -225,7 +225,7 @@ FindDepsAur() {
                         *"<"*)  [[ $(vercmp "$prevaurver" "$prevver") -lt 0 ]] && continue;;
                         *"="*)  [[ $(vercmp "$prevaurver" "$prevver") -eq 0 ]] && continue;;
                     esac
-                    [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=("${prevdepspkgsaur[$i]}")
+                    [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
                 ;;
                 *) continue;;
             esac
@@ -236,7 +236,7 @@ FindDepsAur() {
     depspkgs+=($(getjsonarray "MakeDepends"))
 
     # remove installed deps
-    depspkgs=($($pacmanbin -T "${depspkgs[@]}" | sort -u))
+    depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
 
     # split binary and AUR depends pkgs
     unset depspkgsaur
@@ -247,14 +247,14 @@ FindDepsAur() {
                 depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
             done
         fi
-        depspkgsaur=($(LANG=C $pacmanbin -Sp "${depspkgs[@]}" 2>&1 >/dev/null | awk -F " " '{print $NF}'))
+        depspkgsaur=($(LANG=C $pacmanbin -Sp ${depspkgs[@]} 2>&1 >/dev/null | awk -F " " '{print $NF}'))
         repodeps+=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u)  <(tr ' ' '\n' <<< ${depspkgsaur[@]} | LC_COLLATE=C sort -u)))
     fi
     unset depspkgs
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # store for AUR version check
-        [[ ! $nodeps ]] && prevdepspkgsaur=("${depspkgsaur[@]}")
+        [[ ! $nodeps ]] && prevdepspkgsaur=(${depspkgsaur[@]})
 
         # remove AUR pkgs versioning
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
@@ -272,8 +272,8 @@ FindDepsAur() {
     fi
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
-        aurdepspkgs+=("${depspkgsaur[@]}")
-        deps+=("${depspkgsaur[@]}")
+        aurdepspkgs+=(${depspkgsaur[@]})
+        deps+=(${depspkgsaur[@]})
         FindDepsAur ${depspkgsaur[@]}
     fi
 }
@@ -299,19 +299,19 @@ FindDepsRepo() {
             [[ -n "$j" ]] && [[ "$j" != "$(expac -Ss '%n' "^$i$" | tr '\n' ' ' | awk -F " " '{print $1}')" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
         done
         if [[ -n "${providersrepopkgsrm[@]}" ]]; then
-            providersrepopkgsrm=($($pacmanbin -T "${providersrepopkgsrm[@]}" | sort -u))
+            providersrepopkgsrm=($($pacmanbin -T ${providersrepopkgsrm[@]} | sort -u))
             allrepopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${allrepopkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${providersrepopkgsrm[@]} | LC_COLLATE=C sort -u)))
         fi
     fi
 
-    repodepspkgs=($($pacmanbin -T "${allrepopkgs[@]}" | sort -u))
+    repodepspkgs=($($pacmanbin -T ${allrepopkgs[@]} | sort -u))
 }
 
 IgnoreDepsChecks() {
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     # add checked targets
-    deps=("${aurpkgs[@]}")
+    deps=(${aurpkgs[@]})
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
@@ -335,7 +335,7 @@ IgnoreDepsChecks() {
                 note "e" $"Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
-        deps+=("$i")
+        deps+=($i)
     done
 }
 
@@ -344,7 +344,7 @@ ProviderChecks() {
 
     allproviders=($(expac -S '%S' "${repodepspkgs[@]}" | sort -u))
     # remove installed providers
-    providersdeps=($($pacmanbin -T "${allproviders[@]}" | sort -u))
+    providersdeps=($($pacmanbin -T ${allproviders[@]} | sort -u))
 
     for ((i=0; i<${#providersdeps[@]}; i++)); do
         providers=($(expac -Ss '%n' "^${providersdeps[$i]}$" | sort -u))
@@ -379,7 +379,7 @@ ProviderChecks() {
             local nb=0
         fi
         providerpkgs+=(${providers[$nb]})
-        [[ $nb -ne 0 ]] && rmproviderpkgs+=("${providersdeps[$i]}")
+        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
     done
 
     # pactree always return default choice so update binary deps list
@@ -388,14 +388,14 @@ ProviderChecks() {
         for i in "${rmproviderpkgs[@]}"; do
             providerpkgsrm+=($(pactree -su "$i"))
         done
-        providerpkgsrm=($($pacmanbin -T "${providerpkgsrm[@]}" | sort -u))
+        providerpkgsrm=($($pacmanbin -T ${providerpkgsrm[@]} | sort -u))
         repodepspkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${repodepspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${providerpkgsrm[@]} | LC_COLLATE=C sort -u)))
 
         # add deps of selected providers instead
         for i in "${providerpkgs[@]}"; do
             providerdeps+=($(pactree -su "$i"))
         done
-        repodepspkgs+=($($pacmanbin -T "${providerdeps[@]}" | sort -u))
+        repodepspkgs+=($($pacmanbin -T ${providerdeps[@]} | sort -u))
     fi
 
     # get binary packages info
@@ -415,7 +415,7 @@ ConflictChecks() {
     allQconflicts=($(expac -Q '%C'))
 
     # AUR conflicts
-    Aprovides=("${depsAname[@]}")
+    Aprovides=(${depsAname[@]})
     Aprovides+=($(getjsonarray "Provides"))
     Aconflicts=($(getjsonarray "Conflicts"))
     # remove AUR versioning
@@ -431,9 +431,9 @@ ConflictChecks() {
 
     for i in "${aurconflicts[@]}"; do
         unset aurAconflicts
-        [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=("$i")
+        [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=($i)
         for j in "${depsAname[@]}"; do
-            [[ " $(getjsonarrayvar "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=("$j")
+            [[ " $(getjsonarrayvar "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=($j)
         done
 
         for j in "${aurAconflicts[@]}"; do
@@ -442,11 +442,11 @@ ConflictChecks() {
             [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
             [[ "$j" == "$k" || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
-            Aprovides=("$j")
+            Aprovides=($j)
             if [[ ! $noconfirm && ! " ${aurconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
-                    aurconflictingpkgs+=("$j" "$k")
-                    aurconflictingpkgsrm+=("$k")
+                    aurconflictingpkgs+=($j $k)
+                    aurconflictingpkgsrm+=($k)
                     for ((l=0; l<${#depsAname[@]}; l++)); do
                         [[ " ${depsAname[$l]} " =~ " $k " ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
                     done
@@ -476,7 +476,7 @@ ConflictChecks() {
 
     # repo conflicts
     if [[ -n "${repodepspkgs[@]}" ]]; then
-        repodepsprovides=("${repodepspkgs[@]}")
+        repodepsprovides=(${repodepspkgs[@]})
         repodepsprovides+=($(expac -S '%S' "${repodepspkgs[@]}")) # no versioning
         repodepsconflicts=($(expac -S '%C' "${repodepspkgs[@]}"))
         repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${repodepsprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
@@ -493,9 +493,9 @@ ConflictChecks() {
 
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
-                    repoconflictingpkgs+=("$j" "$k")
-                    repoconflictingpkgsrm+=("$k")
-                    Qprovides=("$(expac -Ss '%S' "^$k$")")
+                    repoconflictingpkgs+=($j $k)
+                    repoconflictingpkgsrm+=($k)
+                    Qprovides=($(expac -Ss '%S' "^$k$"))
                     [[ ! " ${Qprovides[@]} " =~ " $k " && ! " ${repoconflictingpkgsrm[@]} " =~ " $k " ]] && checkQrequires $k
                     break
                 else
@@ -504,14 +504,14 @@ ConflictChecks() {
                     note "e" $"$j and $k are in conflict"
                 fi
             fi
-            Qprovides=("$(expac -Ss '%S' "^$k$")")
+            Qprovides=($(expac -Ss '%S' "^$k$"))
             [[ ! " ${Qprovides[@]} " =~ " $k " ]] && checkQrequires $k
         done
     done
 }
 
 ReinstallChecks() {
-    depsAtmp=("${depsAname[@]}")
+    depsAtmp=(${depsAname[@]})
     for ((i=0; i<${#depsAtmp[@]}; i++)); do
         [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
@@ -528,7 +528,7 @@ ReinstallChecks() {
             fi
         fi
     done
-    [[ $needed ]] && depsAname=("${depsAname[@]}") && depsQver=("${depsQver[@]}") && depsAver=("${depsAver[@]}") && depsAood=("${depsAood[@]}")
+    [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
 
     nothingtodo ${deps[@]}
 }
@@ -548,7 +548,7 @@ Prompt() {
         summ=0
         for ((i=0; i<${#repodepspkgs[@]}; i++)); do
             getcachedpkg "${repodepspkgs[$i]}-${repodepsSver[$i]}" '/var/cache/pacman/pkg'
-            [[ $cachedpkg ]] && binaryksize=("${binaryksize[@]/${binaryksize[$i]}/0}")
+            [[ $cachedpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
             sumk=$((sumk + ${binaryksize[$i]}))
             summ=$((summ + ${binarymsize[$i]}))
         done
@@ -560,13 +560,13 @@ Prompt() {
     for ((i=0; i<${#depsAname[@]}; i++)); do
         [[ ! $PKGDEST || $rebuild ]] && break
         getcachedpkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
-        [[ $cachedpkg ]] && cachedpkgs+=("${depsAname[$i]}") && depsAcached[$i]=$"(cached)" || depsAcached[$i]=""
+        [[ $cachedpkg ]] && cachedpkgs+=(${depsAname[$i]}) && depsAcached[$i]=$"(cached)" || depsAcached[$i]=""
         unset cachedpkg
     done
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         strname=$"Name"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
-        depsArepo=("${depsAname[@]/#/aur/}")
+        depsArepo=(${depsAname[@]/#/aur/})
         lname=$(getlength ${depsArepo[@]} ${repodepsSrepo[@]} "$strname")
         lver=$(getlength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
         lsize=$(getlength "$strsize")
@@ -673,7 +673,7 @@ MakePkgs() {
     # split packages support
     for ((i=0; i<${#pkgsbase[@]}; i++)); do
         for ((j=0; j<${#deps[@]}; j++)); do
-            [[ "${pkgsbase[$i]}" = "${pkgsbase[$j]}" ]] && [[ ! " ${pkgsdeps[@]} " =~ " ${deps[$j]} " ]] && pkgsdeps+=("${deps[$j]}")
+            [[ "${pkgsbase[$i]}" = "${pkgsbase[$j]}" ]] && [[ ! " ${pkgsdeps[@]} " =~ " ${deps[$j]} " ]] && pkgsdeps+=(${deps[$j]})
         done
         pkgsdeps+=("#")
     done
@@ -700,7 +700,7 @@ MakePkgs() {
             vcspkg=$(awk -F "-" '{print $NF}' <<< ${basepkgs[$i]})
             for j in "${VCSCLIENTS[@]}"; do
                 if [[ ! "${vcschecked[@]}" =~ "$vcspkg" && $(awk -F "::" '{print $1}' <<< $j) == "$vcspkg" ]]; then
-                    vcsclient=$(awk -F "::" '{print $NF}' <<< $j) && vcschecked+=("$vcspkg")
+                    vcsclient=$(awk -F "::" '{print $NF}' <<< $j) && vcschecked+=($vcspkg)
                     [[ -z "$(expac -Qs '%n' "^$vcsclient$")" ]] && yes $(gettext pacman Y) | sudo $pacmanbin -S $vcsclient --asdeps
                 fi
             done
@@ -714,7 +714,7 @@ MakePkgs() {
             else
                 makepkg -f --verifysource ${makeopts[@]}
             fi
-            (( $? > 0)) && errmakepkg+=("${pkgsdeps[$i]}")
+            (( $? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
             # silent extraction and pkgver update only
             makepkg -od --noprepare --skipinteg ${makeopts[@]} &>/dev/null
         fi
@@ -764,11 +764,11 @@ MakePkgs() {
                         continue
                     else
                         basepkgsupdate='true'
-                        checkpkgsdepslist+=("$j")
+                        checkpkgsdepslist+=($j)
                     fi
                 done
                 if [[ $basepkgsupdate ]]; then
-                    pkgsdepslist=("${checkpkgsdepslist[@]}")
+                    pkgsdepslist=(${checkpkgsdepslist[@]})
                 else
                     continue
                 fi
@@ -828,7 +828,7 @@ MakePkgs() {
         fi
         # clean
         if (( $? > 0)); then
-            errmakepkg+=("${pkgsdeps[$i]}")
+            errmakepkg+=(${pkgsdeps[$i]})
             note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
             [[ $silent ]] && note "f" $"check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
         else
@@ -905,10 +905,10 @@ CleanUp() {
 }
 
 DownloadAur() {
-    [[ $color != 'never' ]] && coweropts=("${coweropts[@]/auto/always}")
+    [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
     while read -r flag pkg info; do
         case $flag in
-            S)  [[ $operation = download && -n "$info" ]] && echo "$info" && pkgsedit+=("$pkg");;
+            S)  [[ $operation = download && -n "$info" ]] && echo "$info" && pkgsedit+=($pkg);;
             W)  [[ $operation = download && -n "$info" ]] && echo "$info";;
             E)  [[ -n "$info" ]] && echo "$info";;
         esac
@@ -990,7 +990,7 @@ CleanCache() {
 getignoredpkgs() {
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2- | tr -d "'\""))
-    ignoredpkgs=("${ignoredpkgs[@]//,/ }")
+    ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
 getinstallscripts() {
@@ -1008,11 +1008,11 @@ getcachedpkg() {
 
 getpackagebase() {
     for i in "$@"; do
-        pkgsbase+=("$(getjsonvarvar "PackageBase" "$i")")
+        pkgsbase+=($(getjsonvarvar "PackageBase" "$i"))
     done
     for i in "${pkgsbase[@]}"; do
         [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
-        basepkgs+=("$i")
+        basepkgs+=($i)
     done
 }
 
@@ -1024,7 +1024,7 @@ downloadjson() {
     if [[ "${#urlargs}" -lt 8125 ]]; then
         curl -sfg --compressed -C 0 "$aururl$urlargs" -o "$tmpdir/rpc.json" || note "e" $"Could not connect to the AUR"
     else
-        urlpkgs=("$@")
+        urlpkgs=($@)
         urlencodedpkgs1=($(sed 's/+/%2b/g;s/@/%40/g' <<< ${urlpkgs[@]:0:$((${#urlpkgs[@]}/2))}))
         urlencodedpkgs2=($(sed 's/+/%2b/g;s/@/%40/g' <<< ${urlpkgs[@]:$((${#urlpkgs[@]}/2))}))
         urlargs1="$(printf "&arg[]=%s" "${urlencodedpkgs1[@]}")"
@@ -1118,7 +1118,7 @@ ctrlc() {
     echo
     [[ -e "$tmpdir/sudov.lck" ]] && rm "$tmpdir/sudov.lck"
     [[ -e "$tmpdir/build.lck" ]] && rm "$tmpdir/build.lck"
-    [[ $operation = sync ]] && [[ ! $search && ! $info ]] && [[ -n "${basepkgs[@]}" ]] && CleanUp "${basepkgs[@]}"
+    [[ $operation = sync ]] && [[ ! $search && ! $info ]] && [[ -n "${basepkgs[@]}" ]] && CleanUp ${basepkgs[@]}
     exit
 }
 
@@ -1165,9 +1165,9 @@ version() {
 #
 
 # get short arguments
-args=("$@")
+args=($@)
 for i in "${args[@]}"; do
-    [[ "$i" =~ ^-[a-zA-Z0-9] ]] && opts+=("$i")
+    [[ "$i" =~ ^-[a-zA-Z0-9] ]] && opts+=($i)
 done
 
 # get options
@@ -1192,7 +1192,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
-                    ignore) ignoredpkgs+=("${!OPTIND}"); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
+                    ignore) ignoredpkgs+=(${!OPTIND}); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
@@ -1242,7 +1242,7 @@ while [[ -n "${!OPTIND}" ]]; do
         esac
     done
     # packages
-    [[ -z "${!OPTIND}" ]] && break || pkgs+=("${!OPTIND}")
+    [[ -z "${!OPTIND}" ]] && break || pkgs+=(${!OPTIND})
     shift $OPTIND
     OPTIND=1
 done
@@ -1271,12 +1271,12 @@ else
 fi
 
 # sanity check
-pacmanarg=("${pacmanarg[@]/--/}")
-pacmanarg=("${pacmanarg[@]/-r/}")
-pacmanarg=("${pacmanarg[@]/-a/}")
+pacmanarg=(${pacmanarg[@]/--/})
+pacmanarg=(${pacmanarg[@]/-r/})
+pacmanarg=(${pacmanarg[@]/-a/})
 [[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ "$EUID" -eq 0 ]] && note "e" $"you cannot perform this operation as root"
-[[ $pacS ]] && pacmanarg=("${pacmanarg[@]/-e/}")
-[[ $pacS ]] && [[ $search && $info ]] && coweropts=("${coweropts[@]/-i/}")
+[[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
+[[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && note "e" $"${colorW}$builddir${reset} does not have write permission."
