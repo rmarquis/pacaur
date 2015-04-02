@@ -9,33 +9,34 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 1.7.5\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: pacaur:92
+#: /home/ludvick/Developer/translations/pacaur/pacaur:95
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "${colorW}Uruchamianie aktualizacji AUR...${reset}"
 
-#: pacaur:103
+#: /home/ludvick/Developer/translations/pacaur/pacaur:106
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr ""
 "${colorW}$i${reset} ${colorY}nie jest dostępny${reset} w AUR -- pomijanie"
 
-#: pacaur:131 pacaur:172
+#: /home/ludvick/Developer/translations/pacaur/pacaur:134
+#: /home/ludvick/Developer/translations/pacaur/pacaur:175
 msgid "latest"
 msgstr "najnowszy"
 
-#: pacaur:136
+#: /home/ludvick/Developer/translations/pacaur/pacaur:139
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr "${checkaurpkgs[$i]} jest w IgnorePkg/IgnoreGroup. Instalować mimo to?"
 
-#: pacaur:137
+#: /home/ludvick/Developer/translations/pacaur/pacaur:140
 msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
 msgstr "${colorW}${checkaurpkgs[$i]}${reset}: ignorowanie aktualizacji pakietu"
 
-#: pacaur:142
+#: /home/ludvick/Developer/translations/pacaur/pacaur:145
 msgid ""
 "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
@@ -45,46 +46,35 @@ msgstr ""
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:154
+#: /home/ludvick/Developer/translations/pacaur/pacaur:157
 msgid "resolving dependencies..."
 msgstr "rozwiązywanie zależności..."
 
-#: pacaur:180
+#: /home/ludvick/Developer/translations/pacaur/pacaur:182
 msgid "no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
 msgstr "brak metadanych AUR dla pakietu ${colorR}${depsAname[$i]}${reset}"
 
-#: pacaur:215
-msgid ""
-"no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- switching "
-"to parsing mode"
-msgstr ""
-"brak metadanych AUR dla pakietu ${colorR}${depsAname[$i]}${reset} -- "
-"włączanie trybu analizowania"
+#: /home/ludvick/Developer/translations/pacaur/pacaur:187
+msgid "no results found for $i"
+msgstr "brak wyników dla $i"
 
-#: pacaur:322
-msgid ""
-"Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i${reset}"
-msgstr ""
-"Potencjalnie niebezpieczne '${colorR}sudo${reset}' wykryto w ${colorW}$i"
-"${reset}"
-
-#: pacaur:324
-msgid "Do you really want to continue?"
-msgstr "Na pewno chcesz kontynuować?"
-
-#: pacaur:340 pacaur:355
+#: /home/ludvick/Developer/translations/pacaur/pacaur:319
+#: /home/ludvick/Developer/translations/pacaur/pacaur:334
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: ignorowanie aktualizacji pakietu"
 
-#: pacaur:341 pacaur:347 pacaur:352 pacaur:356
+#: /home/ludvick/Developer/translations/pacaur/pacaur:320
+#: /home/ludvick/Developer/translations/pacaur/pacaur:326
+#: /home/ludvick/Developer/translations/pacaur/pacaur:331
+#: /home/ludvick/Developer/translations/pacaur/pacaur:335
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "Nierozwiązane zależności pakietu '${colorW}$i${reset}'"
 
-#: pacaur:351
+#: /home/ludvick/Developer/translations/pacaur/pacaur:330
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr "zależność $i jest w IgnorePkg/IgnoreGroup. Instalować, mimo to?"
 
-#: pacaur:382
+#: /home/ludvick/Developer/translations/pacaur/pacaur:361
 msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
@@ -92,39 +82,47 @@ msgstr ""
 "${colorW}Dostępne są ${#providers[@]} pakiety dostarczające "
 "${providersdeps[$i]}:${reset}"
 
-#: pacaur:389
+#: /home/ludvick/Developer/translations/pacaur/pacaur:368
 msgid "Enter a number (default=0):"
 msgstr "Wprowadź liczbę (domyślnie=0):"
 
-#: pacaur:395
+#: /home/ludvick/Developer/translations/pacaur/pacaur:373
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "nieprawidłowa wartość: $nb powinna być pomiędzy 0 i $providersnb"
 
-#: pacaur:397
+#: /home/ludvick/Developer/translations/pacaur/pacaur:375
 msgid "invalid number: $nb"
 msgstr "nieprawidłowa wartość: $nb"
 
-#: pacaur:434
+#: /home/ludvick/Developer/translations/pacaur/pacaur:411
 msgid "looking for inter-conflicts..."
 msgstr "poszukiwanie konfliktów między pakietami..."
 
-#: pacaur:480 pacaur:528
+#: /home/ludvick/Developer/translations/pacaur/pacaur:447
+#: /home/ludvick/Developer/translations/pacaur/pacaur:495
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j i $k konfliktują ze sobą ($i). Usunąć $k?"
 
-#: pacaur:494 pacaur:535
+#: /home/ludvick/Developer/translations/pacaur/pacaur:461
+#: /home/ludvick/Developer/translations/pacaur/pacaur:502
 msgid "unresolvable package conflicts detected"
 msgstr "wykryto nierozwiązywalne konflikty pakietu"
 
-#: pacaur:495 pacaur:536
+#: /home/ludvick/Developer/translations/pacaur/pacaur:462
+#: /home/ludvick/Developer/translations/pacaur/pacaur:503
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "nie można przygotować transakcji (konfliktujące zależności)"
 
-#: pacaur:553
+#: /home/ludvick/Developer/translations/pacaur/pacaur:463
+#: /home/ludvick/Developer/translations/pacaur/pacaur:504
+msgid "$j and $k are in conflict"
+msgstr "$j i $k konfliktują ze sobą"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:520
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} najnowsza rewizja -- pobieranie"
 
-#: pacaur:556
+#: /home/ludvick/Developer/translations/pacaur/pacaur:523
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
@@ -132,14 +130,14 @@ msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} jest w najnowszej wersji "
 "-- reinstalacja"
 
-#: pacaur:558
+#: /home/ludvick/Developer/translations/pacaur/pacaur:525
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} jest w najnowszej wersji "
 "-- pomijanie"
 
-#: pacaur:571
+#: /home/ludvick/Developer/translations/pacaur/pacaur:538
 msgid ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
 "out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
@@ -149,227 +147,268 @@ msgstr ""
 "${colorR}nieaktualny${reset} w dniu ${colorY}$(date -d \"@${depsAood[$i]}\" "
 "\"+%Y-%m-%d\")${reset}"
 
-#: pacaur:596
+#: /home/ludvick/Developer/translations/pacaur/pacaur:563
 msgid "(cached)"
 msgstr "(w pamięci podręcznej)"
 
-#: pacaur:601 pacaur:623
+#: /home/ludvick/Developer/translations/pacaur/pacaur:568
+#: /home/ludvick/Developer/translations/pacaur/pacaur:590
 msgid "Name"
 msgstr "Nazwa"
 
-#: pacaur:601 pacaur:623
+#: /home/ludvick/Developer/translations/pacaur/pacaur:568
+#: /home/ludvick/Developer/translations/pacaur/pacaur:590
 msgid "Old Version"
 msgstr "Poprzednia wersja"
 
-#: pacaur:601 pacaur:623
+#: /home/ludvick/Developer/translations/pacaur/pacaur:568
+#: /home/ludvick/Developer/translations/pacaur/pacaur:590
 msgid "New Version"
 msgstr "Nowa wersja"
 
-#: pacaur:601 pacaur:623
+#: /home/ludvick/Developer/translations/pacaur/pacaur:568
+#: /home/ludvick/Developer/translations/pacaur/pacaur:590
 msgid "Download Size"
 msgstr "Wielkość pobrania"
 
-#: pacaur:612 pacaur:636
+#: /home/ludvick/Developer/translations/pacaur/pacaur:579
+#: /home/ludvick/Developer/translations/pacaur/pacaur:603
 msgid "AUR Packages  (${#deps[@]}):"
 msgstr "Pakiety z AUR  (${#deps[@]}):"
 
-#: pacaur:622 pacaur:637
+#: /home/ludvick/Developer/translations/pacaur/pacaur:589
+#: /home/ludvick/Developer/translations/pacaur/pacaur:604
 msgid "Repo Packages (${#repodepspkgs[@]}):"
 msgstr "Pakiety z repozytoriów (${#repodepspkgs[@]}):"
 
-#: pacaur:625
+#: /home/ludvick/Developer/translations/pacaur/pacaur:592
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} MiB"
 
-#: pacaur:641
+#: /home/ludvick/Developer/translations/pacaur/pacaur:608
 msgid "Repo Download Size:"
 msgstr "Wielkość pobrania z repozytoriów:"
 
-#: pacaur:641
+#: /home/ludvick/Developer/translations/pacaur/pacaur:608
 msgid "Repo Installed Size:"
 msgstr "Wielkość instalacji z repozytoriów:"
 
-#: pacaur:641
+#: /home/ludvick/Developer/translations/pacaur/pacaur:608
 msgid "$sumk MiB"
 msgstr "$sumk MiB"
 
-#: pacaur:641
+#: /home/ludvick/Developer/translations/pacaur/pacaur:608
 msgid "$summ MiB"
 msgstr "$summ MiB"
 
-#: pacaur:650
+#: /home/ludvick/Developer/translations/pacaur/pacaur:617
 msgid "installation"
 msgstr "instalacja"
 
-#: pacaur:650
+#: /home/ludvick/Developer/translations/pacaur/pacaur:617
 msgid "download"
 msgstr "pobranie"
 
-#: pacaur:651
+#: /home/ludvick/Developer/translations/pacaur/pacaur:618
 msgid "Proceed with $action?"
 msgstr "Przejść do $action?"
 
-#: pacaur:659
+#: /home/ludvick/Developer/translations/pacaur/pacaur:626
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Pobieranie pakietów...${reset}"
 
-#: pacaur:674
+#: /home/ludvick/Developer/translations/pacaur/pacaur:641
 msgid "View $i PKGBUILD?"
 msgstr "Chcesz przejrzeć plik PKGBUILD pakietu $i?"
 
-#: pacaur:675 pacaur:687
+#: /home/ludvick/Developer/translations/pacaur/pacaur:642
+#: /home/ludvick/Developer/translations/pacaur/pacaur:654
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "Przejrzano plik PKGBUILD pakietu ${colorW}$i${reset}"
 
-#: pacaur:675 pacaur:687
+#: /home/ludvick/Developer/translations/pacaur/pacaur:642
+#: /home/ludvick/Developer/translations/pacaur/pacaur:654
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "Nie można otworzyć pliku PKGBUILD pakietu ${colorW}$i${reset}"
 
-#: pacaur:681
+#: /home/ludvick/Developer/translations/pacaur/pacaur:648
 msgid "View $j script?"
 msgstr "Chcesz przejrzeć skrypt .install pakietu $j?"
 
-#: pacaur:682 pacaur:690
+#: /home/ludvick/Developer/translations/pacaur/pacaur:649
+#: /home/ludvick/Developer/translations/pacaur/pacaur:657
 msgid "${colorW}$j${reset} script viewed"
 msgstr "Przejrzano skrypt .install pakietu ${colorW}$j${reset}"
 
-#: pacaur:682 pacaur:690
+#: /home/ludvick/Developer/translations/pacaur/pacaur:649
+#: /home/ludvick/Developer/translations/pacaur/pacaur:657
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "Nie można otworzyć skryptu .install pakietu ${colorW}$j${reset}"
 
-#: pacaur:725
+#: /home/ludvick/Developer/translations/pacaur/pacaur:711
+msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
+msgstr "Sprawdzanie integralności ${colorW}${pkgsdeps[$i]}${reset}..."
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:723
+msgid "failed to verify ${colorW}$i${reset} integrity"
+msgstr "nie udało się zweryfikować integralności ${colorW}$i${reset}"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:728
+msgid "build.lck exists in $tmpdir"
+msgstr "build.lck znajduje się w $tmpdir"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:733
 msgid "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
 msgstr "Instalacja zależności ${colorW}${providerpkgs[@]}${reset}..."
 
-#: pacaur:790
+#: /home/ludvick/Developer/translations/pacaur/pacaur:763
+msgid "${colorW}$j${reset} is up-to-date -- skipping"
+msgstr "${colorW}$j${reset} jest zaktualizowany -- pomijanie"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:785
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "Instalowanie pakietu ${colorW}$j${reset} z pamięci podręcznej..."
 
-#: pacaur:794
+#: /home/ludvick/Developer/translations/pacaur/pacaur:789
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "Pakiet ${colorW}$j${reset} jest już dostępny w pamięci podręcznej"
 
-#: pacaur:803
+#: /home/ludvick/Developer/translations/pacaur/pacaur:798
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "Budowanie ${colorW}${pkgsdeps[$i]}${reset} pakietów..."
 
-#: pacaur:815
+#: /home/ludvick/Developer/translations/pacaur/pacaur:814
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
 msgstr "Instalowanie zależności ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:839
+#: /home/ludvick/Developer/translations/pacaur/pacaur:832
+#: /home/ludvick/Developer/translations/pacaur/pacaur:836
+msgid "${colorW}${basepkgs[$i]}${reset} cleaning skipped"
+msgstr "${colorW}${basepkgs[$i]}${reset} pominięto oczyszczanie"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:833
+msgid "check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
+msgstr "sprawdź plik log w ${colorW}$builddir/${basepkgs[$i]}${reset}"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:856
 msgid "Removing installed AUR dependencies..."
 msgstr "Usuwanie zainstalowanych zależności z AUR..."
 
-#: pacaur:855
+#: /home/ludvick/Developer/translations/pacaur/pacaur:872
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "${colorW}$i${reset} jest ${colorY}osieroconym${reset} pakietem"
 
-#: pacaur:867
+#: /home/ludvick/Developer/translations/pacaur/pacaur:877
+msgid "failed to build ${colorW}$i${reset} package(s)"
+msgstr "nie udało się zbudować pakietów ${colorW}$i${reset}"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:892
 msgid "${colorW}$i${reset} cleaning skipped"
 msgstr "${colorW}$i${reset} pominięto oczyszczanie"
 
-#: pacaur:872
+#: /home/ludvick/Developer/translations/pacaur/pacaur:897
 msgid "${colorW}$i${reset} cleaned"
 msgstr "${colorW}$i${reset} oczyszczono"
 
-#: pacaur:872
+#: /home/ludvick/Developer/translations/pacaur/pacaur:897
 msgid "Could not clean ${colorW}$i${reset}"
 msgstr "Nie można wyczyścić ${colorW}$i${reset}"
 
-#: pacaur:878
+#: /home/ludvick/Developer/translations/pacaur/pacaur:903
 msgid "Build directory cleaned"
 msgstr "Oczyszczono katalog budowania pakietu"
 
-#: pacaur:878
+#: /home/ludvick/Developer/translations/pacaur/pacaur:903
 msgid "Build directory already cleaned"
 msgstr "Katalog budowania pakietu już oczyszczono"
 
-#: pacaur:910 pacaur:933
+#: /home/ludvick/Developer/translations/pacaur/pacaur:935
+#: /home/ludvick/Developer/translations/pacaur/pacaur:958
 msgid "[ ignored ]"
 msgstr "[ zignorowano ]"
 
-#: pacaur:948
+#: /home/ludvick/Developer/translations/pacaur/pacaur:973
 msgid "AUR cache directory:"
 msgstr "Katalog pamięci podręcznej AUR:"
 
-#: pacaur:950
+#: /home/ludvick/Developer/translations/pacaur/pacaur:975
 msgid "Packages to keep:"
 msgstr "Zachowywane pakiety:"
 
-#: pacaur:950
+#: /home/ludvick/Developer/translations/pacaur/pacaur:975
 msgid "All locally installed packages"
 msgstr "Wszystkie, zainstalowane lokalnie, pakiety"
 
-#: pacaur:951
+#: /home/ludvick/Developer/translations/pacaur/pacaur:976
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Chcesz usunąć wszystkie pozostałe pakiety z pamięci podręcznej AUR?"
 
-#: pacaur:954
+#: /home/ludvick/Developer/translations/pacaur/pacaur:979
 msgid "removing old packages from cache..."
 msgstr "usuwanie starych pakietów z pamięci podręcznej..."
 
-#: pacaur:957
+#: /home/ludvick/Developer/translations/pacaur/pacaur:982
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "Chcesz usunąć WSZYSTKIE pliki z pamięci podręcznej AUR?"
 
-#: pacaur:958
+#: /home/ludvick/Developer/translations/pacaur/pacaur:983
 msgid "removing all files from AUR cache..."
 msgstr "usuwanie wszystkich plików z pamięci podręcznej AUR..."
 
-#: pacaur:1000 pacaur:1007
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1025
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1032
 msgid "Could not connect to the AUR"
 msgstr "Nie można połączyć z AUR"
 
-#: pacaur:1033
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1058
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr "nie można przygotować transakcji (niespełnione zależności)"
 
-#: pacaur:1034
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1059
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: wymaga $@"
 
-#: pacaur:1042
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1067
 msgid "$2 [Y/n] "
 msgstr "$2 [T/n] "
 
-#: pacaur:1049
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1074
 msgid "$2 [y/N] "
 msgstr "$2 [t/N] "
 
-#: pacaur:1080
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1105
 msgid " there is nothing to do"
 msgstr " nie ma nic do zrobienia"
 
-#: pacaur:1101
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1126
 msgid "usage:  pacaur <operation> [options] [target(s)]"
 msgstr "składnia:  pacaur <operacja> [opcje] [pakiet(y)]"
 
-#: pacaur:1102
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1127
 msgid "operations:"
 msgstr "operacje:"
 
-#: pacaur:1103
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1128
 msgid " pacman extension"
 msgstr " rozszerzenie pacmana"
 
-#: pacaur:1104
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1129
 msgid "   -S, -Q           extend pacman operations to the AUR"
 msgstr "   -S, -Q           rozciąga działanie operacji pacmana na AUR"
 
-#: pacaur:1105
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1130
 msgid " AUR only"
 msgstr " tylko AUR"
 
-#: pacaur:1106
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1131
 msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     poszukuje pasujących ciągów tekstu w AUR"
 
-#: pacaur:1107
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1132
 msgid "   -i, --info       view package information"
 msgstr "   -i, --info       pokazuje informacje o pakietach"
 
-#: pacaur:1108
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1133
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -377,39 +416,40 @@ msgstr ""
 "   -d, --download   pobiera pakiety -- wprowadź podwójnie, by pobrać "
 "zależności z AUR"
 
-#: pacaur:1109
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1134
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    pobiera i buduje pakiety"
 
-#: pacaur:1110
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1135
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       pobiera, buduje i instaluje pakiety"
 
-#: pacaur:1111
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1136
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      sprawdza aktualność pakietów z AUR"
 
-#: pacaur:1112
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1137
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     aktualizuje pakiety z AUR"
 
-#: pacaur:1113 pacaur:1121
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1138
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1146
 msgid " general"
 msgstr " ogólne"
 
-#: pacaur:1114
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1139
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    wyświetla informacje o wersji"
 
-#: pacaur:1115
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1140
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       wyświetla niniejszą pomoc"
 
-#: pacaur:1117
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1142
 msgid "options:"
 msgstr "opcje:"
 
-#: pacaur:1118
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1143
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
@@ -417,13 +457,13 @@ msgstr ""
 " rozszerzenie pacmana - można użyć z -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, "
 "-Scc"
 
-#: pacaur:1119
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1144
 msgid ""
 "   -a, --aur        only search, install or clean target(s) from the AUR"
 msgstr ""
 "   -a, --aur        poszukuje, instaluje lub czyści tylko pakiety z AUR"
 
-#: pacaur:1120
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1145
 msgid ""
 "   -r, --repo       only search, install or clean target(s) from the "
 "repositories"
@@ -431,12 +471,12 @@ msgstr ""
 "   -r, --repo       poszukuje, instaluje lub czyści tylko pakiety z "
 "repozytoriów"
 
-#: pacaur:1122
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1147
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
 "   -e, --edit       edycja plików PKGBUILD oraz podgląd skryptów .install"
 
-#: pacaur:1123
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1148
 msgid ""
 "   -c, --clean      clean target(s) build files -- can be combined with the -"
 "m, -y, -u operations"
@@ -444,59 +484,65 @@ msgstr ""
 "   -c, --clean      czyści pliki po zbudowaniu pakietu -- można łączyć z -m, "
 "-y, -u"
 
-#: pacaur:1124
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1149
 msgid "   -q, --quiet      show less information for query and search"
 msgstr ""
 "   -q, --quiet      wyświetla mniej informacji przy zapytaniach i "
 "wyszukiwaniu"
 
-#: pacaur:1125
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1150
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr "   --devel          uwzględnia aktualizację pakietów devel z AUR"
 
-#: pacaur:1126
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1151
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         pomija aktualizację pakietów -- można używać wielokrotnie"
 
-#: pacaur:1127
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1152
 msgid "   --needed         do not reinstall already up to date target(s)"
 msgstr "   --needed         nie reinstaluje aktualnych pakietów"
 
-#: pacaur:1128
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1153
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      nie wyświetla żadnych potwierdzeń"
 
-#: pacaur:1129
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1154
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         wyłącza zapytanie o edycję plików"
 
-#: pacaur:1130
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1155
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        zawsze przebudowuje pakiety"
 
-#: pacaur:1256
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1277
+msgid "you cannot perform this operation as root"
+msgstr "nie możesz wykonać tej operacji jako root"
+
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1281
 msgid "${colorW}editor${reset} variable unset"
 msgstr "Nie ustawiono zmiennej ${colorW}editor${reset}"
 
-#: pacaur:1257
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1282
 msgid "${colorW}$builddir${reset} does not have write permission."
 msgstr "${colorW}$builddir${reset} nie posiada uprawnień do zapisu."
 
-#: pacaur:1258
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1283
 msgid "no targets specified (use -h for help)"
 msgstr "nie podano żadnych celów (użyj -h aby otrzymać pomoc)"
 
-#: pacaur:1259
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1284
 msgid "target not found"
 msgstr "nie znaleziono celu"
 
-#: pacaur:1260
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1285
 msgid "alternative installation root option not supported"
 msgstr "opcja instalacji na inne konto root nie jest obsługiwana"
 
-#: pacaur:1298 pacaur:1310 pacaur:1318
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1323
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1335
+#: /home/ludvick/Developer/translations/pacaur/pacaur:1343
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."
@@ -504,3 +550,19 @@ msgstr ""
 "Nie znaleziono ${colorW}${aurpkgs[*]}${reset} w repozytoriach; szukam w "
 "${colorM}AUR${reset}..."
 
+#~ msgid ""
+#~ "no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- "
+#~ "switching to parsing mode"
+#~ msgstr ""
+#~ "brak metadanych AUR dla pakietu ${colorR}${depsAname[$i]}${reset} -- "
+#~ "włączanie trybu analizowania"
+
+#~ msgid ""
+#~ "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i"
+#~ "${reset}"
+#~ msgstr ""
+#~ "Potencjalnie niebezpieczne '${colorR}sudo${reset}' wykryto w ${colorW}$i"
+#~ "${reset}"
+
+#~ msgid "Do you really want to continue?"
+#~ msgstr "Na pewno chcesz kontynuować?"
