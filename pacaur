@@ -448,7 +448,7 @@ ConflictChecks() {
                     aurconflictingpkgs+=($j $k)
                     aurconflictingpkgsrm+=($k)
                     for ((l=0; l<${#depsAname[@]}; l++)); do
-                        [[ " ${depsAname[$l]} " =~ " $k " ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
+                        [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
                     done
                     Aprovides+=($(getjsonarrayvar "Provides" "$j"))
                     # remove AUR versioning
