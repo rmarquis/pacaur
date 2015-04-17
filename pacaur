@@ -233,7 +233,20 @@ FindDepsAur() {
     fi
 
     depspkgs=($(getjsonarray "Depends"))
-    depspkgs+=($(getjsonarray "MakeDepends"))
+
+    # cached makedeps check
+    if [[ ! $PKGDEST || $rebuild ]]; then
+        depspkgs+=($(getjsonarray "MakeDepends"))
+    else
+        for ((i=0; i<${#depspkgsaur[@]}; i++)); do
+            depsAname=$(getjsonvarvar "Name" "${depspkgsaur[$i]}")
+            depsAver=$(getjsonvarvar "Version" "${depspkgsaur[$i]}")
+            makedepspkgs=($(getjsonarrayvar "MakeDepends" "${depspkgsaur[$i]}"))
+            getcachedpkg "${depsAname}-${depsAver}" "$PKGDEST"
+            [[ ! $cachedpkg ]] && depspkgs+=(${makedepspkgs[@]})
+            unset cachedpkg makedepspkgs
+        done
+    fi
 
     # remove installed deps
     depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
