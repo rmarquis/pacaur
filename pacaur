@@ -15,9 +15,27 @@ LC_COLLATE=C                                # getopts sorting
 TEXTDOMAIN='pacaur'
 TEXTDOMAINDIR='/usr/share/locale'
 
+# determine config location
+if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
+    for i in ${XDG_CONFIG_DIRS//:/ }; do
+        [[ -d "$i" ]] && export XDG_CONFIG_DIRS="$i" && break
+    done
+fi
+configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/pacaur"
+userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
+userpacmandir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacman"
+
 # source makepkg variables
-source /etc/makepkg.conf
-[[ -r "$HOME/.makepkg.conf" ]] && source "$HOME/.makepkg.conf"
+if [[ -r "$MAKEPKG_CONF" ]]; then
+    source "$MAKEPKG_CONF"
+else
+    source /etc/makepkg.conf
+    if [[ -r "$userpacmandir/makepkg.conf" ]]; then
+        source "$userpacmandir/makepkg.conf"
+    elif [[ -r "$HOME/.makepkg.conf" ]]; then
+        source "$HOME/.makepkg.conf"
+    fi
+fi
 
 # set variables
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
@@ -35,13 +53,6 @@ sudoloop=false                              # prevent sudo timeout
 pacmanbin="${PACMAN:-pacman}"
 
 # source xdg config
-if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
-    for i in ${XDG_CONFIG_DIRS//:/ }; do
-        [[ -d "$i" ]] && export XDG_CONFIG_DIRS="$i" && break
-    done
-fi
-configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/pacaur"
-userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
 source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
