@@ -36,7 +36,7 @@ pacmanbin="${PACMAN:-pacman}"
 
 # source xdg config
 if [[ -n "${XDG_CONFIG_DIRS}" ]]; then
-    xdg_config=($(awk -F ":" '{for (i=1; i<=NF; i++) print $i}' <<< ${XDG_CONFIG_DIRS}))
+    xdg_config=(${XDG_CONFIG_DIRS//:/ })
     for i in "${xdg_config[@]}"; do
         [[ -d "$i" ]] && export XDG_CONFIG_DIRS="$i" && break
     done
