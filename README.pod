@@ -130,7 +130,7 @@ Overwrite existing files when downloading I<target(s)> PKGBUILD.
 
 =item B<--devel>
 
-When used with update operations, also upgrade AUR development packages
+When used with update and check operations, also consider AUR development packages
 (supported are cvs, svn, git, hg, bzr and darcs development packages, as well
 as nightly build packages).
 
