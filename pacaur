@@ -987,6 +987,7 @@ CheckAur() {
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
         for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
             [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsQood[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
+            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${aurpkgsAname[$i]})" ]] && aurpkgsAver[$i]=$"latest"
         done
         [[ ! $lname ]] && lname=$(getlength "${aurpkgsAname[@]}")
         [[ ! $lQver ]] && lQver=$(getlength "${aurpkgsQver[@]}")
