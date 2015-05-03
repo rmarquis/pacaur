@@ -970,6 +970,15 @@ CheckRepo() {
 CheckAur() {
     getignoredpkgs
     aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+
+    # add devel packages
+    if [[ $devel ]]; then
+        foreignpkgs=($($pacmanbin -Qmq))
+        for i in "${foreignpkgs[@]}"; do
+            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgsQood+=($i)
+        done
+    fi
+
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && tr ' ' '\n' <<< ${aurpkgsQood[@]} && return
         downloadjson ${aurpkgsQood[@]}
