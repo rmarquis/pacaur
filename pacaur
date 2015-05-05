@@ -921,8 +921,8 @@ CleanUp() {
         done
     else
         # hack for vcs protected files
-        chmod -R 755 "${builddir:?}/*" &>/dev/null
-        rm -r "${builddir:?}/*" &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
+        chmod -R 755 ${builddir:?}/* &>/dev/null
+        rm -r ${builddir:?}/* &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
     fi
 }
 
