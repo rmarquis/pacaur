@@ -934,7 +934,7 @@ DownloadAur() {
             W)  [[ $operation = download && -n "$info" ]] && echo "$info";;
             E)  [[ -n "$info" ]] && echo "$info";;
         esac
-    done < <(cower ${coweropts[@]} -b $@ ${ignoreopts[@]} -t $builddir 2>&1)
+    done < <(cower ${coweropts[@]} -b $@ ${ignoreopts[@]} -t "$builddir" 2>&1)
     wait
 }
 
