@@ -914,8 +914,8 @@ CleanUp() {
         done
     else
         # hack for vcs protected files
-        chmod -R 755 ${builddir:?}/* &>/dev/null
-        rm -r ${builddir:?}/* &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
+        chmod -R 755 "${builddir:?}"/* &>/dev/null
+        rm -r "${builddir:?}"/* &>/dev/null && note "s" $"Build directory cleaned" || note "w" $"Build directory already cleaned"
     fi
 }
 
@@ -927,7 +927,7 @@ DownloadAur() {
             W)  [[ $operation = download && -n "$info" ]] && echo "$info";;
             E)  [[ -n "$info" ]] && echo "$info";;
         esac
-    done < <(cower ${coweropts[@]} -b $@ ${ignoreopts[@]} -t $builddir 2>&1)
+    done < <(cower ${coweropts[@]} -b $@ ${ignoreopts[@]} -t "$builddir" 2>&1)
     wait
 }
 
