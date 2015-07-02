@@ -12,7 +12,8 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ target(s) ]
 
 Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
 designed to minimize user prompt interaction and to use an uncluttered
-interface. It is built upon the well designed cower and expac C backends.
+interface. It uses the full secured RPC interface to solve the dependency tree,
+and it is built upon the well designed cower and expac C backends.
 
 Invoking pacaur consists of supplying an operation, any applicable options, and
 usually one or more targets. A I<target> is usually a package name or a search
