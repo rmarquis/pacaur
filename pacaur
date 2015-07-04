@@ -46,7 +46,7 @@ fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
 silent=false                                # silence output
-sortbyvotes=true                            # sort search results by votes
+sortby=votes                                # search results sort method
 sudoloop=false                              # prevent sudo timeout
 
 # set pacman binary
@@ -958,7 +958,10 @@ DownloadAur() {
 }
 
 SearchInfoAur() {
-    [[ $sortbyvotes = true && -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]] && coweropts+=("--rsort=votes")
+    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
+        [[ $sortby = votes ]] && coweropts+=("--rsort=votes");
+        [[ $sortby = popularity ]] && coweropts+=("--rsort=popularity");
+    fi
     cower ${coweropts[@]} $@
 }
 
@@ -1257,6 +1260,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     ignorerepo=*) coweropts+=("--${OPTARG}");;
                     asort) coweropts+=("--sort=name");;
                     vsort) coweropts+=("--rsort=votes");;
+                    psort) coweropts+=("--rsort=popularity");;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     nodeps) nodeps=true; pacopts+=("--nodeps"); makeopts+=("--nodeps"); ((count++));;

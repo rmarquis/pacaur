@@ -218,6 +218,10 @@ When searching the AUR, sort the results by alphabetical order.
 
 When searching the AUR, sort the results by decreasing number of votes.
 
+=item B<--psort>
+
+When searching the AUR, sort the results by decreasing popularity.
+
 =item B<--domain> <FQDN>
 
 Point at a domain other than the default I<aur.archlinux.org>.
@@ -293,10 +297,10 @@ packages. Default is B<true>.
 Enable silent output. The makepkg output will be collected in the build
 directory of packages should any error occurs. Default is B<false>.
 
-=item B<sortbyvotes>
+=item B<sortby>
 
-When searching the AUR, sort the results by decreasing number of votes. Default
-is B<true>.
+When searching the AUR, sort the results by alphabetical order, number of votes
+or popularity. Default is B<votes>.
 
 =item B<sudoloop>
 
