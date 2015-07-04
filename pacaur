@@ -52,6 +52,10 @@ sudoloop=false                              # prevent sudo timeout
 # set pacman binary
 pacmanbin="${PACMAN:-pacman}"
 
+# set AUR variables
+aururl="aur.archlinux.org"
+aurrpc="https://$aururl/rpc.php?type=multiinfo&v=3"
+
 # source xdg config
 source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
@@ -60,10 +64,6 @@ source "$configdir/config"
 [[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
 [[ ! -d "$builddir" ]] && mkdir -p "$builddir"
-
-# set AUR variables
-aururl="https://aur.archlinux.org"
-aurrpc="$aururl/rpc.php?type=multiinfo&v=3"
 
 #
 # Functions
@@ -1234,6 +1234,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     rebuild) rebuild=true;;
                     root) root=true;;
                     silent) silent=true; makeopts+=("--log");;
+                    domain) aururl=${!OPTIND}; coweropts+=("--domain ${!OPTIND}"); shift;;
                     version) version; exit;;
                     help) usage; exit;;
                     *) pacopts+=("--$OPTARG");;

@@ -185,6 +185,10 @@ When searching the AUR, sort the results by alphabetical order.
 
 When searching the AUR, sort the results by decreasing number of votes.
 
+=item B<--domain> <FQDN>
+
+Point at a domain other than the default I<aur.archlinux.org>.
+
 =back
 
 
