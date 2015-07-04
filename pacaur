@@ -54,7 +54,7 @@ pacmanbin="${PACMAN:-pacman}"
 
 # set AUR variables
 aururl="aur.archlinux.org"
-aurrpc="/rpc.php?type=multiinfo&v=3"
+aurrpc="/rpc.php?type=multiinfo&v=4"
 
 # source xdg config
 source "$configdir/config"
