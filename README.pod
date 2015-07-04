@@ -212,7 +212,7 @@ precedence over the I<IgnoreOOD> option of the cower config file.
 
 =item B<--asort>
 
-When searching the AUR, sort the results by alphabetical order.
+When searching the AUR, sort the results by name in alphabetical order.
 
 =item B<--vsort>
 
@@ -299,8 +299,8 @@ directory of packages should any error occurs. Default is B<false>.
 
 =item B<sortby>
 
-When searching the AUR, sort the results by alphabetical order, number of votes
-or popularity. Default is B<popularity>.
+When searching the AUR, sort the results by I<name>, number of I<votes> or
+I<popularity>. Default is B<popularity>.
 
 =item B<sudoloop>
 
