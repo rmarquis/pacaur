@@ -61,8 +61,9 @@ source "$configdir/config"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
 [[ ! -d "$builddir" ]] && mkdir -p "$builddir"
 
-# set AUR variable
-aururl="https://aur.archlinux.org/rpc.php?type=multiinfo&v=3"
+# set AUR variables
+aururl="https://aur.archlinux.org"
+aurrpc="$aururl/rpc.php?type=multiinfo&v=3"
 
 #
 # Functions
@@ -1049,14 +1050,14 @@ downloadjson() {
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
     # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
     if [[ "${#urlargs}" -lt 8125 ]]; then
-        curl -sfg --compressed -C 0 "$aururl$urlargs" -o "$tmpdir/rpc.json" || note "e" $"Could not connect to the AUR"
+        curl -sfg --compressed -C 0 "$aurrpc$urlargs" -o "$tmpdir/rpc.json" || note "e" $"Could not connect to the AUR"
     else
         urlpkgs=($@)
         urlencodedpkgs1=($(sed 's/+/%2b/g;s/@/%40/g' <<< ${urlpkgs[@]:0:$((${#urlpkgs[@]}/2))}))
         urlencodedpkgs2=($(sed 's/+/%2b/g;s/@/%40/g' <<< ${urlpkgs[@]:$((${#urlpkgs[@]}/2))}))
         urlargs1="$(printf "&arg[]=%s" "${urlencodedpkgs1[@]}")"
         urlargs2="$(printf "&arg[]=%s" "${urlencodedpkgs2[@]}")"
-        curl -sfg --compressed -C 0 "$aururl$urlargs1" -o "$tmpdir/rpc1.json" "$aururl$urlargs2" -o "$tmpdir/rpc2.json" || note "e" $"Could not connect to the AUR"
+        curl -sfg --compressed -C 0 "$aurrpc$urlargs1" -o "$tmpdir/rpc1.json" "$aurrpc$urlargs2" -o "$tmpdir/rpc2.json" || note "e" $"Could not connect to the AUR"
         # merge json files
         json_reformat < "$tmpdir/rpc1.json" | head -n -2 | sed -r 's/}$/},/g;s/"resultcount": [0-9]+/"resultcount": "?"/g' > "$tmpdir/rpc.json"
         json_reformat < "$tmpdir/rpc2.json" | tail -n +6 >> "$tmpdir/rpc.json"
