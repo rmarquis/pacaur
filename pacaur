@@ -61,6 +61,9 @@ source "$configdir/config"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
 [[ ! -d "$builddir" ]] && mkdir -p "$builddir"
 
+# set AUR variable
+aururl="https://aur.archlinux.org/rpc.php?type=multiinfo&v=3"
+
 #
 # Functions
 #
@@ -1042,7 +1045,6 @@ getpackagebase() {
 }
 
 downloadjson() {
-    aururl="https://aur.archlinux.org/rpc.php?type=multiinfo&v=3"
     urlencodedpkgs=($(sed 's/+/%2b/g;s/@/%40/g' <<< $@)) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
     # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
