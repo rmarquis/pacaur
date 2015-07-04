@@ -46,7 +46,7 @@ fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
 silent=false                                # silence output
-sortby=votes                                # search results sort method
+sortby=popularity                           # search results sort method
 sudoloop=false                              # prevent sudo timeout
 
 # set pacman binary

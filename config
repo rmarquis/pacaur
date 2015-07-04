@@ -14,6 +14,6 @@
 #clean=true                            # clean up after package install
 #cleandevel=true                       # clean up devel package
 #silent=false                          # silence output
-#sortby=votes                          # search results sort method
+#sortby=popularity                     # search results sort method
 #sudoloop=false                        # prevent sudo timeout
 

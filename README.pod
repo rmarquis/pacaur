@@ -300,7 +300,7 @@ directory of packages should any error occurs. Default is B<false>.
 =item B<sortby>
 
 When searching the AUR, sort the results by alphabetical order, number of votes
-or popularity. Default is B<votes>.
+or popularity. Default is B<popularity>.
 
 =item B<sudoloop>
 
