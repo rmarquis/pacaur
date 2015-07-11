@@ -411,6 +411,7 @@ ProviderChecks() {
         repodepspkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${repodepspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${providerpkgsrm[@]} | LC_COLLATE=C sort -u)))
 
         # add deps of selected providers instead
+        providerspkgs=($(tr '|' ' ' <<< ${providerspkgs[@]}))
         for i in "${providerspkgs[@]}"; do
             providerdeps+=($(pactree -su "$i"))
         done
