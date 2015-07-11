@@ -397,7 +397,7 @@ ProviderChecks() {
         else
             local nb=0
         fi
-        providerpkgs+=(${providers[$nb]})
+        providerspkgs+=(${providers[$nb]})
         [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
     done
 
