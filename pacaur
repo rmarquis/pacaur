@@ -411,7 +411,7 @@ ProviderChecks() {
         repodepspkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${repodepspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${providerpkgsrm[@]} | LC_COLLATE=C sort -u)))
 
         # add deps of selected providers instead
-        for i in "${providerpkgs[@]}"; do
+        for i in "${providerspkgs[@]}"; do
             providerdeps+=($(pactree -su "$i"))
         done
         repodepspkgs+=($($pacmanbin -T ${providerdeps[@]} | sort -u))
@@ -748,9 +748,9 @@ MakePkgs() {
     touch "$tmpdir/build.lck"
 
     # install provider packages
-    if [[ -n "${providerpkgs[@]}" ]]; then
-        note "i" $"Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
-        yes $(gettext pacman Y) | sudo $pacmanbin -S ${providerpkgs[@]} --asdeps
+    if [[ -n "${providerspkgs[@]}" ]]; then
+        note "i" $"Installing ${colorW}${providerspkgs[@]}${reset} dependencies..."
+        yes $(gettext pacman Y) | sudo $pacmanbin -S ${providerspkgs[@]} --asdeps
     fi
 
     # main
