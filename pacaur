@@ -107,7 +107,7 @@ Core() {
 
 UpgradeAur() {
     note "i" $"${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} 2>&1 | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
+    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} --color=never 2>&1 | awk -F " " '{print $2}'))
 
     # foreign packages check
     foreignpkgs=($($pacmanbin -Qmq))
@@ -964,7 +964,7 @@ CheckRepo() {
 
 CheckAur() {
     getignoredpkgs
-    aurpkgsQood=($(cower ${coweropts[@]} $@ | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    aurpkgsQood=($(cower ${coweropts[@]} $@ --color=never))
 
     # add devel packages
     if [[ $devel ]]; then
