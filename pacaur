@@ -107,9 +107,7 @@ Core() {
 
 UpgradeAur() {
     note "i" $"${colorW}Starting AUR upgrade...${reset}"
-    [[ -e "$tmpdir/ignoretmp" ]] && rm "$tmpdir/ignoretmp"
-    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} 2>"$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
-    [[ -e "$tmpdir/ignoretmp" ]] && aurpkgs+=($(awk -F " " '{print $2}' "$tmpdir/ignoretmp" | sed -r "s:\x1B\[[0-9;]*[mK]::g"))
+    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} 2>&1 | sed -r "s:\x1B\[[0-9;]*[mK]::g" | awk -F " " '{print $2}'))
 
     # foreign packages check
     foreignpkgs=($($pacmanbin -Qmq))
