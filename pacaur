@@ -255,37 +255,25 @@ FindDepsAur() {
     # remove installed deps
     if [[ ! $foreign && ! $devel ]]; then
         depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
-    fi
-
-    # devel reorder
-    if [[ $devel ]]; then
-        # remove all pkgs versioning
+    else
+        # remove versioning and check providers
         for ((i=0; i<${#depspkgs[@]}; i++)); do
             depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-        done
-        # check providers
-        for ((i=0; i<${#depspkgs[@]}; i++)); do
             depspkgs[$i]=$(expac -Qs '%n' "^${depspkgs[$i]}$")
         done
-        unset vcsdepspkgs
-        for ((i=0; i<${#depspkgs[@]}; i++)); do
-            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depspkgs[$i]})" ]] && vcsdepspkgs+=(${depspkgs[$i]})
-        done
-        [[ ! $foreign ]] && depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
-        depspkgs=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${vcsdepspkgs[@]} | LC_COLLATE=C sort -u)))
-    fi
-
-    # remove installed binary packages only
-    if [[ $foreign ]]; then
-        # remove all pkgs versioning
-        for ((i=0; i<${#depspkgs[@]}; i++)); do
-            depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-        done
-        # check providers
-        for ((i=0; i<${#depspkgs[@]}; i++)); do
-            depspkgs[$i]=$(expac -Qs '%n' "^${depspkgs[$i]}$")
-        done
-        depspkgs=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u)))
+        # reorder devel
+        if [[ $devel ]]; then
+            unset vcsdepspkgs
+            for ((i=0; i<${#depspkgs[@]}; i++)); do
+                [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depspkgs[$i]})" ]] && vcsdepspkgs+=(${depspkgs[$i]})
+            done
+            [[ ! $foreign ]] && depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
+            depspkgs=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${vcsdepspkgs[@]} | LC_COLLATE=C sort -u)))
+        fi
+        # remove installed binary packages only
+        if [[ $foreign ]]; then
+            depspkgs=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u)))
+        fi
     fi
 
     # split binary and AUR depends pkgs
