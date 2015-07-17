@@ -40,7 +40,7 @@ from pacman.
 =item B<-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc>
 
 Pacaur wraps B<pacman operations> and extends respectively its install, search,
-info, download, update, check updates and clean functions to the AUR. This
+info, download only, update, check updates and clean functions to the AUR. This
 behavior is optional and can be disabled with the I<fallback> variable in the
 config file. Pacaur will also pass any pacman related options to the pacman
 binary.
@@ -137,8 +137,8 @@ as nightly build packages).
 
 =item B<--foreign>
 
-When used with install and update operations, also consider already installed
-foreign dependencies packages.
+When used with install, download only and update operations, also consider already
+installed foreign dependencies.
 
 =item B<--ignore> I<target(s)>
 
