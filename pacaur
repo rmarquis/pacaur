@@ -173,6 +173,7 @@ DepsSolver() {
     done
     deps+=(${aurpkgs[@]})
 
+    [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
     FindDepsAur ${aurpkgs[@]}
 
     # get AUR packages info
@@ -252,7 +253,20 @@ FindDepsAur() {
     fi
 
     # remove installed deps
-    depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
+    if [[ ! $foreign ]]; then
+        depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
+    # remove installed binary packages only
+    else
+        # remove all pkgs versioning
+        for ((i=0; i<${#depspkgs[@]}; i++)); do
+            depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
+        done
+        # check providers
+        for ((i=0; i<${#depspkgs[@]}; i++)); do
+            depspkgs[$i]=$(expac -Qs '%n' "^${depspkgs[$i]}$")
+        done
+        depspkgs=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u)))
+    fi
 
     # split binary and AUR depends pkgs
     unset depspkgsaur
@@ -1177,6 +1191,7 @@ usage() {
     printf "%s\n" $"   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u operations"
     printf "%s\n" $"   -q, --quiet      show less information for query and search"
     printf "%s\n" $"   --devel          consider AUR development packages upgrade"
+    printf "%s\n" $"   --foreign        consider already installed foreign dependencies"
     printf "%s\n" $"   --ignore         ignore a package upgrade (can be used more than once)"
     printf "%s\n" $"   --needed         do not reinstall already up to date target(s)"
     printf "%s\n" $"   --noconfirm      do not prompt for any confirmation"
@@ -1221,6 +1236,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
+                    foreign) foreign=true;;
                     ignore) ignoredpkgs+=(${!OPTIND}); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) coweropts+=("--ignore-ood");;

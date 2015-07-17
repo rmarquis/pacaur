@@ -135,6 +135,11 @@ When used with update and check operations, also consider AUR development packag
 (supported are cvs, svn, git, hg, bzr and darcs development packages, as well
 as nightly build packages).
 
+=item B<--foreign>
+
+When used with install and update operations, also consider already installed
+foreign dependencies packages.
+
 =item B<--ignore> I<target(s)>
 
 Ignore a I<target> upgrade. Can be used more than once. Also accepts a comma
