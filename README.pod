@@ -10,10 +10,10 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ target(s) ]
 
 =head1 DESCRIPTION
 
-Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity,
-designed to minimize user prompt interaction and to use an uncluttered
-interface. It uses the full secured RPC interface to solve the dependency tree,
-and it is built upon the well designed cower and expac C backends.
+Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity
+and is designed to minimize user prompt interaction. It uses an uncluttered
+interface and make use of the full secured RPC interface to solve the dependency
+tree. It is built upon the well designed cower and expac C backends.
 
 Invoking pacaur consists of supplying an operation, any applicable options, and
 usually one or more targets. A I<target> is usually a package name or a search
@@ -35,6 +35,8 @@ from pacman.
 
 =head1 OPERATIONS
 
+Pacman extension operations
+
 =over 4
 
 =item B<-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc>
@@ -44,6 +46,12 @@ info, download only, update, check updates and clean functions to the AUR. This
 behavior is optional and can be disabled with the I<fallback> variable in the
 config file. Pacaur will also pass any pacman related options to the pacman
 binary.
+
+=back
+
+AUR specific operations
+
+=over 4
 
 =item B<-s, --search>
 
@@ -83,6 +91,12 @@ Update foreign packages in the AUR. Without any arguments, all manually
 installed packages will be updated. If I<target(s)> are supplied, only those
 packages will be updated.
 
+=back
+
+General operations
+
+=over 4
+
 =item B<-v, --version>
 
 Display version and quit.
@@ -96,6 +110,41 @@ Display the help message and quit.
 
 =head1 OPTIONS
 
+Pacman extension options
+
+=over 4
+
+=item B<-a, --aur>
+
+When used with pacman extended operations, only search, download, build, install
+or update I<target(s)> from the AUR.
+
+=item B<-r, --repo>
+
+When used with pacman extended operations, only search, download, build, install
+or update I<target(s)> from the repositories.
+
+=back
+
+AUR specific options
+
+=over 4
+
+=item B<-c, --clean>
+
+Remove build files after building I<target(s)>. Pass this option twice to force
+cleaning when the I<cleandevel> option is disabled. Can also be used as a
+standalone command. When passed twice without any arguments, clean the entire
+build directory.
+
+=item B<-f, --force>
+
+Overwrite existing files when downloading I<target(s)> PKGBUILD.
+
+=back
+
+General options
+
 =over 4
 
 =item B<-e, --edit>
@@ -103,54 +152,33 @@ Display the help message and quit.
 Edit PKGBUILD and view install script when downloading or building I<target(s)>.
 Can also be used as a standalone command.
 
-=item B<-c, --clean>
-
-Remove build files after building I<target(s)>. Pass this option twice to force
-cleaning when the cleandevel option is disabled. Can also be used as a
-standalone command. When passed twice without any arguments, clean the entire
-build directory.
-
 =item B<-q, --quiet>
 
 Show less information for search and query operations. Search will only show
 package names and not version, group, and description information.
 
-=item B<-a, --aur>
-
-When used with pacman extended operations, only search or install I<target(s)>
-from the AUR.
-
-=item B<-r, --repo>
-
-When used with pacman extended operations, only search or install I<target(s)>
-from the repositories.
-
-=item B<-f, --force>
-
-Overwrite existing files when downloading I<target(s)> PKGBUILD.
-
 =item B<--devel>
 
 When used with update and check operations, also consider AUR development packages
-(supported are cvs, svn, git, hg, bzr and darcs development packages, as well
-as nightly build packages).
+(supported are I<cvs>, I<svn>, I<git>, I<hg>, I<bzr> and I<darcs> development
+packages, as well as I<nightly> build packages).
 
 =item B<--foreign>
 
-When used with install, download only and update operations, also consider already
+When used with build, install and update operations, also consider already
 installed foreign dependencies.
 
 =item B<--ignore> I<target(s)>
 
 Ignore a I<target> upgrade. Can be used more than once. Also accepts a comma
 delimited list as a single argument. Packages listed in pacman and cower's
-IgnorePkg directive are honored.
+I<IgnorePkg> directive are honored.
 
 =item B<--needed>
 
-Do not reinstall I<target(s)> that are already up to date. The build of
-development packages (supported are svn, git, hg and bzr development packages)
-that are found up-to-date after the source checkout will be skipped.
+Do not reinstall I<target(s)> that are already up-to-date. The build of
+development packages (supported are I<svn>, I<git>, I<hg> and I<bzr> development
+packages) that are found up-to-date after the source checkout will be skipped.
 
 =item B<--noconfirm>
 
