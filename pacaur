@@ -111,7 +111,7 @@ UpgradeAur() {
 
     # foreign packages check
     foreignpkgs=($($pacmanbin -Qmq))
-    allaurpkgs=($(getjsonvar "$(downloadjson ${foreignpkgs[@]})" "Name"))
+    allaurpkgs=($(getjson "var" "$(downloadjson ${foreignpkgs[@]})" "Name"))
     aurforeignpkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allaurpkgs[@]} | LC_COLLATE=C sort -u)))
     for i in "${aurforeignpkgs[@]}"; do
         note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
@@ -138,8 +138,8 @@ IgnoreChecks() {
 
     # check targets
     json=$(downloadjson ${checkaurpkgs[@]})
-    checkaurpkgsAname=($(getjsonvar "$json" "Name"))    # return sorted results
-    checkaurpkgsAver=($(getjsonvar "$json" "Version"))
+    checkaurpkgsAname=($(getjson "var" "$json" "Name"))    # return sorted results
+    checkaurpkgsAver=($(getjson "var" "$json" "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgsAname[@]}"))
     for ((i=0; i<${#checkaurpkgsAname[@]}; i++)); do
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgsAname[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
@@ -178,9 +178,9 @@ DepsSolver() {
 
     # get AUR packages info
     json=$(downloadjson ${deps[@]})
-    depsAname=($(getjsonvar "$json" "Name"))    # return sorted results
-    depsAver=($(getjsonvar "$json" "Version"))
-    depsAood=($(getjsonvar "$json" "OutOfDate"))
+    depsAname=($(getjson "var" "$json" "Name"))    # return sorted results
+    depsAver=($(getjson "var" "$json" "Version"))
+    depsAood=($(getjson "var" "$json" "OutOfDate"))
     for ((i=0; i<${#depsAname[@]}; i++)); do
         depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
@@ -204,7 +204,7 @@ FindDepsAur() {
     json=$(downloadjson ${depspkgsaur[@]})
 
     # target check
-    [[ -z "${prevdepspkgsaur[@]}" ]] && errdeps+=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< $(getjsonvar "$json" "Name") | sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u)))
+    [[ -z "${prevdepspkgsaur[@]}" ]] && errdeps+=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< $(getjson "var" "$json" "Name") | sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u)))
 
     # AUR versioning check
     if [[ -n "${prevdepspkgsaur[@]}" ]]; then
@@ -214,7 +214,7 @@ FindDepsAur() {
                     unset prevname prevver prevaurver
                     prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
                     prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
-                    prevaurver=($(getjsonvarvar "$json" "Version" "$prevname"))
+                    prevaurver=($(getjson "varvar" "$json" "Version" "$prevname"))
 
                     # not found in AUR nor repo
                     if [[ ! $prevaurver ]]; then
@@ -237,17 +237,17 @@ FindDepsAur() {
         done
     fi
 
-    depspkgs=($(getjsonarray "$json" "Depends"))
+    depspkgs=($(getjson "array" "$json" "Depends"))
 
     # cached packages makedeps check
     if [[ ! $PKGDEST || $rebuild ]]; then
-        depspkgs+=($(getjsonarray "$json" "MakeDepends"))
+        depspkgs+=($(getjson "array" "$json" "MakeDepends"))
     else
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
-            depsAname=$(getjsonvarvar "$json" "Name" "${depspkgsaur[$i]}")
-            depsAver=$(getjsonvarvar "$json" "Version" "${depspkgsaur[$i]}")
+            depsAname=$(getjson "varvar" "$json" "Name" "${depspkgsaur[$i]}")
+            depsAver=$(getjson "varvar" "$json" "Version" "${depspkgsaur[$i]}")
             getcachedpkg "$depsAname-$depsAver" "$PKGDEST"
-            [[ ! $cachedpkg ]] && depspkgs+=($(getjsonarrayvar "$json" "MakeDepends" "${depspkgsaur[$i]}"))
+            [[ ! $cachedpkg ]] && depspkgs+=($(getjson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
             unset cachedpkg
         done
     fi
@@ -458,8 +458,8 @@ ConflictChecks() {
 
     # AUR conflicts
     Aprovides=(${depsAname[@]})
-    Aprovides+=($(getjsonarray "$json" "Provides"))
-    Aconflicts=($(getjsonarray "$json" "Conflicts"))
+    Aprovides+=($(getjson "array" "$json" "Provides"))
+    Aconflicts=($(getjson "array" "$json" "Conflicts"))
     # remove AUR versioning
     for ((i=0; i<${#Aprovides[@]}; i++)); do
         Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
@@ -475,7 +475,7 @@ ConflictChecks() {
         unset aurAconflicts
         [[ " ${depsAname[@]} " =~ " $i " ]] && aurAconflicts=($i)
         for j in "${depsAname[@]}"; do
-            [[ " $(getjsonarrayvar "$json" "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=($j)
+            [[ " $(getjson "arrayvar" "$json" "Conflicts" "$j") " =~ " $i " ]] && aurAconflicts+=($j)
         done
 
         for j in "${aurAconflicts[@]}"; do
@@ -492,7 +492,7 @@ ConflictChecks() {
                     for ((l=0; l<${#depsAname[@]}; l++)); do
                         [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
                     done
-                    Aprovides+=($(getjsonarrayvar "$json" "Provides" "$j"))
+                    Aprovides+=($(getjson "arrayvar" "$json" "Provides" "$j"))
                     # remove AUR versioning
                     for ((i=0; i<${#Aprovides[@]}; i++)); do
                         Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
@@ -505,7 +505,7 @@ ConflictChecks() {
                     note "e" $"$j and $k are in conflict"
                 fi
             fi
-            Aprovides+=($(getjsonarrayvar "$json" "Provides" "$j"))
+            Aprovides+=($(getjson "arrayvar" "$json" "Provides" "$j"))
             # remove AUR versioning
             for ((i=0; i<${#Aprovides[@]}; i++)); do
                 Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
@@ -734,7 +734,7 @@ MakePkgs() {
         unset cachedpkg
         if [[ -z "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
             for j in "${pkgsdepslist[@]}"; do
-                depsAver="$(getjsonvarvar "$json" "Version" "$j")"
+                depsAver="$(getjson "varvar" "$json" "Version" "$j")"
                 [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
             done
         # install vcs client
@@ -820,7 +820,7 @@ MakePkgs() {
         # check package cache
         for j in "${pkgsdepslist[@]}"; do
             unset cachedpkg
-            [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(getjsonvarvar "$json" "Version" "$j")"
+            [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(getjson "varvar" "$json" "Version" "$j")"
             [[ $PKGDEST && ! $rebuild ]] && getcachedpkg "$j-$depsAver" "$PKGDEST"
             if [[ $cachedpkg ]]; then
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
@@ -1002,8 +1002,8 @@ CheckAur() {
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && tr ' ' '\n' <<< ${aurpkgsQood[@]} && return
         json=$(downloadjson ${aurpkgsQood[@]})
-        aurpkgsAname=($(getjsonvar "$json" "Name"))    # return sorted results
-        aurpkgsAver=($(getjsonvar "$json" "Version"))
+        aurpkgsAname=($(getjson "var" "$json" "Name"))    # return sorted results
+        aurpkgsAver=($(getjson "var" "$json" "Version"))
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
         for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
             [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsQood[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
@@ -1061,7 +1061,7 @@ getcachedpkg() {
 getpackagebase() {
     json=$(downloadjson "$@")
     for i in "$@"; do
-        pkgsbase+=($(getjsonvarvar "$json" "PackageBase" "$i"))
+        pkgsbase+=($(getjson "varvar" "$json" "PackageBase" "$i"))
     done
     for i in "${pkgsbase[@]}"; do
         [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
@@ -1087,20 +1087,20 @@ downloadjson() {
     fi
 }
 
-getjsonvar() {
-    json_reformat <<< "$1" | tr -d "\", " | grep -Po "$2:.*" | sed -r "s/$2:/$2#/g" | awk -F "#" '{print $2}'
-}
-
-getjsonvarvar() {
-    json_reformat <<< "$1" | tr -d ", " | sed -e "/\"Name\":\"$3\"/,/}/!d" | tr -d "\"" | grep -Po "$2:.*" | sed -r "s/$2:/$2#/g" | awk -F "#" '{print $2}'
-}
-
-getjsonarray() {
-    json_reformat <<< "$1" | tr -d ", " | sed -e "/^\"$2\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n'
-}
-
-getjsonarrayvar() {
-    json_reformat <<< "$1" | tr -d ", " | sed -e "/\"Name\":\"$3\"/,/}/!d" | sed -e "/^\"$2\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]'
+getjson() {
+    case "$1" in
+        var)
+            json_reformat <<< "$2" | tr -d "\", " | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
+        varvar)
+            json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
+            tr -d "\"" | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
+        array)
+            json_reformat <<< "$2" | tr -d ", " | sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' \
+            | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n';;
+        arrayvar)
+            json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
+            sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]';;
+    esac
 }
 
 checkQrequires() {
