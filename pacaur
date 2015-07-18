@@ -1074,7 +1074,7 @@ downloadjson() {
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
     # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
     if [[ "${#urlargs}" -lt 8125 ]]; then
-        curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs" || note "e" $"Could not connect to the AUR"
+        curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs"
     else
         # split and merge json stream
         urlpkgs=($@)
@@ -1083,7 +1083,7 @@ downloadjson() {
         urlargs1="$(printf "&arg[]=%s" "${urlencodedpkgs1[@]}")"
         urlargs2="$(printf "&arg[]=%s" "${urlencodedpkgs2[@]}")"
         curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs1" "https://$aururl$aurrpc$urlargs2" \
-            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g' || note "e" $"Could not connect to the AUR"
+            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
     fi
 }
 
