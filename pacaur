@@ -1088,19 +1088,23 @@ downloadjson() {
 }
 
 getjson() {
-    case "$1" in
-        var)
-            json_reformat <<< "$2" | tr -d "\", " | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
-        varvar)
-            json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
-            tr -d "\"" | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
-        array)
-            json_reformat <<< "$2" | tr -d ", " | sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' \
-            | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n';;
-        arrayvar)
-            json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
-            sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]';;
-    esac
+    if json_verify -q <<< "$2"; then
+        case "$1" in
+            var)
+                json_reformat <<< "$2" | tr -d "\", " | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
+            varvar)
+                json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
+                tr -d "\"" | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
+            array)
+                json_reformat <<< "$2" | tr -d ", " | sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' \
+                | tr '\n' ' ' | sed "s/] /]\n/g" | awk -F ":" '{print $2}' | tr -d '[]"' | tr -d '\n';;
+            arrayvar)
+                json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
+                sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | awk -F ":" '{print $2}' | tr -d '[]';;
+        esac
+    else
+        note "e" "Could not connect to the AUR"
+    fi
 }
 
 checkQrequires() {
