@@ -273,11 +273,7 @@ Define the editor. Default is I<$EDITOR>, with a fallback on B<vi>.
 
 =item B<editpkgbuild>
 
-Enable PKGBUILD editing prompt. Default is B<true>.
-
-=item B<editinstall>
-
-Enable install script editing prompt. Default is B<true>.
+Enable PKGBUILD and install script editing prompt. Default is B<true>.
 
 =item B<fallback>
 

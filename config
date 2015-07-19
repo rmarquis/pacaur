@@ -9,8 +9,7 @@
 # The Color and VerbosePkgLists options can be enabled in /etc/pacman.conf.
 #builddir="${BUILDDIR:-$tmpdir}"       # build directory
 #editor="${EDITOR:-vi}"                # PKGBUILD editor
-#editpkgbuild=true                     # edit PKGBUILD script
-#editinstall=true                      # edit install script
+#editpkgbuild=true                     # edit PKGBUILD and install scripts
 #fallback=true                         # pacman fallback to the AUR
 #clean=true                            # clean up after package install
 #cleandevel=true                       # clean up devel package

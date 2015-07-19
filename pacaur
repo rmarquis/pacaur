@@ -41,8 +41,7 @@ fi
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
 builddir="${BUILDDIR:-$tmpdir}"             # build directory
 editor="${EDITOR:-vi}"                      # PKGBUILD editor
-editpkgbuild=true                           # edit PKGBUILD
-editinstall=true                            # edit install script
+editpkgbuild=true                           # edit PKGBUILD and install scripts
 fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
@@ -683,14 +682,14 @@ EditPkgs() {
                 if proceed "y" $"View $i PKGBUILD?"; then
                     [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                 fi
-            fi
-            # edit install script
-            if [[ ! $editinstall = false && -n "${installscripts[@]}" ]]; then
-                for j in "${installscripts[@]}"; do
-                if proceed "y" $"View $j script?"; then
-                        [[ -e "$builddir/$i/$j" ]] && $editor "$builddir/$i/$j" && note "s" $"${colorW}$j${reset} script viewed" || note "e" $"Could not open ${colorW}$j${reset} script"
+                # edit install script
+                if [[ -n "${installscripts[@]}" ]]; then
+                    for j in "${installscripts[@]}"; do
+                        if proceed "y" $"View $j script?"; then
+                            [[ -e "$builddir/$i/$j" ]] && $editor "$builddir/$i/$j" && note "s" $"${colorW}$j${reset} script viewed" || note "e" $"Could not open ${colorW}$j${reset} script"
+                        fi
+                    done
                 fi
-                done
             fi
         else
             [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && note "s" $"${colorW}$i${reset} PKGBUILD viewed" || note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
