@@ -208,19 +208,19 @@ FindDepsAur() {
     # AUR versioning check
     if [[ -n "${prevdepspkgsaur[@]}" ]]; then
         for ((i=0; i<${#prevdepspkgsaur[@]}; i++)); do
+            unset prevname prevver prevaurver
+            prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
+            prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
+            prevaurver=($(getjson "varvar" "$json" "Version" "$prevname"))
+
+            # not found in AUR nor repo
+            if [[ ! $prevaurver ]]; then
+                [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                continue
+            fi
+
             case "${prevdepspkgsaur[$i]}" in
                 *">"*|*"<"*|*"="*)
-                    unset prevname prevver prevaurver
-                    prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
-                    prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
-                    prevaurver=($(getjson "varvar" "$json" "Version" "$prevname"))
-
-                    # not found in AUR nor repo
-                    if [[ ! $prevaurver ]]; then
-                        [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
-                        continue
-                    fi
-
                     # found in AUR but version not correct
                     case "${prevdepspkgsaur[$i]}" in
                         *">="*) [[ $(vercmp "$prevaurver" "$prevver") -ge 0 ]] && continue;;
