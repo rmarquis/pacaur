@@ -1177,7 +1177,7 @@ ctrlc() {
 }
 
 usage() {
-    printf "%s\n" $"usage:  pacaur <operation> [options] [target(s)]"
+    printf "%s\n" $"usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
     printf "%s\n" $"operations:"
     printf "%s\n" $" pacman extension"
     printf "%s\n" $"   -S, -Q           extend pacman operations to the AUR"
