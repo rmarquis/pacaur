@@ -35,7 +35,7 @@ from pacman.
 
 =head1 OPERATIONS
 
-Pacman extension operations
+=head2 Pacman extension operations
 
 =over 4
 
@@ -49,7 +49,7 @@ binary.
 
 =back
 
-AUR specific operations
+=head2 AUR specific operations
 
 =over 4
 
@@ -93,7 +93,7 @@ packages will be updated.
 
 =back
 
-General operations
+=head2 General operations
 
 =over 4
 
@@ -110,7 +110,7 @@ Display the help message and quit.
 
 =head1 OPTIONS
 
-Pacman extension options
+=head2 Pacman extension options
 
 =over 4
 
@@ -126,7 +126,7 @@ or update I<target(s)> from the repositories.
 
 =back
 
-AUR specific options
+=head2 AUR specific options
 
 =over 4
 
@@ -143,7 +143,7 @@ Overwrite existing files when downloading I<target(s)> PKGBUILD.
 
 =back
 
-General options
+=head2 General options
 
 =over 4
 
