@@ -1,0 +1,522 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: hu\n"
+
+#: pacaur:105
+msgid "${colorW}Starting AUR upgrade...${reset}"
+msgstr "${colorW}AUR frissítés indítása...${reset}"
+
+#: pacaur:116
+msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+msgstr ""
+"${colorW}$i${reset} ${colorY}nem található${reset} az AUR-ban -- kihagyva"
+
+#: pacaur:144 pacaur:185 pacaur:990
+msgid "latest"
+msgstr "naprakész"
+
+#: pacaur:149
+msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+"${checkaurpkgs[$i]} szerepel az IgnorePkg/IgnoreGroup beállításokban. "
+"Folytatod a telepítést?"
+
+#: pacaur:150
+msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+msgstr "${colorW}${checkaurpkgs[$i]}${reset}: frissítés kihagyva"
+
+#: pacaur:155
+msgid ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+msgstr ""
+"${colorW}${checkaurpkgs[$i]}${reset}: frissítés kihagyva "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+
+#: pacaur:167
+msgid "resolving dependencies..."
+msgstr "függőségek feloldása..."
+
+#: pacaur:192
+msgid "no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
+msgstr ""
+"nincs AUR információ erről a csomagról: ${colorR}${depsAname[$i]}${reset}"
+
+#: pacaur:197
+msgid "no results found for $i"
+msgstr "nincs találat erre: $i"
+
+#: pacaur:341 pacaur:356
+msgid "${colorW}$i${reset}: ignoring package upgrade"
+msgstr "${colorW}$i${reset}: frissítés kihagyva"
+
+#: pacaur:342 pacaur:348 pacaur:353 pacaur:357
+msgid "Unresolved dependency '${colorW}$i${reset}'"
+msgstr "Feloldatlan függőség: '${colorW}$i${reset}'"
+
+#: pacaur:352
+msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+"$i függőség szerepel az IgnorePkg/IgnoreGroup beállításokban. Folytatod a "
+"telepítést?"
+
+#: pacaur:383
+msgid ""
+"${colorW}There are ${#providers[@]} providers available for "
+"${providersdeps[$i]}:${reset}"
+msgstr ""
+"${colorW}${#providers[@]} csomag szolgáltatja ezt: "
+"${providersdeps[$i]}${reset}"
+
+#: pacaur:390
+msgid "Enter a number (default=0):"
+msgstr "Adj meg egy számot (alapértelmezés=0):"
+
+#: pacaur:395
+msgid "invalid value: $nb is not between 0 and $providersnb"
+msgstr "érvénytelen érték: $nb nem 0 és $providersnb közötti szám"
+
+#: pacaur:397
+msgid "invalid number: $nb"
+msgstr "érvénytelen szám: $nb"
+
+#: pacaur:433
+msgid "looking for inter-conflicts..."
+msgstr "ütközések keresése..."
+
+#: pacaur:469 pacaur:517
+msgid "$j and $k are in conflict ($i). Remove $k?"
+msgstr "$j és $k ütköznek egymással ($i). Eltávolítod ezt: $k?"
+
+#: pacaur:483 pacaur:524
+msgid "unresolvable package conflicts detected"
+msgstr "feloldhatatlan csomagütközések találhatók"
+
+#: pacaur:484 pacaur:525
+msgid "failed to prepare transaction (conflicting dependencies)"
+msgstr "nem sikerült előkészíteni a tranzakciót (ütköző függőségek)"
+
+#: pacaur:485 pacaur:526
+msgid "$j and $k are in conflict"
+msgstr "$j és $k ütköznek egymással"
+
+#: pacaur:542
+msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
+msgstr "${colorW}${depsAname[$i]}${reset} legújabb verzió -- letöltés"
+
+#: pacaur:545
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
+"reinstalling"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} naprakész -- újratelepítés"
+
+#: pacaur:547
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} naprakész -- kihagyás"
+
+#: pacaur:560
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"\")${reset}"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} ${colorR}elavultnak"
+"${reset} lett jelölve ekkor: ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-"
+"%m-%d\")${reset}"
+
+#: pacaur:585
+msgid "(cached)"
+msgstr "(gyorsítótárban)"
+
+#: pacaur:590 pacaur:612
+msgid "Name"
+msgstr "Név"
+
+#: pacaur:590 pacaur:612
+msgid "Old Version"
+msgstr "Régi verzió"
+
+#: pacaur:590 pacaur:612
+msgid "New Version"
+msgstr "Új verzió"
+
+#: pacaur:590 pacaur:612
+msgid "Download Size"
+msgstr "Letöltés mérete"
+
+#: pacaur:601 pacaur:625
+msgid "AUR Packages  (${#deps[@]}):"
+msgstr "AUR csomagok  (${#deps[@]}):"
+
+#: pacaur:611 pacaur:626
+msgid "Repo Packages (${#repodepspkgs[@]}):"
+msgstr "Repo csomagok (${#repodepspkgs[@]}):"
+
+#: pacaur:614
+msgid "${binarysize[$i]} MiB"
+msgstr "${binarysize[$i]} MiB"
+
+#: pacaur:630
+msgid "Repo Download Size:"
+msgstr "Repo letöltés mérete:"
+
+#: pacaur:630
+msgid "Repo Installed Size:"
+msgstr "Repo telepítés mérete:"
+
+#: pacaur:630
+msgid "$sumk MiB"
+msgstr "$sumk MiB"
+
+#: pacaur:630
+msgid "$summ MiB"
+msgstr "$summ MiB"
+
+#: pacaur:639
+msgid "installation"
+msgstr "telepítés"
+
+#: pacaur:639
+msgid "download"
+msgstr "letöltés"
+
+#: pacaur:640
+msgid "Proceed with $action?"
+msgstr "Folytatod a ${action}t?"
+
+#: pacaur:648
+msgid "${colorW}Retrieving package(s)...${reset}"
+msgstr "${colorW}Csomag(ok) letöltése...${reset}"
+
+#: pacaur:663
+msgid "View $i PKGBUILD?"
+msgstr "Megnyitod $i PKGBUILD-jét?"
+
+#: pacaur:664 pacaur:676
+msgid "${colorW}$i${reset} PKGBUILD viewed"
+msgstr "${colorW}$i${reset} PKGBUILD megtekintve"
+
+#: pacaur:664 pacaur:676
+msgid "Could not open ${colorW}$i${reset} PKGBUILD"
+msgstr "Nem sikerült megnyitni ${colorW}$i${reset} PKGBUILD-jét"
+
+#: pacaur:670
+msgid "View $j script?"
+msgstr "Megnyitod a(z) $j script-et?"
+
+#: pacaur:671 pacaur:679
+msgid "${colorW}$j${reset} script viewed"
+msgstr "${colorW}$j${reset} script megtekintve"
+
+#: pacaur:671 pacaur:679
+msgid "Could not open ${colorW}$j${reset} script"
+msgstr "Nem sikerült megnyitni a(z) ${colorW}$j${reset} script-et"
+
+#: pacaur:733
+msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
+msgstr "${colorW}${pkgsdeps[$i]}${reset} integritásának ellenőrzése..."
+
+#: pacaur:745
+msgid "failed to verify ${colorW}$i${reset} integrity"
+msgstr "${colorW}$i${reset} integritásának ellenőrzése sikertelen"
+
+#: pacaur:750
+msgid "build.lck exists in $tmpdir"
+msgstr "build.lck már létezik itt: $tmpdir"
+
+#: pacaur:755
+msgid "Installing ${colorW}${providerpkgs[@]}${reset} dependencies..."
+msgstr "${colorW}${providerpkgs[@]}${reset} függőség telepítése..."
+
+#: pacaur:785
+msgid "${colorW}$j${reset} is up-to-date -- skipping"
+msgstr "${colorW}$j${reset} naprakész -- kihagyás"
+
+#: pacaur:807
+msgid "Installing ${colorW}$j${reset} cached package..."
+msgstr "${colorW}$j${reset} gyorsítótárban levő csomag telepítése..."
+
+#: pacaur:811
+msgid "Package ${colorW}$j${reset} already available in cache"
+msgstr "${colorW}$j${reset} csomag már elérhető gyorsítótárból"
+
+#: pacaur:820
+msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr "${colorW}${pkgsdeps[$i]}${reset} csomag build-elése..."
+
+#: pacaur:836
+msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
+msgstr "${colorW}${pkgsdeps[$i]}${reset} függőségek telepítése..."
+
+#: pacaur:854 pacaur:858
+msgid "${colorW}${basepkgs[$i]}${reset} cleaning skipped"
+msgstr "${colorW}${basepkgs[$i]}${reset} takarítása kihagyva"
+
+#: pacaur:855
+msgid "check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
+msgstr "a build napló elérhető itt: ${colorW}$builddir/${basepkgs[$i]}${reset}"
+
+#: pacaur:878
+msgid "Removing installed AUR dependencies..."
+msgstr "Telepített AUR függőségek törlése..."
+
+#: pacaur:894
+msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+msgstr "${colorW}$i${reset} ${colorY}árva${reset} csomaggá vált"
+
+#: pacaur:899
+msgid "failed to build ${colorW}$i${reset} package(s)"
+msgstr "${colorW}$i${reset} csomag build-elése sikertelen"
+
+#: pacaur:914
+msgid "${colorW}$i${reset} cleaning skipped"
+msgstr "${colorW}$i${reset} takarítása kihagyva"
+
+#: pacaur:919
+msgid "${colorW}$i${reset} cleaned"
+msgstr "${colorW}$i${reset} takarítása kész"
+
+#: pacaur:919
+msgid "Could not clean ${colorW}$i${reset}"
+msgstr "${colorW}$i${reset} takarítása sikertelen"
+
+#: pacaur:925
+msgid "Build directory cleaned"
+msgstr "Build könyvtár takarítása kész"
+
+#: pacaur:925
+msgid "Build directory already cleaned"
+msgstr "Build könyvtár már korábban takarításra került"
+
+#: pacaur:957 pacaur:989
+msgid "[ ignored ]"
+msgstr "[ kihagyva ]"
+
+#: pacaur:1005
+msgid "AUR cache directory:"
+msgstr "AUR gyorsítótár könyvtára:"
+
+#: pacaur:1007
+msgid "Packages to keep:"
+msgstr "Megtartandó csomagok:"
+
+#: pacaur:1007
+msgid "All locally installed packages"
+msgstr "Minden telepített csomag"
+
+#: pacaur:1008
+msgid "Do you want to remove all other packages from AUR cache?"
+msgstr "Szeretnél minden más csomagot törölni az AUR gyorsítótárból?"
+
+#: pacaur:1011
+msgid "removing old packages from cache..."
+msgstr "régi csomagok törlése a gyorsítótárból..."
+
+#: pacaur:1014
+msgid "Do you want to remove ALL files from AUR cache?"
+msgstr "Szeretnéd az ÖSSZES fájlt törölni az AUR gyorsítótárból?"
+
+#: pacaur:1015
+msgid "removing all files from AUR cache..."
+msgstr "összes fájl törlése az AUR gyorsítótárból..."
+
+#: pacaur:1057 pacaur:1064
+msgid "Could not connect to the AUR"
+msgstr "Nem sikerült kapcsolódni az AUR-hoz"
+
+#: pacaur:1090
+msgid "failed to prepare transaction (could not satisfy dependencies)"
+msgstr ""
+"nem sikerült előkészíteni a tranzakciót (nem lehet kielégíteni a "
+"függőségeket)"
+
+#: pacaur:1091
+msgid "${Qrequires[@]}: requires $@"
+msgstr "${Qrequires[@]}: $@ hiányzik"
+
+#: pacaur:1099
+msgid "$2 [Y/n] "
+msgstr "$2 [I/n] "
+
+#: pacaur:1106
+msgid "$2 [y/N] "
+msgstr "$2 [i/N] "
+
+#: pacaur:1137
+msgid " there is nothing to do"
+msgstr " nincs tennivaló"
+
+#: pacaur:1158
+msgid "usage:  pacaur <operation> [options] [target(s)]"
+msgstr "használat:  pacaur <művelet> [opciók] [csomag(ok)]"
+
+#: pacaur:1159
+msgid "operations:"
+msgstr "műveletek:"
+
+#: pacaur:1160
+msgid " pacman extension"
+msgstr " pacman kiegészítés"
+
+#: pacaur:1161
+msgid "   -S, -Q           extend pacman operations to the AUR"
+msgstr "   -S, -Q           pacman műveletek kiterjesztése az AUR-ra"
+
+#: pacaur:1162
+msgid " AUR only"
+msgstr " AUR opciók"
+
+#: pacaur:1163
+msgid "   -s, --search     search AUR for matching strings"
+msgstr "   -s, --search     keresés az AUR-ban a megadott szövegre"
+
+#: pacaur:1164
+msgid "   -i, --info       view package information"
+msgstr "   -i, --info       csomag adatainak megtekintése"
+
+#: pacaur:1165
+msgid ""
+"   -d, --download   download target(s) -- pass twice to download AUR "
+"dependencies"
+msgstr ""
+"   -d, --download   csomag(ok) letöltése -- kétszer megadva letölti az AUR "
+"függőségeket"
+
+#: pacaur:1166
+msgid "   -m, --makepkg    download and make target(s)"
+msgstr "   -m, --makepkg    csomag(ok) letöltése és make futtatása"
+
+#: pacaur:1167
+msgid "   -y, --sync       download, make and install target(s)"
+msgstr "   -y, --sync       csomag(ok) letöltése, make és telepítés futtatása"
+
+#: pacaur:1168
+msgid "   -k, --check      check for AUR update(s)"
+msgstr "   -k, --check      AUR frissítések keresése"
+
+#: pacaur:1169
+msgid "   -u, --update     update AUR package(s)"
+msgstr "   -u, --update     AUR frissítések telepítése"
+
+#: pacaur:1170 pacaur:1178
+msgid " general"
+msgstr " általános"
+
+#: pacaur:1171
+msgid "   -v, --version    display version information"
+msgstr "   -v, --version    verzióinformációk kiírása"
+
+#: pacaur:1172
+msgid "   -h, --help       display help information"
+msgstr "   -h, --help       súgó megjelenítése"
+
+#: pacaur:1174
+msgid "options:"
+msgstr "opciók:"
+
+#: pacaur:1175
+msgid ""
+" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
+"Sc, -Scc operations"
+msgstr ""
+" pacman kiegészítés - használható az -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, "
+"-Scc műveletekkel"
+
+#: pacaur:1176
+msgid ""
+"   -a, --aur        only search, install or clean target(s) from the AUR"
+msgstr "   -a, --aur        műveletek elvégzése csak az AUR csomagokon"
+
+#: pacaur:1177
+msgid ""
+"   -r, --repo       only search, install or clean target(s) from the "
+"repositories"
+msgstr "   -r, --repo       műveletek elvégzése csak a repo-kon"
+
+#: pacaur:1179
+msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
+msgstr ""
+"   -e, --edit       csomag PKGBUILD-jének szerkesztése és telepítő script "
+"megtekintése"
+
+#: pacaur:1180
+msgid ""
+"   -c, --clean      clean target(s) build files -- can be combined with the -"
+"m, -y, -u operations"
+msgstr ""
+"   -c, --clean      csomag build fájljainak takarítása -- együtt használható "
+"az -m, -y, -u műveletekkel"
+
+#: pacaur:1181
+msgid "   -q, --quiet      show less information for query and search"
+msgstr ""
+"   -q, --quiet      kevesebb információ mutatása lekérdezéseknél és "
+"keresésnél"
+
+#: pacaur:1182
+msgid "   --devel          consider AUR development packages upgrade"
+msgstr ""
+"   --devel          fejlesztés alatt álló AUR csomagok figyelembe vétele"
+
+#: pacaur:1183
+msgid ""
+"   --ignore         ignore a package upgrade (can be used more than once)"
+msgstr ""
+"   --ignore         csomag frissítésének kihagyása (többször is használható)"
+
+#: pacaur:1184
+msgid "   --needed         do not reinstall already up to date target(s)"
+msgstr "   --needed         ne telepítse újra a naprakész csomagokat"
+
+#: pacaur:1185
+msgid "   --noconfirm      do not prompt for any confirmation"
+msgstr "   --noconfirm      ne kérjen megerősítést semmihez"
+
+#: pacaur:1186
+msgid "   --noedit         do not prompt to edit files"
+msgstr "   --noedit         ne ajánlja fel a fájlok szerkesztését"
+
+#: pacaur:1187
+msgid "   --rebuild        always rebuild package(s)"
+msgstr "   --rebuild        csomagok újra build-elése minden esetben"
+
+#: pacaur:1309
+msgid "you cannot perform this operation as root"
+msgstr "root-ként nem végezheted el ezt a műveletet"
+
+#: pacaur:1313
+msgid "${colorW}editor${reset} variable unset"
+msgstr "${colorW}editor${reset} változó nincs beállítva"
+
+#: pacaur:1314
+msgid "${colorW}$builddir${reset} does not have write permission."
+msgstr "${colorW}$builddir${reset} nem rendelkezik írási jogosultsággal."
+
+#: pacaur:1315
+msgid "no targets specified (use -h for help)"
+msgstr "nincs megadva csomag (-h használatával elérhető a súgó)"
+
+#: pacaur:1316
+msgid "target not found"
+msgstr "csomag nem található"
+
+#: pacaur:1317
+msgid "alternative installation root option not supported"
+msgstr "alternatív telepítési gyökérkönyvtár megadása nem támogatott"
+
+#: pacaur:1355 pacaur:1367 pacaur:1375
+msgid ""
+"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"${colorW}${aurpkgs[*]}${reset} csomag(ok) nem találhatók a repo-kban, "
+"keresés az ${colorM}AUR${reset}-ban..."
