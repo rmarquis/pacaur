@@ -387,6 +387,8 @@ B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury
 
+B<[hu] - Magyar> - "avelkei"
+
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
 B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
