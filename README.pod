@@ -383,6 +383,8 @@ B<[es] - Español> - Germán "gosella" Osella Massa
 
 B<[fr] - Français> - "spider-mario", "Neitsab"
 
+B<[hu] - Magyar> - "avelkei"
+
 B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury
