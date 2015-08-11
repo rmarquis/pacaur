@@ -39,7 +39,7 @@ fi
 
 # set variables
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
-builddir="${BUILDDIR:-$tmpdir}"             # build directory
+builddir="${AURDEST:-$tmpdir}"              # clone directory
 editor="${EDITOR:-vi}"                      # PKGBUILD editor
 editpkgbuild=true                           # edit PKGBUILD and install scripts
 fallback=true                               # pacman fallback to the AUR
@@ -100,7 +100,6 @@ Core() {
     ReinstallChecks
     OutofdateChecks
     Prompt
-    DownloadPkgs
     MakePkgs
 }
 
@@ -678,12 +677,23 @@ Prompt() {
 }
 
 DownloadPkgs() {
-    # download and extract
     Note "i" $"${colorW}Retrieving package(s)...${reset}"
-    coweropts+=("-d") && DownloadAur ${deps[@]}
+    GetPkgbase $@
 
-    GetPkgbase ${deps[@]}
-    EditPkgs ${basepkgs[@]}
+    # clone
+    cd "$builddir"
+    for i in ${basepkgs[@]}; do
+        if [[ ! -d "$i" ]]; then
+            if [[ $builddir != $tmpdir ]]; then
+                git clone https://aur.archlinux.org/$i.git
+            else
+                git clone --depth=1 https://aur.archlinux.org/$i.git
+            fi
+        else
+            cd "$builddir/$i"
+            git pull;
+        fi
+    done
 }
 
 EditPkgs() {
@@ -718,6 +728,10 @@ EditPkgs() {
 }
 
 MakePkgs() {
+    # download
+    DownloadPkgs ${deps[@]}
+    EditPkgs ${basepkgs[@]}
+
     # current orphan packages
     oldorphanpkgs=($($pacmanbin -Qdtq))
 
@@ -962,18 +976,6 @@ CleanUp() {
         chmod -R 755 "${builddir:?}"/* &>/dev/null
         rm -r "${builddir:?}"/* &>/dev/null && Note "s" $"Build directory cleaned" || Note "w" $"Build directory already cleaned"
     fi
-}
-
-DownloadAur() {
-    [[ $color != 'never' ]] && coweropts=(${coweropts[@]/auto/always})
-    while read -r flag pkg info; do
-        case $flag in
-            S)  [[ $operation = download && -n "$info" ]] && echo "$info" && pkgsedit+=($pkg);;
-            W)  [[ $operation = download && -n "$info" ]] && echo "$info";;
-            E)  [[ -n "$info" ]] && echo "$info";;
-        esac
-    done < <(cower ${coweropts[@]} -b $@ ${ignoreopts[@]} -t "$builddir" 2>&1)
-    wait
 }
 
 SearchInfoAur() {
@@ -1371,8 +1373,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 case $operation in
     download)
         # download (-d) handling
-        DownloadAur ${pkgs[@]}
-        GetPkgbase ${pkgsedit[@]}
+        DownloadPkgs ${pkgs[@]}
         EditPkgs ${pkgsbase[@]}
         exit;;
     cleanpkg)

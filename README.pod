@@ -268,7 +268,7 @@ The available options are:
 
 =item B<builddir>
 
-Define the build directory. Default is I<$BUILDDIR>, with a fallback on
+Define the build directory. Default is I<$AURDEST>, with a fallback on
 B</tmp/pacaurtmp-$USER>.
 
 =item B<editor>

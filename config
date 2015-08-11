@@ -7,7 +7,7 @@
 # The following options are commented out with their default values listed.
 # If you wish to use different values, uncomment and update the values.
 # The Color and VerbosePkgLists options can be enabled in /etc/pacman.conf.
-#builddir="${BUILDDIR:-$tmpdir}"       # build directory
+#clonedir="${AURDEST:-$tmpdir}"        # clone directory
 #editor="${EDITOR:-vi}"                # PKGBUILD editor
 #editpkgbuild=true                     # edit PKGBUILD and install scripts
 #fallback=true                         # pacman fallback to the AUR
