@@ -326,12 +326,9 @@ FindDepsRepo() {
 
     for i in "${repodeps[@]}"; do
         allrepopkgs+=($(pactree -su "$i"))
-        allrepopkgs+=($(pactree -s "$i" | grep " provides " | awk '{print $NF}' | sort -u))
+        providersrepopkgs+=($(pactree -s "$i" | grep " provides " | awk '{print $NF}' | sort -u))
     done
-
-    if [[ -n "${allrepopkgs[@]}" ]]; then
-        providersrepopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${allrepopkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< $(expac -S '%n' "${allrepopkgs[@]}") | LC_COLLATE=C sort -u)))
-    fi
+    providersrepopkgs=($(tr ' ' '\n' <<< ${providersrepopkgs[@]} | sort -u))
 
     # remove pactree deps of default providers if non default provider is already installed
     if [[ -n "${providersrepopkgs[@]}" ]]; then
