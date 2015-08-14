@@ -326,6 +326,7 @@ FindDepsRepo() {
 
     for i in "${repodeps[@]}"; do
         allrepopkgs+=($(pactree -su "$i"))
+        allrepopkgs+=($(pactree -s "$i" | grep " provides " | awk '{print $NF}' | sort -u))
     done
 
     if [[ -n "${allrepopkgs[@]}" ]]; then
