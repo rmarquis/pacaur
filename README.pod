@@ -196,10 +196,10 @@ and regardless of up-to-date status of development packages.
 
 =item B<--silent>
 
-Enable silent output. This will send the output of each packaging functions to
-text files in the build directory named I<pkgname-pkgver-pkgrel-arch-function.log>.
-Additional pacman output for providers and cached packages installation will also
-be hidden.
+Silence output. This will send the output of each packaging functions to text
+files in the build directory named I<pkgname-pkgver-pkgrel-arch-function.log>.
+Additional pacman output for providers and cached packages installation will
+also be hidden.
 
 =item B<--ignore-ood>
 
@@ -287,6 +287,10 @@ Clean build directory after operation. Default is B<true>.
 
 When clean config option is enabled, clean build directory of development
 packages. Default is B<true>.
+
+=item B<silent>
+Enable silent oytput. The makepkg output will be collected in the build
+directory of packages should any error occurs. Default is B<false>.
 
 =item B<sortbyvotes>
 

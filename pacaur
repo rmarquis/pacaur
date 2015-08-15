@@ -45,6 +45,7 @@ editpkgbuild=true                           # edit PKGBUILD and install scripts
 fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
+silent=false                                # silence output
 sortbyvotes=true                            # sort search results by votes
 sudoloop=false                              # prevent sudo timeout
 
@@ -1210,6 +1211,7 @@ Usage() {
     printf "%s\n" $"   --noconfirm      do not prompt for any confirmation"
     printf "%s\n" $"   --noedit         do not prompt to edit files"
     printf "%s\n" $"   --rebuild        always rebuild package(s)"
+    printf "%s\n" $"   --silent         silence output"
     echo
 }
 
