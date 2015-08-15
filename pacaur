@@ -752,7 +752,7 @@ MakePkgs() {
         if [[ ! $cachedpkg || $rebuild ]]; then
             cd "$builddir/${basepkgs[$i]}"
             Note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
-            if [[ $silent ]]; then
+            if [[ $silent = true ]]; then
                 makepkg -f --verifysource ${makeopts[@]} &>/dev/null
             else
                 makepkg -f --verifysource ${makeopts[@]}
@@ -842,7 +842,7 @@ MakePkgs() {
 
         if [[ $installpkg ]]; then
             # install
-            if [[ $silent ]]; then
+            if [[ $silent = true ]]; then
                 makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
             else
                 makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
@@ -855,14 +855,14 @@ MakePkgs() {
             if [[ $isaurdeps = true ]]; then
                 # install AUR deps
                 Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
-                if [[ $silent ]]; then
+                if [[ $silent = true ]]; then
                     makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
                 else
                     makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
                 fi
             else
                 # install then remove binary deps
-                if [[ $silent ]]; then
+                if [[ $silent = true ]]; then
                     makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
                 else
                     makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
@@ -873,7 +873,7 @@ MakePkgs() {
         if (( $? > 0)); then
             errmakepkg+=(${pkgsdeps[$i]})
             Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
-            [[ $silent ]] && Note "f" $"check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
+            [[ $silent = true ]] && Note "f" $"check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
         else
             if [[ ! $installpkg && ! $PKGDEST ]]; then
                 Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
