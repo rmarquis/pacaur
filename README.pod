@@ -196,8 +196,8 @@ and regardless of up-to-date status of development packages.
 
 =item B<--silent>
 
-Enable silent output. This will send the output of the makepkg build() function
-to a text file in the build directory named I<pkgname-pkgver-pkgrel-arch.log>.
+Enable silent output. This will send the output of each packaging functions to
+text files in the build directory named I<pkgname-pkgver-pkgrel-arch-function.log>.
 Additional pacman output for providers and cached packages installation will also
 be hidden.
 
