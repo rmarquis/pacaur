@@ -1265,7 +1265,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
-                    root) root=true;;
+                    root) pacopts+=("--root ${!OPTIND}"); shift;;
                     silent) silent=true; makeopts+=("--log");;
                     domain) aururl=${!OPTIND}; coweropts+=("--domain ${!OPTIND}"); shift;;
                     version) Version; exit;;
@@ -1344,7 +1344,6 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ ! -w "$builddir" ]] && Note "e" $"${colorW}$builddir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
-[[ $root ]] && Note "e" $"alternative installation root option not supported"
 
 # operations
 case $operation in
