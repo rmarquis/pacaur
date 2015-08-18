@@ -289,7 +289,8 @@ When clean config option is enabled, clean build directory of development
 packages. Default is B<true>.
 
 =item B<silent>
-Enable silent oytput. The makepkg output will be collected in the build
+
+Enable silent output. The makepkg output will be collected in the build
 directory of packages should any error occurs. Default is B<false>.
 
 =item B<sortbyvotes>
