@@ -529,7 +529,7 @@ ConflictChecks() {
         repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]$i" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
         for j in "${repoSconflicts[@]}"; do
             unset k && k=$(expac -Qs '%n' "^$i$")
-            [[ -z "$k" ]] && continue # skip when no conflict with repopkgs
+            [[ "$j" == "$k" || -z "$k" ]] && continue # skip when no conflict with repopkgs
 
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
                 if ! Proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
