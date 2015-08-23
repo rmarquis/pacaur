@@ -508,7 +508,7 @@ ConflictChecks() {
             for ((i=0; i<${#Aprovides[@]}; i++)); do
                 Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
             done
-            [[ ! " ${Aprovides[@]} " =~ " $k " ]] && CheckRequires $k
+            [[ ! " ${Aprovides[@]} " =~ " $k " && ! " ${aurconflictingpkgsrm[@]} " =~ " $k " ]] && CheckRequires $k
         done
     done
 
