@@ -259,7 +259,8 @@ FindDepsAur() {
         # remove versioning and check providers
         for ((i=0; i<${#depspkgs[@]}; i++)); do
             depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-            depspkgs[$i]=$(expac -Qs '%n' "^${depspkgs[$i]}$")
+            unset j && j=$(expac -Qs '%n' "^${depspkgs[$i]}$")
+            [[ -n "$j" ]] && depspkgs[$i]="$j" || foreignpkgs+=(${depspkgs[$i]})
         done
         # reorder devel
         if [[ $devel ]]; then
