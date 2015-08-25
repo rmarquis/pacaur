@@ -360,8 +360,9 @@ queries speed. Using Google primary DNS (8.8.8.8 and 8.8.4.4) might also help.
 
 =item B<alternative installation root>
 
-The alternative installation root I<-r /path> short option of pacman is not
-supported. The I<--root /path> long option is however taken into account.
+The alternative installation root I<--root /path> option of pacman is not
+supported. You might want to chroot to the new path and use pacaur from there
+instead.
 
 
 =back
