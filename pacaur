@@ -173,6 +173,18 @@ DepsSolver() {
     done
     deps+=(${aurpkgs[@]})
 
+    # target providers
+    json=$(DownloadJson ${aurpkgs[@]})
+    aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
+
+    # target providers check
+    if [[ -n "${aurpkgsproviders[@]}" ]]; then
+        for ((i=0; i<${#aurpkgsproviders[@]}; i++)); do
+            unset aurpkgsprovidersname
+            aurpkgsprovidersname=${aurpkgsproviders[$i]} && aurpkgsprovidersname=${aurpkgsproviders%[=><]*}
+        done
+    fi
+
     [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
     FindDepsAur ${aurpkgs[@]}
 
@@ -216,7 +228,7 @@ FindDepsAur() {
 
             # not found in AUR nor repo
             if [[ ! $prevaurver ]]; then
-                [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && [[ ! " ${aurpkgsprovidersname[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
                 continue
             fi
 
