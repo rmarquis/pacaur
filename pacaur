@@ -254,12 +254,16 @@ FindDepsAur() {
     # cached packages makedeps check
     if [[ ! $PKGDEST || $rebuild ]]; then
         depspkgs+=($(GetJson "array" "$json" "MakeDepends"))
+        depspkgs+=($(GetJson "array" "$json" "CheckDepends"))
     else
         for ((i=0; i<${#depspkgsaur[@]}; i++)); do
             depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaur[$i]}")
             depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaur[$i]}")
             GetCachedPkg "$depsAname-$depsAver" "$PKGDEST"
-            [[ ! $cachedpkg ]] && depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
+            if [[ ! $cachedpkg ]]; then
+                depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
+                depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${depspkgsaur[$i]}"))
+            fi
             unset cachedpkg
         done
     fi
