@@ -317,8 +317,9 @@ Default is B<false>.
 =item B<sudo configuration>
 
 To be used with minimal password prompting, I<sudo> should be configured
-accordingly. See B<sudoers>(5). Alternatively, enable the I<sudoloop> config
-option.
+accordingly to allow sudo access. See B<sudoers>(5). You might also want to
+disable the I<password_prompt> sudo parameter to avoid password prompt timeout.
+Alternatively, enable the I<sudoloop> config option.
 
 =item B<pacman misc options>
 
@@ -331,6 +332,14 @@ through the I<VerbosePkgLists> option.
 
 Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>,
 I<$BUILDDIR>) are fully honored. See B<makepkg>(8).
+
+=item B<fallback>
+
+By default, any operation will be applied on the binary repositories, then the
+AUR if necessary. This behavior is optional and can be disabled with the
+I<fallback> config option. When disabled, any operation will be restricted to the
+binary repositories similarly to pacman, while AUR operations can be applied
+explicitly with the I<--aur> option.
 
 =item B<build directory>
 
