@@ -12,7 +12,7 @@ Usage: I<pacaur> E<lt>operationE<gt> [ options ] [ target(s) ]
 
 Pacaur is an Arch User Repository (AUR) helper aiming at speed and simplicity
 and is designed to minimize user prompt interaction. It uses an uncluttered
-interface and make use of the full secured RPC interface to solve the dependency
+interface and makes use of the full secured RPC interface to solve the dependency
 tree. It is built upon the well designed cower and expac C backends.
 
 Invoking pacaur consists of supplying an operation, any applicable options, and
@@ -27,11 +27,11 @@ manual build process with makepkg and its configuration options, as well as
 being knowledgeable about sudo and gpg configuration.
 
 Two sets of command line options are provided: commands which call the pacman
-binary and extend for AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc)>,
+binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc)>,
 and commands which are AUR specific B<(-s, -i, -d, -m, -y, -k, -u)>. As such,
-pacaur can be used by users who prefer to have a single tool to manage officials
-and AUR repositories, or by users who prefer to keep their AUR frontend separated
-from pacman.
+pacaur can be used by users who prefer to have a single tool to manage the
+official and AUR repositories, or by users who prefer to keep their AUR
+frontend separated from pacman.
 
 =head1 OPERATIONS
 
@@ -42,7 +42,7 @@ from pacman.
 =item B<-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc>
 
 Pacaur wraps B<pacman operations> and extends respectively its install, search,
-info, download only, update, check updates and clean functions to the AUR. This
+info, download only, update, check updates and clean functions for the AUR. This
 behavior is optional and can be disabled with the I<fallback> variable in the
 config file. Pacaur will also pass any pacman related options to the pacman
 binary.
@@ -186,8 +186,8 @@ Perform commands without confirmation from the user.
 
 =item B<--noedit>
 
-Perform commands without editing any installation files. Bypass the I<--edit>
-option.
+Perform commands without editing any installation files. Overrides the
+I<--edit> option.
 
 =item B<--rebuild>
 
@@ -207,8 +207,8 @@ When searching the AUR, ignore all results marked as out of date.
 
 =item B<--no-ignore-ood>
 
-When searching the AUR, also show results marked as out of date. This take
-precedence over the I<IgnoreOOD> option of the cower config file.
+When searching the AUR, also show results marked as out of date. This takes
+precedence over the I<IgnoreOOD> option in the cower config file.
 
 =item B<--asort>
 
@@ -256,7 +256,7 @@ and falling back to
 
 =item B<other config>
 
-In addition, pacaur fully honors cower config file. See B<cower>(1).
+In addition, pacaur fully honors cower's config file. See B<cower>(1).
 
 =back
 
@@ -289,8 +289,8 @@ Clean build directory after operation. Default is B<true>.
 
 =item B<cleandevel>
 
-When clean config option is enabled, clean build directory of development
-packages. Default is B<true>.
+When the B<clean> config option is enabled, this also cleans build directories
+of development packages. Default is B<true>.
 
 =item B<silent>
 
@@ -305,8 +305,8 @@ I<popularity>. Default is B<popularity>.
 =item B<sudoloop>
 
 Prevent sudo timeout. This option overrides the system-wide sudo configuration
-and refresh the sudo timestamp automatically in a loop when building packages.
-Default is B<false>.
+and refreshes the sudo timestamp automatically in a loop when building
+packages. Default is B<false>.
 
 =back
 
@@ -343,7 +343,7 @@ explicitly with the I<--aur> option.
 
 =item B<build directory>
 
-You might want to change the default build directory (set on /tmp on a temporary
+You might want to change the default build directory (set to /tmp on a temporary
 filesystem residing in volatile memory) especially when building big packages on
 a low-memory machine.
 
@@ -353,23 +353,24 @@ If you want to avoid cleaning up the build directory of packages, disable the
 I<clean> config option. If you want to avoid cleaning up the build directory of
 development packages, disable the I<cleandevel> config option. This will speed
 up the update even if the I<clean> config option is enabled for normal packages.
-You might also want to change the default temporary directory which is
+You might also want to change the default build directory which is
 automatically cleared upon reboot. Alternatively, you can enable source caching
 with the makepkg I<$SRCDEST> environment variable.
 
 =item B<interactive PKGBUILDs>
 
 Packages requiring user input while building are not supported and might fail
-to install properly. There are currently no official directive about these
-interactives PKGBUILDs, but some of the official pacman developers expressed
+to install properly. There is currently no official directive about these
+interactive PKGBUILDs, but some of the official pacman developers expressed
 the opinion that PKGBUILDs should always provide default compilation options.
 
 =item B<host name error>
 
 If a lot of "Couldn't resolve host name" and "Timeout was reached" messages are
-outputed while checking for updates in spite of the internet line working
-correctly, ensure your local I<DNS server> is correctly configured to improve
-queries speed. Using Google primary DNS (8.8.8.8 and 8.8.4.4) might also help.
+displayed while checking for updates although the internet connection is
+working correctly, ensure your local I<DNS server> is correctly configured to
+improve name lookups. Using Google's primary DNS (8.8.8.8 and 8.8.4.4) might
+also help.
 
 =item B<alternative installation root>
 
@@ -389,7 +390,8 @@ B<cower>(1), B<pacman>(8), B<makepkg>(8), B<sudoers>(5)
 
 Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
-All credits go to all direct or indirect contributors. Many thanks to all of you!
+All credits go to all direct or indirect contributors. Many thanks to all of
+you!
 
 =head1 TRANSLATORS
 
