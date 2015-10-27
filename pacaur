@@ -801,7 +801,7 @@ MakePkgs() {
 
         # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAall
-        if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
+        if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
                 aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
                 aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
@@ -854,39 +854,48 @@ MakePkgs() {
         # build
         Note "i" $"Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 
-        if [[ $installpkg ]]; then
-            # install
-            if [[ $silent = true ]]; then
-                makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
-            else
-                makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
-            fi
-        else
+        # install then remove binary deps
+        makeopts=(${makeopts[@]/-r/})
+        if [[ ! $installpkg ]]; then
             unset isaurdeps
             for j in "${pkgsdepslist[@]}"; do
                 [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && isaurdeps=true
             done
-            if [[ $isaurdeps = true ]]; then
-                # install AUR deps
-                Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
-                if [[ $silent = true ]]; then
-                    makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
-                else
-                    makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
-                fi
-            else
-                # install then remove binary deps
-                if [[ $silent = true ]]; then
-                    makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
-                else
-                    makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
-                fi
-            fi
+            [[ $isaurdeps != true ]] && makeopts+=("-r")
+        fi
+
+        if [[ $silent = true ]]; then
+            makepkg -sf ${makeopts[@]} --noconfirm &>/dev/null
+        else
+            makepkg -sf ${makeopts[@]} --noconfirm
+        fi
+
+        # error check
+        if (( $? > 0)); then
+            errmakepkg+=(${pkgsdeps[$i]})
+        fi
+
+        # retrieve filename
+        unset builtpkgs builtdepspkgs
+        for j in "${pkgsdepslist[@]}"; do
+            unset cachedpkg
+            [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
+            GetCachedPkg "$j-$depsAver" "$builddir/${basepkgs[$i]}"
+            [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && builtdepspkgs+=($cachedpkg) || builtpkgs+=($cachedpkg)
+        done
+
+        # install
+        if  [[ -n "${builtdepspkgs[@]}" ]]; then
+            Note "i" $"Installing missing AUR dependencies..."
+            sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
+        fi
+        if [[ -n "${builtpkgs[@]}" && $installpkg ]]; then
+            Note "i" $"Installing AUR package(s)..."
+            sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
         fi
 
         # clean
-        if (( $? > 0)); then
-            errmakepkg+=(${pkgsdeps[$i]})
+        if [[ " ${errmakepkg[@]} " =~ " ${pkgsdeps[$i]} " ]]; then
             Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
             [[ $silent = true ]] && Note "f" $"check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
         else
