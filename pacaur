@@ -758,7 +758,7 @@ MakePkgs() {
             for j in "${VCSCLIENTS[@]}"; do
                 if [[ ! "${vcschecked[@]}" =~ "$vcspkg" && $(awk -F "::" '{print $1}' <<< $j) == "$vcspkg" ]]; then
                     vcsclient=$(awk -F "::" '{print $NF}' <<< $j) && vcschecked+=($vcspkg)
-                    [[ -z "$(expac -Qs '%n' "^$vcsclient$")" ]] && yes $(gettext pacman Y) | sudo $pacmanbin -S $vcsclient --asdeps
+                    [[ -z "$(expac -Qs '%n' "^$vcsclient$")" ]] && sudo $pacmanbin -S $vcsclient --asdeps --noconfirm
                 fi
             done
         fi
@@ -788,7 +788,7 @@ MakePkgs() {
     # install provider packages
     if [[ -n "${providerspkgs[@]}" ]]; then
         Note "i" $"Installing ${colorW}${providerspkgs[@]}${reset} dependencies..."
-        yes $(gettext pacman Y) | sudo $pacmanbin -S ${providerspkgs[@]} --asdeps
+        sudo $pacmanbin -S ${providerspkgs[@]} --ask 36 --asdeps --noconfirm
     fi
 
     # main
@@ -840,7 +840,7 @@ MakePkgs() {
             if [[ $cachedpkg ]]; then
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     Note "i" $"Installing ${colorW}$j${reset} cached package..."
-                    yes $(gettext pacman Y) | sudo $pacmanbin -U $cachedpkg ${pacopts[@]}
+                    sudo $pacmanbin -U $cachedpkg --ask 36 ${pacopts[@]} --noconfirm
                     [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     Note "w" $"Package ${colorW}$j${reset} already available in cache"
@@ -857,9 +857,9 @@ MakePkgs() {
         if [[ $installpkg ]]; then
             # install
             if [[ $silent = true ]]; then
-                yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
             else
-                yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
             fi
         else
             unset isaurdeps
@@ -870,19 +870,20 @@ MakePkgs() {
                 # install AUR deps
                 Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} dependencies..."
                 if [[ $silent = true ]]; then
-                    yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
                 else
-                    yes $(gettext pacman Y) | makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    makepkg -sfi ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
                 fi
             else
                 # install then remove binary deps
                 if [[ $silent = true ]]; then
-                    yes $(gettext pacman Y) | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} &>/dev/null
+                    makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm &>/dev/null
                 else
-                    yes $(gettext pacman Y) | makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]}
+                    makepkg -sfr ${makeopts[@]} --pkg ${pkgsdeps[$i]} --noconfirm
                 fi
             fi
         fi
+
         # clean
         if (( $? > 0)); then
             errmakepkg+=(${pkgsdeps[$i]})
