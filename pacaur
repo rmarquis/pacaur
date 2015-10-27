@@ -803,9 +803,9 @@ MakePkgs() {
         unset aurdevelpkgsAall
         if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" && ! $rebuild ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
-                aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-                aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
-                aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | cut -d '=' -f 2- | tr -d "'\"")
+                aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
+                aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
+                aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
                 if [[ -n "$aurdevelpkgsAepo" ]]; then
                     aurdevelpkgsAall="$aurdevelpkgsAepo:$aurdevelpkgsAver-$aurdevelpkgsArel"
                 else
@@ -1058,8 +1058,8 @@ CleanCache() {
 }
 
 GetIgnoredPkgs() {
-    ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | cut -d '=' -f 2- | tr -d "'\""))
-    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | cut -d '=' -f 2- | tr -d "'\""))
+    ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
+    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | awk -F '=' '{print $NF}' | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
