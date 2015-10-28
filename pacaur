@@ -824,11 +824,7 @@ MakePkgs() {
                         checkpkgsdepslist+=($j)
                     fi
                 done
-                if [[ $basepkgsupdate ]]; then
-                    pkgsdepslist=(${checkpkgsdepslist[@]})
-                else
-                    continue
-                fi
+                [[ $basepkgsupdate ]] && pkgsdepslist=(${checkpkgsdepslist[@]}) || continue
             fi
         fi
 
