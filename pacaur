@@ -881,14 +881,9 @@ MakePkgs() {
         done
 
         # install
-        if  [[ -n "${builtdepspkgs[@]}" ]]; then
-            Note "i" $"Installing missing AUR dependencies..."
-            sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
-        fi
-        if [[ -n "${builtpkgs[@]}" && $installpkg ]]; then
-            Note "i" $"Installing AUR package(s)..."
-            sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
-        fi
+        Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+        [[ -n "${builtdepspkgs[@]}" ]] && sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
+        [[ -n "${builtpkgs[@]}" && $installpkg ]] && sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
 
         # clean
         if [[ " ${errmakepkg[@]} " =~ " ${pkgsdeps[$i]} " ]]; then
