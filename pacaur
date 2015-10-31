@@ -61,7 +61,6 @@ source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # set up directories
-[[ -d "$tmpdir" ]] && [[ ! -w "$tmpdir" ]] && sudo rm -rf "$tmpdir"
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
 [[ ! -d "$builddir" ]] && mkdir -p "$builddir"
 
