@@ -887,7 +887,10 @@ MakePkgs() {
         # clean
         if [[ " ${errmakepkg[@]} " =~ " ${pkgsdeps[$i]} " ]]; then
             Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
-            [[ $silent = true ]] && Note "f" $"check build log in ${colorW}$builddir/${basepkgs[$i]}${reset}"
+            if [[ $silent = true ]]then
+                [[ $LOGDEST ]] && logdir="$LOGDEST" || logdir="$builddir/${basepkgs[$i]}"
+                Note "f" $"check build log in ${colorW}$logdir${reset}"
+            fi
         else
             if [[ ! $installpkg && ! $PKGDEST ]]; then
                 Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"

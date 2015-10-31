@@ -330,7 +330,7 @@ through the I<VerbosePkgLists> option.
 
 =item B<environment variables>
 
-Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>,
+Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>, I<LOGDEST>,
 I<$BUILDDIR>) are fully honored. See B<makepkg>(8).
 
 =item B<fallback>
