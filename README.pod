@@ -130,13 +130,6 @@ or update I<target(s)> from the repositories.
 
 =over 4
 
-=item B<-c, --clean>
-
-Remove build files after building I<target(s)>. Pass this option twice to force
-cleaning when the I<cleandevel> option is disabled. Can also be used as a
-standalone command. When passed twice without any arguments, clean the entire
-build directory.
-
 =item B<-f, --force>
 
 Overwrite existing files when downloading I<target(s)> PKGBUILD.
@@ -285,15 +278,6 @@ since last build, and B<none> to disable the viewing prompt. Default is B<full>.
 
 Extend pacman commands to the AUR. Default is B<true>.
 
-=item B<clean>
-
-Clean build directory after operation. Default is B<true>.
-
-=item B<cleandevel>
-
-When the B<clean> config option is enabled, this also cleans build directories
-of development packages. Default is B<true>.
-
 =item B<silent>
 
 Enable silent output. The makepkg output will be collected in the build
@@ -348,16 +332,6 @@ explicitly with the I<--aur> option.
 You might want to change the default build directory (set to /tmp on a temporary
 filesystem residing in volatile memory) especially when building big packages on
 a low-memory machine.
-
-=item B<build cleaning>
-
-If you want to avoid cleaning up the build directory of packages, disable the
-I<clean> config option. If you want to avoid cleaning up the build directory of
-development packages, disable the I<cleandevel> config option. This will speed
-up the update even if the I<clean> config option is enabled for normal packages.
-You might also want to change the default build directory which is
-automatically cleared upon reboot. Alternatively, you can enable source caching
-with the makepkg I<$SRCDEST> environment variable.
 
 =item B<interactive PKGBUILDs>
 
