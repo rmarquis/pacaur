@@ -126,23 +126,14 @@ or update I<target(s)> from the repositories.
 
 =back
 
-=head2 AUR specific options
-
-=over 4
-
-=item B<-f, --force>
-
-Overwrite existing files when downloading I<target(s)> PKGBUILD.
-
-=back
-
 =head2 General options
 
 =over 4
 
 =item B<-e, --edit>
 
-Edit PKGBUILD and view install script when downloading or building I<target(s)>.
+Edit build files when downloading or building I<target(s)>. Overrides the
+I<displaybuildfiles> config option and always fully shows the build files.
 Can also be used as a standalone command.
 
 =item B<-q, --quiet>
@@ -190,7 +181,7 @@ and regardless of up-to-date status of development packages.
 =item B<--silent>
 
 Silence output. This will send the output of each packaging functions to text
-files in the build directory named I<pkgname-pkgver-pkgrel-arch-function.log>.
+files in the clone directory named I<pkgname-pkgver-pkgrel-arch-function.log>.
 Additional pacman output for providers and cached packages installation will
 also be hidden.
 
@@ -253,6 +244,7 @@ In addition, pacaur fully honors cower's config file. See B<cower>(1).
 
 =back
 
+
 =head1 CONFIG OPTIONS
 
 The available options are:
@@ -268,9 +260,9 @@ Default is I<$AURDEST>, with a fallback on B</tmp/pacaurtmp-$USER>.
 
 Define the editor. Default is I<$EDITOR>, with a fallback on B<vi>.
 
-=item B<editpkgbuild>
+=item B<displaybuildfiles>
 
-Enable PKGBUILD and install script viewing prompt. Possible values are B<full>
+Display PKGBUILD and install script viewing prompt. Possible values are B<full>
 to always display the full build files, B<diff> to only display the difference
 since last build, and B<none> to disable the viewing prompt. Default is B<full>.
 
@@ -296,6 +288,40 @@ packages. Default is B<false>.
 
 =back
 
+
+=head1 ENVIRONMENT
+
+=over 4
+
+=item B<AURDEST>
+
+Determines where the package build files will be cloned.
+
+=back
+
+In addition, makepkg environment variables are fully honored. See B<makepkg>(8).
+In particular, the following variables are useful:
+
+=over 4
+
+=item B<PKGDEST>
+
+Determines where the built packages will be stored.
+
+=item B<SRCDEST>
+
+Determines where the source of packages will be stored.
+
+=item B<LOGDEST>
+
+Determines where the build logs will be stored.
+
+=item B<BUILDDIR>
+
+Determines where the packages will be built.
+
+=back
+
 =head1 NOTES
 
 =over 4
@@ -314,10 +340,12 @@ colored output can be enabled with the I<Color> option, while a detailed interfa
 displaying name, version and size of packages formatted as a table is available
 through the I<VerbosePkgLists> option.
 
-=item B<environment variables>
+=item B<build files comparison>
 
-Makepkg environment variables (I<$PACMAN>, I<$PKGDEST>, I<$SRCDEST>, I<LOGDEST>,
-I<$BUILDDIR>) are fully honored. See B<makepkg>(8).
+To be able to display build files comparison, the default clone directory (set
+to /tmp on a temporary filesystem residing in volatile memory) should be set
+to a persistent location. Alternatively, define the pacaur specific I<$AURDEST>
+environment variable.
 
 =item B<fallback>
 
@@ -326,12 +354,6 @@ AUR if necessary. This behavior is optional and can be disabled with the
 I<fallback> config option. When disabled, any operation will be restricted to the
 binary repositories similarly to pacman, while AUR operations can be applied
 explicitly with the I<--aur> option.
-
-=item B<build directory>
-
-You might want to change the default build directory (set to /tmp on a temporary
-filesystem residing in volatile memory) especially when building big packages on
-a low-memory machine.
 
 =item B<interactive PKGBUILDs>
 
