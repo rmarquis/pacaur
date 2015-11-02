@@ -724,18 +724,12 @@ EditPkgs() {
                 fi
             fi
         else
-            if [[ -e "$builddir/$i/.git/FETCH_HEAD" && $editpkgbuild = diff ]]; then
-                # show diff
-                timestamp=$(stat -c %Y "$builddir/$i/.git/FETCH_HEAD")
-                git log --since $timestamp
-            else
-                # show pkgbuild and install script
-                [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
-                if [[ -n "${installscripts[@]}" ]]; then
-                    for j in "${installscripts[@]}"; do
-                        [[ -e "$builddir/$i/$j" ]] && $editor "$builddir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
-                    done
-                fi
+            # show pkgbuild and install script
+            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            if [[ -n "${installscripts[@]}" ]]; then
+                for j in "${installscripts[@]}"; do
+                    [[ -e "$builddir/$i/$j" ]] && $editor "$builddir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                done
             fi
         fi
     done
