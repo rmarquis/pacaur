@@ -43,8 +43,6 @@ builddir="${AURDEST:-$tmpdir}"              # clone directory
 editor="${EDITOR:-vi}"                      # PKGBUILD editor
 editpkgbuild=full                           # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
-clean=true                                  # cleanup after install
-cleandevel=true                             # cleanup devel after install
 silent=false                                # silence output
 sortby=popularity                           # sort method (name|votes|popularity)
 sudoloop=false                              # prevent sudo timeout
@@ -881,6 +879,7 @@ MakePkgs() {
 
         # install then remove binary deps
         makeopts=(${makeopts[@]/-r/})
+
         if [[ ! $installpkg ]]; then
             unset isaurdeps
             for j in "${pkgsdepslist[@]}"; do
@@ -913,21 +912,6 @@ MakePkgs() {
         Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
         [[ -n "${builtdepspkgs[@]}" ]] && sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
         [[ -n "${builtpkgs[@]}" && $installpkg ]] && sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
-
-        # clean
-        if [[ " ${errmakepkg[@]} " =~ " ${pkgsdeps[$i]} " ]]; then
-            Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
-            if [[ $silent = true ]]; then
-                [[ $LOGDEST ]] && logdir="$LOGDEST" || logdir="$builddir/${basepkgs[$i]}"
-                Note "f" $"check build log in ${colorW}$logdir${reset}"
-            fi
-        else
-            if [[ ! $installpkg && ! $PKGDEST ]]; then
-                Note "w" $"${colorW}${basepkgs[$i]}${reset} cleaning skipped"
-            else
-                CleanUp ${basepkgs[$i]}
-            fi
-        fi
 
         # set dep status
         if [[ $installpkg ]]; then
@@ -969,29 +953,6 @@ MakePkgs() {
 
     # exit error code
     [[ -z "${errmakepkg[@]}" ]] && exit
-}
-
-CleanUp() {
-    [[ ! $clean = true ]] && return
-    local i
-    if [[ -n "$@" ]]; then
-        cd "$builddir"
-        for i in "$@"; do
-            # skip devel (no nightly here)
-            if [[ ! $cleandevel = true && -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs)$" <<< $i)" && $count -lt 2 ]]; then
-                Note "w" $"${colorW}$i${reset} cleaning skipped"
-                continue
-            else
-                # hack for vcs protected files
-                chmod -R 755 $i &>/dev/null
-                rm -r $i &>/dev/null && Note "s" $"${colorW}$i${reset} cleaned" || Note "w" $"Could not clean ${colorW}$i${reset}"
-            fi
-        done
-    else
-        # hack for vcs protected files
-        chmod -R 755 "${builddir:?}"/* &>/dev/null
-        rm -r "${builddir:?}"/* &>/dev/null && Note "s" $"Build directory cleaned" || Note "w" $"Build directory already cleaned"
-    fi
 }
 
 SearchInfoAur() {
@@ -1212,7 +1173,6 @@ Cancel() {
     echo
     [[ -e "$tmpdir/sudov.lck" ]] && rm "$tmpdir/sudov.lck"
     [[ -e "$tmpdir/build.lck" ]] && rm "$tmpdir/build.lck"
-    [[ $operation = sync ]] && [[ ! $search && ! $info ]] && [[ -n "${basepkgs[@]}" ]] && CleanUp ${basepkgs[@]}
     exit
 }
 
@@ -1237,8 +1197,6 @@ Usage() {
     printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc operations"
     printf "%s\n" $"   -a, --aur        only search, install or clean target(s) from the AUR"
     printf "%s\n" $"   -r, --repo       only search, install or clean target(s) from the repositories"
-    printf "%s\n" $" AUR specific"
-    printf "%s\n" $"   -c, --clean      clean target(s) build files -- can be combined with the -m, -y, -u operations"
     printf "%s\n" $" general"
     printf "%s\n" $"   -e, --edit       edit target(s) PKGBUILD and view install script"
     printf "%s\n" $"   -q, --quiet      show less information for query and search"
@@ -1284,7 +1242,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     update) operation=sync; upgrade=true; installpkg=true; coweropts+=("-f"); selective=true; aur='1';;
                     force) coweropts+=("-f"); pacopts+=("--force");;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
-                    clean) operation=cleanpkg; clean=true; ((count++));;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); color=never;;
                     repo) repo='1';;
                     aur) aur='1';;
@@ -1328,7 +1285,7 @@ while [[ -n "${!OPTIND}" ]]; do
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=sync && cleancache=true && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || [[ ! $operation ]] && operation=cleanpkg; clean=true && ((count++));;
+                [[ $pac || $pacQ || $pacS ]] && continue;;
             q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); color=never;;
             r)  repo='1';;
             a)  aur='1';;
@@ -1381,7 +1338,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && Note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$builddir" ]] && Note "e" $"${colorW}$builddir${reset} does not have write permission."
-[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg || ($operation = cleanpkg && $count -eq 1) ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 [[ $root ]] && Note "e" $"alternative installation root option not supported"
 
@@ -1391,10 +1348,6 @@ case $operation in
         # download (-d) handling
         DownloadPkgs ${pkgs[@]}
         EditPkgs ${pkgsbase[@]}
-        exit;;
-    cleanpkg)
-        # clean (-c) handling
-        CleanUp ${pkgs[@]}
         exit;;
     editpkg)
         # edit (-e) handling
