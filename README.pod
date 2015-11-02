@@ -277,7 +277,9 @@ Define the editor. Default is I<$EDITOR>, with a fallback on B<vi>.
 
 =item B<editpkgbuild>
 
-Enable PKGBUILD and install script editing prompt. Default is B<true>.
+Enable PKGBUILD and install script viewing prompt. Possible values are B<full>
+to always display the full build files, B<diff> to only display the difference
+since last build, and B<none> to disable the viewing prompt. Default is B<full>.
 
 =item B<fallback>
 

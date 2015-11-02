@@ -9,7 +9,7 @@
 # The Color and VerbosePkgLists options can be enabled in /etc/pacman.conf.
 #clonedir="${AURDEST:-$tmpdir}"        # clone directory
 #editor="${EDITOR:-vi}"                # PKGBUILD editor
-#editpkgbuild=true                     # edit PKGBUILD and install scripts
+#editpkgbuild=full                     # display build files (none|diff|full)
 #fallback=true                         # pacman fallback to the AUR
 #clean=true                            # clean up after package install
 #cleandevel=true                       # clean up devel package

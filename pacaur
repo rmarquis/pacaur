@@ -41,7 +41,7 @@ fi
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
 builddir="${AURDEST:-$tmpdir}"              # clone directory
 editor="${EDITOR:-vi}"                      # PKGBUILD editor
-editpkgbuild=true                           # edit PKGBUILD and install scripts
+editpkgbuild=full                           # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
 clean=true                                  # cleanup after install
 cleandevel=true                             # cleanup devel after install
@@ -703,8 +703,8 @@ EditPkgs() {
         unset timestamp
         GetInstallScripts $i
         if [[ ! $edit ]]; then
-            if [[ ! $editpkgbuild = false ]]; then
-                if [[ -e "$builddir/$i/.git/FETCH_HEAD" ]]; then
+            if [[ ! $editpkgbuild = none ]]; then
+                if [[ -e "$builddir/$i/.git/FETCH_HEAD" && $editpkgbuild = diff ]]; then
                     # show diff
                     if Proceed "y" $"View $i PKGBUILD and script diff?"; then
                         timestamp=$(stat -c %Y "$builddir/$i/.git/FETCH_HEAD")
@@ -726,7 +726,7 @@ EditPkgs() {
                 fi
             fi
         else
-            if [[ -e "$builddir/$i/.git/FETCH_HEAD" ]]; then
+            if [[ -e "$builddir/$i/.git/FETCH_HEAD" && $editpkgbuild = diff ]]; then
                 # show diff
                 timestamp=$(stat -c %Y "$builddir/$i/.git/FETCH_HEAD")
                 git log --since $timestamp
