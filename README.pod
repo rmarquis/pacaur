@@ -2,7 +2,7 @@
 
 =head1 NAME
 
-pacaur - a fast workflow AUR helper using cower as backend
+pacaur - an AUR helper that minimizes user interaction
 
 =head1 SYNOPSIS
 
