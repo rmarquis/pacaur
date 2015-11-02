@@ -259,10 +259,10 @@ The available options are:
 
 =over 4
 
-=item B<builddir>
+=item B<clonedir>
 
-Define the build directory. Default is I<$AURDEST>, with a fallback on
-B</tmp/pacaurtmp-$USER>.
+Define the directory into which the package build files will be cloned.
+Default is I<$AURDEST>, with a fallback on B</tmp/pacaurtmp-$USER>.
 
 =item B<editor>
 

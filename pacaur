@@ -39,7 +39,7 @@ fi
 
 # set variables
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
-builddir="${AURDEST:-$tmpdir}"              # clone directory
+clonedir="${AURDEST:-$tmpdir}"              # clone directory
 editor="${EDITOR:-vi}"                      # PKGBUILD editor
 editpkgbuild=full                           # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
@@ -60,7 +60,7 @@ source "$configdir/config"
 
 # set up directories
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir"
-[[ ! -d "$builddir" ]] && mkdir -p "$builddir"
+[[ ! -d "$clonedir" ]] && mkdir -p "$clonedir"
 
 #
 # Functions
@@ -679,16 +679,16 @@ DownloadPkgs() {
     GetPkgbase $@
 
     # clone
-    cd "$builddir"
+    cd "$clonedir"
     for i in ${basepkgs[@]}; do
         if [[ ! -d "$i" ]]; then
-            if [[ $builddir != $tmpdir ]]; then
+            if [[ $clonedir != $tmpdir ]]; then
                 git clone https://aur.archlinux.org/$i.git
             else
                 git clone --depth=1 https://aur.archlinux.org/$i.git
             fi
         else
-            cd "$builddir/$i"
+            cd "$clonedir/$i"
             git pull;
         fi
     done
@@ -702,22 +702,22 @@ EditPkgs() {
         GetInstallScripts $i
         if [[ ! $edit ]]; then
             if [[ ! $editpkgbuild = none ]]; then
-                if [[ -e "$builddir/$i/.git/FETCH_HEAD" && $editpkgbuild = diff ]]; then
+                if [[ -e "$clonedir/$i/.git/FETCH_HEAD" && $editpkgbuild = diff ]]; then
                     # show diff
                     if Proceed "y" $"View $i PKGBUILD and script diff?"; then
-                        timestamp=$(stat -c %Y "$builddir/$i/.git/FETCH_HEAD")
+                        timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD")
                         git log --since $timestamp
                     fi
                 else
                     # show pkgbuild
                     if Proceed "y" $"View $i PKGBUILD?"; then
-                        [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+                        [[ -e "$clonedir/$i/PKGBUILD" ]] && $editor "$clonedir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                     fi
                     # show install script
                     if [[ -n "${installscripts[@]}" ]]; then
                         for j in "${installscripts[@]}"; do
                             if Proceed "y" $"View $j script?"; then
-                                [[ -e "$builddir/$i/$j" ]] && $editor "$builddir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                                [[ -e "$clonedir/$i/$j" ]] && $editor "$clonedir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
                             fi
                         done
                     fi
@@ -725,10 +725,10 @@ EditPkgs() {
             fi
         else
             # show pkgbuild and install script
-            [[ -e "$builddir/$i/PKGBUILD" ]] && $editor "$builddir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            [[ -e "$clonedir/$i/PKGBUILD" ]] && $editor "$clonedir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
             if [[ -n "${installscripts[@]}" ]]; then
                 for j in "${installscripts[@]}"; do
-                    [[ -e "$builddir/$i/$j" ]] && $editor "$builddir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                    [[ -e "$clonedir/$i/$j" ]] && $editor "$clonedir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
                 done
             fi
         fi
@@ -785,7 +785,7 @@ MakePkgs() {
         fi
 
         if [[ ! $builtpkg || $rebuild ]]; then
-            cd "$builddir/${basepkgs[$i]}"
+            cd "$clonedir/${basepkgs[$i]}"
             Note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
             if [[ $silent = true ]]; then
                 makepkg -f --verifysource ${makeopts[@]} &>/dev/null
@@ -818,7 +818,7 @@ MakePkgs() {
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
-        cd "$builddir/${basepkgs[$i]}"
+        cd "$clonedir/${basepkgs[$i]}"
 
         # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAall
@@ -898,7 +898,7 @@ MakePkgs() {
         for j in "${pkgsdepslist[@]}"; do
             unset builtpkg
             [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
-            GetBuiltPkg "$j-$depsAver" "$builddir/${basepkgs[$i]}"
+            GetBuiltPkg "$j-$depsAver" "$clonedir/${basepkgs[$i]}"
             [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && builtdepspkgs+=($builtpkg) || builtpkgs+=($builtpkg)
         done
 
@@ -1056,9 +1056,9 @@ GetIgnoredPkgs() {
 }
 
 GetInstallScripts() {
-    [[ ! -d "$builddir/$1" ]] && return
+    [[ ! -d "$clonedir/$1" ]] && return
     unset installscriptspath installscripts
-    installscriptspath=($(find "$builddir/$1/" -maxdepth 1 -name "*.install"))
+    installscriptspath=($(find "$clonedir/$1/" -maxdepth 1 -name "*.install"))
     [[ -n "${installscriptspath[@]}" ]] && installscripts=($(basename -a ${installscriptspath[@]}))
 }
 
@@ -1347,7 +1347,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && Note "e" $"${colorW}editor${reset} variable unset"
-[[ ! -w "$builddir" ]] && Note "e" $"${colorW}$builddir${reset} does not have write permission."
+[[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 [[ $root ]] && Note "e" $"alternative installation root option not supported"
