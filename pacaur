@@ -1245,7 +1245,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 case "$OPTARG" in
                     search) operation=sync; search=true; coweropts+=("-s"); aur='1';;
                     info) operation=sync; info=true; coweropts+=("-i"); aur='1';;
-                    download) operation=download; coweropts+=("-d");;
+                    download) operation=download && ((count++));;
                     makepkg) operation=sync; coweropts+=("-f"); aur='1';;
                     sync) operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
                     check) operation=upgrades; coweropts+=("-uq"); aur='1';;
@@ -1283,7 +1283,7 @@ while [[ -n "${!OPTIND}" ]]; do
             i)  [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
             d)  [[ $pacS ]] && nodeps=true && pacopts+=("--nodeps") && makeopts+=("--nodeps") && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=download; coweropts+=("-d");;
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; coweropts+=("-f"); aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; coweropts+=("-f"); aur='1';;
@@ -1356,7 +1356,13 @@ pacmanarg=(${pacmanarg[@]/-a/})
 case $operation in
     download)
         # download (-d) handling
-        DownloadPkgs ${pkgs[@]}
+        if [[ $count -gt 1 ]]; then
+            ClassifyPkgs ${pkgs[@]}
+            DepsSolver
+            DownloadPkgs ${deps[@]}
+        else
+            DownloadPkgs ${pkgs[@]}
+        fi
         EditPkgs ${pkgsbase[@]}
         exit;;
     editpkg)
