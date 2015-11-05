@@ -704,9 +704,10 @@ EditPkgs() {
             if [[ ! $displaybuildfiles = none ]]; then
                 if [[ -e "$clonedir/$i/.git/FETCH_HEAD" && $displaybuildfiles = diff ]]; then
                     # show diff
-                    if Proceed "y" $"View $i PKGBUILD and script diff?"; then
+                    if Proceed "y" $"View $i build files diff?"; then
                         timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD")
                         git log --since $timestamp
+                        Note "s" $"${colorW}$i${reset} build files diff viewed"
                     fi
                 else
                     # show pkgbuild
