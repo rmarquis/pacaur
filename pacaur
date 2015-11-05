@@ -1347,6 +1347,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && Note "e" $"${colorW}editor${reset} variable unset"
+[[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ $editpkgbuild = diff && $clonedir = $tmpdir ]] && Note "e" $"${colorW}clonedir${reset} or ${colorW}\$AURDEST${reset} should be set to a non volatile memory location"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
