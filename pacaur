@@ -40,8 +40,8 @@ fi
 # set variables
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
 clonedir="${AURDEST:-$tmpdir}"              # clone directory
-editor="${EDITOR:-vi}"                      # PKGBUILD editor
-editpkgbuild=full                           # display build files (none|diff|full)
+editor="${EDITOR:-vi}"                      # build files editor
+displaybuildfiles=full                      # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
 silent=false                                # silence output
 sortby=popularity                           # sort method (name|votes|popularity)
@@ -701,8 +701,8 @@ EditPkgs() {
         unset timestamp
         GetInstallScripts $i
         if [[ ! $edit ]]; then
-            if [[ ! $editpkgbuild = none ]]; then
-                if [[ -e "$clonedir/$i/.git/FETCH_HEAD" && $editpkgbuild = diff ]]; then
+            if [[ ! $displaybuildfiles = none ]]; then
+                if [[ -e "$clonedir/$i/.git/FETCH_HEAD" && $displaybuildfiles = diff ]]; then
                     # show diff
                     if Proceed "y" $"View $i PKGBUILD and script diff?"; then
                         timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD")
@@ -1347,7 +1347,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && Note "e" $"${colorW}editor${reset} variable unset"
-[[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ $editpkgbuild = diff && $clonedir = $tmpdir ]] && Note "e" $"${colorW}clonedir${reset} or ${colorW}\$AURDEST${reset} should be set to a non volatile memory location"
+[[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ $displaybuildfiles = diff && $clonedir = $tmpdir ]] && Note "e" $"${colorW}clonedir${reset} or ${colorW}\$AURDEST${reset} should be set to a non volatile memory location"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"

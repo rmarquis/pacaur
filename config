@@ -8,8 +8,8 @@
 # If you wish to use different values, uncomment and update the values.
 # The Color and VerbosePkgLists options can be enabled in /etc/pacman.conf.
 #clonedir="${AURDEST:-$tmpdir}"        # clone directory
-#editor="${EDITOR:-vi}"                # PKGBUILD editor
-#editpkgbuild=full                     # display build files (none|diff|full)
+#editor="${EDITOR:-vi}"                # build files editor
+#displaybuildfiles=full                # display build files (none|diff|full)
 #fallback=true                         # pacman fallback to the AUR
 #silent=false                          # silence output
 #sortby=popularity                     # sort method (name|votes|popularity)
