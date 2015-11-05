@@ -691,6 +691,7 @@ DownloadPkgs() {
             cd "$clonedir/$i"
             git pull;
         fi
+        cd "$clonedir"
     done
 }
 
@@ -698,11 +699,12 @@ EditPkgs() {
     [[ $noedit ]] && return
     for i in "$@"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
+        cd "$clonedir/$i"
         unset timestamp
         GetInstallScripts $i
         if [[ ! $edit ]]; then
             if [[ ! $displaybuildfiles = none ]]; then
-                if [[ -e "$clonedir/$i/.git/FETCH_HEAD" && $displaybuildfiles = diff ]]; then
+                if [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]]; then
                     # show diff
                     if Proceed "y" $"View $i build files diff?"; then
                         timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD")
@@ -712,13 +714,13 @@ EditPkgs() {
                 else
                     # show pkgbuild
                     if Proceed "y" $"View $i PKGBUILD?"; then
-                        [[ -e "$clonedir/$i/PKGBUILD" ]] && $editor "$clonedir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+                        [[ -e "PKGBUILD" ]] && $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                     fi
                     # show install script
                     if [[ -n "${installscripts[@]}" ]]; then
                         for j in "${installscripts[@]}"; do
                             if Proceed "y" $"View $j script?"; then
-                                [[ -e "$clonedir/$i/$j" ]] && $editor "$clonedir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                                [[ -e "$j" ]] && $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
                             fi
                         done
                     fi
@@ -726,10 +728,10 @@ EditPkgs() {
             fi
         else
             # show pkgbuild and install script
-            [[ -e "$clonedir/$i/PKGBUILD" ]] && $editor "$clonedir/$i/PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            [[ -e "PKGBUILD" ]] && $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
             if [[ -n "${installscripts[@]}" ]]; then
                 for j in "${installscripts[@]}"; do
-                    [[ -e "$clonedir/$i/$j" ]] && $editor "$clonedir/$i/$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                    [[ -e "$j" ]] && $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
                 done
             fi
         fi
