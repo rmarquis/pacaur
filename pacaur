@@ -1276,6 +1276,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     rebuild) rebuild=true;;
                     silent) silent=true; makeopts+=("--log");;
                     domain) aururl=${!OPTIND}; coweropts+=("--domain ${!OPTIND}"); shift;;
+                    root) pacopts+=("--root ${!OPTIND}"); shift;;
                     version) Version; exit;;
                     help) Usage; exit;;
                     *) pacopts+=("--$OPTARG");;

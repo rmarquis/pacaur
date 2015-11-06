@@ -372,9 +372,9 @@ also help.
 
 =item B<alternative installation root>
 
-The alternative installation root I<-r> short option of pacman is not supported.
-You might want to use the I<--root /path> long option instead, or chroot to the 
-new path and use pacaur from there instead.
+The alternative installation root I<-r /path> short option of pacman is not
+supported. Use the I<--root /path> long option instead, or chroot to the new
+path and use pacaur from there instead.
 
 
 =back
