@@ -65,18 +65,18 @@ Show info for I<target(s)>.
 
 =item B<-d, --download>
 
-Download I<target(s)> PKGBUILD. Pass this option twice to fetch dependencies
+Clone the I<target(s)> build files. Pass this option twice to fetch dependencies
 (done recursively).
 
 =item B<-m, --makepkg>
 
-Download PKGBUILD and build I<target(s)>. Missing dependencies will be installed
+Clone build files and build I<target(s)>. Missing dependencies will be installed
 as required to ensure the build to succeed, before being automatically
 uninstalled.
 
 =item B<-y, --sync>
 
-Download PKGBUILD, build and install I<target(s)>. Missing dependencies will be
+Clone build files, build and install I<target(s)>. Missing dependencies will be
 automatically installed as required.
 
 =item B<-k, --check>
@@ -106,7 +106,6 @@ Display version and quit.
 Display the help message and quit.
 
 =back
-
 
 =head1 OPTIONS
 
@@ -212,7 +211,6 @@ Point at a domain other than the default I<aur.archlinux.org>.
 
 =back
 
-
 =head1 CONFIG FILE
 
 =over 4
@@ -244,7 +242,6 @@ In addition, pacaur fully honors cower's config file. See B<cower>(1).
 
 =back
 
-
 =head1 CONFIG OPTIONS
 
 The available options are:
@@ -253,18 +250,19 @@ The available options are:
 
 =item B<clonedir>
 
-Define the directory into which the package build files will be cloned.
-Default is I<$AURDEST>, with a fallback on B</tmp/pacaurtmp-$USER>.
+Define the directory into which the packages build files (PKGBUILD, .SRCINFO
+and install script files) will be cloned. Default is B<$AURDEST>, with a
+fallback on I</tmp/pacaurtmp-$USER>.
 
 =item B<editor>
 
-Define the editor. Default is I<$EDITOR>, with a fallback on B<vi>.
+Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
 
 =item B<displaybuildfiles>
 
-Display PKGBUILD and install script viewing prompt. Possible values are B<full>
-to always display the full build files, B<diff> to only display the difference
-since last build, and B<none> to disable the viewing prompt. Default is B<full>.
+Display PKGBUILD and install script viewing prompt. Possible values are I<full>
+to always display the full build files, I<diff> to only display the difference
+since last build, and I<none> to disable the viewing prompt. Default is B<full>.
 
 =item B<fallback>
 
@@ -272,8 +270,9 @@ Extend pacman commands to the AUR. Default is B<true>.
 
 =item B<silent>
 
-Enable silent output. The makepkg output will be collected in the build
-directory of packages should any error occurs. Default is B<false>.
+Enable silent output. The makepkg output will be collected in the clone
+directory or the I<LOGDEST> directory if defined should any error occurs.
+Default is B<false>.
 
 =item B<sortby>
 
@@ -288,14 +287,16 @@ packages. Default is B<false>.
 
 =back
 
-
 =head1 ENVIRONMENT
 
 =over 4
 
 =item B<AURDEST>
 
-Determines where the package build files will be cloned.
+Determines where the packages build files (PKGBUILD, .SRCINFO and install script
+files) will be cloned. You might want to change the default clone directory (set
+to I</tmp> on a temporary filesystem residing in volatile memory) to make full
+use of cloned build files.
 
 =back
 
@@ -306,19 +307,29 @@ In particular, the following variables are useful:
 
 =item B<PKGDEST>
 
-Determines where the built packages will be stored.
+Determines where the built packages will be stored. If using the existing
+I</var/cache/pacman/pkg> pacman cache directory, ensure your user has proper
+write permissions.
 
 =item B<SRCDEST>
 
-Determines where the source of packages will be stored.
+Determines where the source of packages will be stored. This will speed up the
+update of development packages. The I<-Sc> and I<-Scc> clean operations allow
+to remove the non development packages source files and all source files
+respectively.
 
 =item B<LOGDEST>
 
-Determines where the build logs will be stored.
+Determines where the build logs will be stored. By default, the I<--silent>
+option will write build logs in the clone directory if the build fails, but
+will remove them if the build succeeds.
 
 =item B<BUILDDIR>
 
-Determines where the packages will be built.
+Determines where the packages will be built. By default, build will happen in
+the defined clone directory, but build speed can be improved by using I</tmp>
+located in volatile memory, unless big packages need to be built on a low-memory
+machine.
 
 =back
 
@@ -342,18 +353,18 @@ through the I<VerbosePkgLists> option.
 
 =item B<build files comparison>
 
-To be able to display build files comparison, the default clone directory (set
-to /tmp on a temporary filesystem residing in volatile memory) should be set
-to a persistent location. Alternatively, define the pacaur specific I<$AURDEST>
-environment variable.
+To be able to display build files comparison, the default clone directory
+(set to I</tmp> on a temporary filesystem residing in volatile memory) should
+be set to a persistent location. Alternatively, define the pacaur specific
+I<$AURDEST> environment variable.
 
 =item B<fallback>
 
 By default, any operation will be applied on the binary repositories, then the
 AUR if necessary. This behavior is optional and can be disabled with the
-I<fallback> config option. When disabled, any operation will be restricted to the
-binary repositories similarly to pacman, while AUR operations can be applied
-explicitly with the I<--aur> option.
+I<fallback> config option. When disabled, any operation will be restricted to
+the binary repositories similarly to pacman, while AUR operations can be
+applied explicitly with the I<--aur> option.
 
 =item B<interactive PKGBUILDs>
 
@@ -376,13 +387,11 @@ The alternative installation root I<-r /path> short option of pacman is not
 supported. Use the I<--root /path> long option instead, or chroot to the new
 path and use pacaur from there instead.
 
-
 =back
 
 =head1 SEE ALSO
 
 B<cower>(1), B<pacman>(8), B<makepkg>(8), B<sudoers>(5)
-
 
 =head1 AUTHOR
 
