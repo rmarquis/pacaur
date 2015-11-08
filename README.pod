@@ -270,9 +270,8 @@ Extend pacman commands to the AUR. Default is B<true>.
 
 =item B<silent>
 
-Enable silent output. The makepkg output will be collected in the clone
-directory or the I<LOGDEST> directory if defined should any error occurs.
-Default is B<false>.
+Enable silent output. The makepkg output will be collected in the clone directory
+or the I<$LOGDEST> directory should any error occur. Default is B<false>.
 
 =item B<sortby>
 
@@ -294,9 +293,8 @@ packages. Default is B<false>.
 =item B<AURDEST>
 
 Determines where the packages build files (PKGBUILD, .SRCINFO and install script
-files) will be cloned. You might want to change the default clone directory (set
-to I</tmp> on a temporary filesystem residing in volatile memory) to make full
-use of cloned build files.
+files) will be cloned. You might want to set the clone directory to a persistent
+location to make full use of cloned build files history.
 
 =back
 
@@ -307,15 +305,16 @@ In particular, the following variables are useful:
 
 =item B<PKGDEST>
 
-Determines where the built packages will be stored. If using the existing
-I</var/cache/pacman/pkg> pacman cache directory, ensure your user has proper
-write permissions.
+Determines where the built packages will be stored. The I<-Sc> and I<-Scc> clean
+operations allow to remove the non locally installed cached files and all cached
+files, respectively. If using the existing I</var/cache/pacman/pkg> pacman cache
+directory, ensure your user has proper write permissions.
 
 =item B<SRCDEST>
 
 Determines where the source of packages will be stored. This will speed up the
 update of development packages. The I<-Sc> and I<-Scc> clean operations allow
-to remove the non development packages source files and all source files
+to remove the non development packages source files and all source files,
 respectively.
 
 =item B<LOGDEST>
@@ -328,8 +327,8 @@ will remove them if the build succeeds.
 
 Determines where the packages will be built. By default, build will happen in
 the defined clone directory, but build speed can be improved by using I</tmp>
-located in volatile memory, unless big packages need to be built on a low-memory
-machine.
+located in volatile memory. This is however not recommended if big packages
+need to be built on a low-memory machine.
 
 =back
 
@@ -353,10 +352,10 @@ through the I<VerbosePkgLists> option.
 
 =item B<build files comparison>
 
-To be able to display build files comparison, the default clone directory
-(set to I</tmp> on a temporary filesystem residing in volatile memory) should
-be set to a persistent location. Alternatively, define the pacaur specific
-I<$AURDEST> environment variable.
+To be able to display build files comparison with I<diff> value of the
+I<displaybuildfiles> config option, the clone directory (set by default to
+I</tmp> on a temporary filesystem residing in volatile memory) or the alternative
+I<$AURDEST> environment variable should also be changed to a persistent location.
 
 =item B<fallback>
 
