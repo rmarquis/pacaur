@@ -689,7 +689,8 @@ DownloadPkgs() {
             fi
         else
             cd "$clonedir/$i"
-            git pull;
+            git reset --hard HEAD &>/dev/null # updated pkgver of vcs packages prevent pull
+            git pull
         fi
         cd "$clonedir"
     done
