@@ -1018,14 +1018,13 @@ CheckAur() {
 
 CleanCache() {
     if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
+        [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Packages to keep:" $"All locally installed packages"
         printf "\n%s %s\n" $"AUR cache directory:" "$PKGDEST"
         if [[ $count -eq 1 ]]; then
-            printf "${colorW}%s${reset}\n %s\n" $"Packages to keep:" $"All locally installed packages"
-            if ! Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
-                exit
+            if Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
+                printf "%s\n" $"removing old packages from cache..."
+                paccache -ru -k0 -c $PKGDEST &>/dev/null
             fi
-            printf "%s\n" $"removing old packages from cache..."
-            paccache -ru -k0 -c $PKGDEST &>/dev/null
         else
             if ! Proceed "n" $"Do you want to remove ALL files from AUR cache?"; then
                 printf "%s\n" $"removing all files from AUR cache..."
@@ -1034,19 +1033,17 @@ CleanCache() {
         fi
     fi
     if [[ $SRCDEST ]]; then
+        [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Sources to keep:" $"All development packages sources"
         printf "\n%s %s\n" $"AUR source cache directory:" "$SRCDEST"
         if [[ $count -eq 1 ]]; then
-            printf "${colorW}%s${reset}\n %s\n" $"Sources to keep:" $"All development packages sources"
-            if ! Proceed "y" $"Do you want to remove all non development files from AUR source cache?"; then
-                exit
+            if Proceed "y" $"Do you want to remove all non development files from AUR source cache?"; then
+                printf "%s\n" $"removing non development files from source cache..."
+                rm -f $SRCDEST/* &>/dev/null
             fi
-            printf "%s\n" $"removing non development files from source cache..."
-            rm -f $SRCDEST/* &>/dev/null
         else
             if ! Proceed "n" $"Do you want to remove ALL files from AUR source cache?"; then
                 printf "%s\n" $"removing all files from AUR source cache..."
-                rm -rf $SRCDEST/*
-                #&>/dev/null
+                rm -rf $SRCDEST/* &>/dev/null
             fi
         fi
     fi
