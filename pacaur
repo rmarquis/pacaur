@@ -297,9 +297,22 @@ FindDepsAur() {
             for ((i=0; i<${#depspkgs[@]}; i++)); do
                 depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
             done
+        # assume installed deps
+        elif [[ -n "${assumeinstalled[@]}" ]]; then
+            # remove versioning
+            for ((i=0; i<${#assumeinstalled[@]}; i++)); do
+                unset assumedepspkgs
+                for ((j=0; j<${#depspkgs[@]}; j++)); do
+                    assumedepspkgs[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$j]})
+                    [[ " ${assumedepspkgs[@]} " =~ " ${assumeinstalled[$i]} " ]] && depspkgs[$j]=${assumeinstalled[$i]};
+                done
+            done
+            depspkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${assumeinstalled[@]} | LC_COLLATE=C sort -u)))
         fi
-        depspkgsaur=($(LANG=C $pacmanbin -Sp ${depspkgs[@]} 2>&1 >/dev/null | awk '{print $NF}'))
-        repodeps+=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u)  <(tr ' ' '\n' <<< ${depspkgsaur[@]} | LC_COLLATE=C sort -u)))
+        if [[ -n "${depspkgs[@]}" ]]; then
+            depspkgsaur=($(LANG=C $pacmanbin -Sp ${depspkgs[@]} 2>&1 >/dev/null | awk '{print $NF}'))
+            repodeps+=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u)  <(tr ' ' '\n' <<< ${depspkgsaur[@]} | LC_COLLATE=C sort -u)))
+        fi
     fi
     unset depspkgs
 
@@ -1270,6 +1283,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     nodeps) nodeps=true; pacopts+=("--nodeps"); makeopts+=("--nodeps"); ((count++));;
+                    assume-installed) assumeinstalled+=(${!OPTIND}); pacopts+=("--assume-installed ${!OPTIND}"); shift;;
                     noconfirm) noconfirm=true; pacopts+=("--noconfirm");;
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
