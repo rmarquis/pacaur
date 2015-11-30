@@ -142,9 +142,9 @@ package names and not version, group, and description information.
 
 =item B<--devel>
 
-When used with update and check operations, also consider AUR development packages
-(supported are I<cvs>, I<svn>, I<git>, I<hg>, I<bzr> and I<darcs> development
-packages, as well as I<nightly> build packages).
+When used with update and check operations, also consider AUR development
+packages. Supported are I<cvs>, I<svn>, I<git>, I<hg>, I<bzr> and I<darcs>
+development packages, as well as I<nightly> build packages.
 
 =item B<--foreign>
 
@@ -160,8 +160,8 @@ I<IgnorePkg> directive are honored.
 =item B<--needed>
 
 Do not reinstall I<target(s)> that are already up-to-date. The build of
-development packages (supported are I<svn>, I<git>, I<hg> and I<bzr> development
-packages) that are found up-to-date after the source checkout will be skipped.
+development packages that are found up-to-date after the source checkout will
+be skipped. Supported are I<svn>, I<git>, I<hg> and I<bzr> development packages.
 
 =item B<--noconfirm>
 
@@ -186,12 +186,14 @@ also be hidden.
 
 =item B<--ignore-ood>
 
-When searching the AUR, ignore all results marked as out of date.
+When searching the AUR, ignore all results marked as out of date. Can be enabled
+by default with the I<IgnoreOOD> option in the cower config file.
 
 =item B<--no-ignore-ood>
 
-When searching the AUR, also show results marked as out of date. This takes
-precedence over the I<IgnoreOOD> option in the cower config file.
+When searching the AUR, show results marked as out of date. This is the default
+behavior. When the I<IgnoreOOD> option in the cower config file is enabled, this
+takes precedence over it.
 
 =item B<--asort>
 
