@@ -690,6 +690,7 @@ DownloadPkgs() {
         else
             cd "$clonedir/$i"
             git reset --hard HEAD &>/dev/null # updated pkgver of vcs packages prevent pull
+            [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]] && cp -pf ".git/FETCH_HEAD" ".git/FETCH_HEAD.prev"
             git pull
         fi
         cd "$clonedir"
@@ -705,11 +706,11 @@ EditPkgs() {
         GetInstallScripts $i
         if [[ ! $edit ]]; then
             if [[ ! $displaybuildfiles = none ]]; then
-                if [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]]; then
+                if [[ -e ".git/FETCH_HEAD.prev" && $displaybuildfiles = diff ]]; then
                     # show diff
                     if Proceed "y" $"View $i build files diff?"; then
-                        timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD")
-                        git log --since $timestamp
+                        timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD.prev")
+                        git show --since $timestamp
                         Note "s" $"${colorW}$i${reset} build files diff viewed"
                     fi
                 else
