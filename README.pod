@@ -398,6 +398,11 @@ B<cower>(1), B<pacman>(8), B<makepkg>(8), B<sudoers>(5)
 
 Remy Marquis E<lt>remy.marquis@gmail.comE<gt>
 
+After many requests, it is now possible to send a donation via PayPal to the
+above email address. Although I would certainly appreciate the gesture, I would
+however suggest to donate instead to a charitable organization of your choice as
+your money could make a bigger difference, thank you!
+
 All credits go to all direct or indirect contributors. Many thanks to all of
 you!
 
