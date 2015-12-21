@@ -547,9 +547,30 @@ ConflictChecks() {
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsprovides=(${repodepspkgs[@]})
         repodepsprovides+=($(expac -S '%S' "${repodepspkgs[@]}")) # no versioning
-        repodepsconflicts=($(expac -S '%C' "${repodepspkgs[@]}"))
+        repodepsconflicts=($(expac -S '%H' "${repodepspkgs[@]}"))
+
+        # versioning check
+        unset checkedrepodepsconflicts
+        for ((i=0; i<${#repodepsconflicts[@]}; i++)); do
+            unset repodepsconflictsname repodepsconflictsver localver
+            repodepsconflictsname=${repodepsconflicts[$i]} && repodepsconflictsname=${repodepsconflictsname%[><]*} && repodepsconflictsname=${repodepsconflictsname%=*}
+            repodepsconflictsver=${repodepsconflicts[$i]} && repodepsconflictsver=${repodepsconflictsver#*=} && repodepsconflictsver=${repodepsconflictsver#*[><]}
+            [[ $repodepsconflictsname ]] && localver=$(expac -Q '%v' $repodepsconflictsname)
+
+            if [[ $localver ]]; then
+                case "${repodepsconflicts[$i]}" in
+                        *">="*) [[ $(vercmp "$repodepsconflictsver" "$localver") -ge 0 ]] && continue;;
+                        *"<="*) [[ $(vercmp "$repodepsconflictsver" "$localver") -le 0 ]] && continue;;
+                        *">"*)  [[ $(vercmp "$repodepsconflictsver" "$localver") -gt 0 ]] && continue;;
+                        *"<"*)  [[ $(vercmp "$repodepsconflictsver" "$localver") -lt 0 ]] && continue;;
+                        *"="*)  [[ $(vercmp "$repodepsconflictsver" "$localver") -eq 0 ]] && continue;;
+                esac
+                checkedrepodepsconflicts+=($repodepsconflictsname)
+            fi
+        done
+
         repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${repodepsprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
-        repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${repodepsconflicts[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQprovides[@]} | LC_COLLATE=C sort -u)))
+        repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${checkedrepodepsconflicts[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQprovides[@]} | LC_COLLATE=C sort -u)))
         repoconflicts=($(tr ' ' '\n' <<< ${repoconflicts[@]} | LC_COLLATE=C sort -u))
     fi
 
