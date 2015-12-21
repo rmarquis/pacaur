@@ -302,6 +302,7 @@ FindDepsAur() {
             # remove versioning
             for ((i=0; i<${#assumeinstalled[@]}; i++)); do
                 unset assumedepspkgs
+                assumeinstalled[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${assumeinstalled[$i]})
                 for ((j=0; j<${#depspkgs[@]}; j++)); do
                     assumedepspkgs[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$j]})
                     [[ " ${assumedepspkgs[@]} " =~ " ${assumeinstalled[$i]} " ]] && depspkgs[$j]=${assumeinstalled[$i]};
