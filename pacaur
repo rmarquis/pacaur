@@ -1281,7 +1281,7 @@ done
 # get options
 count=0
 while [[ -n "${!OPTIND}" ]]; do
-    while getopts "sidmykufecqrahvVDQRSTUbglnoptw-:" OPT; do
+    while getopts "sidmykufecqrahvxVDFQRSTUbglnoptw-:" OPT; do
         pacmanarg+=("-$OPT");
         case "$OPT" in
             -)
@@ -1462,7 +1462,9 @@ case $operation in
         [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CheckAur ${pkgs[@]}
         exit;;
     *)  # others operations handling
-        if [[ -z "${pkgs[@]}" || -n "$(grep -e "-[QTglp]" <<< ${pacmanarg[@]})" ]]; then
+        if [[ -z "${pkgs[@]}" && -n "$(grep -e "-[F]" <<< ${pacmanarg[@]})" ]]; then
+            sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${pkgs[@]}
+        elif [[ -z "${pkgs[@]}" || -n "$(grep -e "-[QTglp]" <<< ${pacmanarg[@]})" ]]; then
             $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
             sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
