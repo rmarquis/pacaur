@@ -269,17 +269,19 @@ FindDepsAur() {
         depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
     else
         # remove versioning and check providers
+        unset vcsdepspkgs
         for ((i=0; i<${#depspkgs[@]}; i++)); do
             depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
             unset j && j=$(expac -Qs '%n' "^${depspkgs[$i]}$")
-            [[ -n "$j" ]] && depspkgs[$i]="$j" || foreignpkgs+=(${depspkgs[$i]})
+            if [[ -n "$j" ]]; then
+                depspkgs[$i]="$j"
+                [[ $devel ]] && [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $j)" ]] && vcsdepspkgs+=($j)
+            else
+                foreignpkgs+=(${depspkgs[$i]})
+            fi
         done
         # reorder devel
         if [[ $devel ]]; then
-            unset vcsdepspkgs
-            for ((i=0; i<${#depspkgs[@]}; i++)); do
-                [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depspkgs[$i]})" ]] && vcsdepspkgs+=(${depspkgs[$i]})
-            done
             [[ ! $foreign ]] && depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
             depspkgs=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${vcsdepspkgs[@]} | LC_COLLATE=C sort -u)))
         fi
