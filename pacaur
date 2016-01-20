@@ -924,7 +924,7 @@ MakePkgs() {
         done
 
         # install
-        Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+        [[ $installpkg || " ${aurdepspkgs[@]} " =~ " ${pkgsdeps[$i]} " ]] && Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
         [[ -n "${builtdepspkgs[@]}" ]] && sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
         [[ -n "${builtpkgs[@]}" && $installpkg ]] && sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
 
