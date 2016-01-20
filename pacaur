@@ -924,9 +924,11 @@ MakePkgs() {
         done
 
         # install
-        [[ $installpkg || " ${aurdepspkgs[@]} " =~ " ${pkgsdeps[$i]} " ]] && Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
-        [[ -n "${builtdepspkgs[@]}" ]] && sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
-        [[ -n "${builtpkgs[@]}" && $installpkg ]] && sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+        if [[ $installpkg || -z "${builtpkgs[@]}" ]]; then
+            Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+            [[ -n "${builtdepspkgs[@]}" ]] && sudo $pacmanbin -U ${builtdepspkgs[@]} --ask 36 --asdeps ${pacopts[@]} --noconfirm
+            [[ -n "${builtpkgs[@]}" ]] && sudo $pacmanbin -U ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+        fi
 
         # set dep status
         if [[ $installpkg ]]; then
