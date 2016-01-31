@@ -1464,7 +1464,7 @@ case $operation in
     *)  # others operations handling
         if [[ -z "${pkgs[@]}" && -n "$(grep -e "-[F]" <<< ${pacmanarg[@]})" && -n "$(grep -e "-[y]" <<< ${pacmanarg[@]})" ]]; then
             sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${pkgs[@]}
-        elif [[ -z "${pkgs[@]}" || -n "$(grep -e "-[FQTglp]" <<< ${pacmanarg[@]})" ]]; then
+        elif [[ -z "${pkgs[@]}" || -n "$(grep -e "-[DFQTglp]" <<< ${pacmanarg[@]})" ]] && [[ ! " ${pacopts[@]} " =~ " --asdeps " && ! " ${pacopts[@]} " =~ " --asexp " ]]; then
             $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
             sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
