@@ -420,7 +420,7 @@ B<[hu] - Magyar> - "avelkei"
 
 B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
-B<[ja] - 日本語> - Colin "fosskers" Woodbury
+B<[ja] - 日本語> - Colin "fosskers" Woodbury, TSUYUSATO "MakeNowJust" Kitsune
 
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
