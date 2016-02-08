@@ -786,7 +786,7 @@ MakePkgs() {
     oldorphanpkgs=($($pacmanbin -Qdtq))
 
     # initialize sudo
-    if sudo -v; then
+    if sudo $pacmanbin -V > /dev/null; then
         [[ $sudoloop = true ]] && SudoV &
     fi
 
@@ -1219,7 +1219,7 @@ NothingToDo() {
 SudoV() {
     touch "$tmpdir/sudov.lck"
     while [[ -e "$tmpdir/sudov.lck" ]]; do
-        sudo -n -v
+        sudo $pacmanbin -V > /dev/null
         sleep 2
     done
 }
