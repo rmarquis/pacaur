@@ -866,9 +866,9 @@ MakePkgs() {
         unset aurdevelpkgsAall
         if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
             if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
-                aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
-                aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
-                aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\"")
+                aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\" ")
+                aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\" ")
+                aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\" ")
                 if [[ -n "$aurdevelpkgsAepo" ]]; then
                     aurdevelpkgsAall="$aurdevelpkgsAepo:$aurdevelpkgsAver-$aurdevelpkgsArel"
                 else
