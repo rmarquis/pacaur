@@ -1033,11 +1033,18 @@ CheckRepo() {
 
 CheckAur() {
     GetIgnoredPkgs
-    aurpkgsQood=($(cower ${coweropts[@]} $@ --color=never))
+
+    foreignpkgs=($($pacmanbin -Qmq))
+    json=$(DownloadJson ${foreignpkgs[@]})
+    aurpkgsAname=($(GetJson "var" "$json" "Name")) # return sorted results
+    aurpkgsAver=($(GetJson "var" "$json" "Version"))
+    aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
+    for ((i=0; i<${#aurpkgsAname[@]}; i++)); do
+        [[ $(vercmp "${aurpkgsAver[$i]}" "${aurpkgsQver[$i]}") -gt 0 ]] && aurpkgsQood+=(${aurpkgsAname[$i]});
+    done
 
     # add devel packages
     if [[ $devel ]]; then
-        foreignpkgs=($($pacmanbin -Qmq))
         for i in "${foreignpkgs[@]}"; do
             [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgsQood+=($i)
         done
