@@ -1045,8 +1045,8 @@ CheckAur() {
         aurpkgsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
         aurpkgsAver=($(GetJson "var" "$json" "Version"))
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
-        for ((i=0; i<${#aurpkgsQood[@]}; i++)); do
-            [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsQood[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
+        for ((i=0; i<${#aurpkgsAname[@]}; i++)); do
+            [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsAname[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
             [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${aurpkgsAname[$i]})" ]] && aurpkgsAver[$i]=$"latest"
         done
         [[ ! $lname ]] && lname=$(GetLength "${aurpkgsAname[@]}")
