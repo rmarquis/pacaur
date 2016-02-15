@@ -103,11 +103,17 @@ Core() {
 
 UpgradeAur() {
     Note "i" $"${colorW}Starting AUR upgrade...${reset}"
-    aurpkgs+=($(cower -u ${coweropts[@]} ${pkgs[@]} --color=never 2>&1 | awk '{print $2}'))
+
+    foreignpkgs=($($pacmanbin -Qmq))
+    json=$(DownloadJson ${foreignpkgs[@]})
+    allaurpkgs=($(GetJson "var" "$json" "Name"))
+    allaurpkgsAver=($(GetJson "var" "$json" "Version"))
+    allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
+    for ((i=0; i<${#allaurpkgs[@]}; i++)); do
+        [[ $(vercmp "${allaurpkgsAver[$i]}" "${allaurpkgsQver[$i]}") -gt 0 ]] && aurpkgs+=(${allaurpkgs[$i]});
+    done
 
     # foreign packages check
-    foreignpkgs=($($pacmanbin -Qmq))
-    allaurpkgs=($(GetJson "var" "$(DownloadJson ${foreignpkgs[@]})" "Name"))
     aurforeignpkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allaurpkgs[@]} | LC_COLLATE=C sort -u)))
     for i in "${aurforeignpkgs[@]}"; do
         Note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
@@ -1099,7 +1105,6 @@ CleanCache() {
 
 GetIgnoredPkgs() {
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
-    [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | awk -F '=' '{print $NF}' | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
