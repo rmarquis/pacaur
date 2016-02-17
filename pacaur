@@ -933,6 +933,7 @@ MakePkgs() {
         # error check
         if (( $? > 0)); then
             errmakepkg+=(${pkgsdeps[$i]})
+            continue  # skip install
         fi
 
         # retrieve filename
