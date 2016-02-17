@@ -863,38 +863,31 @@ MakePkgs() {
         cd "$clonedir/${basepkgs[$i]}"
 
         # build devel if necessary only (supported protocols only)
-        unset aurdevelpkgsAall
+        unset aurdevelpkgsAver
         if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
-            if [[ -n "$(grep -E '^pkgver[ ]*[(]+[)]+' "PKGBUILD")" ]]; then
-                aurdevelpkgsAver=$(grep '^pkgver=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\" ")
-                aurdevelpkgsArel=$(grep '^pkgrel=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\" ")
-                aurdevelpkgsAepo=$(grep '^epoch=' "PKGBUILD" | awk -F '=' '{print $NF}' | tr -d "'\" ")
-                if [[ -n "$aurdevelpkgsAepo" ]]; then
-                    aurdevelpkgsAall="$aurdevelpkgsAepo:$aurdevelpkgsAver-$aurdevelpkgsArel"
-                else
-                    aurdevelpkgsAall="$aurdevelpkgsAver-$aurdevelpkgsArel"
-                fi
+            # retrieve updated version
+            aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
+            aurdevelpkgsAver=${aurdevelpkgsAver[0]}
 
-                # check split packages update
-                unset basepkgsupdate checkpkgsdepslist
-                for j in "${pkgsdepslist[@]}"; do
-                    aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
-                    if [[ -n $aurdevelpkgsQver && $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAall") -ge 0 ]] && [[ $needed && ! $rebuild ]]; then
-                        Note "w" $"${colorW}$j${reset} is up-to-date -- skipping"
-                        continue
-                    else
-                        basepkgsupdate='true'
-                        checkpkgsdepslist+=($j)
-                    fi
-                done
-                [[ $basepkgsupdate ]] && pkgsdepslist=(${checkpkgsdepslist[@]}) || continue
-            fi
+            # check split packages update
+            unset basepkgsupdate checkpkgsdepslist
+            for j in "${pkgsdepslist[@]}"; do
+                aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
+                if [[ -n $aurdevelpkgsQver && $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver") -ge 0 ]] && [[ $needed && ! $rebuild ]]; then
+                    Note "w" $"${colorW}$j${reset} is up-to-date -- skipping"
+                    continue
+                else
+                    basepkgsupdate='true'
+                    checkpkgsdepslist+=($j)
+                fi
+            done
+            [[ $basepkgsupdate ]] && pkgsdepslist=(${checkpkgsdepslist[@]}) || continue
         fi
 
         # check package cache
         for j in "${pkgsdepslist[@]}"; do
             unset builtpkg
-            [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
+            [[ $aurdevelpkgsAver ]] && depsAver="$aurdevelpkgsAver" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
             [[ $PKGDEST && ! $rebuild ]] && GetBuiltPkg "$j-$depsAver" "$PKGDEST"
             if [[ $builtpkg ]]; then
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
@@ -940,7 +933,7 @@ MakePkgs() {
         unset builtpkgs builtdepspkgs
         for j in "${pkgsdepslist[@]}"; do
             unset builtpkg
-            [[ $aurdevelpkgsAall ]] && depsAver="$aurdevelpkgsAall" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
+            [[ $aurdevelpkgsAver ]] && depsAver="$aurdevelpkgsAver" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
             GetBuiltPkg "$j-$depsAver" "$clonedir/${basepkgs[$i]}"
             [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && builtdepspkgs+=($builtpkg) || builtpkgs+=($builtpkg)
         done
