@@ -585,6 +585,7 @@ ConflictChecks() {
                 if ! Proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
                     repoconflictingpkgs+=($j $k)
                     repoconflictingpkgsrm+=($k)
+                    repoconflictingpkgsadd+=($j)
                     Qprovides=($(expac -Ss '%S' "^$k$"))
                     [[ ! " ${Qprovides[@]} " =~ " $k " && ! " ${repoconflictingpkgsrm[@]} " =~ " $k " ]] && CheckRequires $k
                     break
@@ -848,10 +849,10 @@ MakePkgs() {
     [[ -e "$tmpdir/build.lck" ]] && Note "e" $"build.lck exists in $tmpdir" && exit 1
     touch "$tmpdir/build.lck"
 
-    # install provider packages
-    if [[ -n "${providerspkgs[@]}" ]]; then
-        Note "i" $"Installing ${colorW}${providerspkgs[@]}${reset} dependencies..."
-        sudo $pacmanbin -S ${providerspkgs[@]} --ask 36 --asdeps --noconfirm
+    # install provider packages and repo conflicting packages that makepkg --noconfirm cannot handle
+    if [[ -n "${providerspkgs[@]}" || -n "${repoconflictingpkgsadd[@]}" ]]; then
+        Note "i" $"Installing ${colorW}${providerspkgs[@]} ${repoconflictingpkgsadd[@]}${reset} dependencies..."
+        sudo $pacmanbin -S ${providerspkgs[@]} ${repoconflictingpkgsadd[@]} --ask 36 --asdeps --noconfirm
     fi
 
     # main
@@ -958,15 +959,15 @@ MakePkgs() {
     done
 
     # remove AUR deps
-    if [[ ! $installpkg && -n "${aurdepspkgs[@]}" ]]; then
-        aurdepspkgs=($(expac -Q '%n' "${aurdepspkgs[@]}"))
+    if [[ ! $installpkg ]]; then
+        [[ -n "${aurdepspkgs[@]}" ]] && aurdepspkgs=($(expac -Q '%n' "${aurdepspkgs[@]}"))
         if [[ -n "${aurdepspkgs[@]}" ]]; then
             Note "i" $"Removing installed AUR dependencies..."
             sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
         fi
         # readd removed conflicting packages
-        [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --asdeps --needed --noconfirm
-        [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --asdeps --needed --noconfirm
+        [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --ask 36 --asdeps --needed --noconfirm
+        [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --ask 36 --asdeps --needed --noconfirm
     fi
 
     # remove locks
