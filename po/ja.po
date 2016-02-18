@@ -248,7 +248,7 @@ msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
 msgstr ""
-"${colorW}${providerspkgs[@]}${reset} の依存関係をインストールしています..."
+"${colorW}${repoprovidersconflictingpkgs[@]}${reset} の依存関係をインストールしています..."
 
 #: pacaur:880
 msgid "${colorW}$j${reset} is up-to-date -- skipping"

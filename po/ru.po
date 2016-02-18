@@ -249,7 +249,7 @@ msgstr "build.lck существует в $tmpdir"
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
-msgstr "Установка зависимостей ${colorW}${providerspkgs[@]}${reset}..."
+msgstr "Установка зависимостей ${colorW}${repoprovidersconflictingpkgs[@]}${reset}..."
 
 #: pacaur:880
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
