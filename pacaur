@@ -450,6 +450,8 @@ ProviderChecks() {
         [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
     done
 
+    repoprovidersconflictingpkgs+=(${providerspkgs[@]})
+
     # pactree always return default choice so update binary deps list
     if [[ -n "${rmproviderpkgs[@]}" ]]; then
         # remove deps of default providers
@@ -585,7 +587,7 @@ ConflictChecks() {
                 if ! Proceed "n" $"$j and $k are in conflict ($i). Remove $k?"; then
                     repoconflictingpkgs+=($j $k)
                     repoconflictingpkgsrm+=($k)
-                    repoconflictingpkgsadd+=($j)
+                    repoprovidersconflictingpkgs+=($j)
                     Qprovides=($(expac -Ss '%S' "^$k$"))
                     [[ ! " ${Qprovides[@]} " =~ " $k " && ! " ${repoconflictingpkgsrm[@]} " =~ " $k " ]] && CheckRequires $k
                     break
@@ -850,9 +852,9 @@ MakePkgs() {
     touch "$tmpdir/build.lck"
 
     # install provider packages and repo conflicting packages that makepkg --noconfirm cannot handle
-    if [[ -n "${providerspkgs[@]}" || -n "${repoconflictingpkgsadd[@]}" ]]; then
-        Note "i" $"Installing ${colorW}${providerspkgs[@]} ${repoconflictingpkgsadd[@]}${reset} dependencies..."
-        sudo $pacmanbin -S ${providerspkgs[@]} ${repoconflictingpkgsadd[@]} --ask 36 --asdeps --noconfirm
+    if [[ -n "${repoprovidersconflictingpkgs[@]}" ]]; then
+        Note "i" $"Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} dependencies..."
+        sudo $pacmanbin -S ${repoprovidersconflictingpkgs[@]} --ask 36 --asdeps --noconfirm
     fi
 
     # main
