@@ -1103,14 +1103,13 @@ GetInstallScripts() {
 }
 
 GetBuiltPkg() {
-    builtpkg="$2/$1-${CARCH}${PKGEXT}"
-    [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any${PKGEXT}"
-    # check no compression in case extension is locally overwritten
-    [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-${CARCH}.pkg.tar"
-    [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any.pkg.tar"
-    # fallback check for repository packages in pacman cache
-    [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-${CARCH}.pkg.tar.xz"
-    [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any.pkg.tar.xz"
+    # check PKGEXT suffixe first, then default .xz suffixe for repository packages in pacman cache
+    # and lastly all remaining suffixes in case PKGEXT is locally overridden
+    for pkgext in ${PKGEXT} .tar.xz .tar .tar.gz .tar.bz2 .tar.lzo .tar.lrz .tar.Z; do
+        builtpkg="$2/$1-${CARCH}$pkgext"
+        [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any$pkgext"
+        [[ -f "$builtpkg" ]] && break;
+    done
     [[ ! -f "$builtpkg" ]] && unset builtpkg
 }
 
