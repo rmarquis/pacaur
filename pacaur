@@ -59,7 +59,7 @@ source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # set up directories
-[[ ! -d "$tmpdir" ]] && mkdir -m 700 -p "$tmpdir"
+[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir" -m 700
 [[ ! -d "$clonedir" ]] && mkdir -p "$clonedir"
 
 #
