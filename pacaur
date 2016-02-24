@@ -59,7 +59,7 @@ source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # set up directories
-[[ ! -d "$tmpdir" ]] && mkdir -m 700 -p "$tmpdir"
+[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir" -m 700
 [[ ! -d "$clonedir" ]] && mkdir -p "$clonedir"
 
 #
@@ -226,7 +226,7 @@ FindDepsAur() {
             unset prevname prevver prevaurver
             prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
             prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
-            prevaurver=($(GetJson "varvar" "$json" "Version" "$prevname"))
+            prevaurver=$(GetJson "varvar" "$json" "Version" "$prevname")
 
             # not found in AUR nor repo
             if [[ ! $prevaurver ]]; then
