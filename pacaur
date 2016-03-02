@@ -80,7 +80,7 @@ ClassifyPkgs() {
             for i in "${norepopkgs[@]}"; do
                 [[ ! " ${noaurpkgs[@]} " =~ [a-zA-Z0-9\.\+-]+\/$i[^a-zA-Z0-9\.\+-] ]] && aurpkgs+=($i) # do not search repo/pkgs in AUR
             done
-            repopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${noaurpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | LC_COLLATE=C sort -u)))
+            repopkgs=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${noaurpkgs[@]}")))
         fi
     else
         [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
@@ -114,7 +114,7 @@ UpgradeAur() {
     done
 
     # foreign packages check
-    aurforeignpkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allaurpkgs[@]} | LC_COLLATE=C sort -u)))
+    aurforeignpkgs=($(grep -xvf <(printf '%s\n' "${allaurpkgs[@]}") <(printf '%s\n' "${foreignpkgs[@]}")))
     for i in "${aurforeignpkgs[@]}"; do
         Note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
     done
@@ -218,7 +218,11 @@ FindDepsAur() {
     json=$(DownloadJson ${depspkgsaur[@]})
 
     # target check
-    [[ -z "${prevdepspkgsaur[@]}" ]] && errdeps+=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< $(GetJson "var" "$json" "Name") | sort -u) <(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u)))
+    if [[ -z "${prevdepspkgsaur[@]}" ]]; then
+        errdepsname=($(GetJson "var" "$json" "Name"))
+        errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${errdepsname[@]}")))
+        errdeps+=($(grep -xvf <(printf '%s\n' "${errdepsname[@]}") <(printf '%s\n' "${aurpkgs[@]}")))
+    fi
 
     # AUR versioning check
     if [[ -n "${prevdepspkgsaur[@]}" ]]; then
@@ -289,11 +293,13 @@ FindDepsAur() {
         # reorder devel
         if [[ $devel ]]; then
             [[ ! $foreign ]] && depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
-            depspkgs=($(LC_COLLATE=C comm -3 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${vcsdepspkgs[@]} | LC_COLLATE=C sort -u)))
+            depspkgs=($(grep -xvf <(printf '%s\n' "${depspkgs[@]}") <(printf '%s\n' "${vcsdepspkgs[@]}")))
+            depspkgs+=($(grep -xvf <(printf '%s\n' "${vcsdepspkgs[@]}") <(printf '%s\n' "${depspkgs[@]}")))
+            depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u))
         fi
         # remove installed binary packages only
         if [[ $foreign ]]; then
-            depspkgs=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${foreignpkgs[@]} | LC_COLLATE=C sort -u)))
+            depspkgs=($(grep -xf <(printf '%s\n' "${depspkgs[@]}") <(printf '%s\n' "${foreignpkgs[@]}")))
         fi
     fi
 
@@ -316,11 +322,11 @@ FindDepsAur() {
                     [[ " ${assumedepspkgs[@]} " =~ " ${assumeinstalled[$i]} " ]] && depspkgs[$j]=${assumeinstalled[$i]};
                 done
             done
-            depspkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${assumeinstalled[@]} | LC_COLLATE=C sort -u)))
+            depspkgs=($(grep -xvf <(printf '%s\n' "${assumeinstalled[@]}") <(printf '%s\n' "${depspkgs[@]}")))
         fi
         if [[ -n "${depspkgs[@]}" ]]; then
             depspkgsaur=($(LANG=C $pacmanbin -Sp ${depspkgs[@]} 2>&1 >/dev/null | awk '{print $NF}'))
-            repodeps+=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u)  <(tr ' ' '\n' <<< ${depspkgsaur[@]} | LC_COLLATE=C sort -u)))
+            repodeps+=($(grep -xvf <(printf '%s\n' "${depspkgsaur[@]}") <(printf '%s\n' "${depspkgs[@]}")))
         fi
     fi
     unset depspkgs
@@ -374,7 +380,7 @@ FindDepsRepo() {
         done
         if [[ -n "${providersrepopkgsrm[@]}" ]]; then
             providersrepopkgsrm=($($pacmanbin -T ${providersrepopkgsrm[@]} | sort -u))
-            allrepopkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${allrepopkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${providersrepopkgsrm[@]} | LC_COLLATE=C sort -u)))
+            allrepopkgs=($(grep -xvf <(printf '%s\n' "${providersrepopkgsrm[@]}") <(printf '%s\n' "${allrepopkgs[@]}")))
         fi
     fi
 
@@ -465,7 +471,7 @@ ProviderChecks() {
             providerpkgsrm+=($(pactree -su "$i"))
         done
         providerpkgsrm=($($pacmanbin -T ${providerpkgsrm[@]} | sort -u))
-        repodepspkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${repodepspkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${providerpkgsrm[@]} | LC_COLLATE=C sort -u)))
+        repopkgspkgs=($(grep -xvf <(printf '%s\n' "${providerpkgsrm[@]}") <(printf '%s\n' "${repodepspkgs[@]}")))
 
         # add deps of selected providers instead
         providerspkgs=($(tr '|' ' ' <<< ${providerspkgs[@]}))
@@ -502,8 +508,8 @@ ConflictChecks() {
     for ((i=0; i<${#Aconflicts[@]}; i++)); do
         Aconflicts[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aconflicts[$i]})
     done
-    aurconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${Aprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
-    aurconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${Aconflicts[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQprovides[@]} | LC_COLLATE=C sort -u)))
+    aurconflicts+=($(grep -xf <(printf '%s\n' "${Aprovides[@]}") <(printf '%s\n' "${allQconflicts[@]}")))
+    aurconflicts+=($(grep -xf <(printf '%s\n' "${Aconflicts[@]}") <(printf '%s\n' "${allQprovides[@]}")))
     aurconflicts=($(tr ' ' '\n' <<< ${aurconflicts[@]} | LC_COLLATE=C sort -u))
 
     for i in "${aurconflicts[@]}"; do
@@ -577,8 +583,8 @@ ConflictChecks() {
             fi
         done
 
-        repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${repodepsprovides[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQconflicts[@]} | LC_COLLATE=C sort -u)))
-        repoconflicts+=($(LC_COLLATE=C comm -12 <(tr ' ' '\n' <<< ${checkedrepodepsconflicts[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${allQprovides[@]} | LC_COLLATE=C sort -u)))
+        repoconflicts+=($(grep -xf <(printf '%s\n' "${repodepsprovides[@]}") <(printf '%s\n' "${allQconflicts[@]}")))
+        repoconflicts+=($(grep -xf <(printf '%s\n' "${checkedrepodepsconflicts[@]}") <(printf '%s\n' "${allQprovides[@]}")))
         repoconflicts=($(tr ' ' '\n' <<< ${repoconflicts[@]} | LC_COLLATE=C sort -u))
     fi
 
@@ -985,7 +991,7 @@ MakePkgs() {
 
     # new orphan packages check
     orphanpkgs=($($pacmanbin -Qdtq))
-    neworphanpkgs=($(LC_COLLATE=C comm -23 <(tr ' ' '\n' <<< ${orphanpkgs[@]} | LC_COLLATE=C sort -u) <(tr ' ' '\n' <<< ${oldorphanpkgs[@]} | LC_COLLATE=C sort -u)))
+    neworphanpkgs=($(grep -xvf <(printf '%s\n' "${oldorphanpkgs[@]}") <(printf '%s\n' "${orphanpkgs[@]}")))
     for i in "${neworphanpkgs[@]}"; do
         Note "w" $"${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
     done
