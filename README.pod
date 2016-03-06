@@ -429,3 +429,5 @@ B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
 B<[ru] - Русский> - "kyak"
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
+
+B<[nl] - Nederlands - "Yoshi2889"
