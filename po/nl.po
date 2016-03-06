@@ -6,6 +6,13 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Language: nl\n"
 "X-Source-Language: C\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: nl\n"
+"X-Generator: Poedit 1.8.7\n"
 
 #: pacaur:105
 msgid "${colorW}Starting AUR upgrade...${reset}"
@@ -198,10 +205,12 @@ msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Pakket(ten) ophalen...${reset}"
 
 #: pacaur:751
+#, fuzzy
 msgid "View $i build files diff?"
 msgstr "verschil in $i build bestanden bekijken?"
 
 #: pacaur:754
+#, fuzzy
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "verschil in build bestanden van ${colorW}$i${reset} bekeken"
 
@@ -327,28 +336,34 @@ msgid "Sources to keep:"
 msgstr "Bronnen om te houden:"
 
 #: pacaur:1077
+#, fuzzy
 msgid "All development packages sources"
 msgstr "Alle ontwikkelings pakketten bronnen"
 
 #: pacaur:1078
+#, fuzzy
 msgid "AUR source cache directory:"
 msgstr "AUR bronnen cache map:"
 
 #: pacaur:1080
+#, fuzzy
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr ""
 "Wilt u alle niet-ontwikkelings bestanden uit de AUR bronnen cache "
 "verwijderen?"
 
 #: pacaur:1081
+#, fuzzy
 msgid "removing non development files from source cache..."
 msgstr "alle niet-ontwikkelings bestanden uit de bronnen cache verwijderen..."
 
 #: pacaur:1085
+#, fuzzy
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "Wilt u ALLE bestanden uit de AUR bronnen cache verwijderen?"
 
 #: pacaur:1086
+#, fuzzy
 msgid "removing all files from AUR source cache..."
 msgstr "alle bestanden uit de AUR bronnen cache verwijderen..."
 
