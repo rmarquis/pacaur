@@ -250,12 +250,6 @@ The available options are:
 
 =over 4
 
-=item B<clonedir>
-
-Define the directory into which the packages build files (PKGBUILD, .SRCINFO
-and install script files) will be cloned. Default is B<$AURDEST>, with a
-fallback on I</tmp/pacaurtmp-$USER>.
-
 =item B<editor>
 
 Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
@@ -295,8 +289,15 @@ packages. Default is B<false>.
 =item B<AURDEST>
 
 Determines where the packages build files (PKGBUILD, .SRCINFO and install script
-files) will be cloned. You might want to set the clone directory to a persistent
-location to make full use of cloned build files history.
+files) will be cloned.
+
+If this environment variable is not defined, the clone directory will be set to
+
+  $XDG_CACHE_HOME/pacaur
+
+with a fall back to
+
+  $HOME/.cache/pacaur
 
 =back
 
@@ -354,10 +355,10 @@ through the I<VerbosePkgLists> option.
 
 =item B<build files comparison>
 
-To be able to display build files comparison with I<diff> value of the
-I<displaybuildfiles> config option, the clone directory (set by default to
-I</tmp> on a temporary filesystem residing in volatile memory) or the alternative
-I<$AURDEST> environment variable should also be changed to a persistent location.
+To be able to display build files comparison, the I<displaybuildfiles> config
+option should be set to I<diff>. The clone directory (set by default to
+I<$XDG_CACHE_HOME/pacaur>) can be changed through the alternative
+I<$AURDEST> environment variable. It should always be set to a persistent location.
 
 =item B<fallback>
 

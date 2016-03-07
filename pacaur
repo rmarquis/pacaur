@@ -24,6 +24,7 @@ fi
 configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/pacaur"
 userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
 userpacmandir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacman"
+usercachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/pacaur"
 
 # source makepkg variables
 if [[ -r "$MAKEPKG_CONF" ]]; then
@@ -39,7 +40,7 @@ fi
 
 # set variables
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
-clonedir="${AURDEST:-$tmpdir}"              # clone directory
+clonedir="${AURDEST:-$usercachedir}"        # clone directory
 editor="${EDITOR:-vi}"                      # build files editor
 displaybuildfiles=full                      # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
