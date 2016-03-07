@@ -422,6 +422,8 @@ B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury, TSUYUSATO "MakeNowJust" Kitsune
 
+B<[nl] - Nederlands> - "Yoshi2889"
+
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
 B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
@@ -430,4 +432,3 @@ B<[ru] - Русский> - "kyak"
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
 
-B<[nl] - Nederlands> - "Yoshi2889"
