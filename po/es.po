@@ -169,11 +169,11 @@ msgstr "${binarysize[$i]} MiB"
 
 #: pacaur:701
 msgid "Repo Download Size:"
-msgstr "Tamaño de la Descarga:"
+msgstr "Tamaño de la Descarga del Repositorio:"
 
 #: pacaur:701
 msgid "Repo Installed Size:"
-msgstr "Tamaño de la Instalación:"
+msgstr "Tamaño de la Instalación del Repositorio:"
 
 #: pacaur:701
 msgid "$sumk MiB"
