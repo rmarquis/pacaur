@@ -412,7 +412,7 @@ B<[ca] - Català> - Alex "alexhenrie" Henrie
 
 B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "HerrNieschnell", "pszalanski", Stefan "rumpelsepp" Tatschner
 
-B<[es] - Español> - Germán "gosella" Osella Massa
+B<[es] - Español> - Germán "gosella" Osella Massa, Ismael "ChuckDaniels87" González
 
 B<[fr] - Français> - "spider-mario", "Neitsab"
 
