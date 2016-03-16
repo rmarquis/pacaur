@@ -264,6 +264,13 @@ FindDepsAur() {
         done
     fi
 
+    # workaround for limited RPC support of architecture dependent fields
+    if [[ ${CARCH} == 'i686' ]]; then
+        for i in "${depspkgs[@]}"; do
+             [[ -n "$(grep -E "^lib32\-" <<< $i)" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^$i$//g"))
+        done
+    fi
+
     # remove installed deps
     if [[ ! $foreign && ! $devel ]]; then
         depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
