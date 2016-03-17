@@ -266,8 +266,8 @@ FindDepsAur() {
 
     # workaround for limited RPC support of architecture dependent fields
     if [[ ${CARCH} == 'i686' ]]; then
-        for i in "${depspkgs[@]}"; do
-             [[ -n "$(grep -E "^lib32\-" <<< $i)" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^$i$//g"))
+        for ((i=0; i<${#depspkgs[@]}; i++)); do
+             [[ -n "$(grep -E "^lib32\-" <<< ${depspkgs[$i]})" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^${depspkgs[$i]}$//g"))
         done
     fi
 
