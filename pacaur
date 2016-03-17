@@ -530,8 +530,8 @@ ConflictChecks() {
                     done
                     Aprovides+=($(GetJson "arrayvar" "$json" "Provides" "$j"))
                     # remove AUR versioning
-                    for ((i=0; i<${#Aprovides[@]}; i++)); do
-                        Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
+                    for ((l=0; l<${#Aprovides[@]}; l++)); do
+                        Aprovides[$l]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$l]})
                     done
                     [[ ! " ${Aprovides[@]} " =~ " $k " && ! " ${aurconflictingpkgsrm[@]} " =~ " $k " ]] && CheckRequires $k
                     break
@@ -543,8 +543,8 @@ ConflictChecks() {
             fi
             Aprovides+=($(GetJson "arrayvar" "$json" "Provides" "$j"))
             # remove AUR versioning
-            for ((i=0; i<${#Aprovides[@]}; i++)); do
-                Aprovides[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$i]})
+            for ((l=0; l<${#Aprovides[@]}; l++)); do
+                Aprovides[$l]=$(awk -F ">|<|=" '{print $1}' <<< ${Aprovides[$l]})
             done
             [[ ! " ${Aprovides[@]} " =~ " $k " && ! " ${aurconflictingpkgsrm[@]} " =~ " $k " ]] && CheckRequires $k
         done
