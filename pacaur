@@ -268,7 +268,7 @@ FindDepsAur() {
     if [[ ${CARCH} == 'i686' ]]; then
         depspkgstmp=(${depspkgs[@]})
         for ((i=0; i<${#depspkgstmp[@]}; i++)); do
-             [[ -n "$(grep -E "^lib32\-" <<< ${depspkgstmp[$i]})" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^${depspkgs[$i]}$//g"))
+             [[ -n "$(grep -E "^lib32\-" <<< ${depspkgstmp[$i]})" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^${depspkgstmp[$i]}$//g"))
         done
     fi
 
