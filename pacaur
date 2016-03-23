@@ -68,6 +68,8 @@ source "$configdir/config"
 #
 
 ClassifyPkgs() {
+    local noaurpkgs norepopkgs
+    # global aurpkgs repopkgs
     if [[ $fallback = true ]]; then
         [[ $repo ]] && repopkgs=(${pkgs[@]})
         [[ $aur ]] && aurpkgs=(${pkgs[@]})
@@ -103,6 +105,8 @@ Core() {
 }
 
 UpgradeAur() {
+    local foreignpkgs allaurpkgs allaurpkgsAver allaurpkgsQver aurforeignpkgs i
+    # global aurpkgs json
     Note "i" $"${colorW}Starting AUR upgrade...${reset}"
 
     foreignpkgs=($($pacmanbin -Qmq))
@@ -134,6 +138,8 @@ UpgradeAur() {
 }
 
 IgnoreChecks() {
+    local checkaurpkgs checkaurpkgsAname checkaurpkgsAver checkaurpkgsQver i
+    # global aurpkgs rmaurpkgs json
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     checkaurpkgs=(${aurpkgs[@]})
@@ -168,6 +174,8 @@ IgnoreChecks() {
 }
 
 DepsSolver() {
+    local aurpkgsproviders aurpkgsprovidersname i
+    # global aurdeps deps errdeps foreignpkgs repodeps json depsAname depsAver depsAood depsQver
     Note "i" $"resolving dependencies..."
 
     # remove AUR pkgs versioning
@@ -213,6 +221,8 @@ DepsSolver() {
 }
 
 FindDepsAur() {
+    local errdepsname depspkgs depspkgstmp builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
+    # global depspkgsaur json errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=(${aurpkgs[@]})
 
@@ -370,6 +380,8 @@ FindDepsAur() {
 }
 
 FindDepsRepo() {
+    local allrepopkgs providersrepopkgs providersrepopkgsrm i j
+    # global repodeps
     [[ -z "${repodeps[@]}" ]] && return
 
     # reduce root binary deps
@@ -397,6 +409,8 @@ FindDepsRepo() {
 }
 
 IgnoreDepsChecks() {
+    local i
+    # global ignoredpkgs aurpkgs aurdepspkgs rmaurpkgs deps repodepspkgs
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     # add checked targets
@@ -429,6 +443,8 @@ IgnoreDepsChecks() {
 }
 
 ProviderChecks() {
+    local allproviders providersdeps providers providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
+    # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
     [[ -z "${repodepspkgs[@]}" ]] && return
 
     allproviders=($(expac -S '%S' "${repodepspkgs[@]}" | sort -u))
@@ -500,6 +516,9 @@ ProviderChecks() {
 }
 
 ConflictChecks() {
+    local allQprovides allQconflicts Aprovides Aconflicts aurconflicts aurAconflicts i j k
+    local repodepsprovides repodepsconflicts checkedrepodepsconflicts repodepsconflictsname repodepsconflictsver localver repoconflictingpkgs
+    # global deps depsAname json aurdepspkgs aurconflictingpkgs aurconflictingpkgsrm depsQver repodepspkgs repoconflictingpkgsrm repoprovidersconflictingpkgs
     Note "i" $"looking for inter-conflicts..."
 
     allQprovides=($(expac -Q '%n'))
@@ -625,6 +644,8 @@ ConflictChecks() {
 }
 
 ReinstallChecks() {
+    local i depsAtmp
+    # global aurpkgs aurdepspkgs deps aurconflictingpkgs depsAname depsQver depsAver depsAood
     depsAtmp=(${depsAname[@]})
     for i in "${!depsAtmp[@]}"; do
         [[ ! $foreign ]] && [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
@@ -648,12 +669,17 @@ ReinstallChecks() {
 }
 
 OutofdateChecks() {
+    local i
+    # global depsAname depsAver depsAood
     for i in "${!depsAname[@]}"; do
         [[ "${depsAood[$i]}" -gt 0 ]] && Note "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
     done
 }
 
 Prompt() {
+    local i binaryksize sumk summ builtpkg cachedpkgs strname stroldver strnewver strsize action
+    local depsver repodepspkgsver strrepodlsize strrepoinsize strsumk strsumm lreposizelabel lreposize
+    # global repodepspkgs repodepsSver depsAname depsAver depsArepo depsAcached lname lver lsize deps depsQver repodepspkgs repodepsSrepo repodepsQver repodepsSver
     # compute binary size
     if [[ -n "${repodepspkgs[@]}" ]]; then
         binaryksize=($(expac -S -1 '%k' "${repodepspkgs[@]}"))
@@ -736,6 +762,8 @@ Prompt() {
 }
 
 DownloadPkgs() {
+    local i
+    # global basepkgs
     Note "i" $"${colorW}Retrieving package(s)...${reset}"
     GetPkgbase $@
 
@@ -759,6 +787,8 @@ DownloadPkgs() {
 }
 
 EditPkgs() {
+    local timestamp i j
+    # global cachedpkgs installscripts editor
     [[ $noedit ]] && return
     for i in "$@"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
@@ -1022,6 +1052,8 @@ SearchInfoAur() {
 }
 
 CheckRepo() {
+    local repopkgsQood repopkgsQver repopkgsSver repopkgsSrepo repopkgsQgrp repopkgsQignore i
+    # global lname lQver lSver lrepo lgrp
     GetIgnoredPkgs
     repopkgsQood=($($pacmanbin -Quq $@))
     if [[ -n "${repopkgsQood[@]}" ]]; then
@@ -1046,6 +1078,8 @@ CheckRepo() {
 }
 
 CheckAur() {
+    local foreignpkgs json aurpkgsAname aurpkgsAver aurpkgsQver aurpkgsQood aurpkgsQignore i
+    # global lname lQver lSver lrepo lgrp
     GetIgnoredPkgs
 
     foreignpkgs=($($pacmanbin -Qmq))
@@ -1118,11 +1152,14 @@ CleanCache() {
 }
 
 GetIgnoredPkgs() {
+    # global ignoredpkgs
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
 GetInstallScripts() {
+    local installscriptspath
+    # global installscripts
     [[ ! -d "$clonedir/$1" ]] && return
     unset installscriptspath installscripts
     installscriptspath=($(find "$clonedir/$1/" -maxdepth 1 -name "*.install"))
@@ -1130,6 +1167,8 @@ GetInstallScripts() {
 }
 
 GetBuiltPkg() {
+    local pkgext
+    # global builtpkg
     # check PKGEXT suffixe first, then default .xz suffixe for repository packages in pacman cache
     # and lastly all remaining suffixes in case PKGEXT is locally overridden
     for pkgext in ${PKGEXT} .pkg.tar.xz .pkg.tar .pkg.tar.gz .pkg.tar.bz2 .pkg.tar.lzo .pkg.tar.lrz .pkg.tar.Z; do
@@ -1141,6 +1180,8 @@ GetBuiltPkg() {
 }
 
 GetPkgbase() {
+    local i
+    # global json pkgsbase basepkgs
     json=$(DownloadJson "$@")
     for i in "$@"; do
         pkgsbase+=($(GetJson "varvar" "$json" "PackageBase" "$i"))
@@ -1152,12 +1193,14 @@ GetPkgbase() {
 }
 
 DownloadJson() {
+    local urlencodedpkgs urlargs
     urlencodedpkgs=($(sed 's/+/%2b/g;s/@/%40/g' <<< $@)) # pkgname consists of alphanum@._+-
     urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
     # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
     if [[ "${#urlargs}" -lt 8125 ]]; then
         curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs"
     else
+        local urlencodedpkgs1 urlencodedpkgs2 urlargs1 urlargs2
         # split and merge json stream
         urlpkgs=($@)
         urlencodedpkgs1=($(sed 's/+/%2b/g;s/@/%40/g' <<< ${urlpkgs[@]:0:$((${#urlpkgs[@]}/2))}))
@@ -1190,6 +1233,7 @@ GetJson() {
 }
 
 CheckRequires() {
+    local Qrequires
     Qrequires=$(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk '{print $1}' | tr '\n' ' ')
     if [[ -n "${Qrequires[@]}" ]]; then
         Note "f" $"failed to prepare transaction (could not satisfy dependencies)"
@@ -1198,6 +1242,7 @@ CheckRequires() {
 }
 
 Proceed() {
+    local Y y N n answer
     Y="$(gettext pacman Y)"; y="${Y,,}";
     N="$(gettext pacman N)"; n="${N,,}"
     case "$1" in
@@ -1230,7 +1275,7 @@ Note() {
 }
 
 GetLength() {
-    local length=0
+    local length=0 i
     for i in "$@"; do
         x=${#i}
         [[ $x -gt $length ]] && length=$x
