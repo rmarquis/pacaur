@@ -1113,7 +1113,7 @@ GetInstallScripts() {
 GetBuiltPkg() {
     # check PKGEXT suffixe first, then default .xz suffixe for repository packages in pacman cache
     # and lastly all remaining suffixes in case PKGEXT is locally overridden
-    for pkgext in ${PKGEXT} .tar.xz .tar .tar.gz .tar.bz2 .tar.lzo .tar.lrz .tar.Z; do
+    for pkgext in ${PKGEXT} .pkg.tar.xz .pkg.tar .pkg.tar.gz .pkg.tar.bz2 .pkg.tar.lzo .pkg.tar.lrz .pkg.tar.Z; do
         builtpkg="$2/$1-${CARCH}$pkgext"
         [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any$pkgext"
         [[ -f "$builtpkg" ]] && break;
