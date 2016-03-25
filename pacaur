@@ -50,6 +50,7 @@ displaybuildfiles=full                      # display build files (none|diff|ful
 fallback=true                               # pacman fallback to the AUR
 silent=false                                # silence output
 sortby=popularity                           # sort method (name|votes|popularity)
+sortorder=descending                        # sort order (ascending|descending)
 sudoloop=false                              # prevent sudo timeout
 
 # set pacman binary
@@ -1047,8 +1048,7 @@ MakePkgs() {
 
 SearchInfoAur() {
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
-        [[ $sortby = votes ]] && coweropts+=("--rsort=votes");
-        [[ $sortby = popularity ]] && coweropts+=("--rsort=popularity");
+        [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
     fi
     cower ${coweropts[@]} $@
 }
@@ -1382,9 +1382,8 @@ while [[ -n "${!OPTIND}" ]]; do
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
                     ignorerepo=*) coweropts+=("--${OPTARG}");;
-                    asort) coweropts+=("--sort=name");;
-                    vsort) coweropts+=("--rsort=votes");;
-                    psort) coweropts+=("--rsort=popularity");;
+                    sort) coweropts+=("--sort ${!OPTIND}"); shift;;
+                    rsort) coweropts+=("--rsort ${!OPTIND}"); shift;;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     nodeps) nodeps=true; pacopts+=("--nodeps"); makeopts+=("--nodeps"); ((count++));;

@@ -195,17 +195,10 @@ When searching the AUR, show results marked as out of date. This is the default
 behavior. When the I<IgnoreOOD> option in the cower config file is enabled, this
 takes precedence over it.
 
-=item B<--asort>
+=item B<--sort> <KEY>, B<--rsort> <KEY>
 
-When searching the AUR, sort the results by name in alphabetical order.
-
-=item B<--vsort>
-
-When searching the AUR, sort the results by decreasing number of votes.
-
-=item B<--psort>
-
-When searching the AUR, sort the results by decreasing popularity.
+When searching the AUR, sort the results in ascending or descending order,
+respectively, by I<KEY> where I<KEY> is B<name>, B<votes> or B<popularity>.
 
 =item B<--domain> <FQDN>
 
@@ -273,6 +266,11 @@ or the I<$LOGDEST> directory should any error occur. Default is B<false>.
 
 When searching the AUR, sort the results by I<name>, number of I<votes> or
 I<popularity>. Default is B<popularity>.
+
+=item B<sortorder>
+
+When searching the AUR, sort the results in I<ascending> or I<descending> order.
+Default is B<descending>.
 
 =item B<sudoloop>
 
