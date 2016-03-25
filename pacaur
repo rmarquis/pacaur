@@ -834,6 +834,9 @@ EditPkgs() {
 }
 
 MakePkgs() {
+    local oldorphanpkgs neworphanpkgs orphanpkgs pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
+    # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs
+
     # download
     DownloadPkgs ${deps[@]}
     EditPkgs ${basepkgs[@]}
