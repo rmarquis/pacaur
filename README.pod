@@ -200,6 +200,12 @@ takes precedence over it.
 When searching the AUR, sort the results in ascending or descending order,
 respectively, by I<KEY> where I<KEY> is B<name>, B<votes> or B<popularity>.
 
+=item B<--by> <FIELD>
+
+When searching the AUR, search by I<FIELD> where I<FIELD> is B<name>, B<name-desc>,
+or B<maintainer> to search for packages by their name, name and description, or by
+the package maintainer, respectively. The default is to search by name-desc.
+
 =item B<--domain> <FQDN>
 
 Point at a domain other than the default I<aur.archlinux.org>.

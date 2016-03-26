@@ -1384,6 +1384,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     ignorerepo=*) coweropts+=("--${OPTARG}");;
                     sort) coweropts+=("--sort ${!OPTIND}"); shift;;
                     rsort) coweropts+=("--rsort ${!OPTIND}"); shift;;
+                    by) coweropts+=("--by ${!OPTIND}"); shift;;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     nodeps) nodeps=true; pacopts+=("--nodeps"); makeopts+=("--nodeps"); ((count++));;
