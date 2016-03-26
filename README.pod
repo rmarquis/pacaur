@@ -184,16 +184,12 @@ files in the clone directory named I<pkgname-pkgver-pkgrel-arch-function.log>.
 Additional pacman output for providers and cached packages installation will
 also be hidden.
 
-=item B<--ignore-ood>
+=item B<--ignore-ood>, B<--no-ignore-ood>
 
-When searching the AUR, ignore all results marked as out of date. Can be enabled
-by default with the I<IgnoreOOD> option in the cower config file.
-
-=item B<--no-ignore-ood>
-
-When searching the AUR, show results marked as out of date. This is the default
-behavior. When the I<IgnoreOOD> option in the cower config file is enabled, this
-takes precedence over it.
+When searching the AUR, ignore all results marked as out of date or do not ignore
+results marked as out of date, respectively. The default is to not ignore results
+marked as out of date. This can be changed with the I<IgnoreOOD> option in the
+cower config file.
 
 =item B<--sort> <KEY>, B<--rsort> <KEY>
 
