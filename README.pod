@@ -377,8 +377,8 @@ the opinion that PKGBUILDs should always provide default compilation options.
 
 =item B<host name error>
 
-If a lot of "Couldn't resolve host name" and "Timeout was reached" messages are
-displayed while checking for updates although the internet connection is
+If a lot of "Could not connect to the AUR" and "Timeout was reached" messages
+are displayed while checking for updates although the internet connection is
 working correctly, ensure your local I<DNS server> is correctly configured to
 improve name lookups. Using Google's primary DNS (8.8.8.8 and 8.8.4.4) might
 also help.
