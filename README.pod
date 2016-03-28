@@ -65,8 +65,8 @@ Show info for I<target(s)>.
 
 =item B<-d, --download>
 
-Clone the I<target(s)> build files. Pass this option twice to fetch dependencies
-(done recursively).
+Clone the I<target(s)> build files. Pass this option twice to fetch uninstalled
+dependencies (done recursively).
 
 =item B<-m, --makepkg>
 
@@ -149,7 +149,7 @@ development packages, as well as I<nightly> build packages.
 =item B<--foreign>
 
 When used with build, install and update operations, also consider already
-installed foreign dependencies.
+installed foreign dependencies when solving the dependency tree.
 
 =item B<--ignore> I<target(s)>
 
