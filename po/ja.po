@@ -9,29 +9,29 @@ msgstr ""
 "X-Language: ja\n"
 "X-Source-Language: C\n"
 
-#: pacaur:105
+#: pacaur:115
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "${colorW}AURの更新を開始...${reset}"
 
-#: pacaur:113
+#: pacaur:129
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr "${colorW}$i${reset} はAURに ${colorY}存在しません${reset} -- 省略"
 
-#: pacaur:141 pacaur:195 pacaur:1047
+#: pacaur:159 pacaur:215 pacaur:1111
 msgid "latest"
 msgstr "最新版"
 
-#: pacaur:146
+#: pacaur:164
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "${checkaurpkgs[i]} は IgnorePkg/IgnoreGroup に記入されています。それでもイン"
 "ストールしますか？"
 
-#: pacaur:147
+#: pacaur:165
 msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
 msgstr "${colorW}${checkaurpkgs[$i]}${reset}: 更新を無視します"
 
-#: pacaur:152
+#: pacaur:170
 msgid ""
 "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
@@ -41,33 +41,33 @@ msgstr ""
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:164
+#: pacaur:184
 msgid "resolving dependencies..."
 msgstr "依存関係を解決しています..."
 
-#: pacaur:200
+#: pacaur:220
 msgid "no results found for $i"
 msgstr "$i は見つかりませんでした"
 
-#: pacaur:323
+#: pacaur:358
 msgid "dependency cycle detected"
 msgstr "循環した依存関係を検出しました"
 
-#: pacaur:387 pacaur:402
+#: pacaur:426 pacaur:441
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: 更新を無視します"
 
-#: pacaur:388 pacaur:394 pacaur:399 pacaur:403
+#: pacaur:427 pacaur:433 pacaur:438 pacaur:442
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "依存関係 '${colorW}$i${reset}' が解決されませんでした"
 
-#: pacaur:398
+#: pacaur:437
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "$i の依存関係は IgnorePkg/IgnoreGroup に記入されています。それでもインストー"
 "ルしますか？"
 
-#: pacaur:429
+#: pacaur:470
 msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
@@ -75,43 +75,43 @@ msgstr ""
 "${colorW}${providersdeps[$i]}${reset}を提供するパッケージは${#providers[@]}個"
 "あります"
 
-#: pacaur:436
+#: pacaur:477
 msgid "Enter a number (default=0):"
 msgstr "番号を入力してください (default=0):"
 
-#: pacaur:441
+#: pacaur:482
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "無効: 0から${providersnb}の数値を入力してください"
 
-#: pacaur:443
+#: pacaur:484
 msgid "invalid number: $nb"
 msgstr "無効な番号: $nb"
 
-#: pacaur:482
+#: pacaur:526
 msgid "looking for inter-conflicts..."
 msgstr "衝突するパッケージが無いか確認しています"
 
-#: pacaur:518 pacaur:587
+#: pacaur:562 pacaur:631
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j と $k が衝突しています($i)。$k を削除しますか？"
 
-#: pacaur:532 pacaur:595
+#: pacaur:576 pacaur:639
 msgid "unresolvable package conflicts detected"
 msgstr "解決できないパッケージの衝突が検出されました"
 
-#: pacaur:533 pacaur:596
+#: pacaur:577 pacaur:640
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "処理の準備に失敗しました (衝突する依存関係)"
 
-#: pacaur:534 pacaur:597
+#: pacaur:578 pacaur:641
 msgid "$j and $k are in conflict"
 msgstr "$j と $k は衝突しています"
 
-#: pacaur:613
+#: pacaur:659
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} の最新版 -- 取得"
 
-#: pacaur:616
+#: pacaur:662
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
@@ -119,12 +119,12 @@ msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} は最新です -- 再インストー"
 "ル"
 
-#: pacaur:618
+#: pacaur:664
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} は最新です -- 省略"
 
-#: pacaur:631
+#: pacaur:679
 #, fuzzy
 msgid ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
@@ -134,145 +134,146 @@ msgstr ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset}は次の日付より ${colorR}out "
 "of date${reset} になっています: ${colorY}$(date -d "
 
-#: pacaur:656
+#: pacaur:707
 msgid "(cached)"
 msgstr "(キャッシュ済み)"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Name"
 msgstr "名前"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Old Version"
 msgstr "古いバージョン"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "New Version"
 msgstr "新しいバージョン"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Download Size"
 msgstr "ダウンロード容量"
 
-#: pacaur:672 pacaur:696
+#: pacaur:722 pacaur:746
 msgid "AUR Packages  (${#deps[@]}):"
 msgstr "AURパッケージ (${#deps[@]}):"
 
-#: pacaur:682 pacaur:697
+#: pacaur:732 pacaur:747
 msgid "Repo Packages (${#repodepspkgs[@]}):"
 msgstr "リポジトリのパッケージ (${#repodepspkgs[@]}):"
 
-#: pacaur:685
+#: pacaur:735
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} MiB"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Download Size:"
 msgstr "リポジトリからダウンロードする容量:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Installed Size:"
 msgstr "インストール済みのパッケージの容量:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$sumk MiB"
 msgstr "$sumk MiB"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$summ MiB"
 msgstr "$summ MiB"
 
-#: pacaur:710
+#: pacaur:760
 msgid "installation"
 msgstr "インストール"
 
-#: pacaur:710
+#: pacaur:760
 msgid "download"
 msgstr "ダウンロード"
 
-#: pacaur:711
+#: pacaur:761
 msgid "Proceed with $action?"
 msgstr "${action}を続行しますか？"
 
-#: pacaur:718
+#: pacaur:770
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}パッケージを取得しています...${reset}"
 
-#: pacaur:751
+#: pacaur:805
 msgid "View $i build files diff?"
 msgstr "$i のビルドファイルのdiffを見ますか？"
 
-#: pacaur:754
+#: pacaur:808
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "${colorW}$i${reset} のビルドファイルのdiffの確認を完了しました"
 
-#: pacaur:758
+#: pacaur:812
 msgid "View $i PKGBUILD?"
 msgstr "$i の PKGBUILD を確認しますか？"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "${colorW}$i${reset} の PKGBUILD の確認を完了しました"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "${colorW}$i${reset} の PKGBUILD を開けません"
 
-#: pacaur:764
+#: pacaur:818
 msgid "View $j script?"
 msgstr "$i の .install ファイルを確認しますか？"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "${colorW}$j${reset} script viewed"
 msgstr "${colorW}$i${reset} の .install ファイルの確認を完了しました"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "${colorW}$i${reset} の .install ファイルを開けません"
 
-#: pacaur:834
+#: pacaur:891
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "${colorW}${depsAname[$i]}${reset} を検証しています..."
 
-#: pacaur:846
+#: pacaur:903
 msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "${colorW}$i${reset} の検証に失敗しました"
 
-#: pacaur:851
+#: pacaur:908
 msgid "build.lck exists in $tmpdir"
 msgstr "build.lck が $tmpdir に存在します"
 
-#: pacaur:856
+#: pacaur:913
 #, fuzzy
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
 msgstr ""
-"${colorW}${repoprovidersconflictingpkgs[@]}${reset} の依存関係をインストールしています..."
+"${colorW}${repoprovidersconflictingpkgs[@]}${reset} の依存関係をインストール"
+"しています..."
 
-#: pacaur:880
+#: pacaur:937
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}$j${reset} は最新です -- 省略"
 
-#: pacaur:897
+#: pacaur:953
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "キャッシュに存在する ${colorW}$j${reset} をインストールしています..."
 
-#: pacaur:901
+#: pacaur:957
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "${colorW}$j${reset} は既にキャッシュに存在します"
 
-#: pacaur:910
+#: pacaur:966
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} をビルドしています..."
 
-#: pacaur:946
+#: pacaur:1001
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr ""
 "キャッシュに存在する ${colorW}${pkgsdeps[$i]}${reset} をインストールしていま"
 "す..."
 
-#: pacaur:948
+#: pacaur:1003
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
@@ -280,131 +281,136 @@ msgstr ""
 "${colorW}${pkgsdeps[$i]}${reset} のインストールに失敗しました。.SRCINFO と "
 "PKGBUILD の内容が一致しません。"
 
-#: pacaur:967
+#: pacaur:1021
 msgid "Removing installed AUR dependencies..."
 msgstr "AURの依存関係を削除します"
 
-#: pacaur:983
+#: pacaur:1037
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr ""
 "${colorW}$i${reset} は現在、${colorY}他のパッケージから依存されていません"
 "${reset}"
 
-#: pacaur:988
+#: pacaur:1042
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "${colorW}$i${reset} のビルドに失敗しました"
 
-#: pacaur:1014 pacaur:1046
+#: pacaur:1069 pacaur:1110
 msgid "[ ignored ]"
 msgstr "[ 省略 ]"
 
-#: pacaur:1061
+#: pacaur:1125
 msgid "Packages to keep:"
 msgstr "そのままにしておくパッケージ:"
 
-#: pacaur:1061
+#: pacaur:1125
 msgid "All locally installed packages"
 msgstr "インストール済みパッケージ:"
 
-#: pacaur:1062
+#: pacaur:1126
 msgid "AUR cache directory:"
 msgstr "AURのキャッシュ:"
 
-#: pacaur:1064
+#: pacaur:1128
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "その他のAURパッケージのキャッシュを全て削除しますか？"
 
-#: pacaur:1065
+#: pacaur:1129
 msgid "removing old packages from cache..."
 msgstr "古いパッケージのキャッシュを削除しています..."
 
-#: pacaur:1069
+#: pacaur:1133
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "本当に全てのファイルをAURキャッシュから削除しますか？"
 
-#: pacaur:1070
+#: pacaur:1134
 msgid "removing all files from AUR cache..."
 msgstr "AURキャッシュを全て削除しています..."
 
-#: pacaur:1076
+#: pacaur:1140
 msgid "Sources to keep:"
 msgstr "そのままにしておくソース:"
 
-#: pacaur:1076
+#: pacaur:1140
 msgid "All development packages sources"
 msgstr "全ての開発版パッケージのソース"
 
-#: pacaur:1077
+#: pacaur:1141
 msgid "AUR source cache directory:"
 msgstr "AURのキャッシュのあるディレクトリ:"
 
-#: pacaur:1079
+#: pacaur:1143
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr ""
 "本当に全ての開発版でないファイルをAURのソースキャッシュから削除しますか？"
 
-#: pacaur:1080
+#: pacaur:1144
 msgid "removing non development files from source cache..."
 msgstr "開発版でないファイルを全て削除しています..."
 
-#: pacaur:1084
+#: pacaur:1148
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "本当に全てのファイルをAURのソースキャッシュから削除しますか？"
 
-#: pacaur:1085
+#: pacaur:1149
 msgid "removing all files from AUR source cache..."
 msgstr "AURのソースキャッシュを全て削除しています..."
 
-#: pacaur:1169
+#: pacaur:1242
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr "処理の準備に失敗しました (満たすことの出来ない依存関係)"
 
-#: pacaur:1170
+#: pacaur:1243
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: $@ に依存しています"
 
-#: pacaur:1178
+#: pacaur:1252
 msgid "$2 [Y/n] "
 msgstr "$2 [Y/n]"
 
-#: pacaur:1185
+#: pacaur:1259
 msgid "$2 [y/N] "
 msgstr "$2 [y/N]"
 
-#: pacaur:1216
+#: pacaur:1290
 msgid " there is nothing to do"
 msgstr " 何も行なうことがありません"
 
-#: pacaur:1236
+#: pacaur:1310
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr ""
 "使い方: pacaur <オペレーション> [オプション] [パッケージ] -- pacaur(8) も参照"
 
-#: pacaur:1237
+#: pacaur:1311
 msgid "operations:"
 msgstr "オペレーション:"
 
-#: pacaur:1238
+#: pacaur:1312
 msgid " pacman extension"
 msgstr " pacmanの拡張"
 
-#: pacaur:1239
-msgid "   -S, -Q           extend pacman operations to the AUR"
-msgstr "   -S, -Q           AURも対象にするように拡張済み"
+#: pacaur:1313
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
+msgstr ""
 
-#: pacaur:1240
+#: pacaur:1314
+#, fuzzy
+msgid "                    extend pacman operations to the AUR"
+msgstr "                    AURも対象にするように拡張済み"
+
+#: pacaur:1315
 msgid " AUR specific"
 msgstr " AURのみが対象"
 
-#: pacaur:1241
+#: pacaur:1316
 msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     AURを検索"
 
-#: pacaur:1242
+#: pacaur:1317
 msgid "   -i, --info       view package information"
 msgstr "   -i, --info       パッケージの説明を表示"
 
-#: pacaur:1243
+#: pacaur:1318
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -412,51 +418,51 @@ msgstr ""
 "   -d, --download   パッケージをダウンロード -- 2つ重ねると依存パッケージもダ"
 "ウンロード"
 
-#: pacaur:1244
+#: pacaur:1319
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    パッケージをダウンロードしてビルド"
 
-#: pacaur:1245
+#: pacaur:1320
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       パッケージをダウンロードして、ビルドしインストール"
 
-#: pacaur:1246
+#: pacaur:1321
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      AURパッケージにアップデートがあるか確認"
 
-#: pacaur:1247
+#: pacaur:1322
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     AURパッケージをアップデート"
 
-#: pacaur:1248 pacaur:1256
+#: pacaur:1323 pacaur:1331
 msgid " general"
 msgstr " 一般"
 
-#: pacaur:1249
+#: pacaur:1324
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    バージョンを表示"
 
-#: pacaur:1250
+#: pacaur:1325
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       使い方を表示"
 
-#: pacaur:1252
+#: pacaur:1327
 msgid "options:"
 msgstr "オプション:"
 
-#: pacaur:1253
+#: pacaur:1328
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
 msgstr ""
 " pacmanの拡張 - -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc と併せて使います"
 
-#: pacaur:1254
+#: pacaur:1329
 msgid ""
 "   -a, --aur        only search, build or install target(s) from the AUR"
 msgstr "   -a, --aur        検索、ビルドとインストールの範囲をAURだけにします"
 
-#: pacaur:1255
+#: pacaur:1330
 msgid ""
 "   -r, --repo       only search, build or install target(s) from the "
 "repositories"
@@ -464,56 +470,56 @@ msgstr ""
 "   -r, --repo       検索、ビルドとインストールの範囲を公式リポジトリだけにし"
 "ます"
 
-#: pacaur:1257
+#: pacaur:1332
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr "   -e, --edit       PKGBUILD を編集して、.install ファイルを閲覧"
 
-#: pacaur:1258
+#: pacaur:1333
 msgid "   -q, --quiet      show less information for query and search"
 msgstr "   -q, --quiet      検索結果の出力を最小限にします"
 
-#: pacaur:1259
+#: pacaur:1334
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr "   --devel          git等で管理されるパッケージも更新"
 
-#: pacaur:1260
+#: pacaur:1335
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr "   --foreign        既にインストールされた外部の依存関係を考慮"
 
-#: pacaur:1261
+#: pacaur:1336
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr "   --ignore         更新しないパッケージを指定(複数指定可能)"
 
-#: pacaur:1262
+#: pacaur:1337
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --needed         最新のパッケージをアップデートしません"
 
-#: pacaur:1263
+#: pacaur:1338
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      確認を表示しません"
 
-#: pacaur:1264
+#: pacaur:1339
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         ファイルを編集するか尋ねないようにします"
 
-#: pacaur:1265
+#: pacaur:1340
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        常にパッケージを再ビルド"
 
-#: pacaur:1266
+#: pacaur:1341
 msgid "   --silent         silence output"
 msgstr "   --silent         出力を抑えます"
 
-#: pacaur:1392
+#: pacaur:1466
 msgid "you cannot perform this operation as root"
 msgstr "このオペレーションはrootでは実行できません"
 
-#: pacaur:1396
+#: pacaur:1470
 msgid "${colorW}editor${reset} variable unset"
 msgstr "${colorW}editor${reset} 変数が設定されていません"
 
-#: pacaur:1397
+#: pacaur:1471
 msgid ""
 "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
 "non volatile memory location"
@@ -521,19 +527,19 @@ msgstr ""
 "${colorW}clonedir${reset} と ${colorW}\\$AURDEST${reset} には削除されないディ"
 "レクトリを指定してください"
 
-#: pacaur:1398
+#: pacaur:1472
 msgid "${colorW}$clonedir${reset} does not have write permission."
 msgstr "権限がないので、${colorW}$clonedir${reset} にファイルを作成できません"
 
-#: pacaur:1399
+#: pacaur:1473
 msgid "no targets specified (use -h for help)"
 msgstr "対象が指定されていません (-h を使ってヘルプを見て下さい)"
 
-#: pacaur:1400
+#: pacaur:1474
 msgid "target not found"
 msgstr "対象は見つかりませんでした"
 
-#: pacaur:1437 pacaur:1449 pacaur:1457
+#: pacaur:1511 pacaur:1523 pacaur:1531
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."

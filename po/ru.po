@@ -11,29 +11,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.6\n"
 
-#: pacaur:105
+#: pacaur:115
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "${colorW}Запускается обновление AUR...${reset}"
 
-#: pacaur:113
+#: pacaur:129
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr "${colorW}$i${reset} ${colorY}не существует${reset} в AUR -- пропускаем"
 
-#: pacaur:141 pacaur:195 pacaur:1047
+#: pacaur:159 pacaur:215 pacaur:1111
 msgid "latest"
 msgstr "latest"
 
-#: pacaur:146
+#: pacaur:164
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "${checkaurpkgs[$i]} находится в IgnorePkg/IgnoreGroup. Установить в любом "
 "случае?"
 
-#: pacaur:147
+#: pacaur:165
 msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
 msgstr "${colorW}${checkaurpkgs[$i]}${reset}: обновление пакета игнорируется"
 
-#: pacaur:152
+#: pacaur:170
 msgid ""
 "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
@@ -43,32 +43,32 @@ msgstr ""
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:164
+#: pacaur:184
 msgid "resolving dependencies..."
 msgstr "разрешение зависимостей..."
 
-#: pacaur:200
+#: pacaur:220
 msgid "no results found for $i"
 msgstr "не найдено результатов для $i"
 
-#: pacaur:323
+#: pacaur:358
 msgid "dependency cycle detected"
 msgstr "обнаружена циклическая зависимость"
 
-#: pacaur:387 pacaur:402
+#: pacaur:426 pacaur:441
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: обновление пакета игнорируется"
 
-#: pacaur:388 pacaur:394 pacaur:399 pacaur:403
+#: pacaur:427 pacaur:433 pacaur:438 pacaur:442
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "Неразрешенная зависимость '${colorW}$i${reset}'"
 
-#: pacaur:398
+#: pacaur:437
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "Зависимость $i находится в IgnorePkg/IgnoreGroup. Установить в любом случае?"
 
-#: pacaur:429
+#: pacaur:470
 msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
@@ -76,43 +76,43 @@ msgstr ""
 "${colorW}Для ${providersdeps[$i]} доступно ${#providers[@]} предлагаемых "
 "пакетов:${reset}"
 
-#: pacaur:436
+#: pacaur:477
 msgid "Enter a number (default=0):"
 msgstr "Введите число (по умолчанию=0):"
 
-#: pacaur:441
+#: pacaur:482
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "неправильное число: $nb должно быть между 0 и $providersnb"
 
-#: pacaur:443
+#: pacaur:484
 msgid "invalid number: $nb"
 msgstr "неправильное число: $nb"
 
-#: pacaur:482
+#: pacaur:526
 msgid "looking for inter-conflicts..."
 msgstr "поиск конфликтов между пакетами..."
 
-#: pacaur:518 pacaur:587
+#: pacaur:562 pacaur:631
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j и $k конфликтуют ($i). Удалить $k?"
 
-#: pacaur:532 pacaur:595
+#: pacaur:576 pacaur:639
 msgid "unresolvable package conflicts detected"
 msgstr "обнаружены неразрешимые конфликты пакета"
 
-#: pacaur:533 pacaur:596
+#: pacaur:577 pacaur:640
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "невозможно подготовить транзакцию (конфликтующие зависимости)"
 
-#: pacaur:534 pacaur:597
+#: pacaur:578 pacaur:641
 msgid "$j and $k are in conflict"
 msgstr "$j и $k конфликтуют"
 
-#: pacaur:613
+#: pacaur:659
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} последняя ревизия -- получаем"
 
-#: pacaur:616
+#: pacaur:662
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
@@ -120,13 +120,13 @@ msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} актуален -- "
 "переустанавливаем"
 
-#: pacaur:618
+#: pacaur:664
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} актуален -- пропускаем"
 
-#: pacaur:631
+#: pacaur:679
 msgid ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
 "out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
@@ -136,142 +136,143 @@ msgstr ""
 "устаревший${reset} на ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
 "\")${reset}"
 
-#: pacaur:656
+#: pacaur:707
 msgid "(cached)"
 msgstr "(кэшировано)"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Name"
 msgstr "Название"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Old Version"
 msgstr "Старая версия"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "New Version"
 msgstr "Новая версия"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Download Size"
 msgstr "Размер загрузки"
 
-#: pacaur:672 pacaur:696
+#: pacaur:722 pacaur:746
 msgid "AUR Packages  (${#deps[@]}):"
 msgstr "Пакеты из AUR  (${#deps[@]}):"
 
-#: pacaur:682 pacaur:697
+#: pacaur:732 pacaur:747
 msgid "Repo Packages (${#repodepspkgs[@]}):"
 msgstr "Пакеты из репо (${#repodepspkgs[@]}):"
 
-#: pacaur:685
+#: pacaur:735
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} МиБ"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Download Size:"
 msgstr "Размер загрузки из репо:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Installed Size:"
 msgstr "Размер установки из репо:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$sumk MiB"
 msgstr "$sumk МиБ"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$summ MiB"
 msgstr "$summ МиБ"
 
-#: pacaur:710
+#: pacaur:760
 msgid "installation"
 msgstr "установке"
 
-#: pacaur:710
+#: pacaur:760
 msgid "download"
 msgstr "загрузке"
 
-#: pacaur:711
+#: pacaur:761
 msgid "Proceed with $action?"
 msgstr "Приступить к $action?"
 
-#: pacaur:718
+#: pacaur:770
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Получаем пакет(ы)...${reset}"
 
-#: pacaur:751
+#: pacaur:805
 msgid "View $i build files diff?"
 msgstr "Посмотреть diff файлов сборки для $i?"
 
-#: pacaur:754
+#: pacaur:808
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "просмотрен diff для файлов сборки ${colorW}$i${reset}"
 
-#: pacaur:758
+#: pacaur:812
 msgid "View $i PKGBUILD?"
 msgstr "Просмотреть PKGBUILD для $i?"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "просмотрен PKGBUILD для ${colorW}$i${reset}"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "Невозможно открыть PKGBUILD для ${colorW}$i${reset}"
 
-#: pacaur:764
+#: pacaur:818
 msgid "View $j script?"
 msgstr "Просмотреть $j скрипт?"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "${colorW}$j${reset} script viewed"
 msgstr "просмотрен ${colorW}$j${reset} скрипт"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "Невозможно открыть ${colorW}$j${reset} скрипт"
 
-#: pacaur:834
+#: pacaur:891
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "Проверка целостности ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:846
+#: pacaur:903
 msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "Ошибка проверки целостности ${colorW}$i${reset}"
 
-#: pacaur:851
+#: pacaur:908
 msgid "build.lck exists in $tmpdir"
 msgstr "build.lck существует в $tmpdir"
 
-#: pacaur:856
+#: pacaur:913
 #, fuzzy
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
-msgstr "Установка зависимостей ${colorW}${repoprovidersconflictingpkgs[@]}${reset}..."
+msgstr ""
+"Установка зависимостей ${colorW}${repoprovidersconflictingpkgs[@]}${reset}..."
 
-#: pacaur:880
+#: pacaur:937
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}$j${reset} актуален -- пропускаем"
 
-#: pacaur:897
+#: pacaur:953
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "Установка пакета ${colorW}$j${reset} из кэша..."
 
-#: pacaur:901
+#: pacaur:957
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "Пакет ${colorW}$j${reset} уже доступен в кэше"
 
-#: pacaur:910
+#: pacaur:966
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "Сборка пакета(ов) ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:946
+#: pacaur:1001
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "Установка пакета(ов) ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:948
+#: pacaur:1003
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
@@ -279,130 +280,135 @@ msgstr ""
 "Пакет(ы) ${colorW}${pkgsdeps[$i]}${reset} не могут быть установлены. "
 "Проверьте .SRCINFO на несоответствия с PKGBUILD."
 
-#: pacaur:967
+#: pacaur:1021
 msgid "Removing installed AUR dependencies..."
 msgstr "Удаление установленных зависимостей AUR..."
 
-#: pacaur:983
+#: pacaur:1037
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "пакет ${colorW}$i${reset} ${colorY}теперь неиспользуемый${reset}"
 
-#: pacaur:988
+#: pacaur:1042
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "Ошибка сборки пакета(ов) ${colorW}$i${reset}"
 
-#: pacaur:1014 pacaur:1046
+#: pacaur:1069 pacaur:1110
 msgid "[ ignored ]"
 msgstr "[ игнорируется ]"
 
-#: pacaur:1061
+#: pacaur:1125
 msgid "Packages to keep:"
 msgstr "Пакеты, которые останутся:"
 
-#: pacaur:1061
+#: pacaur:1125
 msgid "All locally installed packages"
 msgstr "Все локально установленные пакеты"
 
-#: pacaur:1062
+#: pacaur:1126
 msgid "AUR cache directory:"
 msgstr "Директория для кэша AUR:"
 
-#: pacaur:1064
+#: pacaur:1128
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Вы хотите удалить все остальные пакеты из кэша AUR?"
 
-#: pacaur:1065
+#: pacaur:1129
 msgid "removing old packages from cache..."
 msgstr "удаление старых пакетов из кэша..."
 
-#: pacaur:1069
+#: pacaur:1133
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "Вы хотите удалить ВСЕ файлы из кэша AUR?"
 
-#: pacaur:1070
+#: pacaur:1134
 msgid "removing all files from AUR cache..."
 msgstr "удаление всех файлов из кэша AUR..."
 
-#: pacaur:1076
+#: pacaur:1140
 msgid "Sources to keep:"
 msgstr "Исходники, которые останутся:"
 
-#: pacaur:1076
+#: pacaur:1140
 msgid "All development packages sources"
 msgstr "Исходники всех пакетов разработки"
 
-#: pacaur:1077
+#: pacaur:1141
 msgid "AUR source cache directory:"
 msgstr "Директория для кэша исходников AUR:"
 
-#: pacaur:1079
+#: pacaur:1143
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr "Вы хотите удалить все файлы, не относящиеся к разработке, из кэша AUR?"
 
-#: pacaur:1080
+#: pacaur:1144
 msgid "removing non development files from source cache..."
 msgstr ""
 "удаление всех файлов, не относящихся к разработке, из кэша исходников..."
 
-#: pacaur:1084
+#: pacaur:1148
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "Вы хотите удалить ВСЕ файлы из кэша исходников AUR?"
 
-#: pacaur:1085
+#: pacaur:1149
 msgid "removing all files from AUR source cache..."
 msgstr "удаление всех файлов из кэша исходников AUR..."
 
-#: pacaur:1169
+#: pacaur:1242
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr ""
 "невозможно подготовить транзакцию (невозможно удовлетворить зависимости)"
 
-#: pacaur:1170
+#: pacaur:1243
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: требует $@"
 
-#: pacaur:1178
+#: pacaur:1252
 msgid "$2 [Y/n] "
 msgstr "$2 [Y/n] "
 
-#: pacaur:1185
+#: pacaur:1259
 msgid "$2 [y/N] "
 msgstr "$2 [y/N] "
 
-#: pacaur:1216
+#: pacaur:1290
 msgid " there is nothing to do"
 msgstr " нечего выполнять"
 
-#: pacaur:1236
+#: pacaur:1310
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr ""
 "использование:  pacaur <операция> [опции] [цель(цели)] -- см. также pacaur(8)"
 
-#: pacaur:1237
+#: pacaur:1311
 msgid "operations:"
 msgstr "операции:"
 
-#: pacaur:1238
+#: pacaur:1312
 msgid " pacman extension"
 msgstr " расширение pacman"
 
-#: pacaur:1239
-msgid "   -S, -Q           extend pacman operations to the AUR"
-msgstr "   -S, -Q           расширить операции pacman на AUR"
+#: pacaur:1313
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
+msgstr ""
 
-#: pacaur:1240
+#: pacaur:1314
+#, fuzzy
+msgid "                    extend pacman operations to the AUR"
+msgstr "                    расширить операции pacman на AUR"
+
+#: pacaur:1315
 msgid " AUR specific"
 msgstr " Специфично для AUR"
 
-#: pacaur:1241
+#: pacaur:1316
 msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     поиск совпадающих строк в репозитории AUR"
 
-#: pacaur:1242
+#: pacaur:1317
 msgid "   -i, --info       view package information"
 msgstr "   -i, --info       посмотреть информацию о пакете"
 
-#: pacaur:1243
+#: pacaur:1318
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -410,39 +416,39 @@ msgstr ""
 "   -d, --download   загрузить пакет(ы) -- укажите дважды для загрузки "
 "зависимостей из AUR"
 
-#: pacaur:1244
+#: pacaur:1319
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    загрузить и собрать пакет(ы)"
 
-#: pacaur:1245
+#: pacaur:1320
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       загрузить, собрать и установить пакет(ы)"
 
-#: pacaur:1246
+#: pacaur:1321
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      проверить обновления в AUR"
 
-#: pacaur:1247
+#: pacaur:1322
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     обновить пакет(ы) из AUR"
 
-#: pacaur:1248 pacaur:1256
+#: pacaur:1323 pacaur:1331
 msgid " general"
 msgstr " общие"
 
-#: pacaur:1249
+#: pacaur:1324
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    показать информацию о версии"
 
-#: pacaur:1250
+#: pacaur:1325
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       показать справку"
 
-#: pacaur:1252
+#: pacaur:1327
 msgid "options:"
 msgstr "опции:"
 
-#: pacaur:1253
+#: pacaur:1328
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
@@ -450,13 +456,13 @@ msgstr ""
 " расширение pacman - может быть использовано с ключами -S, -Ss, -Si, -Sii, -"
 "Sw, -Su, -Qu, -Sc, -Scc"
 
-#: pacaur:1254
+#: pacaur:1329
 msgid ""
 "   -a, --aur        only search, build or install target(s) from the AUR"
 msgstr ""
 "   -a, --aur        искать, собирать или устанавливать цели только из AUR"
 
-#: pacaur:1255
+#: pacaur:1330
 msgid ""
 "   -r, --repo       only search, build or install target(s) from the "
 "repositories"
@@ -464,60 +470,60 @@ msgstr ""
 "   -r, --repo       искать, собирать или устанавливать цели только из "
 "репозиториев"
 
-#: pacaur:1257
+#: pacaur:1332
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
 "   -e, --edit       редактировать файл PKGBUILD и просмотеть скрипт install"
 
-#: pacaur:1258
+#: pacaur:1333
 msgid "   -q, --quiet      show less information for query and search"
 msgstr "   -q, --quiet      отображать меньше информации по запросу и поиску"
 
-#: pacaur:1259
+#: pacaur:1334
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr ""
 "   --devel          учитывать обновление пакетов для разработчиков в AUR"
 
-#: pacaur:1260
+#: pacaur:1335
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr "   --foreign        учитывать уже установленные внешние зависимости"
 
-#: pacaur:1261
+#: pacaur:1336
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         игнорировать обновление пакета (может быть использовано "
 "несколько раз)"
 
-#: pacaur:1262
+#: pacaur:1337
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --needed         не переустанавливать уже актуальные цели"
 
-#: pacaur:1263
+#: pacaur:1338
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      не запрашивать никаких подтверждений"
 
-#: pacaur:1264
+#: pacaur:1339
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         не выводить запрос на редактирование файлов"
 
-#: pacaur:1265
+#: pacaur:1340
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        всегда пересобирать пакет(ы)"
 
-#: pacaur:1266
+#: pacaur:1341
 msgid "   --silent         silence output"
 msgstr "   --silent         меньше вывода"
 
-#: pacaur:1392
+#: pacaur:1466
 msgid "you cannot perform this operation as root"
 msgstr "эту операцию нельзя выполнить от пользователя root"
 
-#: pacaur:1396
+#: pacaur:1470
 msgid "${colorW}editor${reset} variable unset"
 msgstr "Переменная ${colorW}editor${reset} не установлена"
 
-#: pacaur:1397
+#: pacaur:1471
 msgid ""
 "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
 "non volatile memory location"
@@ -525,19 +531,19 @@ msgstr ""
 "${colorW}clonedir${reset} или ${colorW}\\$AURDEST${reset} должна указывать "
 "на постоянное хранилище"
 
-#: pacaur:1398
+#: pacaur:1472
 msgid "${colorW}$clonedir${reset} does not have write permission."
 msgstr "${colorW}$clonedir${reset} не доступна для записи."
 
-#: pacaur:1399
+#: pacaur:1473
 msgid "no targets specified (use -h for help)"
 msgstr "не указаны цели (используйте -h для справки)"
 
-#: pacaur:1400
+#: pacaur:1474
 msgid "target not found"
 msgstr "цель не найдена"
 
-#: pacaur:1437 pacaur:1449 pacaur:1457
+#: pacaur:1511 pacaur:1523 pacaur:1531
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."

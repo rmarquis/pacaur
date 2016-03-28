@@ -1,42 +1,42 @@
 msgid ""
 msgstr ""
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Language: nl\n"
-"X-Source-Language: C\n"
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Language: nl\n"
+"X-Source-Language: C\n"
 "X-Generator: Poedit 1.8.7\n"
 
-#: pacaur:105
+#: pacaur:115
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "$(colorW)AUR upgrade starten...${reset}"
 
-#: pacaur:113
+#: pacaur:129
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr ""
 "${colorW}$i${reset} is ${colorY}niet beschikbaar${reset} in de AUR -- "
 "overgeslagen"
 
-#: pacaur:141 pacaur:195
+#: pacaur:159 pacaur:215 pacaur:1111
 msgid "latest"
 msgstr "nieuwste"
 
-#: pacaur:146
+#: pacaur:164
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr "${checkaurpkgs[$i]} staat in IgnorePkg/IgnoreGroup. Toch installeren?"
 
-#: pacaur:147
+#: pacaur:165
 msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
 msgstr "${colorW}${checkaurpkgs[$i]}${reset}: upgraden van pakket genegeerd"
 
-#: pacaur:152
+#: pacaur:170
 msgid ""
 "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
@@ -46,32 +46,32 @@ msgstr ""
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:164
+#: pacaur:184
 msgid "resolving dependencies..."
 msgstr "afhankelijkheden oplossen..."
 
-#: pacaur:200
+#: pacaur:220
 msgid "no results found for $i"
 msgstr "geen resultaten gevonden voor $i"
 
-#: pacaur:323
+#: pacaur:358
 msgid "dependency cycle detected"
 msgstr "afhankelijkheidscyclus gedetecteerd"
 
-#: pacaur:387 pacaur:402
+#: pacaur:426 pacaur:441
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: upgraden van pakket genegeerd"
 
-#: pacaur:388 pacaur:394 pacaur:399 pacaur:403
+#: pacaur:427 pacaur:433 pacaur:438 pacaur:442
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "Onopgeloste afhankelijkheid '${colorW}$i${reset}'"
 
-#: pacaur:398
+#: pacaur:437
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "de afhankelijkheid $i staat in IgnorePkg/IgnoreGroup. Toch installeren?"
 
-#: pacaur:429
+#: pacaur:470
 msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
@@ -79,43 +79,43 @@ msgstr ""
 "${colorW}Er zijn ${#providers[@]} aanbieders voor ${providersdeps[$i]}:"
 "${reset}"
 
-#: pacaur:436
+#: pacaur:477
 msgid "Enter a number (default=0):"
 msgstr "Voer een nummer in (standaard=0)"
 
-#: pacaur:441
+#: pacaur:482
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "ongeldige waarde: $nb valt niet tussen 0 en $providersnb"
 
-#: pacaur:443
+#: pacaur:484
 msgid "invalid number: $nb"
 msgstr "ongeldig getal: $nb"
 
-#: pacaur:482
+#: pacaur:526
 msgid "looking for inter-conflicts..."
 msgstr "conflicten zoeken..."
 
-#: pacaur:518 pacaur:587
+#: pacaur:562 pacaur:631
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j en $k zijn in conflict ($i). $k verwijderen?"
 
-#: pacaur:532 pacaur:595
+#: pacaur:576 pacaur:639
 msgid "unresolvable package conflicts detected"
 msgstr "onoplosbare conflicten tussen pakketten gedetecteerd"
 
-#: pacaur:533 pacaur:596
+#: pacaur:577 pacaur:640
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "transactie voorbereiden mislukt (conflict tussen afhankelijkheden)"
 
-#: pacaur:534 pacaur:597
+#: pacaur:578 pacaur:641
 msgid "$j and $k are in conflict"
 msgstr "$j en $k zijn in conflict"
 
-#: pacaur:613
+#: pacaur:659
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} laatste revisie -- ophalen"
 
-#: pacaur:616
+#: pacaur:662
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
@@ -123,14 +123,14 @@ msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up-to-date -- "
 "herinstalleren"
 
-#: pacaur:618
+#: pacaur:664
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up-to-date -- "
 "overgeslagen"
 
-#: pacaur:631
+#: pacaur:679
 msgid ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
 "out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
@@ -140,117 +140,117 @@ msgstr ""
 "${reset} gemarkeerd op ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
 "\")${reset}"
 
-#: pacaur:656
+#: pacaur:707
 msgid "(cached)"
 msgstr "(gecached)"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Name"
 msgstr "Titel"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Old Version"
 msgstr "Oude Versie"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "New Version"
 msgstr "Nieuwe Versie"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Download Size"
 msgstr "Download Grootte"
 
-#: pacaur:672 pacaur:696
+#: pacaur:722 pacaur:746
 msgid "AUR Packages  (${#deps[@]}):"
 msgstr "AUR Pakketten (${#deps[@]}):"
 
-#: pacaur:682 pacaur:697
+#: pacaur:732 pacaur:747
 msgid "Repo Packages (${#repodepspkgs[@]}):"
 msgstr "Repo Pakketten (${#repodepspkgs[@]}):"
 
-#: pacaur:685
+#: pacaur:735
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} MiB"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Download Size:"
 msgstr "Repo Download Grootte:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Installed Size:"
 msgstr "Repo Ge�nstalleerde Grootte"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$sumk MiB"
 msgstr "$sumk MiB"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$summ MiB"
 msgstr "$summ MiB"
 
-#: pacaur:710
+#: pacaur:760
 msgid "installation"
 msgstr "installatie"
 
-#: pacaur:710
+#: pacaur:760
 msgid "download"
 msgstr "download"
 
-#: pacaur:711
+#: pacaur:761
 msgid "Proceed with $action?"
 msgstr "Doorgaan met $action?"
 
-#: pacaur:718
+#: pacaur:770
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Pakket(ten) ophalen...${reset}"
 
-#: pacaur:751
+#: pacaur:805
 #, fuzzy
 msgid "View $i build files diff?"
 msgstr "verschil in $i build bestanden bekijken?"
 
-#: pacaur:754
+#: pacaur:808
 #, fuzzy
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "verschil in build bestanden van ${colorW}$i${reset} bekeken"
 
-#: pacaur:758
+#: pacaur:812
 msgid "View $i PKGBUILD?"
 msgstr "Bekijk PKGBUILD van $i?"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "PKGBUILD van ${colorW}$i${reset} bekeken"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "Kon de PKGBUILD van ${colorW}$i${reset} niet openen"
 
-#: pacaur:764
+#: pacaur:818
 msgid "View $j script?"
 msgstr "Script bekijken van $j?"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "${colorW}$j${reset} script viewed"
 msgstr "Script van ${colorW}$j${reset} bekeken."
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "Kon script van ${colorW}$j${reset} niet openen"
 
-#: pacaur:835
+#: pacaur:891
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "Integriteit van ${colorW}${pkgsdeps[$i]}${reset} controleren..."
 
-#: pacaur:847
+#: pacaur:903
 msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "kon de integriteit van ${colorW}$i${reset} niet verifi�ren"
 
-#: pacaur:852
+#: pacaur:908
 msgid "build.lck exists in $tmpdir"
 msgstr "build.lck bestaat in $tmpdir"
 
-#: pacaur:857
+#: pacaur:913
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
@@ -258,28 +258,28 @@ msgstr ""
 "Bezig met afhankelijkheden installeren voor "
 "${colorW}${repoprovidersconflictingpkgs[@]}${reset}"
 
-#: pacaur:881
+#: pacaur:937
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}$j${reset} is up-to-date -- overgeslagen"
 
-#: pacaur:898
+#: pacaur:953
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "Installing ${colorW}$j${reset} vanuit de cache..."
 
-#: pacaur:902
+#: pacaur:957
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "Pakket ${colorW}$j${reset} is al beschikbaar in de cache"
 
-#: pacaur:911
+#: pacaur:966
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "Bezig met bouwen van ${colorW}${pkgsdeps[$i]}${reset} pakket(ten)..."
 
-#: pacaur:947
+#: pacaur:1001
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr ""
 "Bezig met installeren van ${colorW}${pkgsdeps[$i]}${reset} pakket(ten)..."
 
-#: pacaur:949
+#: pacaur:1003
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
@@ -287,136 +287,141 @@ msgstr ""
 "Kon ${colorW}${pkgsdeps[$i]}${reset} pakket(ten) niet installeren. Verifieer "
 "met de PKGBUILD dat de .SRCINFO geen foutieve data bevat."
 
-#: pacaur:968
+#: pacaur:1021
 msgid "Removing installed AUR dependencies..."
 msgstr "Ge�nstalleerde AUR afhankelijkheden verwijderen..."
 
-#: pacaur:984
+#: pacaur:1037
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "${colorW}$i${reset} is nu niet langer benodigd door een ander pakket"
 
-#: pacaur:989
+#: pacaur:1042
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "kon ${colorW}$i${reset} pakket(ten) niet bouwen"
 
-#: pacaur:1015 pacaur:1047
+#: pacaur:1069 pacaur:1110
 msgid "[ ignored ]"
 msgstr "[ genegeerd ]"
 
-#: pacaur:1062
+#: pacaur:1125
 msgid "Packages to keep:"
 msgstr "Pakketten om te houden:"
 
-#: pacaur:1062
+#: pacaur:1125
 msgid "All locally installed packages"
 msgstr "Alle lokaal ge�nstalleerde pakketten:"
 
-#: pacaur:1063
+#: pacaur:1126
 msgid "AUR cache directory:"
 msgstr "AUR cache map:"
 
-#: pacaur:1065
+#: pacaur:1128
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Wilt u alle andere pakketten uit de AUR cache verwijderen?"
 
-#: pacaur:1066
+#: pacaur:1129
 msgid "removing old packages from cache..."
 msgstr "oude pakketten uit de cache verwijderen..."
 
-#: pacaur:1070
+#: pacaur:1133
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "Wilt u ALLE bestanden uit de AUR cache verwijderen?"
 
-#: pacaur:1071
+#: pacaur:1134
 msgid "removing all files from AUR cache..."
 msgstr "alle bestanden uit de AUR cache verwijderen..."
 
-#: pacaur:1077
+#: pacaur:1140
 msgid "Sources to keep:"
 msgstr "Bronnen om te houden:"
 
-#: pacaur:1077
+#: pacaur:1140
 #, fuzzy
 msgid "All development packages sources"
 msgstr "Alle ontwikkelings pakketten bronnen"
 
-#: pacaur:1078
+#: pacaur:1141
 #, fuzzy
 msgid "AUR source cache directory:"
 msgstr "AUR bronnen cache map:"
 
-#: pacaur:1080
+#: pacaur:1143
 #, fuzzy
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr ""
 "Wilt u alle niet-ontwikkelings bestanden uit de AUR bronnen cache "
 "verwijderen?"
 
-#: pacaur:1081
+#: pacaur:1144
 #, fuzzy
 msgid "removing non development files from source cache..."
 msgstr "alle niet-ontwikkelings bestanden uit de bronnen cache verwijderen..."
 
-#: pacaur:1085
+#: pacaur:1148
 #, fuzzy
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "Wilt u ALLE bestanden uit de AUR bronnen cache verwijderen?"
 
-#: pacaur:1086
+#: pacaur:1149
 #, fuzzy
 msgid "removing all files from AUR source cache..."
 msgstr "alle bestanden uit de AUR bronnen cache verwijderen..."
 
-#: pacaur:1169
+#: pacaur:1242
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr ""
 "kon de transactie niet voorbereiden (kon niet alle afhankelijkheden oplossen)"
 
-#: pacaur:1170
+#: pacaur:1243
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: vereist $@"
 
-#: pacaur:1178
+#: pacaur:1252
 msgid "$2 [Y/n] "
 msgstr "$2 [J/n]"
 
-#: pacaur:1185
+#: pacaur:1259
 msgid "$2 [y/N] "
 msgstr "$2 [j/N]"
 
-#: pacaur:1216
+#: pacaur:1290
 msgid " there is nothing to do"
 msgstr "er is niets om te doen"
 
-#: pacaur:1236
+#: pacaur:1310
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr "gebruik: pacaur <handeling> [opties] [doel(en)] -- Zie ook pacaur(8)"
 
-#: pacaur:1237
+#: pacaur:1311
 msgid "operations:"
 msgstr "handelingen:"
 
-#: pacaur:1238
+#: pacaur:1312
 msgid " pacman extension"
 msgstr "pacman extensie"
 
-#: pacaur:1239
-msgid "   -S, -Q           extend pacman operations to the AUR"
-msgstr "   -S, -Q           pacman handelingen uitbreiden naar de AUR"
+#: pacaur:1313
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
+msgstr ""
 
-#: pacaur:1240
+#: pacaur:1314
+#, fuzzy
+msgid "                    extend pacman operations to the AUR"
+msgstr "                    pacman handelingen uitbreiden naar de AUR"
+
+#: pacaur:1315
 msgid " AUR specific"
 msgstr "AUR-specifiek"
 
-#: pacaur:1241
+#: pacaur:1316
 msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     zoeken in AUR voor overeenkomende strings"
 
-#: pacaur:1242
+#: pacaur:1317
 msgid "   -i, --info       view package information"
 msgstr "   -i, --info       pakketinfomatie bekijken"
 
-#: pacaur:1243
+#: pacaur:1318
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -424,39 +429,39 @@ msgstr ""
 "   -d, --download   doel(en) downloaden -- geef twee keer om AUR "
 "afhankelijkheden te downloaden"
 
-#: pacaur:1244
+#: pacaur:1319
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    download en bouw doel(en)"
 
-#: pacaur:1245
+#: pacaur:1320
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       download, bouw en installeer doel(en)"
 
-#: pacaur:1246
+#: pacaur:1321
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      naar AUR update(s) zoeken"
 
-#: pacaur:1247
+#: pacaur:1322
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     AUR pakket(ten) updaten"
 
-#: pacaur:1248 pacaur:1256
+#: pacaur:1323 pacaur:1331
 msgid " general"
 msgstr "algemeen"
 
-#: pacaur:1249
+#: pacaur:1324
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    toon versie-informatie"
 
-#: pacaur:1250
+#: pacaur:1325
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       toon help-informatie"
 
-#: pacaur:1252
+#: pacaur:1327
 msgid "options:"
 msgstr "opties"
 
-#: pacaur:1253
+#: pacaur:1328
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
@@ -464,14 +469,14 @@ msgstr ""
 "paman extensies - kunnen worden gebruikt met de -S, -Ss, -Si, -Sii, -Sw, -"
 "Su, -Qu, -Sc, -Scc handelingen"
 
-#: pacaur:1254
+#: pacaur:1329
 msgid ""
 "   -a, --aur        only search, build or install target(s) from the AUR"
 msgstr ""
 "   -a, --aur        alleen zoeken, bouwen of installeren van doel(en) uit de "
 "AUR"
 
-#: pacaur:1255
+#: pacaur:1330
 msgid ""
 "   -r, --repo       only search, build or install target(s) from the "
 "repositories"
@@ -479,62 +484,62 @@ msgstr ""
 "   -r, --repo       alleen zoeken, bouwen of installeren van doel(en) uit de "
 "repositories"
 
-#: pacaur:1257
+#: pacaur:1332
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
 "   -e, --edit       bewerk PKGBUILD van doel(en) en bekijk het installatie "
 "script"
 
-#: pacaur:1258
+#: pacaur:1333
 msgid "   -q, --quiet      show less information for query and search"
 msgstr ""
 "   -q, --quiet      laat minder informatie zien bij query en zoekopdrachten"
 
-#: pacaur:1259
+#: pacaur:1334
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr "   --devel          overweeg AUR ontwikkelings pakketten als upgrade"
 
-#: pacaur:1260
+#: pacaur:1335
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr ""
 "   --foreign        overweeg al ge�nstalleerde vreemde afhankelijkheiden"
 
-#: pacaur:1261
+#: pacaur:1336
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         negeer een pakket upgrade (kan meer dan eens gebruikt "
 "worden)"
 
-#: pacaur:1262
+#: pacaur:1337
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --needed         herinstalleer doel(en) die al up-to-date zijn niet"
 
-#: pacaur:1263
+#: pacaur:1338
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      vraag niet om bevestiging"
 
-#: pacaur:1264
+#: pacaur:1339
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         vraag niet om bestanden te bewerken"
 
-#: pacaur:1265
+#: pacaur:1340
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        bouw pakket(ten) altijd opnieuw"
 
-#: pacaur:1266
+#: pacaur:1341
 msgid "   --silent         silence output"
 msgstr "   --silent         toon geen output"
 
-#: pacaur:1392
+#: pacaur:1466
 msgid "you cannot perform this operation as root"
 msgstr "u kunt deze bewerking niet als root uitvoeren"
 
-#: pacaur:1396
+#: pacaur:1470
 msgid "${colorW}editor${reset} variable unset"
 msgstr "${colorW}editor${reset} variabele niet ingestelt"
 
-#: pacaur:1397
+#: pacaur:1471
 msgid ""
 "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
 "non volatile memory location"
@@ -542,19 +547,19 @@ msgstr ""
 "${colorW}clonedir${reset} of ${colorW}\\$AURDEST${reset} moet naar een niet-"
 "vluchtige geheugenlocatie ingestelt worden"
 
-#: pacaur:1398
+#: pacaur:1472
 msgid "${colorW}$clonedir${reset} does not have write permission."
 msgstr "${colorW}$clonedir${reset} heeft geen schrijfpermissies"
 
-#: pacaur:1399
+#: pacaur:1473
 msgid "no targets specified (use -h for help)"
 msgstr "geen doelen gespecificeerd (gebruik -h voor hulp)"
 
-#: pacaur:1400
+#: pacaur:1474
 msgid "target not found"
 msgstr "doel niet gevonden"
 
-#: pacaur:1437 pacaur:1449 pacaur:1457
+#: pacaur:1511 pacaur:1523 pacaur:1531
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."

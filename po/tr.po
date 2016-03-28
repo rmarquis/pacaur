@@ -14,29 +14,29 @@ msgstr ""
 "X-Source-Language: C\n"
 "X-Generator: Lokalize 1.5\n"
 
-#: pacaur:105
+#: pacaur:115
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "${colorW}AUR yükseltmesi başlıyor...${reset}"
 
-#: pacaur:113
+#: pacaur:129
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr ""
 "${colorW}$i${reset} AUR içerisinde ${colorY}bulunamadı${reset} -- atlanıyor"
 
-#: pacaur:141 pacaur:195 pacaur:1047
+#: pacaur:159 pacaur:215 pacaur:1111
 msgid "latest"
 msgstr "en son"
 
-#: pacaur:146
+#: pacaur:164
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "${checkaurpkgs[$i]}, IgnorePkg/IgnoreGroup içerisinde. Yine de kurulsun mu?"
 
-#: pacaur:147
+#: pacaur:165
 msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
 msgstr "${colorW}${checkaurpkgs[$i]}${reset}: paket yükseltmesi yoksayılıyor"
 
-#: pacaur:152
+#: pacaur:170
 msgid ""
 "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
@@ -46,87 +46,87 @@ msgstr ""
 "yoksayılıyor(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:164
+#: pacaur:184
 msgid "resolving dependencies..."
 msgstr "bağımlılıklar çözümleniyor..."
 
-#: pacaur:200
+#: pacaur:220
 msgid "no results found for $i"
 msgstr ""
 
-#: pacaur:323
+#: pacaur:358
 msgid "dependency cycle detected"
 msgstr ""
 
-#: pacaur:387 pacaur:402
+#: pacaur:426 pacaur:441
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: paket yükseltmesi yoksayılıyor"
 
-#: pacaur:388 pacaur:394 pacaur:399 pacaur:403
+#: pacaur:427 pacaur:433 pacaur:438 pacaur:442
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "Çözülemeyen bağımlılık '${colorW}$i${reset}'"
 
-#: pacaur:398
+#: pacaur:437
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr "$i bağımlılığı IgnorePkg/IgnoreGroup içerisinde. Yine de kurulsun mu?"
 
-#: pacaur:429
+#: pacaur:470
 msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
 msgstr ""
 "${colorW}${providersdeps[$i]} için ${#providers[@]} sağlayıcı mevcut:${reset}"
 
-#: pacaur:436
+#: pacaur:477
 msgid "Enter a number (default=0):"
 msgstr "Bir sayı girin (öntanımlı=0):"
 
-#: pacaur:441
+#: pacaur:482
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "geçersiz değer: $nb, 0 ile $providersnb arasında değil"
 
-#: pacaur:443
+#: pacaur:484
 msgid "invalid number: $nb"
 msgstr "geçersiz sayı: $nb"
 
-#: pacaur:482
+#: pacaur:526
 msgid "looking for inter-conflicts..."
 msgstr "ara-çakışmalar aranıyor..."
 
-#: pacaur:518 pacaur:587
+#: pacaur:562 pacaur:631
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j ve $k çakışıyor ($i). $k silinsin mi?"
 
-#: pacaur:532 pacaur:595
+#: pacaur:576 pacaur:639
 msgid "unresolvable package conflicts detected"
 msgstr "çözülemeyen paket çakışmaları bulundu"
 
-#: pacaur:533 pacaur:596
+#: pacaur:577 pacaur:640
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "işlem hazırlama başarısız (çakışan bağımlılıklar)"
 
-#: pacaur:534 pacaur:597
+#: pacaur:578 pacaur:641
 #, fuzzy
 msgid "$j and $k are in conflict"
 msgstr "$j ve $k çakışıyor ($i). $k silinsin mi?"
 
-#: pacaur:613
+#: pacaur:659
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} en son gözden geçirme -- alınıyor"
 
-#: pacaur:616
+#: pacaur:662
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} güncel -- yeniden kuruluyor"
 
-#: pacaur:618
+#: pacaur:664
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} güncel -- atlanıyor"
 
-#: pacaur:631
+#: pacaur:679
 msgid ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
 "out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
@@ -136,283 +136,288 @@ msgstr ""
 "${depsAood[$i]}\" \"+%d-%m-%Y\")${reset} tarihinde ${colorR}eski sürüm"
 "${reset} olarak işaretlenmiş."
 
-#: pacaur:656
+#: pacaur:707
 msgid "(cached)"
 msgstr "(önbellekte)"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Name"
 msgstr "İsim"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Old Version"
 msgstr "Eski Sürüm"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "New Version"
 msgstr "Yeni Sürüm"
 
-#: pacaur:661 pacaur:683
+#: pacaur:711 pacaur:733
 msgid "Download Size"
 msgstr "İndirme Boyutu"
 
-#: pacaur:672 pacaur:696
+#: pacaur:722 pacaur:746
 msgid "AUR Packages  (${#deps[@]}):"
 msgstr "AUR Paketleri  (${#deps[@]}):"
 
-#: pacaur:682 pacaur:697
+#: pacaur:732 pacaur:747
 msgid "Repo Packages (${#repodepspkgs[@]}):"
 msgstr "Depo Paketleri (${#repodepspkgs[@]}):"
 
-#: pacaur:685
+#: pacaur:735
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} MiB"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Download Size:"
 msgstr "Depo İndirme Boyutu:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "Repo Installed Size:"
 msgstr "Depo Kurulu Boyut:"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$sumk MiB"
 msgstr "$sumk MiB"
 
-#: pacaur:701
+#: pacaur:751
 msgid "$summ MiB"
 msgstr "$summ MiB"
 
-#: pacaur:710
+#: pacaur:760
 msgid "installation"
 msgstr "kurulum"
 
-#: pacaur:710
+#: pacaur:760
 msgid "download"
 msgstr "indir"
 
-#: pacaur:711
+#: pacaur:761
 msgid "Proceed with $action?"
 msgstr "$action ile devam edilsin mi?"
 
-#: pacaur:718
+#: pacaur:770
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Paket(ler) getiriliyor...${reset}"
 
-#: pacaur:751
+#: pacaur:805
 msgid "View $i build files diff?"
 msgstr ""
 
-#: pacaur:754
+#: pacaur:808
 #, fuzzy
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "${colorW}$j${reset} betiğine gösterildi"
 
-#: pacaur:758
+#: pacaur:812
 msgid "View $i PKGBUILD?"
 msgstr "$i PKGBUILD gösterilsin mi?"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "${colorW}$i${reset} PKGBUILD gösterildi"
 
-#: pacaur:759 pacaur:773
+#: pacaur:813 pacaur:827
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "${colorW}$i${reset} PKGBUILD açılamadı"
 
-#: pacaur:764
+#: pacaur:818
 msgid "View $j script?"
 msgstr "$j betiği gösterilsin mi?"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "${colorW}$j${reset} script viewed"
 msgstr "${colorW}$j${reset} betiğine gösterildi"
 
-#: pacaur:765 pacaur:776
+#: pacaur:819 pacaur:830
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "${colorW}$j${reset} betiği açılamadı"
 
-#: pacaur:834
+#: pacaur:891
 #, fuzzy
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} bağımlılıkları yükleniyor..."
 
-#: pacaur:846
+#: pacaur:903
 #, fuzzy
 msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "${colorW}$j${reset} betiği açılamadı"
 
-#: pacaur:851
+#: pacaur:908
 msgid "build.lck exists in $tmpdir"
 msgstr ""
 
-#: pacaur:856
+#: pacaur:913
 #, fuzzy
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
 msgstr "${colorW}${providerpkgs[@]}${reset} bağımlılıkları kuruluyor..."
 
-#: pacaur:880
+#: pacaur:937
 #, fuzzy
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} güncel -- atlanıyor"
 
-#: pacaur:897
+#: pacaur:953
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "Önbelleğe alınmış ${colorW}$j${reset} paketi kuruluyor..."
 
-#: pacaur:901
+#: pacaur:957
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "${colorW}$j${reset} paketi zaten önbellekte mevcut"
 
-#: pacaur:910
+#: pacaur:966
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} paket(ler)i inşa ediliyor..."
 
-#: pacaur:946
+#: pacaur:1001
 #, fuzzy
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} paket(ler)i inşa ediliyor..."
 
-#: pacaur:948
+#: pacaur:1003
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
 msgstr ""
 
-#: pacaur:967
+#: pacaur:1021
 msgid "Removing installed AUR dependencies..."
 msgstr "Kurulu AUR bağımlılıkları kaldırılıyor..."
 
-#: pacaur:983
+#: pacaur:1037
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "${colorW}$i${reset}, ${colorY}yeni bir sahipsiz${reset} paket"
 
-#: pacaur:988
+#: pacaur:1042
 #, fuzzy
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "${colorW}${pkgsdeps[$i]}${reset} paket(ler)i inşa ediliyor..."
 
-#: pacaur:1014 pacaur:1046
+#: pacaur:1069 pacaur:1110
 msgid "[ ignored ]"
 msgstr "[ yoksayıldı ]"
 
-#: pacaur:1061
+#: pacaur:1125
 msgid "Packages to keep:"
 msgstr "Saklanacak paketler:"
 
-#: pacaur:1061
+#: pacaur:1125
 msgid "All locally installed packages"
 msgstr "Tüm yerel kurulu paketler"
 
-#: pacaur:1062
+#: pacaur:1126
 msgid "AUR cache directory:"
 msgstr "AUR önbellek dizini:"
 
-#: pacaur:1064
+#: pacaur:1128
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Tüm diğer paketleri AUR önbelleğinden kaldırmak istiyor musunuz?"
 
-#: pacaur:1065
+#: pacaur:1129
 msgid "removing old packages from cache..."
 msgstr "eski paketler önbellekten kaldırılıyor..."
 
-#: pacaur:1069
+#: pacaur:1133
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "TÜM dosyaları AUR önbelleğinden kaldırmak istiyor musunuz?"
 
-#: pacaur:1070
+#: pacaur:1134
 msgid "removing all files from AUR cache..."
 msgstr "tüm dosyalar AUR önbelleğinden kaldırılıyor..."
 
-#: pacaur:1076
+#: pacaur:1140
 #, fuzzy
 msgid "Sources to keep:"
 msgstr "Saklanacak paketler:"
 
-#: pacaur:1076
+#: pacaur:1140
 msgid "All development packages sources"
 msgstr ""
 
-#: pacaur:1077
+#: pacaur:1141
 #, fuzzy
 msgid "AUR source cache directory:"
 msgstr "AUR önbellek dizini:"
 
-#: pacaur:1079
+#: pacaur:1143
 #, fuzzy
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr "TÜM dosyaları AUR önbelleğinden kaldırmak istiyor musunuz?"
 
-#: pacaur:1080
+#: pacaur:1144
 #, fuzzy
 msgid "removing non development files from source cache..."
 msgstr "tüm dosyalar AUR önbelleğinden kaldırılıyor..."
 
-#: pacaur:1084
+#: pacaur:1148
 #, fuzzy
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "TÜM dosyaları AUR önbelleğinden kaldırmak istiyor musunuz?"
 
-#: pacaur:1085
+#: pacaur:1149
 #, fuzzy
 msgid "removing all files from AUR source cache..."
 msgstr "tüm dosyalar AUR önbelleğinden kaldırılıyor..."
 
-#: pacaur:1169
+#: pacaur:1242
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr "işlem hazırlama başarısız (bağımlılıklar sağlanamadı)"
 
-#: pacaur:1170
+#: pacaur:1243
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: $@ gerektirir"
 
-#: pacaur:1178
+#: pacaur:1252
 msgid "$2 [Y/n] "
 msgstr "$2 [E/h] "
 
-#: pacaur:1185
+#: pacaur:1259
 msgid "$2 [y/N] "
 msgstr "$2 [e/H] "
 
-#: pacaur:1216
+#: pacaur:1290
 msgid " there is nothing to do"
 msgstr " yapılacak hiçbir şey yok"
 
-#: pacaur:1236
+#: pacaur:1310
 #, fuzzy
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr "kullanım:  pacaur <işlem> [seçenekler] [paket(ler)]"
 
-#: pacaur:1237
+#: pacaur:1311
 msgid "operations:"
 msgstr "işlemler: "
 
-#: pacaur:1238
+#: pacaur:1312
 msgid " pacman extension"
 msgstr " pacman uzantısı"
 
-#: pacaur:1239
-msgid "   -S, -Q           extend pacman operations to the AUR"
-msgstr "   -S, -Q           pacman işlemlerini AUR'a genişlet"
+#: pacaur:1313
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
+msgstr ""
 
-#: pacaur:1240
+#: pacaur:1314
+#, fuzzy
+msgid "                    extend pacman operations to the AUR"
+msgstr "                    pacman işlemlerini AUR'a genişlet"
+
+#: pacaur:1315
 msgid " AUR specific"
 msgstr ""
 
-#: pacaur:1241
+#: pacaur:1316
 msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     eşleşen dizgeler için AUR deposunu ara"
 
-#: pacaur:1242
+#: pacaur:1317
 #, fuzzy
 msgid "   -i, --info       view package information"
 msgstr ""
 "   -i, --info       paket bilgisini göster -- ayrıntılar için iki kez yazın"
 
-#: pacaur:1243
+#: pacaur:1318
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -420,39 +425,39 @@ msgstr ""
 "   -d, --download   hedef(ler)i indir -- AUR bağımlılıklarını indirmek için "
 "iki kez yazın"
 
-#: pacaur:1244
+#: pacaur:1319
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    hedef(ler)i indir ve derle"
 
-#: pacaur:1245
+#: pacaur:1320
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       hedef(ler)i indir, derle ve kur"
 
-#: pacaur:1246
+#: pacaur:1321
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      AUR güncellemelerini denetle"
 
-#: pacaur:1247
+#: pacaur:1322
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     AUR paket(ler)ini güncelle"
 
-#: pacaur:1248 pacaur:1256
+#: pacaur:1323 pacaur:1331
 msgid " general"
 msgstr " genel"
 
-#: pacaur:1249
+#: pacaur:1324
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    sürüm bilgisini göster"
 
-#: pacaur:1250
+#: pacaur:1325
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       yardım bilgisini göster"
 
-#: pacaur:1252
+#: pacaur:1327
 msgid "options:"
 msgstr "seçenekler:"
 
-#: pacaur:1253
+#: pacaur:1328
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
@@ -460,91 +465,91 @@ msgstr ""
 " pacman uzantıları - -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, -Scc işlemleri "
 "ile kullanılabilir"
 
-#: pacaur:1254
+#: pacaur:1329
 #, fuzzy
 msgid ""
 "   -a, --aur        only search, build or install target(s) from the AUR"
 msgstr "   -a, --aur        paketi sadece AUR'da ara, kur veya temizle"
 
-#: pacaur:1255
+#: pacaur:1330
 #, fuzzy
 msgid ""
 "   -r, --repo       only search, build or install target(s) from the "
 "repositories"
 msgstr "   -r, --repo       paketleri sadece depolarda ara, kur ve temizle"
 
-#: pacaur:1257
+#: pacaur:1332
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr "   -e, --edit       hedef PKGBUILD'ini düzenle ve install betiğine bak"
 
-#: pacaur:1258
+#: pacaur:1333
 msgid "   -q, --quiet      show less information for query and search"
 msgstr "   -q, --quiet      sorgu ve arama için daha az bilgi göster"
 
-#: pacaur:1259
+#: pacaur:1334
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr "   --devel          AUR geliştirme paketleri yükseltmesini hesaba kat"
 
-#: pacaur:1260
+#: pacaur:1335
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr ""
 
-#: pacaur:1261
+#: pacaur:1336
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         bir paket güncellemesini yoksay (birden fazla "
 "kullanılabilir)"
 
-#: pacaur:1262
+#: pacaur:1337
 #, fuzzy
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --noedit         dosyaları düzenlemek için sorma"
 
-#: pacaur:1263
+#: pacaur:1338
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      hiçbir doğrulama için sorma"
 
-#: pacaur:1264
+#: pacaur:1339
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         dosyaları düzenlemek için sorma"
 
-#: pacaur:1265
+#: pacaur:1340
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        paket(ler)i her zaman yeniden inşa et"
 
-#: pacaur:1266
+#: pacaur:1341
 msgid "   --silent         silence output"
 msgstr ""
 
-#: pacaur:1392
+#: pacaur:1466
 msgid "you cannot perform this operation as root"
 msgstr ""
 
-#: pacaur:1396
+#: pacaur:1470
 msgid "${colorW}editor${reset} variable unset"
 msgstr "${colorW}düzenleyici${reset} değişkeni ayarı kaldırılamadı"
 
-#: pacaur:1397
+#: pacaur:1471
 msgid ""
 "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
 "non volatile memory location"
 msgstr ""
 
-#: pacaur:1398
+#: pacaur:1472
 #, fuzzy
 msgid "${colorW}$clonedir${reset} does not have write permission."
 msgstr "${colorW}$builddir${reset} yazma iznine sahip değil."
 
-#: pacaur:1399
+#: pacaur:1473
 msgid "no targets specified (use -h for help)"
 msgstr "hedef belirtilmedi (yardım için -h kullanın)"
 
-#: pacaur:1400
+#: pacaur:1474
 msgid "target not found"
 msgstr "hedef bulunamadı"
 
-#: pacaur:1437 pacaur:1449 pacaur:1457
+#: pacaur:1511 pacaur:1523 pacaur:1531
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."
