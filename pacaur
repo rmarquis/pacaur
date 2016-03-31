@@ -475,7 +475,7 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 printf "\n%s " $"Enter a number (default=0):"
-                read -n $(echo -n $providersnb | wc -m) nb
+                read -r -n $(echo -n $providersnb | wc -m) nb
                 echo
 
                 case $nb in
@@ -1250,14 +1250,14 @@ Proceed() {
     N="$(gettext pacman N)"; n="${N,,}"
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
-            read -n 1 answer
+            read -r -n 1 answer
             echo
             case $answer in
                 $Y|$y|'') return 0;;
                 *) return 1;;
             esac;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
-            read -n 1 answer
+            read -r -n 1 answer
             echo
             case $answer in
                 $N|$n|'') return 0;;
