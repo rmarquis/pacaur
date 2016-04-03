@@ -1382,7 +1382,6 @@ while [[ -n "${!OPTIND}" ]]; do
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
-                    ignorerepo=*) coweropts+=("--${OPTARG}");;
                     sort) coweropts+=("--sort ${!OPTIND}"); shift;;
                     rsort) coweropts+=("--rsort ${!OPTIND}"); shift;;
                     by) coweropts+=("--by ${!OPTIND}"); shift;;
