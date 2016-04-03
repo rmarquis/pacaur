@@ -305,7 +305,7 @@ FindDepsAur() {
         unset vcsdepspkgs
         for i in "${!depspkgs[@]}"; do
             depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-            unset j && j=($(expac -Qs '%n %P' "^${depspkgs[$i]}$" | grep -E "([^a-zA-Z0-9_@\.\+-]${depspkgs[$i]}|^${depspkgs[$i]})" | grep -E "(${depspkgs[$i]}[^a-zA-Z0-9\.\+-]|${depspkgs[$i]}$)" | awk '{print $1}'))
+            unset j && j=$(expac -Qs '%n %P' "^${depspkgs[$i]}$" | grep -E "([^a-zA-Z0-9_@\.\+-]${depspkgs[$i]}|^${depspkgs[$i]})" | grep -E "(${depspkgs[$i]}[^a-zA-Z0-9\.\+-]|${depspkgs[$i]}$)" | awk '{print $1}')
             if [[ -n "$j" ]]; then
                 depspkgs[$i]="$j"
                 [[ $devel ]] && [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $j)" ]] && vcsdepspkgs+=($j)
@@ -400,7 +400,7 @@ FindDepsRepo() {
     # remove pactree deps of default providers if non default provider is already installed
     if [[ -n "${providersrepopkgs[@]}" ]]; then
         for i in "${providersrepopkgs[@]}"; do
-            j=($(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
+            j=$(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ -n "$j" ]] && [[ "$j" != "$(expac -Ss '%n' "^$i$" | tr '\n' ' ' | awk '{print $1}')" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
         done
         if [[ -n "${providersrepopkgsrm[@]}" ]]; then
@@ -475,11 +475,16 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 printf "\n%s " $"Enter a number (default=0):"
-                read -r -n $(echo -n $providersnb | wc -m) nb
+                read -r -n "$(echo -n $providersnb | wc -m)" nb
                 echo
 
                 case $nb in
-                    [0-9]|[0-9][0-9]) [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]] && echo && Note "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--)) || break;;
+                    [0-9]|[0-9][0-9])
+                        if [[ $nb -lt 0 || $nb -ge ${#providers[@]} ]]; then
+                            echo && Note "f" $"invalid value: $nb is not between 0 and $providersnb" && ((i--))
+                        else
+                            break
+                        fi;;
                     '') nb=0;;
                     *) Note "f" $"invalid number: $nb";;
                 esac
@@ -553,7 +558,7 @@ ConflictChecks() {
 
         for j in "${aurAconflicts[@]}"; do
             unset k Aprovides
-            k=($(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
+            k=$(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
             [[ "$j" == "$k" || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
@@ -624,7 +629,7 @@ ConflictChecks() {
         unset Qprovides
         repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]$i" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
         for j in "${repoSconflicts[@]}"; do
-            unset k && k=($(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
+            unset k && k=$(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ "$j" == "$k" || -z "$k" ]] && continue # skip when no conflict with repopkgs
 
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
@@ -771,8 +776,8 @@ DownloadPkgs() {
     GetPkgbase $@
 
     # clone
-    cd "$clonedir"
     for i in ${basepkgs[@]}; do
+        cd "$clonedir" || exit 1
         if [[ ! -d "$i" ]]; then
             if [[ $clonedir != $tmpdir ]]; then
                 git clone https://aur.archlinux.org/$i.git
@@ -780,12 +785,11 @@ DownloadPkgs() {
                 git clone --depth=1 https://aur.archlinux.org/$i.git
             fi
         else
-            cd "$clonedir/$i"
+            cd "$clonedir/$i" || exit 1
             [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]] && cp -pf ".git/FETCH_HEAD" ".git/FETCH_HEAD.prev"
             git reset --hard HEAD -q # updated pkgver of vcs packages prevent pull
             git pull -q
         fi
-        cd "$clonedir"
     done
 }
 
@@ -795,7 +799,7 @@ EditPkgs() {
     [[ $noedit ]] && return
     for i in "$@"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
-        cd "$clonedir/$i"
+        cd "$clonedir/$i" || exit 1
         unset timestamp
         GetInstallScripts $i
         if [[ ! $edit ]]; then
@@ -810,13 +814,21 @@ EditPkgs() {
                 else
                     # show pkgbuild
                     if Proceed "y" $"View $i PKGBUILD?"; then
-                        [[ -e "PKGBUILD" ]] && $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+                        if [[ -e "PKGBUILD" ]]; then
+                            $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed"
+                        else
+                            Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+                        fi
                     fi
                     # show install script
                     if [[ -n "${installscripts[@]}" ]]; then
                         for j in "${installscripts[@]}"; do
                             if Proceed "y" $"View $j script?"; then
-                                [[ -e "$j" ]] && $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                                if [[ -e "$j" ]]; then
+                                    $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed"
+                                else
+                                    Note "e" $"Could not open ${colorW}$j${reset} script"
+                                fi
                             fi
                         done
                     fi
@@ -824,10 +836,18 @@ EditPkgs() {
             fi
         else
             # show pkgbuild and install script
-            [[ -e "PKGBUILD" ]] && $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed" || Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            if [[ -e "PKGBUILD" ]]; then
+                $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed"
+            else
+                Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
+            fi
             if [[ -n "${installscripts[@]}" ]]; then
                 for j in "${installscripts[@]}"; do
-                    [[ -e "$j" ]] && $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed" || Note "e" $"Could not open ${colorW}$j${reset} script"
+                    if [[ -e "$j" ]]; then
+                        $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed"
+                    else
+                        Note "e" $"Could not open ${colorW}$j${reset} script"
+                    fi
                 done
             fi
         fi
@@ -887,7 +907,7 @@ MakePkgs() {
         done
 
         if [[ ! $builtpkg || $rebuild ]]; then
-            cd "$clonedir/${basepkgs[$i]}"
+            cd "$clonedir/${basepkgs[$i]}" || exit 1
             Note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
             if [[ $silent = true ]]; then
                 makepkg -f --verifysource ${makeopts[@]} &>/dev/null
@@ -920,7 +940,7 @@ MakePkgs() {
         # get splitted packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
-        cd "$clonedir/${basepkgs[$i]}"
+        cd "$clonedir/${basepkgs[$i]}" || exit 1
 
         # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAver
@@ -941,7 +961,11 @@ MakePkgs() {
                     checkpkgsdepslist+=($j)
                 fi
             done
-            [[ $basepkgsupdate ]] && pkgsdepslist=(${checkpkgsdepslist[@]}) || continue
+            if [[ $basepkgsupdate ]]; then
+                pkgsdepslist=(${checkpkgsdepslist[@]})
+            else
+                continue
+            fi
         fi
 
         # check package cache
@@ -1174,7 +1198,7 @@ GetBuiltPkg() {
     # check PKGEXT suffixe first, then default .xz suffixe for repository packages in pacman cache
     # and lastly all remaining suffixes in case PKGEXT is locally overridden
     unset builtpkg
-    for pkgext in ${PKGEXT} .pkg.tar.xz .pkg.tar .pkg.tar.gz .pkg.tar.bz2 .pkg.tar.lzo .pkg.tar.lrz .pkg.tar.Z; do
+    for pkgext in $PKGEXT .pkg.tar.xz .pkg.tar .pkg.tar.gz .pkg.tar.bz2 .pkg.tar.lzo .pkg.tar.lrz .pkg.tar.Z; do
         builtpkg="$2/$1-${CARCH}$pkgext"
         [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any$pkgext"
         [[ -f "$builtpkg" ]] && break;
@@ -1237,7 +1261,7 @@ GetJson() {
 
 CheckRequires() {
     local Qrequires
-    Qrequires=$(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk '{print $1}' | tr '\n' ' ')
+    Qrequires=($(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk '{print $1}' | tr '\n' ' '))
     if [[ -n "${Qrequires[@]}" ]]; then
         Note "f" $"failed to prepare transaction (could not satisfy dependencies)"
         Note "e" $"${Qrequires[@]}: requires $@"
@@ -1500,7 +1524,11 @@ case $operation in
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchInfoAur ${pkgs[@]}
         # info (-Si, -i) handling
         elif [[ $info ]]; then
-            [[ -z "${pkgs[@]}" ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            if [[ -z "${pkgs[@]}" ]]; then
+                $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]}
+            else
+                ClassifyPkgs ${pkgs[@]}
+            fi
             if [[ -n "${repopkgs[@]}" ]]; then
                 [[ $refresh ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
                 [[ ! $refresh ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
@@ -1523,7 +1551,11 @@ case $operation in
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy)
         else
-            [[ -z "${pkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} || ClassifyPkgs ${pkgs[@]}
+            if [[ -z "${pkgs[@]}" ]]; then
+                sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]}
+            else
+                ClassifyPkgs ${pkgs[@]}
+            fi
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
