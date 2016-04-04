@@ -1,0 +1,552 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Language: sk\n"
+"X-Source-Language: C\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: pavol.kapusta@gmail.com\n"
+"Language-Team: \n"
+"Language: sk\n"
+"X-Generator: Poedit 1.8.7.1\n"
+
+#: pacaur:105
+msgid "${colorW}Starting AUR upgrade...${reset}"
+msgstr "${colorW}Začínam aktualizáciu AUR...${reset}"
+
+#: pacaur:113
+msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+msgstr ""
+"${colorW}$i${reset} nie ${colorY}je prítomný ${reset} v AUR -- skáčem na "
+"ďalšie"
+
+#: pacaur:141 pacaur:195 pacaur:1055
+msgid "latest"
+msgstr "posledný"
+
+#: pacaur:146
+msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr "${checkaurpkgs[$i]} je v IgnorePkg/IgnoreGroup. Aj tak nainštalovať?"
+
+#: pacaur:147
+msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+msgstr "${colorW}${checkaurpkgs[$i]}${reset}: ignorujem aktualizáciu balíčka"
+
+#: pacaur:152
+msgid ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+msgstr ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignorujem aktualizáciu balíčka "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+
+#: pacaur:164
+msgid "resolving dependencies..."
+msgstr "riešim závislosti ..."
+
+#: pacaur:200
+msgid "no results found for $i"
+msgstr "pre $i nebolo nič nájdené"
+
+#: pacaur:331
+msgid "dependency cycle detected"
+msgstr "zistený cyklus závislostí"
+
+#: pacaur:395 pacaur:410
+msgid "${colorW}$i${reset}: ignoring package upgrade"
+msgstr "${colorW}$i${reset}: ignorujem aktualizáciu balíčka"
+
+#: pacaur:396 pacaur:402 pacaur:407 pacaur:411
+msgid "Unresolved dependency '${colorW}$i${reset}'"
+msgstr "Nevyriešená závislosť '${colorW}$i${reset}'"
+
+#: pacaur:406
+msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr "${checkaurpkgs[$i]} je v IgnorePkg/IgnoreGroup. Aj tak nainštalovať?"
+
+#: pacaur:437
+msgid ""
+"${colorW}There are ${#providers[@]} providers available for "
+"${providersdeps[$i]}:${reset}"
+msgstr ""
+"${colorW}Pre ${providersdeps[$i]} existujú ${#providers[@]} dostupné "
+"nasledovné:${reset}"
+
+#: pacaur:444
+msgid "Enter a number (default=0):"
+msgstr "Zadaj číslo (prednadstavené=0):"
+
+#: pacaur:449
+msgid "invalid value: $nb is not between 0 and $providersnb"
+msgstr "zle zadaná hodnota: $nb nie je medzi 0 a $providersnb"
+
+#: pacaur:451
+msgid "invalid number: $nb"
+msgstr "chybné číslo: $nb"
+
+#: pacaur:490
+msgid "looking for inter-conflicts..."
+msgstr "skúmam vzájomné rozpory..."
+
+#: pacaur:526 pacaur:595
+msgid "$j and $k are in conflict ($i). Remove $k?"
+msgstr "$j a $k sú v rozpore ($i). Odstrániť $k?"
+
+#: pacaur:540 pacaur:603
+msgid "unresolvable package conflicts detected"
+msgstr "zistené nevyriešiteľné rozpory balíčkov"
+
+#: pacaur:541 pacaur:604
+msgid "failed to prepare transaction (conflicting dependencies)"
+msgstr "zmenu sa nepodarilo pripraviť (vylučujúce sa závislosti)"
+
+#: pacaur:542 pacaur:605
+msgid "$j and $k are in conflict"
+msgstr "$j a $k sú v rozpore"
+
+#: pacaur:621
+msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
+msgstr "${colorW}${depsAname[$i]}${reset} posledná verzia -- sťahujem"
+
+#: pacaur:624
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
+"reinstalling"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} je aktuálny -- "
+"preinštalovávam"
+
+#: pacaur:626
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} je aktuálny -- skáčem na "
+"ďalšie"
+
+#: pacaur:639
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"\")${reset}"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} bol označený ako ${colorR}"
+"zastaralý${reset} v  ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"\")${reset}"
+
+#: pacaur:664
+msgid "(cached)"
+msgstr "(uložené lokálne)"
+
+#: pacaur:669 pacaur:691
+msgid "Name"
+msgstr "Meno"
+
+#: pacaur:669 pacaur:691
+msgid "Old Version"
+msgstr "Stará Verzia"
+
+#: pacaur:669 pacaur:691
+msgid "New Version"
+msgstr "Nová Verzia"
+
+#: pacaur:669 pacaur:691
+msgid "Download Size"
+msgstr "Veľkosť Sťahovania"
+
+#: pacaur:680 pacaur:704
+msgid "AUR Packages  (${#deps[@]}):"
+msgstr "AUR Balíčky  (${#deps[@]}):"
+
+#: pacaur:690 pacaur:705
+msgid "Repo Packages (${#repodepspkgs[@]}):"
+msgstr "Repo Balíčky (${#repodepspkgs[@]}):"
+
+#: pacaur:693
+msgid "${binarysize[$i]} MiB"
+msgstr "${binarysize[$i]} MiB"
+
+#: pacaur:709
+msgid "Repo Download Size:"
+msgstr "Repo Veľkosť Sťahovania:"
+
+#: pacaur:709
+msgid "Repo Installed Size:"
+msgstr "Repo Veľkosť Inštalácie:"
+
+#: pacaur:709
+msgid "$sumk MiB"
+msgstr "$sumk MiB"
+
+#: pacaur:709
+msgid "$summ MiB"
+msgstr "$summ MiB"
+
+#: pacaur:718
+msgid "installation"
+msgstr "inštaláciou"
+
+#: pacaur:718
+msgid "download"
+msgstr "sťahovaním"
+
+#: pacaur:719
+msgid "Proceed with $action?"
+msgstr "Pokračovať s $action?"
+
+#: pacaur:726
+msgid "${colorW}Retrieving package(s)...${reset}"
+msgstr "${colorW}Získavam balíč(e)k(y)...${reset}"
+
+#: pacaur:759
+msgid "View $i build files diff?"
+msgstr "Pozrieť $i rozdiel build súborov?"
+
+#: pacaur:762
+msgid "${colorW}$i${reset} build files diff viewed"
+msgstr "${colorW}$i${reset} rozdiel build súborov videný"
+
+#: pacaur:766
+msgid "View $i PKGBUILD?"
+msgstr "Pozrieť $i PKGBUILD?"
+
+#: pacaur:767 pacaur:781
+msgid "${colorW}$i${reset} PKGBUILD viewed"
+msgstr "${colorW}$i${reset} PKGBUILD videný"
+
+#: pacaur:767 pacaur:781
+msgid "Could not open ${colorW}$i${reset} PKGBUILD"
+msgstr "Nemôžem otvoriť ${colorW}$i${reset} PKGBUILD"
+
+#: pacaur:772
+msgid "View $j script?"
+msgstr "Pozrieť si $j skript?"
+
+#: pacaur:773 pacaur:784
+msgid "${colorW}$j${reset} script viewed"
+msgstr "${colorW}$j${reset} skript videný"
+
+#: pacaur:773 pacaur:784
+msgid "Could not open ${colorW}$j${reset} script"
+msgstr "Nemôžem otvoriť ${colorW}$j${reset} skript"
+
+#: pacaur:843
+msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
+msgstr "Kontrolujem ${colorW}${pkgsdeps[$i]}${reset} integritu..."
+
+#: pacaur:855
+msgid "failed to verify ${colorW}$i${reset} integrity"
+msgstr "integritu ${colorW}$i${reset} sa nepodarilo overiť"
+
+#: pacaur:860
+msgid "build.lck exists in $tmpdir"
+msgstr "build.lck existuje v $tmpdir"
+
+#: pacaur:865
+msgid ""
+"Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
+"dependencies..."
+msgstr ""
+"Inštalujem ${colorW}${repoprovidersconflictingpkgs[@]}${reset} závislosti..."
+
+#: pacaur:889
+msgid "${colorW}$j${reset} is up-to-date -- skipping"
+msgstr "${colorW}$j${reset} je aktuálny -- skáčem na ďalšie"
+
+#: pacaur:906
+msgid "Installing ${colorW}$j${reset} cached package..."
+msgstr "Inštalum ${colorW}$j${reset} lokálne uložený balíček..."
+
+#: pacaur:910
+msgid "Package ${colorW}$j${reset} already available in cache"
+msgstr "Balíček ${colorW}$j${reset} sa už nachádza v lokálnom úložisku"
+
+#: pacaur:919
+msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr "Vytváram ${colorW}${pkgsdeps[$i]}${reset} balíč(e)k(y)..."
+
+#: pacaur:955
+msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr "Inštalujem ${colorW}${pkgsdeps[$i]}${reset} balíč(e)k(y)..."
+
+#: pacaur:957
+msgid ""
+"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
+"SRCINFO for mismatching data with PKGBUILD."
+msgstr ""
+"${colorW}${pkgsdeps[$i]}${reset} balíč(e)k(y) sa nepodarilo nainštalovať. "
+"Skontrolujte .SRCINFO pre nájdenie rozdielov s PKGBUILD."
+
+#: pacaur:975
+msgid "Removing installed AUR dependencies..."
+msgstr "Odstraňujem nainštalované AUR závislosti..."
+
+#: pacaur:991
+msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+msgstr "${colorW}$i${reset} je ${colorY}nová sirota${reset}"
+
+#: pacaur:996
+msgid "failed to build ${colorW}$i${reset} package(s)"
+msgstr "balíč(e)k(y) ${colorW}$i${reset} sa nepodarilo vytvoriť"
+
+#: pacaur:1022 pacaur:1054
+msgid "[ ignored ]"
+msgstr "[ ignorované ]"
+
+#: pacaur:1069
+msgid "Packages to keep:"
+msgstr "Balíčky určené na uchovanie:"
+
+#: pacaur:1069
+msgid "All locally installed packages"
+msgstr "Všetky lokálne nainštalované balíčky"
+
+#: pacaur:1070
+msgid "AUR cache directory:"
+msgstr "Priečinok pre balíčky z AUR:"
+
+#: pacaur:1072
+msgid "Do you want to remove all other packages from AUR cache?"
+msgstr "Chcete vymazať všetky lokálne uložené balíčky pochádzajúce z AUR?"
+
+#: pacaur:1073
+msgid "removing old packages from cache..."
+msgstr "odstraňujem všetky lokálne uložené balíčky..."
+
+#: pacaur:1077
+msgid "Do you want to remove ALL files from AUR cache?"
+msgstr ""
+"Naozaj chcete vymazať VŠETKY lokálne uložené súbory pochádzajúce z AUR?"
+
+#: pacaur:1078
+msgid "removing all files from AUR cache..."
+msgstr "odstraňujem všetky lokálne uložené súbory pochádzajúce z AUR..."
+
+#: pacaur:1084
+msgid "Sources to keep:"
+msgstr "Zdrojové súbory balíčkov určených pre uchovanie:"
+
+#: pacaur:1084
+msgid "All development packages sources"
+msgstr "Zdrojové súbory všetkých vývojových balíčkov"
+
+#: pacaur:1085
+msgid "AUR source cache directory:"
+msgstr "Priečinok lokálne uložených súborov z AUR:"
+
+#: pacaur:1087
+msgid "Do you want to remove all non development files from AUR source cache?"
+msgstr ""
+"Chcete odstrániť všetky nie vývojové lokálne uložené súbory pochádzajúce z "
+"AUR?"
+
+#: pacaur:1088
+msgid "removing non development files from source cache..."
+msgstr "odstraňujem nie vývojové lokálne uložené súbory..."
+
+#: pacaur:1092
+msgid "Do you want to remove ALL files from AUR source cache?"
+msgstr ""
+"Chcete odstrániť VŠETKY lokálne uložené zdrojové súbory pochádzajúce z AUR?"
+
+#: pacaur:1093
+msgid "removing all files from AUR source cache..."
+msgstr ""
+"odstraňujem všetky lokálne uložené zdrojové súbory pochádzajúce z AUR..."
+
+#: pacaur:1176
+msgid "failed to prepare transaction (could not satisfy dependencies)"
+msgstr "zmenu sa nepodarilo pripraviť (nesplnené závislosti)"
+
+#: pacaur:1177
+msgid "${Qrequires[@]}: requires $@"
+msgstr "${Qrequires[@]}: si vyžaduje $@"
+
+#: pacaur:1185
+msgid "$2 [Y/n] "
+msgstr "$2 [A/n] "
+
+#: pacaur:1192
+msgid "$2 [y/N] "
+msgstr "$2 [a/N] "
+
+#: pacaur:1223
+msgid " there is nothing to do"
+msgstr "nič ďalšieho na vykonanie"
+
+#: pacaur:1243
+msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
+msgstr ""
+"použitie:  pacaur <funkcia> [možnosti] [cie(ľ)(le)] -- Pozri tiež pacaur(8)"
+
+#: pacaur:1244
+msgid "operations:"
+msgstr "funkcie:"
+
+#: pacaur:1245
+msgid " pacman extension"
+msgstr "rozšírenie funkcionality pacman-a"
+
+#: pacaur:1246
+msgid "   -S, -Q           extend pacman operations to the AUR"
+msgstr " -S, -Q           rozšíri funkcie pacman-a pre AUR "
+
+#: pacaur:1247
+msgid " AUR specific"
+msgstr "týkajúce sa iba AUR"
+
+#: pacaur:1248
+msgid "   -s, --search     search AUR for matching strings"
+msgstr "   -s, --search     prehľadaj AUR za účelom zhody s textovým reťazcom"
+
+#: pacaur:1249
+msgid "   -i, --info       view package information"
+msgstr "   -i, --info       informácia o balíčku"
+
+#: pacaur:1250
+msgid ""
+"   -d, --download   download target(s) -- pass twice to download AUR "
+"dependencies"
+msgstr ""
+"   -d, --download   stiahni cie(ľ)(le) -- zadaj dva krát pre stiahnutie "
+"závislostí z AUR"
+
+#: pacaur:1251
+msgid "   -m, --makepkg    download and make target(s)"
+msgstr "   -m, --makepkg    stiahni a vytvor cie(ľ)(le)"
+
+#: pacaur:1252
+msgid "   -y, --sync       download, make and install target(s)"
+msgstr "   -y, --sync       stiahni, vytvor a nainštaluj cie(ľ)(le)"
+
+#: pacaur:1253
+msgid "   -k, --check      check for AUR update(s)"
+msgstr "   -k, --check      skontroluj aktualizáci(u)(e) z AUR"
+
+#: pacaur:1254
+msgid "   -u, --update     update AUR package(s)"
+msgstr "   -u, --update     aktualizuj balíč(e)k(y) z AUR"
+
+#: pacaur:1255 pacaur:1263
+msgid " general"
+msgstr "všeobecné"
+
+#: pacaur:1256
+msgid "   -v, --version    display version information"
+msgstr "   -v, --version    zobraz informáciu o verzii"
+
+#: pacaur:1257
+msgid "   -h, --help       display help information"
+msgstr "   -h, --help       zobraz pomocníka"
+
+#: pacaur:1259
+msgid "options:"
+msgstr "funkcie:"
+
+#: pacaur:1260
+msgid ""
+" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
+"Sc, -Scc operations"
+msgstr ""
+" rozšírenie funkcionality pacman-a - môže byť použité s -S, -Ss, -Si, -Sii, -"
+"Sw, -Su, -Qu, -Sc, -Scc funkciami"
+
+#: pacaur:1261
+msgid ""
+"   -a, --aur        only search, build or install target(s) from the AUR"
+msgstr ""
+"   -a, --aur        prehľadaj, vytvor alebo nainštaluj cie(ľ)(le) iba z AUR"
+
+#: pacaur:1262
+msgid ""
+"   -r, --repo       only search, build or install target(s) from the "
+"repositories"
+msgstr ""
+"   -r, --repo       prehľadaj, vytvor alebo nainštaluj cie(ľ)(le) iba z "
+"repozitárov"
+
+#: pacaur:1264
+msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
+msgstr ""
+"   -e, --edit       zmeň PKGBUILD cieľ(a)(ov) a pozri si inštalačný skript"
+
+#: pacaur:1265
+msgid "   -q, --quiet      show less information for query and search"
+msgstr ""
+"   -q, --quiet      zobraz menej informácií pri dotazovaní a vyhľadávaní"
+
+#: pacaur:1266
+msgid "   --devel          consider AUR development packages upgrade"
+msgstr "   --devel          zohľadni aktualizáciu vývojových balíčkov z AUR"
+
+#: pacaur:1267
+msgid "   --foreign        consider already installed foreign dependencies"
+msgstr "   --foreign        zohľadni už nainštalované cudzie závislosti"
+
+#: pacaur:1268
+msgid ""
+"   --ignore         ignore a package upgrade (can be used more than once)"
+msgstr ""
+"   --ignore         ignoruj aktualizáciu balíčka (môže byť použité viac než "
+"raz)"
+
+#: pacaur:1269
+msgid "   --needed         do not reinstall already up-to-date target(s)"
+msgstr "   --needed         nepreinštaluj už aktuálny(e) cie(ľ)(le)"
+
+#: pacaur:1270
+msgid "   --noconfirm      do not prompt for any confirmation"
+msgstr "   --noconfirm      nevyzývaj k ďalším potvrdeniam "
+
+#: pacaur:1271
+msgid "   --noedit         do not prompt to edit files"
+msgstr "   --noedit         nevyzývaj k zmene súborov"
+
+#: pacaur:1272
+msgid "   --rebuild        always rebuild package(s)"
+msgstr "   --rebuild        vždy prebuduj (znova vytvor) balíč(e)k(y)"
+
+#: pacaur:1273
+msgid "   --silent         silence output"
+msgstr "   --silent         tichý výstup"
+
+#: pacaur:1398
+msgid "you cannot perform this operation as root"
+msgstr "túto operáciu nemôžeš uskutočniť ako root užívateľ"
+
+#: pacaur:1402
+msgid "${colorW}editor${reset} variable unset"
+msgstr "premenná ${colorW}editora${reset} nie je nastavená"
+
+#: pacaur:1403
+msgid ""
+"${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
+"non volatile memory location"
+msgstr ""
+"${colorW}clonedir${reset} alebo ${colorW}\\$AURDEST${reset} by mali byť "
+"nastavené na stálu oblasť pamäte"
+
+#: pacaur:1404
+msgid "${colorW}$clonedir${reset} does not have write permission."
+msgstr "${colorW}$clonedir${reset} nemá oprávnenie zapisovať"
+
+#: pacaur:1405
+msgid "no targets specified (use -h for help)"
+msgstr "nie sú určené žiadne ciele (použi -h pre pomocníka)"
+
+#: pacaur:1406
+msgid "target not found"
+msgstr "cieľ nenájdený"
+
+#: pacaur:1443 pacaur:1455 pacaur:1463
+msgid ""
+"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"Balíč(e)k(y) ${colorW}${aurpkgs[*]}${reset} nenájden(ý)(é) v repozitároch, "
+"hľadávam v ${colorM}AUR${reset}..."
