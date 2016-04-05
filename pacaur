@@ -806,10 +806,14 @@ EditPkgs() {
             if [[ ! $displaybuildfiles = none ]]; then
                 if [[ -e ".git/FETCH_HEAD.prev" && $displaybuildfiles = diff ]]; then
                     # show diff
-                    if Proceed "y" $"View $i build files diff?"; then
-                        timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD.prev")
-                        git show --since $timestamp
-                        Note "s" $"${colorW}$i${reset} build files diff viewed"
+                    timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD.prev")
+                    if [[ -n "$(git show --since $timestamp)" ]]; then
+                        if Proceed "y" $"View $i build files diff?"; then
+                            git show --since $timestamp
+                            Note "s" $"${colorW}$i${reset} build files diff viewed"
+                        fi
+                    else
+                        Note "w" $"${colorW}$i${reset} build files are up-to-date -- skipping"
                     fi
                 else
                     # show pkgbuild
