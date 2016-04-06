@@ -16,7 +16,7 @@ msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr ""
 "${colorW}$i${reset} ${colorY}nem található${reset} az AUR-ban -- kihagyva"
 
-#: pacaur:159 pacaur:215 pacaur:1135
+#: pacaur:159 pacaur:215 pacaur:1139
 msgid "latest"
 msgstr "naprakész"
 
@@ -197,78 +197,82 @@ msgstr "Folytatod a ${action}t?"
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Csomag(ok) letöltése...${reset}"
 
-#: pacaur:809
+#: pacaur:811
 msgid "View $i build files diff?"
 msgstr "Megnyitod $i build fájljainak diff-jét?"
 
-#: pacaur:812
+#: pacaur:813
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "${colorW}$i${reset} build fájljainak diff-je megtekintve"
 
 #: pacaur:816
+msgid "${colorW}$i${reset} build files are up-to-date -- skipping"
+msgstr "${colorW}$i${reset} build fájljai naprakészek -- kihagyás"
+
+#: pacaur:820
 msgid "View $i PKGBUILD?"
 msgstr "Megnyitod $i PKGBUILD-jét?"
 
-#: pacaur:818 pacaur:840
+#: pacaur:822 pacaur:844
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "${colorW}$i${reset} PKGBUILD megtekintve"
 
-#: pacaur:820 pacaur:842
+#: pacaur:824 pacaur:846
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "Nem sikerült megnyitni ${colorW}$i${reset} PKGBUILD-jét"
 
-#: pacaur:826
+#: pacaur:830
 msgid "View $j script?"
 msgstr "Megnyitod a(z) $j script-et?"
 
-#: pacaur:828 pacaur:847
+#: pacaur:832 pacaur:851
 msgid "${colorW}$j${reset} script viewed"
 msgstr "${colorW}$j${reset} script megtekintve"
 
-#: pacaur:830 pacaur:849
+#: pacaur:834 pacaur:853
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "Nem sikerült megnyitni a(z) ${colorW}$j${reset} script-et"
 
-#: pacaur:911
+#: pacaur:915
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} integritásának ellenőrzése..."
 
-#: pacaur:923
+#: pacaur:927
 msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "${colorW}$i${reset} integritásának ellenőrzése sikertelen"
 
-#: pacaur:928
+#: pacaur:932
 msgid "build.lck exists in $tmpdir"
 msgstr "build.lck már létezik itt: $tmpdir"
 
-#: pacaur:933
+#: pacaur:937
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
 msgstr ""
 "${colorW}${repoprovidersconflictingpkgs[@]}${reset} függőségek telepítése..."
 
-#: pacaur:957
+#: pacaur:961
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}$j${reset} naprakész -- kihagyás"
 
-#: pacaur:977
+#: pacaur:981
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "${colorW}$j${reset} gyorsítótárban levő csomag telepítése..."
 
-#: pacaur:981
+#: pacaur:985
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "${colorW}$j${reset} csomag már elérhető gyorsítótárból"
 
-#: pacaur:990
+#: pacaur:994
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} csomag build folyamatának indítása..."
 
-#: pacaur:1025
+#: pacaur:1029
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "${colorW}${pkgsdeps[$i]}${reset} csomag telepítése..."
 
-#: pacaur:1027
+#: pacaur:1031
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
@@ -277,138 +281,138 @@ msgstr ""
 "Ellenőrizd, hogy a .SRCINFO fájl tartalma megfelel-e PKGBUILD fájlban "
 "megadottaknak."
 
-#: pacaur:1045
+#: pacaur:1049
 msgid "Removing installed AUR dependencies..."
 msgstr "Telepített AUR függőségek törlése..."
 
-#: pacaur:1061
+#: pacaur:1065
 msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
 msgstr "${colorW}$i${reset} ${colorY}árva${reset} csomaggá vált"
 
-#: pacaur:1066
+#: pacaur:1070
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "${colorW}$i${reset} csomag build-elése sikertelen"
 
-#: pacaur:1093 pacaur:1134
+#: pacaur:1097 pacaur:1138
 msgid "[ ignored ]"
 msgstr "[ kihagyva ]"
 
-#: pacaur:1149
+#: pacaur:1153
 msgid "Packages to keep:"
 msgstr "Megtartandó csomagok:"
 
-#: pacaur:1149
+#: pacaur:1153
 msgid "All locally installed packages"
 msgstr "Minden telepített csomag"
 
-#: pacaur:1150
+#: pacaur:1154
 msgid "AUR cache directory:"
 msgstr "AUR gyorsítótár könyvtára:"
 
-#: pacaur:1152
+#: pacaur:1156
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Szeretnél minden más csomagot törölni az AUR gyorsítótárból?"
 
-#: pacaur:1153
+#: pacaur:1157
 msgid "removing old packages from cache..."
 msgstr "régi csomagok törlése a gyorsítótárból..."
 
-#: pacaur:1157
+#: pacaur:1161
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "Szeretnéd az ÖSSZES fájlt törölni az AUR gyorsítótárból?"
 
-#: pacaur:1158
+#: pacaur:1162
 msgid "removing all files from AUR cache..."
 msgstr "összes fájl törlése az AUR gyorsítótárból..."
 
-#: pacaur:1164
+#: pacaur:1168
 msgid "Sources to keep:"
 msgstr "Megtartandó forrásfájlok:"
 
-#: pacaur:1164
+#: pacaur:1168
 msgid "All development packages sources"
 msgstr "Minden instabil csomag forrásai"
 
-#: pacaur:1165
+#: pacaur:1169
 msgid "AUR source cache directory:"
 msgstr "AUR forrásfájl gyorsítótár könyvtára:"
 
-#: pacaur:1167
+#: pacaur:1171
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr ""
 "Szeretnéd törölni az összes nem instabil csomaghoz tartozó fájlt az AUR "
 "forrásfájl gyorsítótárból?"
 
-#: pacaur:1168
+#: pacaur:1172
 msgid "removing non development files from source cache..."
 msgstr ""
 "összes nem instabil csomaghoz tartozó fájl törlése a forrásfájl "
 "gyorsítótárból..."
 
-#: pacaur:1172
+#: pacaur:1176
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "Szeretnéd az ÖSSZES fájlt törölni az AUR forrásfájl gyorsítótárból?"
 
-#: pacaur:1173
+#: pacaur:1177
 msgid "removing all files from AUR source cache..."
 msgstr "összes fájl törlése az AUR forrásfájl gyorsítótárból..."
 
-#: pacaur:1266
+#: pacaur:1270
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr ""
 "nem sikerült előkészíteni a tranzakciót (nem lehet kielégíteni a "
 "függőségeket)"
 
-#: pacaur:1267
+#: pacaur:1271
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: $@ hiányzik"
 
-#: pacaur:1276
+#: pacaur:1280
 msgid "$2 [Y/n] "
 msgstr "$2 [I/n] "
 
-#: pacaur:1283
+#: pacaur:1287
 msgid "$2 [y/N] "
 msgstr "$2 [i/N] "
 
-#: pacaur:1314
+#: pacaur:1318
 msgid " there is nothing to do"
 msgstr " nincs teendő"
 
-#: pacaur:1334
+#: pacaur:1338
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr ""
 "használat:  pacaur <művelet> [opciók] [csomag(ok)] -- lásd még: pacaur(8)"
 
-#: pacaur:1335
+#: pacaur:1339
 msgid "operations:"
 msgstr "műveletek:"
 
-#: pacaur:1336
+#: pacaur:1340
 msgid " pacman extension"
 msgstr " pacman kiegészítés"
 
-#: pacaur:1337
+#: pacaur:1341
 msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
 msgstr "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
 
-#: pacaur:1338
+#: pacaur:1342
 msgid "                    extend pacman operations to the AUR"
 msgstr "                    pacman műveletek kiterjesztése az AUR-ra"
 
-#: pacaur:1339
+#: pacaur:1343
 msgid " AUR specific"
 msgstr "AUR-ra vonatkozó műveletek"
 
-#: pacaur:1340
+#: pacaur:1344
 msgid "   -s, --search     search AUR for matching strings"
 msgstr "   -s, --search     keresés az AUR-ban a megadott szövegre"
 
-#: pacaur:1341
+#: pacaur:1345
 msgid "   -i, --info       view package information"
 msgstr "   -i, --info       csomag adatainak megtekintése"
 
-#: pacaur:1342
+#: pacaur:1346
 msgid ""
 "   -d, --download   download target(s) -- pass twice to download AUR "
 "dependencies"
@@ -416,39 +420,39 @@ msgstr ""
 "   -d, --download   csomag(ok) letöltése -- kétszer megadva letölti az AUR "
 "függőségeket"
 
-#: pacaur:1343
+#: pacaur:1347
 msgid "   -m, --makepkg    download and make target(s)"
 msgstr "   -m, --makepkg    csomag(ok) letöltése és make futtatása"
 
-#: pacaur:1344
+#: pacaur:1348
 msgid "   -y, --sync       download, make and install target(s)"
 msgstr "   -y, --sync       csomag(ok) letöltése, make és telepítés futtatása"
 
-#: pacaur:1345
+#: pacaur:1349
 msgid "   -k, --check      check for AUR update(s)"
 msgstr "   -k, --check      AUR frissítések keresése"
 
-#: pacaur:1346
+#: pacaur:1350
 msgid "   -u, --update     update AUR package(s)"
 msgstr "   -u, --update     AUR frissítések telepítése"
 
-#: pacaur:1347 pacaur:1355
+#: pacaur:1351 pacaur:1359
 msgid " general"
 msgstr " általános"
 
-#: pacaur:1348
+#: pacaur:1352
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    verzióinformációk kiírása"
 
-#: pacaur:1349
+#: pacaur:1353
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       súgó megjelenítése"
 
-#: pacaur:1351
+#: pacaur:1355
 msgid "options:"
 msgstr "opciók:"
 
-#: pacaur:1352
+#: pacaur:1356
 msgid ""
 " pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
 "Sc, -Scc operations"
@@ -456,75 +460,75 @@ msgstr ""
 " pacman kiegészítés - használható az -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -Sc, "
 "-Scc műveletekkel"
 
-#: pacaur:1353
+#: pacaur:1357
 msgid ""
 "   -a, --aur        only search, build or install target(s) from the AUR"
 msgstr ""
 "   -a, --aur        keresés, build és telepítés csak az AUR csomagok között"
 
-#: pacaur:1354
+#: pacaur:1358
 msgid ""
 "   -r, --repo       only search, build or install target(s) from the "
 "repositories"
 msgstr ""
 "   -r, --repo       keresés, build és telepítés csak a repo csomagok között"
 
-#: pacaur:1356
+#: pacaur:1360
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
 "   -e, --edit       csomag PKGBUILD-jének szerkesztése és telepítő script "
 "megtekintése"
 
-#: pacaur:1357
+#: pacaur:1361
 msgid "   -q, --quiet      show less information for query and search"
 msgstr ""
 "   -q, --quiet      kevesebb információ mutatása lekérdezéseknél és "
 "keresésnél"
 
-#: pacaur:1358
+#: pacaur:1362
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr ""
 "   --devel          fejlesztés alatt álló AUR csomagok figyelembe vétele"
 
-#: pacaur:1359
+#: pacaur:1363
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr "   --foreign        már telepített külső függőségek figyelembe vétele"
 
-#: pacaur:1360
+#: pacaur:1364
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         csomag frissítésének kihagyása (többször is használható)"
 
-#: pacaur:1361
+#: pacaur:1365
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --needed         ne telepítse újra a naprakész csomagokat"
 
-#: pacaur:1362
+#: pacaur:1366
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      ne kérjen megerősítést semmihez"
 
-#: pacaur:1363
+#: pacaur:1367
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         ne ajánlja fel a fájlok szerkesztését"
 
-#: pacaur:1364
+#: pacaur:1368
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        csomagok újra build-elése minden esetben"
 
-#: pacaur:1365
+#: pacaur:1369
 msgid "   --silent         silence output"
 msgstr "   --silent         néma kimenet"
 
-#: pacaur:1489
+#: pacaur:1493
 msgid "you cannot perform this operation as root"
 msgstr "root-ként nem végezheted el ezt a műveletet"
 
-#: pacaur:1493
+#: pacaur:1497
 msgid "${colorW}editor${reset} variable unset"
 msgstr "${colorW}editor${reset} változó nincs beállítva"
 
-#: pacaur:1494
+#: pacaur:1498
 msgid ""
 "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
 "non volatile memory location"
@@ -532,19 +536,19 @@ msgstr ""
 "Érdemes ${colorW}clonedir${reset} vagy ${colorW}\\$AURDEST${reset} elérési "
 "utakat maradandó tárolóeszközre állítani"
 
-#: pacaur:1495
+#: pacaur:1499
 msgid "${colorW}$clonedir${reset} does not have write permission."
 msgstr "${colorW}$clonedir${reset} nem rendelkezik írási jogosultsággal."
 
-#: pacaur:1496
+#: pacaur:1500
 msgid "no targets specified (use -h for help)"
 msgstr "nincs megadva csomag (-h használatával elérhető a súgó)"
 
-#: pacaur:1497
+#: pacaur:1501
 msgid "target not found"
 msgstr "csomag nem található"
 
-#: pacaur:1538 pacaur:1550 pacaur:1562
+#: pacaur:1542 pacaur:1554 pacaur:1566
 msgid ""
 "Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."
