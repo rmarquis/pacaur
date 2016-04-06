@@ -254,7 +254,7 @@ Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
 
 Display PKGBUILD and install script viewing prompt. Possible values are I<full>
 to always display the full build files, I<diff> to only display the difference
-since last build, and I<none> to disable the viewing prompt. Default is B<full>.
+since last build, and I<none> to disable the viewing prompt. Default is B<diff>.
 
 =item B<fallback>
 
@@ -356,10 +356,10 @@ through the I<VerbosePkgLists> option.
 
 =item B<build files comparison>
 
-To be able to display build files comparison, the I<displaybuildfiles> config
-option should be set to I<diff>. The clone directory (set by default to
-I<$XDG_CACHE_HOME/pacaur>) can be changed through the alternative
-I<$AURDEST> environment variable. It should always be set to a persistent location.
+To allow build files comparison, the I<displaybuildfiles> default config option
+is set to I<diff>. Although the clone directory (set by default to
+I<$XDG_CACHE_HOME/pacaur>) can be changed through the alternative I<$AURDEST>
+environment variable, it should always be set to a persistent location.
 
 =item B<fallback>
 

@@ -46,7 +46,7 @@ fi
 tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
 clonedir="${AURDEST:-$usercachedir}"        # clone directory
 editor="${EDITOR:-vi}"                      # build files editor
-displaybuildfiles=full                      # display build files (none|diff|full)
+displaybuildfiles=diff                      # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
 silent=false                                # silence output
 sortby=popularity                           # sort method (name|votes|popularity)
