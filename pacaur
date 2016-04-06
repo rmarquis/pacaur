@@ -794,9 +794,10 @@ DownloadPkgs() {
 }
 
 EditPkgs() {
-    local timestamp i j
+    local viewed timestamp i j
     # global cachedpkgs installscripts editor
     [[ $noedit ]] && return
+    unset viewed
     for i in "$@"; do
         [[ " ${cachedpkgs[@]} " =~ " $i " ]] && continue
         cd "$clonedir/$i" || exit 1
@@ -811,6 +812,7 @@ EditPkgs() {
                         if Proceed "y" $"View $i build files diff?"; then
                             git show --since $timestamp
                             Note "s" $"${colorW}$i${reset} build files diff viewed"
+                            viewed='true'
                         fi
                     else
                         Note "w" $"${colorW}$i${reset} build files are up-to-date -- skipping"
@@ -856,6 +858,13 @@ EditPkgs() {
             fi
         fi
     done
+
+    if [[ ! $noconfirm && $displaybuildfiles = diff && $viewed = true ]]; then
+        [[ $installpkg ]] && action=$"installation" || action=$"download"
+        if ! Proceed "y" $"Proceed with $action?"; then
+            exit
+        fi
+    fi
 }
 
 MakePkgs() {
