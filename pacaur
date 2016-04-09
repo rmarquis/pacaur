@@ -114,14 +114,19 @@ UpgradeAur() {
     # global aurpkgs json
     Note "i" $"${colorW}Starting AUR upgrade...${reset}"
 
-    [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
-    json=$(DownloadJson ${foreignpkgs[@]})
-    allaurpkgs=($(GetJson "var" "$json" "Name"))
-    allaurpkgsAver=($(GetJson "var" "$json" "Version"))
-    allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
-    for i in "${!allaurpkgs[@]}"; do
-        [[ $(vercmp "${allaurpkgsAver[$i]}" "${allaurpkgsQver[$i]}") -gt 0 ]] && aurpkgs+=(${allaurpkgs[$i]});
-    done
+    # selective upgrade switch
+    if [[ $selective && -n ${pkgs[@]} ]]; then
+        aurpkgs+=(${pkgs[@]})
+    else
+        foreignpkgs=($($pacmanbin -Qmq))
+        json=$(DownloadJson ${foreignpkgs[@]})
+        allaurpkgs=($(GetJson "var" "$json" "Name"))
+        allaurpkgsAver=($(GetJson "var" "$json" "Version"))
+        allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
+        for i in "${!allaurpkgs[@]}"; do
+            [[ $(vercmp "${allaurpkgsAver[$i]}" "${allaurpkgsQver[$i]}") -gt 0 ]] && aurpkgs+=(${allaurpkgs[$i]});
+        done
+    fi
 
     # foreign packages check
     aurforeignpkgs=($(grep -xvf <(printf '%s\n' "${allaurpkgs[@]}") <(printf '%s\n' "${foreignpkgs[@]}")))
@@ -1557,10 +1562,7 @@ case $operation in
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && CleanCache ${pkgs[@]}
         # sysupgrade (-Su, -u) handling
         elif [[ $upgrade ]]; then
-            if [[ ! $selective ]]; then
-                ClassifyPkgs ${pkgs[@]}
-                unset pkgs  # selective upgrade switch
-            fi
+            [[ -n "${pkgs[@]}" ]] && ClassifyPkgs ${pkgs[@]}
             [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ ! $repo ]] && [[ $aur ]] && [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
             [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
