@@ -1050,8 +1050,8 @@ MakePkgs() {
         if [[ $installpkg ]]; then
             for j in "${pkgsdepslist[@]}"; do
                 [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
-                [[ " ${pacopts[@]} " =~ " --asdeps " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
-                [[ " ${pacopts[@]} " =~ " --asexplicit " ]] && sudo $pacmanbin -D $j --asexplicit ${pacopts[@]} &>/dev/null
+                [[ " ${pacopts[@]} " =~ --(asdep|asdeps) ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
+                [[ " ${pacopts[@]} " =~ --(asexp|asexplicit) ]] && sudo $pacmanbin -D $j --asexplicit ${pacopts[@]} &>/dev/null
             done
         fi
     done
@@ -1590,7 +1590,7 @@ case $operation in
     *)  # others operations handling
         if [[ -z "${pkgs[@]}" && -n "$(grep -e "-[F]" <<< ${pacmanarg[@]})" && -n "$(grep -e "-[y]" <<< ${pacmanarg[@]})" ]]; then
             sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${pkgs[@]}
-        elif [[ -z "${pkgs[@]}" || -n "$(grep -e "-[DFQTglp]" <<< ${pacmanarg[@]})" ]] && [[ ! " ${pacopts[@]} " =~ " --asdeps " && ! " ${pacopts[@]} " =~ " --asexp " ]]; then
+        elif [[ -z "${pkgs[@]}" || -n "$(grep -e "-[DFQTglp]" <<< ${pacmanarg[@]})" ]] && [[ ! " ${pacopts[@]} " =~ --(asdep|asdeps) && ! " ${pacopts[@]} " =~ --(asexp|asexplicit) ]]; then
             $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
         else
             sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${pkgs[@]}
