@@ -436,7 +436,7 @@ B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
 
 B<[ru] - Русский> - "kyak"
 
-B<[sk] - Slovenčina> - Pavol "pakapusta" Kapusta
+B<[sk] - Slovenčina> - Pavol "pakapusta" Kapusta, Juraj "DoctorJellyface" Fiala
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
 
