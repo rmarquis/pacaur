@@ -231,8 +231,8 @@ DepsSolver() {
 }
 
 FindDepsAur() {
-    local errdepsname depspkgs depspkgstmp vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
-    # global depspkgsaur json errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs builtpkg
+    local errdepsname depspkgs depspkgstmp builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
+    # global depspkgsaur json errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
     [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=(${aurpkgs[@]})
 
@@ -291,6 +291,7 @@ FindDepsAur() {
                 depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
                 depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${depspkgsaur[$i]}"))
             fi
+            unset builtpkg
         done
     fi
 
@@ -691,9 +692,9 @@ OutofdateChecks() {
 }
 
 Prompt() {
-    local i binaryksize sumk summ cachedpkgs strname stroldver strnewver strsize action
+    local i binaryksize sumk summ builtpkg cachedpkgs strname stroldver strnewver strsize action
     local depsver repodepspkgsver strrepodlsize strrepoinsize strsumk strsumm lreposizelabel lreposize
-    # global repodepspkgs repodepsSver depsAname depsAver depsArepo depsAcached builtpkg lname lver lsize deps depsQver repodepspkgs repodepsSrepo repodepsQver repodepsSver
+    # global repodepspkgs repodepsSver depsAname depsAver depsArepo depsAcached lname lver lsize deps depsQver repodepspkgs repodepsSrepo repodepsQver repodepsSver
     # compute binary size
     if [[ -n "${repodepspkgs[@]}" ]]; then
         binaryksize=($(expac -S -1 '%k' "${repodepspkgs[@]}"))
@@ -715,6 +716,7 @@ Prompt() {
         [[ ! $PKGDEST || $rebuild ]] && break
         GetBuiltPkg "${depsAname[$i]}-${depsAver[$i]}" "$PKGDEST"
         [[ $builtpkg ]] && cachedpkgs+=(${depsAname[$i]}) && depsAcached[$i]=$"(cached)" || depsAcached[$i]=""
+        unset builtpkg
     done
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
@@ -907,6 +909,7 @@ MakePkgs() {
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
         # cache check
+        unset builtpkg
         if [[ -z "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
             for j in "${pkgsdepslist[@]}"; do
                 depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
@@ -988,6 +991,7 @@ MakePkgs() {
 
         # check package cache
         for j in "${pkgsdepslist[@]}"; do
+            unset builtpkg
             [[ $aurdevelpkgsAver ]] && depsAver="$aurdevelpkgsAver" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
             [[ $PKGDEST && ! $rebuild ]] && GetBuiltPkg "$j-$depsAver" "$PKGDEST"
             if [[ $builtpkg ]]; then
@@ -1033,6 +1037,7 @@ MakePkgs() {
         # retrieve filename
         unset builtpkgs builtdepspkgs
         for j in "${pkgsdepslist[@]}"; do
+            unset builtpkg
             [[ $aurdevelpkgsAver ]] && depsAver="$aurdevelpkgsAver" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
             GetBuiltPkg "$j-$depsAver" "$clonedir/${basepkgs[$i]}"
             [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && builtdepspkgs+=($builtpkg) || builtpkgs+=($builtpkg)
@@ -1215,7 +1220,6 @@ GetBuiltPkg() {
     # global builtpkg
     # check PKGEXT suffixe first, then default .xz suffixe for repository packages in pacman cache
     # and lastly all remaining suffixes in case PKGEXT is locally overridden
-    unset builtpkg
     for pkgext in $PKGEXT .pkg.tar.xz .pkg.tar .pkg.tar.gz .pkg.tar.bz2 .pkg.tar.lzo .pkg.tar.lrz .pkg.tar.Z; do
         builtpkg="$2/$1-${CARCH}$pkgext"
         [[ ! -f "$builtpkg" ]] && builtpkg="$2/$1-any$pkgext"
