@@ -1174,6 +1174,7 @@ CleanCache() {
         if [[ $count -eq 1 ]]; then
             if Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
                 printf "%s\n" $"removing old packages from cache..."
+                paccache -ruq -k0 -c $PKGDEST
                 paccache -rq -k1 -c $PKGDEST
             fi
         else
