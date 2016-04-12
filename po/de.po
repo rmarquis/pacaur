@@ -276,18 +276,18 @@ msgstr "Paket ${colorW}$j${reset} ist bereits im Cache verfügbar"
 
 #: pacaur:1012
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
-msgstr "Erstelle Paket(e) ${colorW}${pkgsdeps[$i]}${reset}..."
+msgstr "Erstelle ${colorW}${pkgsdeps[$i]}${reset}-Paket(e)..."
 
 #: pacaur:1048
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
-msgstr "Installiere Paket(e) ${colorW}${pkgsdeps[$i]}${reset}..."
+msgstr "Installiere ${colorW}${pkgsdeps[$i]}${reset}-Paket(e)..."
 
 #: pacaur:1050
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
 msgstr ""
-"Konnte Paket(e) ${colorW}${pkgsdeps[$i]}${reset} nicht installieren. Stellen "
+"Konnte ${colorW}${pkgsdeps[$i]}${reset}-Paket(e) nicht installieren. Stellen "
 "Sie sicher, dass .SRCINFO und PKGBUILD keine widersprüchlichen Informationen "
 "enthalten."
 
@@ -301,7 +301,7 @@ msgstr "${colorW}$i${reset} ist ein ${colorY}neues verwaistes${reset} Paket"
 
 #: pacaur:1089
 msgid "failed to build ${colorW}$i${reset} package(s)"
-msgstr "Konnte Paket(e) ${colorW}$i${reset} nicht erstellen"
+msgstr "Konnte ${colorW}$i${reset}-Paket(e) nicht erstellen"
 
 #: pacaur:1116 pacaur:1157
 msgid "[ ignored ]"
