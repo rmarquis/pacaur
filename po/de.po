@@ -217,7 +217,7 @@ msgstr ""
 
 #: pacaur:825
 msgid "${colorW}$i${reset} build files are up-to-date -- skipping"
-msgstr "${colorW}$j${reset}: Build-Dateien sind aktuell -- überspringe"
+msgstr "${colorW}$i${reset}: Build-Dateien sind aktuell -- überspringe"
 
 #: pacaur:829
 msgid "View $i PKGBUILD?"
