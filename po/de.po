@@ -72,8 +72,7 @@ msgstr "Ungelöste Abhängigkeit '${colorW}$i${reset}'"
 
 #: pacaur:443
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
-msgstr ""
-"Abhängigkeit von $i ist in IgnorePkg/IgnoreGroup. Trotzdem installieren?"
+msgstr "Abhängigkeit $i ist in IgnorePkg/IgnoreGroup. Trotzdem installieren?"
 
 #: pacaur:476
 msgid ""
