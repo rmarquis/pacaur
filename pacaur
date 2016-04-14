@@ -817,7 +817,7 @@ EditPkgs() {
                     timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD.prev")
                     if [[ -n "$(git show --since $timestamp)" ]]; then
                         if Proceed "y" $"View $i build files diff?"; then
-                            git show --since $timestamp
+                            git show --since $timestamp . ':!\.SRCINFO'
                             Note "s" $"${colorW}$i${reset} build files diff viewed"
                             viewed='true'
                         fi
