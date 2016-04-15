@@ -66,7 +66,7 @@ source "$configdir/config"
 
 # set up directories
 [[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir" -m 700
-[[ ! -d "$clonedir" ]] && mkdir -p "$clonedir"
+[[ ! -d "$clonedir" ]] && mkdir -p "$clonedir" -m 700
 
 #
 # Functions
