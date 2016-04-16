@@ -218,7 +218,7 @@ msgstr "Zobraziť PKGBUILD $i?"
 
 #: pacaur:822 pacaur:844
 msgid "${colorW}$i${reset} PKGBUILD viewed"
-msgstr "{colorW}$i${reset} PKGBUILD zobrazený"
+msgstr "${colorW}$i${reset} PKGBUILD zobrazený"
 
 #: pacaur:824 pacaur:846
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
@@ -378,7 +378,7 @@ msgstr "$2 [a/N] "
 
 #: pacaur:1318
 msgid " there is nothing to do"
-msgstr "nič na vykonanie"
+msgstr " nie je čo robiť"
 
 #: pacaur:1338
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
