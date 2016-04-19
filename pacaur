@@ -322,9 +322,9 @@ FindDepsAur() {
         # reorder devel
         if [[ $devel ]]; then
             [[ ! $foreign ]] && depspkgs=($($pacmanbin -T ${depspkgs[@]} | sort -u))
-            depspkgs=($(grep -xvf <(printf '%s\n' "${depspkgs[@]}") <(printf '%s\n' "${vcsdepspkgs[@]}")))
-            depspkgs+=($(grep -xvf <(printf '%s\n' "${vcsdepspkgs[@]}") <(printf '%s\n' "${depspkgs[@]}")))
-            depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | LC_COLLATE=C sort -u))
+            depspkgstmp=($(grep -xvf <(printf '%s\n' "${depspkgs[@]}") <(printf '%s\n' "${vcsdepspkgs[@]}")))
+            depspkgstmp+=($(grep -xvf <(printf '%s\n' "${vcsdepspkgs[@]}") <(printf '%s\n' "${depspkgs[@]}")))
+            depspkgs=($(tr ' ' '\n' <<< ${depspkgstmp[@]} | LC_COLLATE=C sort -u))
         fi
         # remove installed binary packages only
         if [[ $foreign ]]; then
