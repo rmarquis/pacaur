@@ -300,6 +300,7 @@ FindDepsAur() {
         depspkgstmp=(${depspkgs[@]})
         for i in "${!depspkgstmp[@]}"; do
              [[ -n "$(grep -E "^lib32\-" <<< ${depspkgstmp[$i]})" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^${depspkgstmp[$i]}$//g"))
+             [[ -n "$(grep -E "^gcc-multilib$" <<< ${depspkgstmp[$i]})" ]] && depspkgs=($(tr ' ' '\n' <<< ${depspkgs[@]} | sed "s/^${depspkgstmp[$i]}$//g"))
         done
     fi
 
