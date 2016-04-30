@@ -796,7 +796,7 @@ DownloadPkgs() {
             cd "$clonedir/$i" || exit 1
             [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]] && cp -pf ".git/FETCH_HEAD" ".git/FETCH_HEAD.prev"
             git reset --hard HEAD -q # updated pkgver of vcs packages prevent pull
-            git pull -q
+            git pull --ff -q
         fi
     done
 }
