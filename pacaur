@@ -110,8 +110,8 @@ Core() {
 }
 
 UpgradeAur() {
-    local foreignpkgs allaurpkgs allaurpkgsAver allaurpkgsQver aurforeignpkgs i
-    # global aurpkgs json
+    local foreignpkgs allaurpkgs allaurpkgsAver allaurpkgsQver aurforeignpkgs i json
+    # global aurpkgs
     Note "i" $"${colorW}Starting AUR upgrade...${reset}"
 
     # selective upgrade switch
@@ -119,7 +119,7 @@ UpgradeAur() {
         aurpkgs+=(${pkgs[@]})
     else
         foreignpkgs=($($pacmanbin -Qmq))
-        json=$(DownloadJson ${foreignpkgs[@]})
+        SetJson ${foreignpkgs[@]}
         allaurpkgs=($(GetJson "var" "$json" "Name"))
         allaurpkgsAver=($(GetJson "var" "$json" "Version"))
         allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
@@ -148,12 +148,12 @@ UpgradeAur() {
 }
 
 IgnoreChecks() {
-    local checkaurpkgs checkaurpkgsAver checkaurpkgsQver i
-    # global aurpkgs rmaurpkgs json
+    local checkaurpkgs checkaurpkgsAver checkaurpkgsQver i json
+    # global aurpkgs rmaurpkgs
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
     # check targets
-    json=$(DownloadJson ${aurpkgs[@]})
+    SetJson ${aurpkgs[@]}
     checkaurpkgs=($(GetJson "var" "$json" "Name"))    # return sorted results
     errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${checkaurpkgs[@]}")))
     errdeps+=($(grep -xvf <(printf '%s\n' "${checkaurpkgs[@]}") <(printf '%s\n' "${aurpkgs[@]}")))
@@ -186,7 +186,7 @@ IgnoreChecks() {
 
 DepsSolver() {
     local i
-    # global aurdeps deps errdeps foreignpkgs repodeps json depsAname depsAver depsAood depsQver
+    # global aurdeps deps json errdeps foreignpkgs repodeps depsAname depsAver depsAood depsQver
     Note "i" $"resolving dependencies..."
 
     # remove AUR pkgs versioning
@@ -203,7 +203,7 @@ DepsSolver() {
     deps+=(${aurdepspkgs[@]})
 
     # ensure correct dependency order
-    json=$(DownloadJson ${deps[@]})
+    SetJson ${deps[@]}
     SortDepsAur ${aurpkgs[@]}
     deps=($(tsort <<< ${tsortdeps[@]}))
 
@@ -229,13 +229,13 @@ DepsSolver() {
 
 FindDepsAur() {
     local aurpkgsproviders aurpkgsprovidersname errdepsname depspkgs depspkgstmp depspkgsaurtmp repodepstmp
-    local builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
-    # global depspkgsaur json errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
+    local builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j json
+    # global depspkgsaur errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
 
     if [[ -z "${depspkgsaur[@]}" ]]; then
         # target providers
-        json=$(DownloadJson ${aurpkgs[@]})
+        SetJson ${aurpkgs[@]}
         aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
 
         # target providers check
@@ -246,7 +246,7 @@ FindDepsAur() {
             done
         fi
     else
-        json=$(DownloadJson ${depspkgsaur[@]})
+        SetJson ${depspkgsaur[@]}
     fi
 
     # target check
@@ -402,7 +402,7 @@ FindDepsAur() {
 
 SortDepsAur() {
     local i j sortaurpkgs sortdepspkgs sortdepspkgsaur
-    # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur
+    # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur json
     [[ -z "${checkedsortdepspkgsaur[@]}" ]] && sortaurpkgs=(${aurpkgs[@]}) || sortaurpkgs=(${checkedsortdepspkgsaur[@]})
 
     unset checkedsortdepspkgsaur
@@ -925,7 +925,7 @@ EditPkgs() {
 
 MakePkgs() {
     local oldorphanpkgs neworphanpkgs orphanpkgs pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
-    # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs
+    # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs json
 
     # download
     DownloadPkgs ${deps[@]}
@@ -1176,12 +1176,12 @@ CheckRepo() {
 }
 
 CheckAur() {
-    local foreignpkgs json aurpkgsAname aurpkgsAver aurpkgsQver aurpkgsQood aurpkgsQignore i
+    local foreignpkgs aurpkgsAname aurpkgsAver aurpkgsQver aurpkgsQood aurpkgsQignore i json
     # global lname lQver lSver lrepo lgrp
     GetIgnoredPkgs
 
     [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
-    json=$(DownloadJson ${foreignpkgs[@]})
+    SetJson ${foreignpkgs[@]}
     aurpkgsAname=($(GetJson "var" "$json" "Name")) # return sorted results
     aurpkgsAver=($(GetJson "var" "$json" "Version"))
     aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
@@ -1198,7 +1198,7 @@ CheckAur() {
 
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && tr ' ' '\n' <<< ${aurpkgsQood[@]} && return
-        json=$(DownloadJson ${aurpkgsQood[@]})
+        SetJson ${aurpkgsQood[@]}
         aurpkgsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
         aurpkgsAver=($(GetJson "var" "$json" "Version"))
         aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
@@ -1307,7 +1307,7 @@ GetBuiltPkg() {
 GetPkgbase() {
     local i
     # global json pkgsbase basepkgs
-    json=$(DownloadJson "$@")
+    SetJson "$@"
     for i in "$@"; do
         pkgsbase+=($(GetJson "varvar" "$json" "PackageBase" "$i"))
     done
@@ -1315,6 +1315,15 @@ GetPkgbase() {
         [[ " ${basepkgs[@]} " =~ " $i " ]] && continue
         basepkgs+=($i)
     done
+}
+
+declare -A jsoncache
+SetJson() {
+    # global json
+    if [[ -z "${jsoncache[$@]}" ]]; then
+        jsoncache[$@]="$(DownloadJson $@)"
+    fi
+    json="${jsoncache[$@]}"
 }
 
 DownloadJson() {
