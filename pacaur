@@ -791,9 +791,9 @@ DownloadPkgs() {
             git clone --depth=1 https://aur.archlinux.org/$i.git
         else
             cd "$clonedir/$i" || exit 1
-            [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]] && cp -pf ".git/FETCH_HEAD" ".git/FETCH_HEAD.prev"
             git reset --hard HEAD -q # updated pkgver of vcs packages prevent pull
-            git pull -q
+            [[ "$displaybuildfiles" = diff ]] && git rev-parse HEAD > ".git/HEAD.prev"
+            git pull --ff -q
         fi
     done
 }
@@ -810,12 +810,12 @@ EditPkgs() {
         GetInstallScripts $i
         if [[ ! $edit ]]; then
             if [[ ! $displaybuildfiles = none ]]; then
-                if [[ -e ".git/FETCH_HEAD.prev" && $displaybuildfiles = diff ]]; then
+                if [[ $displaybuildfiles = diff && -e ".git/HEAD.prev" ]]; then
                     # show diff
-                    timestamp=$(stat -c %Y "$clonedir/$i/.git/FETCH_HEAD.prev")
-                    if [[ -n "$(git show --since $timestamp)" ]]; then
+                    diffcmd="git diff $(cut -f1 .git/HEAD.prev) . ':!\.SRCINFO'"
+                    if [[ -n "$($diffcmd)" ]]; then
                         if Proceed "y" $"View $i build files diff?"; then
-                            git show --since $timestamp . ':!\.SRCINFO'
+                            $diffcmd
                             Note "s" $"${colorW}$i${reset} build files diff viewed"
                             viewed='true'
                         fi
