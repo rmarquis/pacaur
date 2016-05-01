@@ -1362,7 +1362,7 @@ GetJson() {
                 sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' | tr '\n' ' ' | cut -d' ' -f 2- | tr -d '[]';;
         esac
     else
-        Note "e" $"Could not connect to the AUR"
+        Note "e" $"Failed to parse JSON"
     fi
 }
 
