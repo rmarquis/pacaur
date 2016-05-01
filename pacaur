@@ -788,11 +788,7 @@ DownloadPkgs() {
     for i in ${basepkgs[@]}; do
         cd "$clonedir" || exit 1
         if [[ ! -d "$i" ]]; then
-            if [[ $clonedir != $tmpdir ]]; then
-                git clone https://aur.archlinux.org/$i.git
-            else
-                git clone --depth=1 https://aur.archlinux.org/$i.git
-            fi
+            git clone --depth=1 https://aur.archlinux.org/$i.git
         else
             cd "$clonedir/$i" || exit 1
             [[ -e ".git/FETCH_HEAD" && $displaybuildfiles = diff ]] && cp -pf ".git/FETCH_HEAD" ".git/FETCH_HEAD.prev"
