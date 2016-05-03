@@ -184,7 +184,7 @@ IgnoreChecks() {
 }
 
 DepsSolver() {
-    local aurpkgsproviders aurpkgsprovidersname i
+    local i
     # global aurdeps deps errdeps foreignpkgs repodeps json depsAname depsAver depsAood depsQver
     Note "i" $"resolving dependencies..."
 
@@ -193,18 +193,6 @@ DepsSolver() {
         aurpkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
     deps+=(${aurpkgs[@]})
-
-    # target providers
-    json=$(DownloadJson ${aurpkgs[@]})
-    aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
-
-    # target providers check
-    if [[ -n "${aurpkgsproviders[@]}" ]]; then
-        for i in "${!aurpkgsproviders[@]}"; do
-            unset aurpkgsprovidersname
-            aurpkgsprovidersname=${aurpkgsproviders[$i]} && aurpkgsprovidersname=${aurpkgsproviders%[=><]*}
-        done
-    fi
 
     [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
     FindDepsAur ${aurpkgs[@]}
@@ -231,12 +219,25 @@ DepsSolver() {
 }
 
 FindDepsAur() {
-    local errdepsname depspkgs depspkgstmp builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
+    local aurpkgsproviders aurpkgsprovidersname errdepsname depspkgs depspkgstmp builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
     # global depspkgsaur json errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
-    [[ -z "${depspkgsaur[@]}" ]] && depspkgsaur=(${aurpkgs[@]})
 
-    json=$(DownloadJson ${depspkgsaur[@]})
+    if [[ -z "${depspkgsaur[@]}" ]]; then
+        # target providers
+        json=$(DownloadJson ${aurpkgs[@]})
+        aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
+
+        # target providers check
+        if [[ -n "${aurpkgsproviders[@]}" ]]; then
+            for i in "${!aurpkgsproviders[@]}"; do
+                unset aurpkgsprovidersname
+                aurpkgsprovidersname=${aurpkgsproviders[$i]} && aurpkgsprovidersname=${aurpkgsproviders%[=><]*}
+            done
+        fi
+    else
+        json=$(DownloadJson ${depspkgsaur[@]})
+    fi
 
     # target check
     if [[ -z "${prevdepspkgsaur[@]}" ]]; then
