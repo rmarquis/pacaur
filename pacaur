@@ -148,20 +148,19 @@ UpgradeAur() {
 }
 
 IgnoreChecks() {
-    local checkaurpkgs checkaurpkgsAname checkaurpkgsAver checkaurpkgsQver i
+    local checkaurpkgs checkaurpkgsAver checkaurpkgsQver i
     # global aurpkgs rmaurpkgs json
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
-    checkaurpkgs=(${aurpkgs[@]})
+    # check targets
+    json=$(DownloadJson ${aurpkgs[@]})
     unset aurpkgs
 
-    # check targets
-    json=$(DownloadJson ${checkaurpkgs[@]})
-    checkaurpkgsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
+    checkaurpkgs=($(GetJson "var" "$json" "Name"))    # return sorted results
     checkaurpkgsAver=($(GetJson "var" "$json" "Version"))
-    checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgsAname[@]}"))
-    for i in "${!checkaurpkgsAname[@]}"; do
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgsAname[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
+    checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
+    for i in "${!checkaurpkgs[@]}"; do
+        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
     for i in "${!checkaurpkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
