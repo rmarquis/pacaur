@@ -193,13 +193,21 @@ DepsSolver() {
     for i in "${!aurpkgs[@]}"; do
         aurpkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
-    deps+=(${aurpkgs[@]})
+    deps=(${aurpkgs[@]})
 
     [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
     FindDepsAur ${aurpkgs[@]}
 
-    # get AUR packages info
+    # avoid possible duplicate
+    deps=($(grep -xvf <(printf '%s\n' "${aurdepspkgs[@]}") <(printf '%s\n' "${deps[@]}")))
+    deps+=(${aurdepspkgs[@]})
+
+    # ensure correct dependency order
     json=$(DownloadJson ${deps[@]})
+    SortDepsAur ${aurpkgs[@]}
+    deps=($(tsort <<< ${tsortdeps[@]}))
+
+    # get AUR packages info
     depsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
     depsAver=($(GetJson "var" "$json" "Version"))
     depsAood=($(GetJson "var" "$json" "OutOfDate"))
@@ -365,6 +373,11 @@ FindDepsAur() {
     fi
     unset depspkgs
 
+    # remove duplicate
+    if [[ -n "${depspkgsaur[@]}" ]]; then
+        depspkgsaur=($(grep -xvf <(printf '%s\n' "${aurdepspkgs[@]}") <(printf '%s\n' "${depspkgsaur[@]}")))
+    fi
+
     # dependency cycle check
     [[ -n "${prevdepspkgsaur[@]}" ]] && [[ "${prevdepspkgsaur[*]}" == "${depspkgsaur[*]}" ]] && Note "e" $"dependency cycle detected"
 
@@ -377,20 +390,50 @@ FindDepsAur() {
             depspkgsaur[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgsaur[$i]})
         done
 
-        # ensure correct dependency order
+        # remove duplicate
         depspkgsaur=($(tr ' ' '\n' <<< ${depspkgsaur[@]} | sort -u))
-        for i in "${!depspkgsaur[@]}"; do
-            if [[ " ${deps[@]} " =~ " ${depspkgsaur[$i]} " ]]; then
-                deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
-                aurdepspkgs=($(tr ' ' '\n' <<< ${aurdepspkgs[@]} | sed "s/^${depspkgsaur[$i]}$//g"))
-            fi
-        done
     fi
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         aurdepspkgs+=(${depspkgsaur[@]})
-        deps+=(${depspkgsaur[@]})
         FindDepsAur ${depspkgsaur[@]}
+    fi
+}
+
+SortDepsAur() {
+    local i j sortaurpkgs sortdepspkgs sortdepspkgsaur
+    # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur
+    [[ -z "${checkedsortdepspkgsaur[@]}" ]] && sortaurpkgs=(${aurpkgs[@]}) || sortaurpkgs=(${checkedsortdepspkgsaur[@]})
+
+    unset checkedsortdepspkgsaur
+    for i in "${!sortaurpkgs[@]}"; do
+        unset sortdepspkgs sortdepspkgsaur
+
+        sortdepspkgs+=($(GetJson "arrayvar" "$json" "Depends" "${sortaurpkgs[$i]}"))
+        sortdepspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${sortaurpkgs[$i]}"))
+        sortdepspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${sortaurpkgs[$i]}"))
+
+        # check AUR deps only
+        for j in "${!sortdepspkgs[@]}"; do
+            sortdepspkgsaur+=($(GetJson "varvar" "$json" "Name" "${sortdepspkgs[$j]}"))
+        done
+
+        # prepare tsort list
+        for j in "${!sortdepspkgsaur[@]}"; do
+            tsortdeps+=("${sortaurpkgs[$i]} ${sortdepspkgsaur[$j]}")
+        done
+
+        # filter non checked deps
+        sortdepspkgsaur=($(grep -xvf <(printf '%s\n' "${allcheckedsortdepspkgsaur[@]}") <(printf '%s\n' "${sortdepspkgsaur[@]}")))
+        if [[ -n "${sortdepspkgsaur[@]}" ]]; then
+            checkedsortdepspkgsaur+=(${sortdepspkgsaur[@]})
+            allcheckedsortdepspkgsaur+=(${sortdepspkgsaur[@]})
+            allcheckedsortdepspkgsaur=($(tr ' ' '\n' <<< ${allcheckedsortdepspkgsaur[@]} | sort -u))
+        fi
+    done
+    if [[ -n "${checkedsortdepspkgsaur[@]}" ]]; then
+        checkedsortdepspkgsaur=($(tr ' ' '\n' <<< ${checkedsortdepspkgsaur[@]} | sort -u))
+        SortDepsAur ${checkedsortdepspkgsaur[@]}
     fi
 }
 
