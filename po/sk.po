@@ -25,7 +25,7 @@ msgstr ""
 
 #: pacaur:159 pacaur:215 pacaur:1139
 msgid "latest"
-msgstr "najnovší"
+msgstr "najnovšia"
 
 #: pacaur:164
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
