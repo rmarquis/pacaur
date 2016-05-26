@@ -466,6 +466,13 @@ ProviderChecks() {
         providers=($(expac -Ss '%n' "^${providersdeps[$i]}$" | sort -u))
         [[ ! ${#providers[@]} -gt 1 ]] && continue
 
+        # skip if provided in dependency chain
+        unset repodepspkgsprovided
+        for j in "${!providers[@]}"; do
+            [[ " ${repodepspkgs[@]} " =~ " ${providers[$j]} " ]] && repodepspkgsprovided='true'
+        done
+        [[ $repodepspkgsprovided ]] && continue
+
         # skip if already provided
         if [[ -n "${providerspkgs[@]}" ]]; then
             providerspkgs=($(tr ' ' '|' <<< ${providerspkgs[@]}))
