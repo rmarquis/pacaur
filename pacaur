@@ -1522,6 +1522,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ $displaybuildfiles = diff && $clonedir = $tmpdir ]] && Note "e" $"${colorW}clonedir${reset} or ${colorW}\$AURDEST${reset} should be set to a non volatile memory location"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 
 # operations
