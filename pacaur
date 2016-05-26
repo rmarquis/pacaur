@@ -1517,6 +1517,18 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 
+# Warning for package(s) not in AUR
+# Puralizes "Package" depending on if there are > 1 packages
+warning_not_in_aur() {
+  package="Package"
+
+  if [[ "${#}" -gt 1 ]]; then
+    package="${package}s"
+  fi
+
+  Note "w" $"${package} ${colorW}${*}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+}
+
 # operations
 case $operation in
     download)
@@ -1556,7 +1568,8 @@ case $operation in
             fi
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-                [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                # [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                [[ $fallback = true && ! $aur ]] && warning_not_in_aur ${aurpkgs[*]}
                 SearchInfoAur ${aurpkgs[@]}
             fi
         # clean (-Sc) handling
@@ -1568,7 +1581,8 @@ case $operation in
             [[ -n "${pkgs[@]}" ]] && ClassifyPkgs ${pkgs[@]}
             [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ ! $repo ]] && [[ $aur ]] && [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            # [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && warning_not_in_aur ${aurpkgs[*]}
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy)
         else
@@ -1580,7 +1594,8 @@ case $operation in
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-                [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                #[[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                [[ $fallback = true && ! $aur ]] && warning_not_in_aur ${aurpkgs[*]}
                 Core ${aurpkgs[@]}
             fi
         fi
