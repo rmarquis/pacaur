@@ -454,7 +454,7 @@ IgnoreDepsChecks() {
 }
 
 ProviderChecks() {
-    local allproviders providersdeps providers providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
+    local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
     # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
     [[ -z "${repodepspkgs[@]}" ]] && return
 
