@@ -728,9 +728,9 @@ Prompt() {
     done
 
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
-        strname=$"Name"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
+        straurname=$"AUR Packages  (${#deps[@]})"; strreponame=$"Repo Packages (${#repodepspkgs[@]})"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
         depsArepo=(${depsAname[@]/#/aur/})
-        lname=$(GetLength ${depsArepo[@]} ${repodepsSrepo[@]} "$strname")
+        lname=$(GetLength ${depsArepo[@]} ${repodepsSrepo[@]} "$straurname" "$strreponame")
         lver=$(GetLength ${depsQver[@]} ${depsAver[@]} ${repodepsQver[@]} ${repodepsSver[@]} "$stroldver" "$strnewver")
         lsize=$(GetLength "$strsize")
 
@@ -739,8 +739,7 @@ Prompt() {
             [[ "${depsQver[$i]}" =~ '#' ]] && unset depsQver[$i]
         done
         # show detailed output
-        printf "\n${colorY}%s${reset}\n\n" $"AUR Packages  (${#deps[@]}):"
-        printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$strname" "$stroldver" "$strnewver"
+        printf "\n${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$straurname" "$stroldver" "$strnewver"
         for i in "${!deps[@]}"; do
             printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}" "${depsAcached[$i]}";
         done
@@ -749,8 +748,7 @@ Prompt() {
             for i in "${!repodepspkgs[@]}"; do
                 binarysize[$i]=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "${binaryksize[$i]} 1048576")
             done
-            printf "\n${colorY}%s${reset}\n\n" $"Repo Packages (${#repodepspkgs[@]}):"
-            printf "${colorW}%-${lname}s  %-${lver}s  %-${lver}s  %s${reset}\n\n" $"Name" $"Old Version" $"New Version" $"Download Size"
+            printf "\n${colorW}%-${lname}s  %-${lver}s  %-${lver}s  %s${reset}\n\n" "$strreponame" "$stroldver" "$strnewver" "$strsize"
             for i in "${!repodepspkgs[@]}"; do
                 printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${repodepsSrepo[$i]}" "${repodepsQver[$i]}" "${repodepsSver[$i]}" $"${binarysize[$i]} MiB";
             done
@@ -763,8 +761,8 @@ Prompt() {
         for i in "${!repodepspkgs[@]}"; do
             repodepspkgsver="${repodepspkgsver}${repodepspkgs[$i]}-${repodepsSver[$i]}  "
         done
-        printf "\n${colorY}%-17s${reset} %s\n" $"AUR Packages  (${#deps[@]}):" "$depsver"
-        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorY}%-17s${reset} %s\n" $"Repo Packages (${#repodepspkgs[@]}):" "$repodepspkgsver"
+        printf "\n${colorW}%-16s${reset} %s\n" $"AUR Packages  (${#deps[@]})" "$depsver"
+        [[ -n "${repodepspkgs[@]}" ]] && printf "${colorW}%-16s${reset} %s\n" $"Repo Packages (${#repodepspkgs[@]})" "$repodepspkgsver"
     fi
 
     if [[ -n "${repodepspkgs[@]}" ]]; then
