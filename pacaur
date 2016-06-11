@@ -912,7 +912,7 @@ MakePkgs() {
 
         # cache check
         unset builtpkg
-        if [[ -z "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
+        if [[ -z "$(grep -E "\-(bzr|git|hg|svn|nightly.*)$" <<< ${basepkgs[$i]})" ]]; then
             for j in "${pkgsdepslist[@]}"; do
                 depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
                 [[ $PKGDEST && ! $rebuild ]] && GetBuiltPkg "$j-$depsAver" "$PKGDEST"
@@ -967,7 +967,7 @@ MakePkgs() {
 
         # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAver
-        if [[ -n "$(grep -E "\-(bzr|git|hg|svn)$" <<< ${basepkgs[$i]})" ]]; then
+        if [[ -n "$(grep -E "\-(bzr|git|hg|svn|nightly.*)$" <<< ${basepkgs[$i]})" ]]; then
             # retrieve updated version
             aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
             aurdevelpkgsAver=${aurdevelpkgsAver[0]}
