@@ -162,7 +162,8 @@ I<IgnorePkg> directive are honored.
 
 Do not reinstall I<target(s)> that are already up-to-date. The build of
 development packages that are found up-to-date after the source checkout will
-be skipped. Supported are I<svn>, I<git>, I<hg> and I<bzr> development packages.
+be skipped. Supported are I<svn>, I<git>, I<hg> and I<bzr> development
+packages, as well as I<nightly> build packages.
 
 =item B<--noconfirm>
 
