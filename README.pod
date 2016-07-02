@@ -417,6 +417,8 @@ you!
 
 B<[ca] - Català> - Alex "alexhenrie" Henrie
 
+B<[da] - Dansk> - Filip "filipkemuel" Kemuel
+
 B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "HerrNieschnell", "pszalanski", Stefan "rumpelsepp" Tatschner, Tilman "Tblue" Blumenbach
 
 B<[es] - Español> - Germán "gosella" Osella Massa, Ismael "ChuckDaniels87" González
