@@ -965,9 +965,9 @@ MakePkgs() {
 
         cd "$clonedir/${basepkgs[$i]}" || exit 1
 
-        # build devel if necessary only (supported protocols only)
+        # build devel if necessary only (supported protocols only) and filter false VCS named packages
         unset aurdevelpkgsAver
-        if [[ -n "$(grep -E "\-(bzr|git|hg|svn|nightly.*)$" <<< ${basepkgs[$i]})" ]]; then
+        if [[ -n "$(grep -E "\-(bzr|git|hg|svn|nightly.*)$" <<< ${basepkgs[$i]})" && -n "$(grep "SKIP" ".SRCINFO")" ]]; then
             # retrieve updated version
             aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
             aurdevelpkgsAver=${aurdevelpkgsAver[0]}
