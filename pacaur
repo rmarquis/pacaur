@@ -1170,7 +1170,9 @@ CheckAur() {
 }
 
 CleanCache() {
-    if [[ $PKGDEST && $PKGDEST != '/var/cache/pacman/pkg/' ]]; then
+    cachedir=($(grep '^CacheDir' '/etc/pacman.conf' | cut -d '=' -f2 | cut -d '#' -f1))
+    [[ $cachedir ]] && cachedir=${cachedir[@]%/} && PKGDEST=${PKGDEST%/}
+    if [[ $PKGDEST  && ! " ${cachedir[@]} " =~ " $PKGDEST " ]]; then
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Packages to keep:" $"All locally installed packages"
         printf "\n%s %s\n" $"AUR cache directory:" "$PKGDEST"
         if [[ $count -eq 1 ]]; then
