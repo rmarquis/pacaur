@@ -218,7 +218,7 @@ DepsSolver() {
 }
 
 FindDepsAur() {
-    local aurpkgsproviders aurpkgsprovidersname errdepsname depspkgs depspkgstmp builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
+    local aurpkgsproviders aurpkgsprovidersname errdepsname depspkgs depspkgstmp depspkgsaurtmp builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j
     # global depspkgsaur json errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
 
@@ -277,22 +277,37 @@ FindDepsAur() {
     fi
 
     depspkgs=($(GetJson "array" "$json" "Depends"))
+    depspkgstmp+=($(GetJson "array" "$json" "MakeDepends"))
+    depspkgstmp+=($(GetJson "array" "$json" "CheckDepends"))
 
     # cached packages makedeps check
     if [[ ! $PKGDEST || $rebuild ]]; then
-        depspkgs+=($(GetJson "array" "$json" "MakeDepends"))
-        depspkgs+=($(GetJson "array" "$json" "CheckDepends"))
+        depspkgs+=(${depspkgstmp[@]})
     else
-        for i in "${!depspkgsaur[@]}"; do
-            depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaur[$i]}")
-            depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaur[$i]}")
-            GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
-            if [[ ! $builtpkg ]]; then
-                depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
-                depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${depspkgsaur[$i]}"))
-            fi
-            unset builtpkg
-        done
+        if [[ -z "${depspkgsaur[@]}" ]]; then
+            depspkgsaurtmp=($(LANG=C $pacmanbin -Sp ${depspkgstmp[@]} 2>&1 >/dev/null | awk '{print $NF}'))
+            json=$(DownloadJson ${depspkgsaurtmp[@]})
+            for i in "${!depspkgsaurtmp[@]}"; do
+                depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaurtmp[$i]}")
+                depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaurtmp[$i]}")
+                GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
+                if [[ ! $builtpkg ]]; then
+                    depspkgs+=(${depspkgstmp[@]})
+                fi
+                unset builtpkg
+            done
+        else
+            for i in "${!depspkgsaur[@]}"; do
+                depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaur[$i]}")
+                depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaur[$i]}")
+                GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
+                if [[ ! $builtpkg ]]; then
+                    depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
+                    depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${depspkgsaur[$i]}"))
+                fi
+                unset builtpkg
+            done
+        fi
     fi
 
     # workaround for limited RPC support of architecture dependent fields
