@@ -280,7 +280,7 @@ FindDepsAur() {
     depspkgs=($(GetJson "array" "$json" "Depends"))
 
     # cached packages makedeps check
-    if [[ ! $PKGDEST || $foreign ]]; then
+    if [[ ! $PKGDEST || $rebuild || $foreign ]]; then
         depspkgs+=($(GetJson "array" "$json" "MakeDepends"))
         depspkgs+=($(GetJson "array" "$json" "CheckDepends"))
     else
