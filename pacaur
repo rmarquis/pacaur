@@ -285,25 +285,16 @@ FindDepsAur() {
         depspkgs+=($(GetJson "array" "$json" "CheckDepends"))
     else
         if [[ -z "${depspkgsaur[@]}" ]]; then
-            depspkgstmp+=($(GetJson "array" "$json" "MakeDepends"))
-            depspkgstmp+=($(GetJson "array" "$json" "CheckDepends"))
-            if [[ -n "${depspkgstmp[@]}" ]]; then
-                depspkgsaurtmp=($(LANG=C $pacmanbin -Sp ${depspkgstmp[@]} 2>&1 >/dev/null | awk '{print $NF}'))
-                repodepstmp=($(grep -xvf <(printf '%s\n' "${depspkgsaurtmp[@]}") <(printf '%s\n' "${depspkgstmp[@]}")))
-            fi
-            if [[ -n "${depspkgsaurtmp[@]}" ]]; then
-                json=$(DownloadJson ${depspkgsaurtmp[@]})
-                for i in "${!depspkgsaurtmp[@]}"; do
-                    depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaurtmp[$i]}")
-                    depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaurtmp[$i]}")
-                    GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
-                    if [[ ! $builtpkg ]]; then
-                        depspkgs+=(${depspkgsaurtmp[$i]})
-                    fi
-                    unset builtpkg
-                done
-            fi
-            depspkgs+=(${repodepstmp[@]})
+            for i in "${!aurpkgs[@]}"; do
+                depsAname=$(GetJson "varvar" "$json" "Name" "${aurpkgs[$i]}")
+                depsAver=$(GetJson "varvar" "$json" "Version" "${aurpkgs[$i]}")
+                GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
+                if [[ ! $builtpkg ]]; then
+                    depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${aurpkgs[$i]}"))
+                    depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${aurpkgs[$i]}"))
+                fi
+                unset builtpkg
+            done
         else
             for i in "${!depspkgsaur[@]}"; do
                 depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaur[$i]}")
