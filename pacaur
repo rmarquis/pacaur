@@ -284,29 +284,17 @@ FindDepsAur() {
         depspkgs+=($(GetJson "array" "$json" "MakeDepends"))
         depspkgs+=($(GetJson "array" "$json" "CheckDepends"))
     else
-        if [[ -z "${depspkgsaur[@]}" ]]; then
-            for i in "${!aurpkgs[@]}"; do
-                depsAname=$(GetJson "varvar" "$json" "Name" "${aurpkgs[$i]}")
-                depsAver=$(GetJson "varvar" "$json" "Version" "${aurpkgs[$i]}")
-                GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
-                if [[ ! $builtpkg ]]; then
-                    depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${aurpkgs[$i]}"))
-                    depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${aurpkgs[$i]}"))
-                fi
-                unset builtpkg
-            done
-        else
-            for i in "${!depspkgsaur[@]}"; do
-                depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaur[$i]}")
-                depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaur[$i]}")
-                GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
-                if [[ ! $builtpkg ]]; then
-                    depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaur[$i]}"))
-                    depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${depspkgsaur[$i]}"))
-                fi
-                unset builtpkg
-            done
-        fi
+        [[ -z "${depspkgsaur[@]}" ]] && depspkgsaurtmp=(${aurpkgs[@]}) || depspkgsaurtmp=(${depspkgsaur[@]})
+        for i in "${!depspkgsaurtmp[@]}"; do
+            depsAname=$(GetJson "varvar" "$json" "Name" "${depspkgsaurtmp[$i]}")
+            depsAver=$(GetJson "varvar" "$json" "Version" "${depspkgsaurtmp[$i]}")
+            GetBuiltPkg "$depsAname-$depsAver" "$PKGDEST"
+            if [[ ! $builtpkg ]]; then
+                depspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${depspkgsaurtmp[$i]}"))
+                depspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${depspkgsaurtmp[$i]}"))
+            fi
+            unset builtpkg
+        done
     fi
 
     # workaround for limited RPC support of architecture dependent fields
