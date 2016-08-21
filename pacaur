@@ -1304,14 +1304,14 @@ Proceed() {
     N="$(gettext pacman N)"; n="${N,,}"
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
-            [[ $cleancache ]] && read -r answer || read -r -n 1 answer
+            read -r answer
             echo
             case $answer in
                 $Y|$y|'') return 0;;
                 *) return 1;;
             esac;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
-            [[ $cleancache ]] && read -r answer || read -r -n 1 answer
+            read -r answer
             echo
             case $answer in
                 $N|$n|'') return 0;;
