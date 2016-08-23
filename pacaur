@@ -154,9 +154,11 @@ IgnoreChecks() {
 
     # check targets
     json=$(DownloadJson ${aurpkgs[@]})
+    checkaurpkgs=($(GetJson "var" "$json" "Name"))    # return sorted results
+    errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${checkaurpkgs[@]}")))
+    errdeps+=($(grep -xvf <(printf '%s\n' "${checkaurpkgs[@]}") <(printf '%s\n' "${aurpkgs[@]}")))
     unset aurpkgs
 
-    checkaurpkgs=($(GetJson "var" "$json" "Name"))    # return sorted results
     checkaurpkgsAver=($(GetJson "var" "$json" "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
     for i in "${!checkaurpkgs[@]}"; do
