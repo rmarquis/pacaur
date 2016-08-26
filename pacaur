@@ -1252,48 +1252,48 @@ GetPkgbase() {
 }
 
 DownloadJson() {
-    local urlencodedpkgs urlargs
-    urlencodedpkgs=($(sed 's/+/%2b/g;s/@/%40/g' <<< $@)) # pkgname consists of alphanum@._+-
-    urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
-    # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
-    if [[ "${#urlargs}" -lt 8125 ]]; then
-        curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs"
-    else
-        # split and merge json stream
+  local urlencodedpkgs urlargs
+  urlencodedpkgs=($(sed 's/+/%2b/g;s/@/%40/g' <<< $@)) # pkgname consists of alphanum@._+-
+  urlargs="$(printf "&arg[]=%s" "${urlencodedpkgs[@]}")"
+  # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
+  if [[ "${#urlargs}" -lt 8125 ]]; then
+    curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs"
+  else
+    # split and merge json stream
 
-        urlpkgs=($@)
-        #Transform the array int a string
-        local urlstring=$( IFS=$'\n'; echo "${urlpkgs[*]}" )
+    urlpkgs=($@)
+    #Transform the array int a string
+    local urlstring=$( IFS=$'\n'; echo "${urlpkgs[*]}" )
 
-        #Maximum size of URI, 8000 just for safety, could be increased with
-        #caution
-        local max=8000 
-        #string to append to each entry
-        local string='&arg[]='
-        local index=0
-        #for each package
-        for package in $urlstring
-        do
-          #If the current curl request plus the string plus the package name is 
-          #greater than or equal to the max, then start the next curl request
-          if [ "$((${#curlreq[index]} + ${#string} + ${#package}))" -ge "$max" ]; then
-            index=$(($index + 1))
-          fi
-
-          #Append the new string,package to the current curl request
-          curlreq[$index]=${curlreq[$index]}$string$package
-        done
-        #set https part of url
-        local https="https://"
-        local index=0
-        for request in ${curlreq[@]}
-        do
-          urlreq[$index]=$https$aururl$aurrpc${curlreq[$index]}
-          index=$(($index+1))
-        done
-        curl -sfg --compressed -C 0 ${urlreq[@]} \
-            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
+    #Maximum size of URI, 8000 just for safety, could be increased with
+    #caution
+    local max=8000 
+    #string to append to each entry
+    local string='&arg[]='
+    local index=0
+    #for each package
+    for package in $urlstring
+    do
+      #If the current curl request plus the string plus the package name is 
+      #greater than or equal to the max, then start the next curl request
+      if [ "$((${#curlreq[index]} + ${#string} + ${#package}))" -ge "$max" ]; then
+        index=$(($index + 1))
       fi
+
+      #Append the new string,package to the current curl request
+      curlreq[$index]=${curlreq[$index]}$string$package
+    done
+    #set https part of url
+    local https="https://"
+    local index=0
+    for request in ${curlreq[@]}
+    do
+      urlreq[$index]=$https$aururl$aurrpc${curlreq[$index]}
+      index=$(($index+1))
+    done
+    curl -sfg --compressed -C 0 ${urlreq[@]} \
+      | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
+  fi
 }
 
 GetJson() {
