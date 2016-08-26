@@ -435,7 +435,7 @@ B<[nl] - Nederlands> - "Yoshi2889"
 
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
-B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta
+B<[pt] - Português> - Thiago "thiagowfx" Barroso Perrotta, Rafael "rccavalcanti" Cavalcanti
 
 B<[ru] - Русский> - "kyak"
 
