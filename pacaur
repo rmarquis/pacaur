@@ -1292,7 +1292,7 @@ DownloadJson() {
           index=$(($index+1))
         done
         curl -sfg --compressed -C 0 ${urlreq[@]} \
-            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g' | tee output
+            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
       fi
 }
 
