@@ -1276,7 +1276,7 @@ DownloadJson() {
         do
           #If the current curl request plus the string plus the package name is 
           #greater than or equal to the max, then start the next curl request
-          if [ "$((${#curlreq[i]} + ${#string} + ${#package}))" -ge "$max" ]; then
+          if [ "$((${#curlreq[index]} + ${#string} + ${#package}))" -ge "$max" ]; then
             index=$(($index + 1))
           fi
 
@@ -1284,7 +1284,7 @@ DownloadJson() {
           curlreq[$index]=${curlreq[$index]}$string$package
         done
         #set https part of url
-        local https="https//"
+        local https="https://"
         local index=0
         for request in ${curlreq[@]}
         do
@@ -1292,12 +1292,12 @@ DownloadJson() {
           index=$(($index+1))
         done
         curl -sfg --compressed -C 0 ${urlreq[@]} \
-            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
-    fi
+            | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g' | tee output
+      fi
 }
 
 GetJson() {
-    if json_verify -q <<< "$2"; then
+    if json_verify  <<< "$2"; then
         case "$1" in
             var)
                 json_reformat <<< "$2" | tr -d "\", " | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
