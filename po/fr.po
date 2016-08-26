@@ -130,8 +130,8 @@ msgid ""
 "out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
 "\")${reset}"
 msgstr ""
-"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} a été marqué comme ${colorR}"
-"périmé${reset} le ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%d-%m-"
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} a été marqué comme "
+"${colorR}périmé${reset} le ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%d-%m-"
 "%Y\")${reset}"
 
 #: pacaur:707
@@ -255,7 +255,8 @@ msgstr "Installation des dépendances de ${colorW}${providerpkgs[@]}${reset}..."
 #: pacaur:937
 #, fuzzy
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
-msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} est à jour -- sauté"
+msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} est à jour "
+"-- sauté"
 
 #: pacaur:953
 msgid "Installing ${colorW}$j${reset} cached package..."
@@ -386,7 +387,8 @@ msgstr " il n'y a rien à faire"
 #: pacaur:1310
 #, fuzzy
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
-msgstr "utilisation :  pacaur <operation> [options] [paquet(s)] -- Voir aussi pacaur(8)"
+msgstr "utilisation :  pacaur <operation> [options] [paquet(s)] "
+"-- Voir aussi pacaur(8)"
 
 #: pacaur:1311
 msgid "operations:"
