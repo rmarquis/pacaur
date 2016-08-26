@@ -1297,7 +1297,7 @@ DownloadJson() {
 }
 
 GetJson() {
-    if json_verify  <<< "$2"; then
+    if json_verify -q  <<< "$2"; then
         case "$1" in
             var)
                 json_reformat <<< "$2" | tr -d "\", " | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
