@@ -1,5 +1,6 @@
 msgid ""
 msgstr ""
+"Last-Translator: Antoine Gravelot <antoine.gravelot@hotmail.fr>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -45,11 +46,11 @@ msgstr "résolution des dépendances..."
 
 #: pacaur:220
 msgid "no results found for $i"
-msgstr ""
+msgstr "aucun résultats n'a été trouvé pour $i"
 
 #: pacaur:358
 msgid "dependency cycle detected"
-msgstr ""
+msgstr "cycle de dépendance détectée"
 
 #: pacaur:426 pacaur:441
 msgid "${colorW}$i${reset}: ignoring package upgrade"
@@ -94,7 +95,7 @@ msgstr "$j et $k sont en conflit ($i). Supprimer $k ?"
 
 #: pacaur:576 pacaur:639
 msgid "unresolvable package conflicts detected"
-msgstr "conflit non résolvable détecté"
+msgstr "conflit de paquets non résolvable détecté"
 
 #: pacaur:577 pacaur:640
 msgid "failed to prepare transaction (conflicting dependencies)"
@@ -115,7 +116,8 @@ msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
 msgstr ""
-"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} est à jour -- réinstalle"
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} est à jour -- "
+"réinstallation"
 
 #: pacaur:664
 msgid ""
@@ -134,7 +136,7 @@ msgstr ""
 
 #: pacaur:707
 msgid "(cached)"
-msgstr "(dans cache)"
+msgstr "(dans le cache)"
 
 #: pacaur:711 pacaur:733
 msgid "Name"
@@ -198,7 +200,7 @@ msgstr "${colorW}Récupération des paquets...${reset}"
 
 #: pacaur:805
 msgid "View $i build files diff?"
-msgstr ""
+msgstr "Voir les diff du paquet $i"
 
 #: pacaur:808
 #, fuzzy
@@ -232,16 +234,16 @@ msgstr "Impossible d'ouvrir le script de ${colorW}$j${reset}"
 #: pacaur:891
 #, fuzzy
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
-msgstr "Installation des dépendances de ${colorW}${pkgsdeps[$i]}${reset}..."
+msgstr "Vérification des dépendances de ${colorW}${pkgsdeps[$i]}${reset}..."
 
 #: pacaur:903
 #, fuzzy
 msgid "failed to verify ${colorW}$i${reset} integrity"
-msgstr "Impossible d'ouvrir le script de ${colorW}$j${reset}"
+msgstr "Impossible de vérifier l'intégriter de ${colorW}$j${reset}"
 
 #: pacaur:908
 msgid "build.lck exists in $tmpdir"
-msgstr ""
+msgstr "build.lck éxiste dans $tmpdir"
 
 #: pacaur:913
 #, fuzzy
@@ -253,11 +255,12 @@ msgstr "Installation des dépendances de ${colorW}${providerpkgs[@]}${reset}..."
 #: pacaur:937
 #, fuzzy
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
-msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} est à jour -- sauté"
+msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} est à jour "
+"-- sauté"
 
 #: pacaur:953
 msgid "Installing ${colorW}$j${reset} cached package..."
-msgstr "Installation du paquet en cache ${colorW}$j${reset}..."
+msgstr "Installation du paquet ${colorW}$j${reset} en cache ..."
 
 #: pacaur:957
 msgid "Package ${colorW}$j${reset} already available in cache"
@@ -270,13 +273,15 @@ msgstr "Construction du paquet ${colorW}${pkgsdeps[$i]}${reset}..."
 #: pacaur:1001
 #, fuzzy
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
-msgstr "Construction du paquet ${colorW}${pkgsdeps[$i]}${reset}..."
+msgstr "Installation du paquet ${colorW}${pkgsdeps[$i]}${reset}..."
 
 #: pacaur:1003
 msgid ""
 "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
 "SRCINFO for mismatching data with PKGBUILD."
 msgstr ""
+"Echec de l'installation de ce(s) paquet(s) ${colorW}${pkgsdeps[$i]}${reset}."
+"Vérifier .SRCINFO pour des données érronées avec PKGBUILD"
 
 #: pacaur:1021
 msgid "Removing installed AUR dependencies..."
@@ -326,11 +331,11 @@ msgstr "suppressiom de tous les fichiers du cache de l'AUR..."
 #: pacaur:1140
 #, fuzzy
 msgid "Sources to keep:"
-msgstr "Paquets à conserver :"
+msgstr "Sources à conserver :"
 
 #: pacaur:1140
 msgid "All development packages sources"
-msgstr ""
+msgstr "Toutes les sources des paquets en développement"
 
 #: pacaur:1141
 #, fuzzy
@@ -382,7 +387,8 @@ msgstr " il n'y a rien à faire"
 #: pacaur:1310
 #, fuzzy
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
-msgstr "utilisation :  pacaur <operation> [options] [paquet(s)]"
+msgstr "utilisation :  pacaur <operation> [options] [paquet(s)] "
+"-- Voir aussi pacaur(8)"
 
 #: pacaur:1311
 msgid "operations:"
@@ -403,7 +409,7 @@ msgstr "                    opérations de pacman étendues à l'AUR"
 
 #: pacaur:1315
 msgid " AUR specific"
-msgstr ""
+msgstr " spécifique à l'AUR"
 
 #: pacaur:1316
 msgid "   -s, --search     search AUR for matching strings"
@@ -533,7 +539,7 @@ msgstr ""
 
 #: pacaur:1466
 msgid "you cannot perform this operation as root"
-msgstr ""
+msgstr "vous ne pouvez pas réaliser cette opération en tant que root"
 
 #: pacaur:1470
 msgid "${colorW}editor${reset} variable unset"
@@ -544,6 +550,8 @@ msgid ""
 "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
 "non volatile memory location"
 msgstr ""
+"${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} devrait être dans "
+"une mémoire non volatil"
 
 #: pacaur:1472
 #, fuzzy
