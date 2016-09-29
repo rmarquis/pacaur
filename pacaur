@@ -1156,7 +1156,74 @@ SearchInfoAur() {
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
         [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
     fi
-    cower ${coweropts[@]} -- $@
+    
+    # store cower information into an array, one line per package and values 
+    # separated by vertical slashes
+    formatopts='--listdelim # --format %n|%v|%d|%u|%p|%L|%P|%D|%M|%O|%C|%R|%m|%o|%r|%t|%s|%a\n'
+    readarray cowerarray < <(cower ${formatopts} ${coweropts[@]} -- $@)
+
+    formatstrings=( $"Name" $"Version" $"Description" $"URL" $"AUR Page" $"Licenses" $"Provides" $"Depends on" $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Mantainer" $"Votes" $"Popularity" $"Out of Date" $"Submitted" $"Last Modified" ) 
+    
+    # in some languages more tabs are needed to properly adjust the info
+    formattab=16
+    for string in "${formatstrings[@]}"
+    do
+        lstring=$(GetLength "$string")
+        if (( $lstring > 16 )); then
+            formattab=26
+        fi
+    done
+
+    # print each package info individually
+    for rows in "${cowerarray[@]}"
+    do
+        # array of info for the current package
+        readarray cowerinfo < <(echo $rows | tr '|' '\n')
+        
+        # repository info is not included in cower information
+        printf "${colorW}%-${formattab}s${reset}: %s\n" $"Repository" "aur"
+
+        for (( i=0; i < "${#formatstrings[@]}"; ++i ))
+        do
+            infotitle=${formatstrings[$i]}
+            
+            # remove non-printable characters from info
+            info=${cowerinfo[$i]}
+            info=$(tr -dc '[[:print:]]' <<< "$info")
+            
+            # replace empty info with 'None' to fit pacman print format
+            if [[ ! $info ]]; then info=$"None"; fi
+
+            # alignment of first line info
+            linfotitle=$(GetLength "$infotitle")
+            linfo="\x1b[$(( $formattab - $linfotitle ))C"
+            # alignment of new lines of multiline info 
+            lmulti="\x1b[$(( $formattab + 2 ))C"
+            
+            # format lists
+            if [ $i -eq 5 ] || [ $i -eq 6 ] || [ $i -eq 7 ] || [ $i -eq 8 ] || [ $i -eq 10 ] || [ $i -eq 11 ]; then
+                # introduce line breaks if needed and align the text
+                maxlength=$(( $(tput cols) - $formattab ))
+                info=$(echo $info | sed 's/#/  /g' | fold -s -w $(( $maxlength - 2 )) | sed "2,$ s/^/$lmulti/") 
+            # format optional dependencies
+            elif [ $i -eq 9 ]; then
+                # remove last separator (#)
+                info=$(echo $info | rev | sed 's/#//' | rev)
+                # set tabs for new lines with an escape character
+                info=$(echo $info | sed "s/\#/\n$lmulti/g")
+            # format out of date
+            elif [ $i -eq 15 ]; then
+                info=$(echo "${info^}")
+            # format dates
+            elif [ $i -eq 16 ] || [ $i -eq 17 ]; then
+                info=$(date -d @${cowerinfo[$i]})
+            fi
+            
+            echo -ne "${colorW}${infotitle}${reset}"
+            echo -ne "${linfo}: ${info}\n" 
+        done
+        echo
+    done
 }
 
 CheckUpdates() {
@@ -1222,6 +1289,7 @@ CheckUpdates() {
             lArepo=3
         fi
     fi
+
 
     if [[ ! $aur ]]; then
         repopkgsQood=($($pacmanbin -Quq $@))
