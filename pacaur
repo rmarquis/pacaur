@@ -1173,7 +1173,7 @@ InfoAur() {
     formatstrings=( $"Name" $"Version" $"Description" $"URL" $"AUR Page" $"Licenses" $"Provides" $"Depends on" $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Mantainer" $"Votes" $"Popularity" $"Out of Date" $"Submitted" $"Last Modified" ) 
     
     # get a list of the query packages to check if they are installed
-    readarray installedpkgs < <(expac -Qs '%n' $@)
+    installedpkgs="$(expac -Q '%n %v' $@)"
     
     # get the longest title to adjust the text
     formattab=1
@@ -1217,10 +1217,17 @@ InfoAur() {
             # alignment of new lines of multiline info 
             lmulti="\x1b[$(( $formattab + 2 ))C"
             
-            # format name of the pkg with installed flag
+            # format name of the pkg with installed flag, including version check
             if [ $i -eq 0 ]; then
-                if ($(echo $installedpkgs | grep -Fxq $info)); then
-                    info="${colorW}$info ${colorC}[${colorG}"$"installed""${colorC}]${reset}"
+                if ($(echo $installedpkgs | grep -Fq $info)); then
+                    installedversion=$(tr -dc '[[:print:]]' <<< ${cowerinfo[1]})
+                    lastversion="$(echo "$installedpkgs" | awk -v var="$info" '$1 == var {print $2}')"
+                    if [[ "$lastversion" == "$installedversion" ]]; then
+                        installedtag="${colorG}"$"installed"
+                    else
+                        installedtag="${colorR}"$"installed"": $installedversion"
+                    fi
+                    info="${colorW}$info ${colorC}[${installedtag}${colorC}]${reset}"
                 else
                     info="${colorW}$info"
                 fi
