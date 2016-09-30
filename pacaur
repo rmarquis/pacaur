@@ -1164,6 +1164,9 @@ SearchInfoAur() {
 
     formatstrings=( $"Name" $"Version" $"Description" $"URL" $"AUR Page" $"Licenses" $"Provides" $"Depends on" $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Mantainer" $"Votes" $"Popularity" $"Out of Date" $"Submitted" $"Last Modified" ) 
     
+    # get a list of the query packages to check if they are installed
+    readarray installedpkgs < <(expac -Qs '%n' $@)
+    
     # in some languages more tabs are needed to properly adjust the info
     formattab=16
     for string in "${formatstrings[@]}"
@@ -1200,6 +1203,12 @@ SearchInfoAur() {
             # alignment of new lines of multiline info 
             lmulti="\x1b[$(( $formattab + 2 ))C"
             
+            # format name of the pkg with installed flag
+            if [ $i -eq 0 ]; then
+                if ($(echo $installedpkgs | grep -Fxq $info)); then
+                    info+=" ["$"installed""]"
+                fi
+            fi
             # format lists
             if [ $i -eq 5 ] || [ $i -eq 6 ] || [ $i -eq 7 ] || [ $i -eq 8 ] || [ $i -eq 10 ] || [ $i -eq 11 ]; then
                 # introduce line breaks if needed and align the text
