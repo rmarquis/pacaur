@@ -1152,7 +1152,15 @@ MakePkgs() {
     [[ -z "${errmakepkg[@]}" ]] && exit
 }
 
-SearchInfoAur() {
+SearchAur() {
+    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
+        [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
+    fi
+
+    cower ${coweropts[@]} -- $@
+}
+
+InfoAur() {
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
         [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
     fi
@@ -1167,27 +1175,30 @@ SearchInfoAur() {
     # get a list of the query packages to check if they are installed
     readarray installedpkgs < <(expac -Qs '%n' $@)
     
-    # in some languages more tabs are needed to properly adjust the info
-    formattab=16
+    # get the longest title to adjust the text
+    formattab=1
     for string in "${formatstrings[@]}"
     do
         lstring=$(GetLength "$string")
-        if (( $lstring > 16 )); then
-            formattab=26
-        fi
+        if (( $lstring > $formattab )); then formattab=$lstring; fi
     done
+    formattab=$(( $formattab + 1 ))
 
-    # print each package info individually
+    # store all formatted text in an array
+    formattedinfo=()
+
+    # format each package info individually
     for rows in "${cowerarray[@]}"
     do
         # array of info for the current package
         readarray cowerinfo < <(echo $rows | tr '|' '\n')
         
         # repository info is not included in cower information
-        printf "${colorW}%-${formattab}s${reset}: ${colorM}%s${reset}\n" $"Repository" "aur"
+        printf -v repositoryformat "${colorW}%-${formattab}s:${reset} ${colorM}%s${reset}\n" $"Repository" "aur"
+        formattedinfo+=("$repositoryformat")
 
         # check if the package is out of date
-        if [[ "${cowerinfo[15]}" == "yes" ]]; then outofdate=true; fi
+        if [[ $(echo "${cowerinfo[15]}") == "yes" ]]; then outofdate=true; else outofdate=false; fi
 
         for (( i=0; i < "${#formatstrings[@]}"; ++i ))
         do
@@ -1227,8 +1238,16 @@ SearchInfoAur() {
             elif [ $i -eq 9 ]; then
                 # remove last separator (#)
                 info=$(echo $info | rev | sed 's/#//' | rev)
-                # set tabs for new lines with an escape character
-                info=$(echo $info | sed "s/\#/\n$lmulti/g")
+                # store pkgs into an array
+                readarray multiinfo < <(echo $info | sed "s/\#/\n/g")
+                # introduce line breaks if needed and align the text
+                maxlength=$(( $(tput cols) - $formattab ))
+                # format first optional pkg
+                info="$(echo "${multiinfo[0]}" | tr -dc '[[:print:]]' | fold -s -w $(( $maxlength - 2)) | sed "s/^ //;2,$ s/^/$lmulti/")"
+                # from second optional pkg all pkgs have the same format
+                for singleinfo in "${multiinfo[@]:1}"; do
+                    info+="\n$(echo "$singleinfo" | tr -dc '[[:print:]]' | fold -s -w $(( $maxlength - 2)) | sed "s/^ //;s/^/$lmulti/")"
+                done
             # format out of date
             elif [ $i -eq 15 ]; then
                 info=$(echo "${info^}")
@@ -1244,14 +1263,19 @@ SearchInfoAur() {
             elif [ $i -eq 2 ] || [ $i -eq 5 ] || [ $i -eq 6 ] || [ $i -eq 7 ] || [ $i -eq 8 ] || [ $i -eq 10 ] || [ $i -eq 11 ]; then
                 # introduce line breaks if needed and align the text
                 maxlength=$(( $(tput cols) - $formattab ))
-                info=$(echo $info | sed 's/#/  /g' | fold -s -w $(( $maxlength - 2 )) | sed "2,$ s/^/$lmulti/") 
+                info=$(echo $info | sed 's/#/  /g' | fold -s -w $(( $maxlength - 2 )) | sed "s/^ //;2,$ s/^/$lmulti/") 
             fi
             
-            echo -ne "${colorW}${infotitle}${reset}"
-            echo -ne "${linfo}: ${info}\n" 
+            # store formatted text
+            formattedinfo+=("${colorW}${infotitle}${linfo}:${reset} ${info}\n") 
         done
-        echo
+    
+        # add a line break between pkgs
+        formattedinfo+=("\n")
     done
+
+    # print formatted info from all packages
+    local IFS=''; echo -ne "${formattedinfo[*]}"
 }
 
 CheckUpdates() {
@@ -1783,7 +1807,7 @@ case $operation in
                 [[ $refresh ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
                 [[ ! $refresh ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
             fi
-            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchInfoAur ${pkgs[@]}
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
         # info (-Si, -i) handling
         elif [[ $info ]]; then
             if [[ -z "${pkgs[@]}" ]]; then
@@ -1805,6 +1829,7 @@ case $operation in
                     fi
                 fi
                 SearchInfoAur ${aurpkgs[@]}
+                InfoAur ${aurpkgs[@]}
             fi
         # clean (-Sc) handling
         elif [[ $cleancache ]]; then
