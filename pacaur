@@ -1255,22 +1255,25 @@ CleanCache() {
         fi
     fi
     if [[ $AURDEST ]]; then
-        foreignpkgs=($($pacmanbin -Qmq))
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Clones to keep:" $"All packages clones"
         printf "\n%s %s\n" $"AUR clone directory:" "$AURDEST"
         if [[ $count -eq 1 ]]; then
             if Proceed "y" $"Do you want to remove all uninstalled clones from AUR clone directory?"; then
+                foreignpkgsbase=($(expac -Q '%n %e' $($pacmanbin -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
                 printf "%s\n" $"removing uninstalled clones from AUR clone cache..."
-                cd $AURDEST || exit 1
-                foreignpkgsbase=($(expac -Q '%n %e' $(pacman -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
                 for clone in *; do
                   [[ -d "$AURDEST/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf $AURDEST/$clone
+                done
+            fi
+            if Proceed "y" $"Do you want to remove all untracked files from AUR clone directory?"; then
+                printf "%s\n" $"removing untracked files from AUR clone cache..."
+                for clone in *; do
+                    [[ -d "$AURDEST/$clone" ]] && git --git-dir="$clone/.git" --work-tree="$clone" clean -ffdx &>/dev/null
                 done
             fi
         else
             if ! Proceed "n" $"Do you want to remove ALL clones from AUR clone directory?"; then
                 printf "%s\n" $"removing all clones from AUR clone cache..."
-                cd $AURDEST || exit 1
                 for clone in *; do
                     [[ -d "$AURDEST/$clone" ]] && rm -rf $AURDEST/$clone
                 done

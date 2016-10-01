@@ -292,7 +292,8 @@ building packages. Default is B<true>.
 
 Determines where the packages build files (PKGBUILD, .SRCINFO and install script
 files) will be cloned. The I<-Sc> and I<-Scc> clean operations allow to remove
-the non locally installed cloned files and all cloned files, respectively.
+the untracked cloned files and the non locally installed cloned files, and all
+cloned files, respectively.
 
 If this environment variable is not defined, the clone directory will be set to
 
