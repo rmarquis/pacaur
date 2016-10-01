@@ -850,7 +850,7 @@ DownloadPkgs() {
 }
 
 EditPkgs() {
-    local viewed timestamp i j
+    local viewed timestamp i j erreditpkg
     # global cachedpkgs installscripts editor
     [[ $noedit ]] && return
     unset viewed
@@ -869,6 +869,7 @@ EditPkgs() {
                             eval "$diffcmd"
                             Note "s" $"${colorW}$i${reset} build files diff viewed"
                             viewed='true'
+                            (($? > 0)) && erreditpkg+=($i)
                         fi
                     else
                         Note "w" $"${colorW}$i${reset} build files are up-to-date -- skipping"
@@ -878,6 +879,7 @@ EditPkgs() {
                     if Proceed "y" $"View $i PKGBUILD?"; then
                         if [[ -e "PKGBUILD" ]]; then
                             $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed"
+                            (($? > 0)) && erreditpkg+=($i)
                         else
                             Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
                         fi
@@ -888,6 +890,7 @@ EditPkgs() {
                             if Proceed "y" $"View $j script?"; then
                                 if [[ -e "$j" ]]; then
                                     $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed"
+                                    (($? > 0)) && erreditpkg+=($i)
                                 else
                                     Note "e" $"Could not open ${colorW}$j${reset} script"
                                 fi
@@ -900,6 +903,7 @@ EditPkgs() {
             # show pkgbuild and install script
             if [[ -e "PKGBUILD" ]]; then
                 $editor "PKGBUILD" && Note "s" $"${colorW}$i${reset} PKGBUILD viewed"
+                (($? > 0)) && erreditpkg+=($i)
             else
                 Note "e" $"Could not open ${colorW}$i${reset} PKGBUILD"
             fi
@@ -907,6 +911,7 @@ EditPkgs() {
                 for j in "${installscripts[@]}"; do
                     if [[ -e "$j" ]]; then
                         $editor "$j" && Note "s" $"${colorW}$j${reset} script viewed"
+                        (($? > 0)) && erreditpkg+=($i)
                     else
                         Note "e" $"Could not open ${colorW}$j${reset} script"
                     fi
@@ -914,6 +919,11 @@ EditPkgs() {
             fi
         fi
     done
+
+    for i in "${erreditpkg[@]}"; do
+        Note "f" $"${colorW}$i${reset} errored on exit"
+    done
+    [[ -n "${erreditpkg[@]}" ]] && exit 1
 
     if [[ ! $noconfirm && $displaybuildfiles = diff && $viewed = true ]]; then
         [[ $installpkg ]] && action=$"installation" || action=$"download"
