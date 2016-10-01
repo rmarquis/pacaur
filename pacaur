@@ -203,11 +203,11 @@ DepsSolver() {
     deps+=(${aurdepspkgs[@]})
 
     # ensure correct dependency order
+    SetJson ${deps[@]}
     SortDepsAur ${aurpkgs[@]}
     deps=($(tsort <<< ${tsortdeps[@]}))
 
     # get AUR packages info
-    SetJson ${deps[@]}
     depsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
     depsAver=($(GetJson "var" "$json" "Version"))
     depsAood=($(GetJson "var" "$json" "OutOfDate"))
