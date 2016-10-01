@@ -1217,11 +1217,11 @@ InfoAur() {
             # alignment of new lines of multiline info 
             lmulti="\x1b[$(( $formattab + 2 ))C"
             
-            # format name of the pkg with installed flag, including version check
-            if [ $i -eq 0 ]; then
+            case $i in
+              0)# format name of the pkg with installed flag, including version check
                 if ($(echo $installedpkgs | grep -Fq $info)); then
-                    installedversion=$(tr -dc '[[:print:]]' <<< ${cowerinfo[1]})
-                    lastversion="$(echo "$installedpkgs" | awk -v var="$info" '$1 == var {print $2}')"
+                    lastversion=$(tr -dc '[[:print:]]' <<< ${cowerinfo[1]})
+                    installedversion="$(echo "$installedpkgs" | awk -v var="$info" '$1 == var {print $2}')"
                     if [[ "$lastversion" == "$installedversion" ]]; then
                         installedtag="${colorG}"$"installed"
                     else
@@ -1231,18 +1231,23 @@ InfoAur() {
                 else
                     info="${colorW}$info"
                 fi
-            # format version
-            elif [ $i -eq 1 ]; then
+              ;;
+              1)# format version
                 if $outofdate; then
                     info="${colorR}$info${reset}"
                 else
                     info="${colorG}$info${reset}"
                 fi
-            # format URLs
-            elif [ $i -eq 3 ] || [ $i -eq 4 ]; then
+              ;;
+              3|4)# format URLs
                 info="${colorC}$info${reset}"
-            # format optional dependencies
-            elif [ $i -eq 9 ]; then
+              ;;
+              2|5|6|7|8|10|11)# format description and lists
+                # introduce line breaks if needed and align the text
+                maxlength=$(( $(tput cols) - $formattab ))
+                info=$(echo $info | sed 's/#/  /g' | fold -s -w $(( $maxlength - 2 )) | sed "s/^ //;2,$ s/^/$lmulti/")
+              ;;
+              9)# format optional dependencies
                 # remove last separator (#)
                 info=$(echo $info | rev | sed 's/#//' | rev)
                 # store pkgs into an array
@@ -1255,23 +1260,19 @@ InfoAur() {
                 for singleinfo in "${multiinfo[@]:1}"; do
                     info+="\n$(echo "$singleinfo" | tr -dc '[[:print:]]' | fold -s -w $(( $maxlength - 2)) | sed "s/^ //;s/^/$lmulti/")"
                 done
-            # format out of date
-            elif [ $i -eq 15 ]; then
+              ;;
+              15)# format out of date
                 info=$(echo "${info^}")
                 if $outofdate; then
                     info="${colorR}"$"Yes""${reset}"
                 else
                     info="${colorG}"$"No""${reset}"
                 fi
-            # format dates
-            elif [ $i -eq 16 ] || [ $i -eq 17 ]; then
+              ;;
+              16|17)# format dates
                 info=$(date -d @${cowerinfo[$i]})
-            # format description and lists
-            elif [ $i -eq 2 ] || [ $i -eq 5 ] || [ $i -eq 6 ] || [ $i -eq 7 ] || [ $i -eq 8 ] || [ $i -eq 10 ] || [ $i -eq 11 ]; then
-                # introduce line breaks if needed and align the text
-                maxlength=$(( $(tput cols) - $formattab ))
-                info=$(echo $info | sed 's/#/  /g' | fold -s -w $(( $maxlength - 2 )) | sed "s/^ //;2,$ s/^/$lmulti/") 
-            fi
+              ;;
+            esac
             
             # store formatted text
             formattedinfo+=("${colorW}${infotitle}${linfo}:${reset} ${info}\n") 
@@ -1835,7 +1836,6 @@ case $operation in
                         Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                     fi
                 fi
-                SearchInfoAur ${aurpkgs[@]}
                 InfoAur ${aurpkgs[@]}
             fi
         # clean (-Sc) handling
