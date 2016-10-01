@@ -419,9 +419,13 @@ SortDepsAur() {
         done
 
         # prepare tsort list
-        for j in "${!sortdepspkgsaur[@]}"; do
-            tsortdeps+=("${sortaurpkgs[$i]} ${sortdepspkgsaur[$j]}")
-        done
+        if [[ -z "${sortdepspkgsaur[@]}" ]]; then
+            tsortdeps+=("${sortaurpkgs[$i]} ${sortaurpkgs[$i]}")
+        else
+            for j in "${!sortdepspkgsaur[@]}"; do
+                tsortdeps+=("${sortaurpkgs[$i]} ${sortdepspkgsaur[$j]}")
+            done
+        fi
 
         # filter non checked deps
         sortdepspkgsaur=($(grep -xvf <(printf '%s\n' "${allcheckedsortdepspkgsaur[@]}") <(printf '%s\n' "${sortdepspkgsaur[@]}")))
