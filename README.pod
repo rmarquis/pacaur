@@ -301,6 +301,9 @@ with a fall back to
 
   $HOME/.cache/pacaur
 
+The I<-Sc> and I<-Scc> clean operations allow to remove the non locally installed
+cloned files and all cloned files, respectively.
+
 =back
 
 In addition, makepkg environment variables are fully honored. See B<makepkg>(8).
