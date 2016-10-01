@@ -1591,7 +1591,13 @@ case $operation in
             fi
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-                [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                if [[ $fallback = true && ! $aur ]]; then
+                    if [[ "${#aurpkgs[@]}" -gt 1 ]]; then
+                        Note "w" $"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                    else
+                        Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                    fi
+                fi
                 SearchInfoAur ${aurpkgs[@]}
             fi
         # clean (-Sc) handling
@@ -1603,7 +1609,13 @@ case $operation in
             [[ -n "${pkgs[@]}" ]] && ClassifyPkgs ${pkgs[@]}
             [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             [[ ! $repo ]] && [[ $aur ]] && [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-            [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+            if [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]]; then
+                if [[ "${#aurpkgs[@]}" -gt 1 ]]; then
+                    Note "w" $"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                else
+                    Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                fi
+            fi
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy)
         else
@@ -1615,7 +1627,13 @@ case $operation in
             [[ -n "${repopkgs[@]}" ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
             if [[ -n "${aurpkgs[@]}" ]]; then
                 [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
-                [[ $fallback = true && ! $aur ]] && Note "w" $"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                if [[ $fallback = true && ! $aur ]]; then
+                    if [[ "${#aurpkgs[@]}" -gt 1 ]]; then
+                        Note "w" $"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                    else
+                        Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
+                    fi
+                fi
                 Core ${aurpkgs[@]}
             fi
         fi
