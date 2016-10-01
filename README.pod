@@ -291,7 +291,8 @@ building packages. Default is B<true>.
 =item B<AURDEST>
 
 Determines where the packages build files (PKGBUILD, .SRCINFO and install script
-files) will be cloned.
+files) will be cloned. The I<-Sc> and I<-Scc> clean operations allow to remove
+the non locally installed cloned files and all cloned files, respectively.
 
 If this environment variable is not defined, the clone directory will be set to
 
@@ -300,9 +301,6 @@ If this environment variable is not defined, the clone directory will be set to
 with a fall back to
 
   $HOME/.cache/pacaur
-
-The I<-Sc> and I<-Scc> clean operations allow to remove the non locally installed
-cloned files and all cloned files, respectively.
 
 =back
 
