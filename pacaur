@@ -261,26 +261,13 @@ DepsSolver() {
 }
 
 FindDepsAur() {
-    local aurpkgsproviders aurpkgsprovidersname depspkgs depspkgstmp depspkgsaurtmp repodepstmp
+    local depspkgs depspkgstmp depspkgsaurtmp repodepstmp
     local builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j json
     # global depspkgsaur errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
 
-    if [[ -z "${depspkgsaur[@]}" ]]; then
-        # target providers
-        SetJson ${aurpkgsnover[@]}
-        aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
-
-        # target providers check
-        if [[ -n "${aurpkgsproviders[@]}" ]]; then
-            for i in "${!aurpkgsproviders[@]}"; do
-                unset aurpkgsprovidersname
-                aurpkgsprovidersname=${aurpkgsproviders[$i]} && aurpkgsprovidersname=${aurpkgsproviders%[=><]*}
-            done
-        fi
-    else
-        SetJson ${depspkgsaur[@]}
-    fi
+    # set json
+    [[ -z "${depspkgsaur[@]}" ]] && SetJson ${aurpkgsnover[@]} || SetJson ${depspkgsaur[@]}
 
     # AUR versioning check
     if [[ -n "${prevdepspkgsaur[@]}" ]]; then
@@ -292,7 +279,7 @@ FindDepsAur() {
 
             # not found in AUR nor repo
             if [[ ! $prevaurver ]]; then
-                [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && [[ ! " ${aurpkgsprovidersname[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
                 continue
             fi
 
