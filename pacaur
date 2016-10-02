@@ -1151,10 +1151,29 @@ SearchInfoAur() {
 
 CheckRepo() {
     local repopkgsQood repopkgsQver repopkgsSver repopkgsSrepo repopkgsQgrp repopkgsQignore i
-    # global lname lQver lSver lrepo lgrp
+    # global foreignpkgs aurpkgsAname aurpkgsAver aurpkgsQver lname lQver lSver lrepo lgrp
     GetIgnoredPkgs
     repopkgsQood=($($pacmanbin -Quq $@))
     if [[ -n "${repopkgsQood[@]}" ]]; then
+        # adjust alignment
+        if [[ ! $repo ]]; then
+            [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
+            SetJson ${foreignpkgs[@]}
+            aurpkgsAname=($(GetJson "var" "$json" "Name")) # return sorted results
+            aurpkgsAver=($(GetJson "var" "$json" "Version"))
+            aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
+            for i in "${!aurpkgsAname[@]}"; do
+                [[ $(vercmp "${aurpkgsAver[$i]}" "${aurpkgsQver[$i]}") -gt 0 ]] && aurpkgsQood+=(${aurpkgsAname[$i]});
+            done
+
+            # add devel packages
+            if [[ $devel ]]; then
+                for i in "${foreignpkgs[@]}"; do
+                    [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgsQood+=($i)
+                done
+            fi
+        fi
+
         [[ $quiet ]] && tr ' ' '\n' <<< ${repopkgsQood[@]} && return
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
         repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
@@ -1169,6 +1188,23 @@ CheckRepo() {
         lSver=$(GetLength "${repopkgsSver[@]}")
         lrepo=$(GetLength "${repopkgsSrepo[@]}")
         lgrp=$(GetLength "${repopkgsQgrp[@]}")
+
+        if [[ ! $repo ]]; then
+            if [[ -n "${aurpkgsQood[@]}" ]]; then
+                # [[ $quiet ]] && tr ' ' '\n' <<< ${aurpkgsQood[@]} && return
+                SetJson ${aurpkgsQood[@]}
+                aurpkgsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
+                aurpkgsAver=($(GetJson "var" "$json" "Version"))
+                aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
+                lAname=$(GetLength "${aurpkgsAname[@]}")
+                lAQver=$(GetLength "${aurpkgsQver[@]}")
+                lASver=$(GetLength "${aurpkgsAver[@]}")
+                [[ $lAname -gt $lname ]] && lname=$lAname
+                [[ $lAQver -gt $lQver ]] && lQver=$lAQver
+                [[ $lASver -gt $lSver ]] && lSver=$lASver
+            fi
+        fi
+
         for i in "${!repopkgsQood[@]}"; do
             printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lQver}s${reset}  ->  ${colorG}%-${lSver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" "${repopkgsQignore[$i]}"
         done
@@ -1176,40 +1212,47 @@ CheckRepo() {
 }
 
 CheckAur() {
-    local foreignpkgs aurpkgsAname aurpkgsAver aurpkgsQver aurpkgsQood aurpkgsQignore i json
-    # global lname lQver lSver lrepo lgrp
+    local aurpkgsQignore i json
+    # global foreignpkgs aurpkgsQood aurpkgsAname aurpkgsAver aurpkgsQver lname lQver lSver lrepo lgrp
     GetIgnoredPkgs
 
-    [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
-    SetJson ${foreignpkgs[@]}
-    aurpkgsAname=($(GetJson "var" "$json" "Name")) # return sorted results
-    aurpkgsAver=($(GetJson "var" "$json" "Version"))
-    aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
-    for i in "${!aurpkgsAname[@]}"; do
-        [[ $(vercmp "${aurpkgsAver[$i]}" "${aurpkgsQver[$i]}") -gt 0 ]] && aurpkgsQood+=(${aurpkgsAname[$i]});
-    done
-
-    # add devel packages
-    if [[ $devel ]]; then
-        for i in "${foreignpkgs[@]}"; do
-            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgsQood+=($i)
+    if [[ $aur ]]; then # FIXME: or -k
+        [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
+        SetJson ${foreignpkgs[@]}
+        aurpkgsAname=($(GetJson "var" "$json" "Name")) # return sorted results
+        aurpkgsAver=($(GetJson "var" "$json" "Version"))
+        aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
+        for i in "${!aurpkgsAname[@]}"; do
+            [[ $(vercmp "${aurpkgsAver[$i]}" "${aurpkgsQver[$i]}") -gt 0 ]] && aurpkgsQood+=(${aurpkgsAname[$i]});
         done
+
+        # add devel packages
+        if [[ $devel ]]; then
+            for i in "${foreignpkgs[@]}"; do
+                [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgsQood+=($i)
+            done
+        fi
+
+        if [[ -n "${aurpkgsQood[@]}" ]]; then
+            [[ $quiet ]] && tr ' ' '\n' <<< ${aurpkgsQood[@]} && return
+            SetJson ${aurpkgsQood[@]}
+            aurpkgsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
+            aurpkgsAver=($(GetJson "var" "$json" "Version"))
+            aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
+            for i in "${!aurpkgsAname[@]}"; do
+                [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsAname[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
+                [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${aurpkgsAname[$i]})" ]] && aurpkgsAver[$i]=$"latest"
+            done
+            [[ ! $lname ]] && lname=$(GetLength "${aurpkgsAname[@]}")
+            [[ ! $lQver ]] && lQver=$(GetLength "${aurpkgsQver[@]}")
+            [[ ! $lSver ]] && lSver=$(GetLength "${aurpkgsAver[@]}")
+            [[ ! $lrepo ]] && lrepo=3
+        fi
     fi
+
 
     if [[ -n "${aurpkgsQood[@]}" ]]; then
         [[ $quiet ]] && tr ' ' '\n' <<< ${aurpkgsQood[@]} && return
-        SetJson ${aurpkgsQood[@]}
-        aurpkgsAname=($(GetJson "var" "$json" "Name"))    # return sorted results
-        aurpkgsAver=($(GetJson "var" "$json" "Version"))
-        aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
-        for i in "${!aurpkgsAname[@]}"; do
-            [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsAname[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
-            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${aurpkgsAname[$i]})" ]] && aurpkgsAver[$i]=$"latest"
-        done
-        [[ ! $lname ]] && lname=$(GetLength "${aurpkgsAname[@]}")
-        [[ ! $lQver ]] && lQver=$(GetLength "${aurpkgsQver[@]}")
-        [[ ! $lSver ]] && lSver=$(GetLength "${aurpkgsAver[@]}")
-        [[ ! $lrepo ]] && lrepo=3
         for i in "${!aurpkgsAname[@]}"; do
             printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lQver}s${reset}  ->  ${colorG}%-${lSver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" " " "${aurpkgsQignore[$i]}"
         done
