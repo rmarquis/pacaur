@@ -35,7 +35,7 @@ _pacaur() {
         esac
     else
         case "$op" in
-            # S) _pacman_pkg Slq; _cower_pkg;; # disabled. Too slow and no fallback var support.
+            S) _pacman_pkg Slq; _cower_pkg;; # No fallback var support.
             d|i|m|y) _cower_pkg;;
             k|u) _pacman_pkg Qqm;;
         esac
