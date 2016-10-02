@@ -196,7 +196,6 @@ DepsSolver() {
     Note "i" $"resolving dependencies..."
 
     # remove AUR pkgs versioning
-    aurpkgs=(${aurpkgs[@]})
     for i in "${!aurpkgs[@]}"; do
         aurpkgsnover[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
