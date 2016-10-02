@@ -152,12 +152,17 @@ IgnoreChecks() {
     # global aurpkgs rmaurpkgs
     [[ -z "${ignoredpkgs[@]}" ]] && return
 
+    # remove AUR pkgs versioning
+    for i in "${!aurpkgs[@]}"; do
+        aurpkgsnover[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
+    done
+
     # check targets
-    SetJson ${aurpkgs[@]}
+    SetJson ${aurpkgsnover[@]}
     checkaurpkgs=($(GetJson "var" "$json" "Name"))    # return sorted results
-    errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${checkaurpkgs[@]}")))
-    errdeps+=($(grep -xvf <(printf '%s\n' "${checkaurpkgs[@]}") <(printf '%s\n' "${aurpkgs[@]}")))
-    unset aurpkgs
+    errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgsnover[@]}") <(printf '%s\n' "${checkaurpkgs[@]}")))
+    errdeps+=($(grep -xvf <(printf '%s\n' "${checkaurpkgs[@]}") <(printf '%s\n' "${aurpkgsnover[@]}")))
+    unset aurpkgsnover
 
     checkaurpkgsAver=($(GetJson "var" "$json" "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
@@ -174,13 +179,14 @@ IgnoreChecks() {
                 fi
             else
                 Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
-                rmaurpkgs+=(${checkaurpkgs[$i]})
+                rmaurpkgs+=(${aurpkgs[$i]})
                 continue
             fi
         fi
-        aurpkgs+=(${checkaurpkgs[$i]})
+        aurpkgsnover+=(${aurpkgs[$i]})
     done
 
+    aurpkgs=(${aurpkgsnover[@]})
     NothingToDo ${aurpkgs[@]}
 }
 
