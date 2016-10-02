@@ -185,18 +185,51 @@ IgnoreChecks() {
 }
 
 DepsSolver() {
-    local i
-    # global aurdeps deps json errdeps foreignpkgs repodeps depsAname depsAver depsAood depsQver
+    local i aurpkgsname aurpkgsver aurpkgsaurver
+    # global aurpkgs aurpkgsnover aurdeps deps json errdeps foreignpkgs repodeps depsAname depsAver depsAood depsQver
     Note "i" $"resolving dependencies..."
 
     # remove AUR pkgs versioning
+    aurpkgs=(${aurpkgs[@]})
     for i in "${!aurpkgs[@]}"; do
-        aurpkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
+        aurpkgsnover[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
-    deps=(${aurpkgs[@]})
+
+    # download initial json
+    SetJson ${aurpkgsnover[@]}
+    deps=(${aurpkgsnover[@]})
+
+    # target versioning check
+    for i in "${!aurpkgs[@]}"; do
+        unset aurpkgsname aurpkgsver aurpkgsaurver
+        aurpkgsname=${aurpkgs[$i]} && aurpkgsname=${aurpkgsname%[><]*} && aurpkgsname=${aurpkgsname%=*}
+        aurpkgsver=${aurpkgs[$i]} && aurpkgsver=${aurpkgsver#*=} && aurpkgsver=${aurpkgsver#*[><]}
+        aurpkgsaurver=$(GetJson "varvar" "$json" "Version" "$aurpkgsname")
+
+        # not found in AUR nor repo
+        if [[ ! $aurpkgsaurver ]]; then
+            [[ ! " ${errdeps[@]} " =~ " ${aurpkgs[$i]} " ]] && errdeps+=(${aurpkgs[$i]})
+            continue
+        fi
+
+        case "${aurpkgs[$i]}" in
+            *">"*|*"<"*|*"="*)
+                # found in AUR but version not correct
+                case "${aurpkgs[$i]}" in
+                    *">="*) [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -ge 0 ]] && continue;;
+                    *"<="*) [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -le 0 ]] && continue;;
+                    *">"*)  [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -gt 0 ]] && continue;;
+                    *"<"*)  [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -lt 0 ]] && continue;;
+                    *"="*)  [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -eq 0 ]] && continue;;
+                esac
+                [[ ! " ${errdeps[@]} " =~ " ${aurpkgs[$i]} " ]] && errdeps+=(${aurpkgs[$i]})
+            ;;
+            *) continue;;
+        esac
+    done
 
     [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
-    FindDepsAur ${aurpkgs[@]}
+    FindDepsAur ${aurpkgsnover[@]}
 
     # avoid possible duplicate
     deps=($(grep -xvf <(printf '%s\n' "${aurdepspkgs[@]}") <(printf '%s\n' "${deps[@]}")))
@@ -228,14 +261,14 @@ DepsSolver() {
 }
 
 FindDepsAur() {
-    local aurpkgsproviders aurpkgsprovidersname errdepsname depspkgs depspkgstmp depspkgsaurtmp repodepstmp
+    local aurpkgsproviders aurpkgsprovidersname depspkgs depspkgstmp depspkgsaurtmp repodepstmp
     local builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j json
     # global depspkgsaur errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
 
     if [[ -z "${depspkgsaur[@]}" ]]; then
         # target providers
-        SetJson ${aurpkgs[@]}
+        SetJson ${aurpkgsnover[@]}
         aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
 
         # target providers check
@@ -247,13 +280,6 @@ FindDepsAur() {
         fi
     else
         SetJson ${depspkgsaur[@]}
-    fi
-
-    # target check
-    if [[ -z "${prevdepspkgsaur[@]}" ]]; then
-        errdepsname=($(GetJson "var" "$json" "Name"))
-        errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${errdepsname[@]}")))
-        errdeps+=($(grep -xvf <(printf '%s\n' "${errdepsname[@]}") <(printf '%s\n' "${aurpkgs[@]}")))
     fi
 
     # AUR versioning check
