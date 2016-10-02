@@ -195,38 +195,9 @@ DepsSolver() {
         aurpkgsnover[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgs[$i]})
     done
 
-    # download initial json
+    # set unversionned json
     SetJson ${aurpkgsnover[@]}
     deps=(${aurpkgsnover[@]})
-
-    # target versioning check
-    for i in "${!aurpkgs[@]}"; do
-        unset aurpkgsname aurpkgsver aurpkgsaurver
-        aurpkgsname=${aurpkgs[$i]} && aurpkgsname=${aurpkgsname%[><]*} && aurpkgsname=${aurpkgsname%=*}
-        aurpkgsver=${aurpkgs[$i]} && aurpkgsver=${aurpkgsver#*=} && aurpkgsver=${aurpkgsver#*[><]}
-        aurpkgsaurver=$(GetJson "varvar" "$json" "Version" "$aurpkgsname")
-
-        # not found in AUR nor repo
-        if [[ ! $aurpkgsaurver ]]; then
-            [[ ! " ${errdeps[@]} " =~ " ${aurpkgs[$i]} " ]] && errdeps+=(${aurpkgs[$i]})
-            continue
-        fi
-
-        case "${aurpkgs[$i]}" in
-            *">"*|*"<"*|*"="*)
-                # found in AUR but version not correct
-                case "${aurpkgs[$i]}" in
-                    *">="*) [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -ge 0 ]] && continue;;
-                    *"<="*) [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -le 0 ]] && continue;;
-                    *">"*)  [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -gt 0 ]] && continue;;
-                    *"<"*)  [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -lt 0 ]] && continue;;
-                    *"="*)  [[ $(vercmp "$aurpkgsaurver" "$aurpkgsver") -eq 0 ]] && continue;;
-                esac
-                [[ ! " ${errdeps[@]} " =~ " ${aurpkgs[$i]} " ]] && errdeps+=(${aurpkgs[$i]})
-            ;;
-            *) continue;;
-        esac
-    done
 
     [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
     FindDepsAur ${aurpkgsnover[@]}
@@ -261,39 +232,46 @@ DepsSolver() {
 }
 
 FindDepsAur() {
-    local depspkgs depspkgstmp depspkgsaurtmp repodepstmp
-    local builtpkg vcsdepspkgs assumedepspkgs prevname prevver prevaurver i j json
-    # global depspkgsaur errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
+    local depspkgs depspkgstmp depspkgsaurtmp repodepstmp builtpkg vcsdepspkgs assumedepspkgs
+    local aurversionpkgs aurversionpkgsname aurversionpkgsver aurversionpkgsaurver i j json
+    # global aurpkgsnover depspkgsaur errdeps depsAname depsAver repodeps aurdepspkgs prevdepspkgsaur foreignpkgs
     [[ $nodeps && $count -ge 2 ]] && return
 
     # set json
-    [[ -z "${depspkgsaur[@]}" ]] && SetJson ${aurpkgsnover[@]} || SetJson ${depspkgsaur[@]}
+    unset aurversionpkgs
+    if [[ -z "${depspkgsaur[@]}" ]]; then
+        SetJson ${aurpkgsnover[@]}
+        aurversionpkgs=(${aurpkgs[@]})
+    else
+        SetJson ${depspkgsaur[@]}
+        aurversionpkgs=(${prevdepspkgsaur[@]})
+    fi
 
-    # AUR versioning check
-    if [[ -n "${prevdepspkgsaur[@]}" ]]; then
-        for i in "${!prevdepspkgsaur[@]}"; do
-            unset prevname prevver prevaurver
-            prevname=${prevdepspkgsaur[$i]} && prevname=${prevname%[><]*} && prevname=${prevname%=*}
-            prevver=${prevdepspkgsaur[$i]} && prevver=${prevver#*=} && prevver=${prevver#*[><]}
-            prevaurver=$(GetJson "varvar" "$json" "Version" "$prevname")
+    # versioning check
+    if [[ -n "${aurversionpkgs[@]}" ]]; then
+        for i in "${!aurversionpkgs[@]}"; do
+            unset aurversionpkgsname aurversionpkgsver aurversionpkgsaurver
+            aurversionpkgsname=${aurversionpkgs[$i]} && aurversionpkgsname=${aurversionpkgsname%[><]*} && aurversionpkgsname=${aurversionpkgsname%=*}
+            aurversionpkgsver=${aurversionpkgs[$i]} && aurversionpkgsver=${aurversionpkgsver#*=} && aurversionpkgsver=${aurversionpkgsver#*[><]}
+            aurversionpkgsaurver=$(GetJson "varvar" "$json" "Version" "$aurversionpkgsname")
 
             # not found in AUR nor repo
-            if [[ ! $prevaurver ]]; then
-                [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+            if [[ ! $aurversionpkgsaurver ]]; then
+                [[ ! " ${errdeps[@]} " =~ " ${aurversionpkgs[$i]} " ]] && errdeps+=(${aurversionpkgs[$i]})
                 continue
             fi
 
-            case "${prevdepspkgsaur[$i]}" in
+            case "${aurversionpkgs[$i]}" in
                 *">"*|*"<"*|*"="*)
                     # found in AUR but version not correct
-                    case "${prevdepspkgsaur[$i]}" in
-                        *">="*) [[ $(vercmp "$prevaurver" "$prevver") -ge 0 ]] && continue;;
-                        *"<="*) [[ $(vercmp "$prevaurver" "$prevver") -le 0 ]] && continue;;
-                        *">"*)  [[ $(vercmp "$prevaurver" "$prevver") -gt 0 ]] && continue;;
-                        *"<"*)  [[ $(vercmp "$prevaurver" "$prevver") -lt 0 ]] && continue;;
-                        *"="*)  [[ $(vercmp "$prevaurver" "$prevver") -eq 0 ]] && continue;;
+                    case "${aurversionpkgs[$i]}" in
+                        *">="*) [[ $(vercmp "$aurversionpkgsaurver" "$aurversionpkgsver") -ge 0 ]] && continue;;
+                        *"<="*) [[ $(vercmp "$aurversionpkgsaurver" "$aurversionpkgsver") -le 0 ]] && continue;;
+                        *">"*)  [[ $(vercmp "$aurversionpkgsaurver" "$aurversionpkgsver") -gt 0 ]] && continue;;
+                        *"<"*)  [[ $(vercmp "$aurversionpkgsaurver" "$aurversionpkgsver") -lt 0 ]] && continue;;
+                        *"="*)  [[ $(vercmp "$aurversionpkgsaurver" "$aurversionpkgsver") -eq 0 ]] && continue;;
                     esac
-                    [[ ! " ${errdeps[@]} " =~ " ${prevdepspkgsaur[$i]} " ]] && errdeps+=(${prevdepspkgsaur[$i]})
+                    [[ ! " ${errdeps[@]} " =~ " ${aurversionpkgs[$i]} " ]] && errdeps+=(${aurversionpkgs[$i]})
                 ;;
                 *) continue;;
             esac
