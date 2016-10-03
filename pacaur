@@ -227,10 +227,12 @@ DepsSolver() {
     done
 
     # no results check
-    for i in "${errdeps[@]}"; do
-        Note "f" $"no results found for $i"
-    done
-    [[ -n "${errdeps[@]}" ]] && exit 1
+    if [[ -n "${errdeps[@]}" ]]; then
+        for i in "${errdeps[@]}"; do
+            Note "f" $"no results found for $i"
+        done
+        exit 1
+    fi
 
     # return all binary deps
     FindDepsRepo ${repodeps[@]}
@@ -920,10 +922,12 @@ EditPkgs() {
         fi
     done
 
-    for i in "${erreditpkg[@]}"; do
-        Note "f" $"${colorW}$i${reset} errored on exit"
-    done
-    [[ -n "${erreditpkg[@]}" ]] && exit 1
+    if [[ -n "${erreditpkg[@]}" ]]; then
+        for i in "${erreditpkg[@]}"; do
+            Note "f" $"${colorW}$i${reset} errored on exit"
+        done
+        exit 1
+    fi
 
     if [[ ! $noconfirm && $displaybuildfiles = diff && $viewed = true ]]; then
         [[ $installpkg ]] && action=$"installation" || action=$"download"
@@ -994,15 +998,17 @@ MakePkgs() {
             else
                 makepkg -f --verifysource ${makeopts[@]}
             fi
-            (( $? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
+            (($? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
             # silent extraction and pkgver update only
             makepkg -od --noprepare --skipinteg ${makeopts[@]} &>/dev/null
         fi
     done
-    for i in "${errmakepkg[@]}"; do
-        Note "f" $"failed to verify ${colorW}$i${reset} integrity"
-    done
-    [[ -n "${errmakepkg[@]}" ]] && exit 1
+    if [[ -n "${errmakepkg[@]}" ]]; then
+        for i in "${errmakepkg[@]}"; do
+            Note "f" $"failed to verify ${colorW}$i${reset} integrity"
+        done
+        exit 1
+    fi
 
     # set lock
     [[ -e "$tmpdir/build.lck" ]] && Note "e" $"build.lck exists in $tmpdir" && exit 1
@@ -1088,7 +1094,7 @@ MakePkgs() {
         fi
 
         # error check
-        if (( $? > 0)); then
+        if (($? > 0)); then
             errmakepkg+=(${pkgsdeps[$i]})
             continue  # skip install
         fi
@@ -1144,12 +1150,12 @@ MakePkgs() {
     done
 
     # makepkg failure check
-    for i in "${errmakepkg[@]}"; do
-        Note "f" $"failed to build ${colorW}$i${reset} package(s)"
-    done
-
-    # exit error code
-    [[ -z "${errmakepkg[@]}" ]] && exit
+    if [[ -n "${errmakepkg[@]}" ]]; then
+        for i in "${errmakepkg[@]}"; do
+            Note "f" $"failed to build ${colorW}$i${reset} package(s)"
+        done
+        exit 1
+    fi
 }
 
 SearchInfoAur() {
