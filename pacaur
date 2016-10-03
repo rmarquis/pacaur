@@ -744,7 +744,7 @@ OutofdateChecks() {
     local i
     # global depsAname depsAver depsAood
     for i in "${!depsAname[@]}"; do
-        [[ "${depsAood[$i]}" -gt 0 ]] && Note "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%Y-%m-%d")${reset}"
+        [[ "${depsAood[$i]}" -gt 0 ]] && Note "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%c")${reset}"
     done
 }
 
