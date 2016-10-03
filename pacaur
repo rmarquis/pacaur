@@ -1315,7 +1315,7 @@ CleanCache() {
         if [[ $count -eq 1 ]]; then
             if Proceed "y" $"Do you want to remove all uninstalled clones from AUR clone directory?"; then
                 foreignpkgsbase=($(expac -Q '%n %e' $($pacmanbin -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
-                printf "%s\n" $"removing uninstalled clones from AUR clone cache..."
+                printf "%s\n\n" $"removing uninstalled clones from AUR clone cache..."
                 for clone in *; do
                   [[ -d "$AURDEST/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf $AURDEST/$clone
                 done
