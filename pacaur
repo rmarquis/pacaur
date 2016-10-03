@@ -1166,9 +1166,6 @@ SearchAur() {
 }
 
 InfoAur() {
-    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
-        [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
-    fi
     cower ${coweropts[@]} -- $@
 }
 
