@@ -1161,6 +1161,9 @@ SearchAur() {
 }
 
 InfoAur() {
+    local formatopts formatstrings formattab formattedinfo installedpkgs cowerarray repositoryformat 
+    local cowerinfo i info infotitle outofdate linfo lmulti installedversion lastversion installedtag singleinfo multiinfo maxlength 
+
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
         [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
     fi
