@@ -1158,11 +1158,141 @@ MakePkgs() {
     fi
 }
 
-SearchInfoAur() {
+SearchAur() {
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
         [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
     fi
+
     cower ${coweropts[@]} -- $@
+}
+
+InfoAur() {
+    local formatopts formatstrings formattab formattedinfo installedpkgs cowerarray repositoryformat 
+    local cowerinfo i info infotitle outofdate linfo lmulti installedversion lastversion installedtag singleinfo multiinfo maxlength 
+
+    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
+        [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
+    fi
+    
+    # store cower information into an array, one line per package and values 
+    # separated by vertical slashes
+    formatopts='--listdelim # --format %n|%v|%d|%u|%p|%L|%P|%D|%M|%O|%C|%R|%m|%o|%r|%t|%s|%a\n'
+    readarray cowerarray < <(cower ${formatopts} ${coweropts[@]} -- $@)
+
+    formatstrings=( $"Name" $"Version" $"Description" $"URL" $"AUR Page" $"Licenses" $"Provides" $"Depends on" $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Mantainer" $"Votes" $"Popularity" $"Out of Date" $"Submitted" $"Last Modified" ) 
+    
+    # get a list of the query packages to check if they are installed
+    installedpkgs="$(expac -Q '%n %v' $@)"
+    
+    # get the longest title to adjust the text
+    formattab=1
+    for string in "${formatstrings[@]}"
+    do
+        lstring=$(GetLength "$string")
+        if (( $lstring > $formattab )); then formattab=$lstring; fi
+    done
+    formattab=$(( $formattab + 1 ))
+
+    # store all formatted text in an array
+    formattedinfo=()
+
+    # format each package info individually
+    for rows in "${cowerarray[@]}"
+    do
+        # array of info for the current package
+        readarray cowerinfo < <(echo $rows | tr '|' '\n')
+        
+        # repository info is not included in cower information
+        printf -v repositoryformat "${colorW}%-${formattab}s:${reset} ${colorM}%s${reset}\n" $"Repository" "aur"
+        formattedinfo+=("$repositoryformat")
+
+        # check if the package is out of date
+        if [[ $(echo "${cowerinfo[15]}") == "yes" ]]; then outofdate=true; else outofdate=false; fi
+
+        for (( i=0; i < "${#formatstrings[@]}"; ++i ))
+        do
+            infotitle=${formatstrings[$i]}
+            
+            # remove non-printable characters from info
+            info=${cowerinfo[$i]}
+            info=$(tr -dc '[[:print:]]' <<< "$info")
+            
+            # replace empty info with 'None' to fit pacman print format
+            if [[ ! $info ]]; then info=$"None"; fi
+
+            # alignment of first line info
+            linfotitle=$(GetLength "$infotitle")
+            linfo="\x1b[$(( $formattab - $linfotitle ))C"
+            # alignment of new lines of multiline info 
+            lmulti="\x1b[$(( $formattab + 2 ))C"
+            
+            case $i in
+              0)# format name of the pkg with installed flag, including version check
+                if ($(echo $installedpkgs | grep -Fq $info)); then
+                    lastversion=$(tr -dc '[[:print:]]' <<< ${cowerinfo[1]})
+                    installedversion="$(echo "$installedpkgs" | awk -v var="$info" '$1 == var {print $2}')"
+                    if [[ "$lastversion" == "$installedversion" ]]; then
+                        installedtag="${colorG}"$"installed"
+                    else
+                        installedtag="${colorR}"$"installed"": $installedversion"
+                    fi
+                    info="${colorW}$info ${colorC}[${installedtag}${colorC}]${reset}"
+                else
+                    info="${colorW}$info"
+                fi
+              ;;
+              1)# format version
+                if $outofdate; then
+                    info="${colorR}$info${reset}"
+                else
+                    info="${colorG}$info${reset}"
+                fi
+              ;;
+              3|4)# format URLs
+                info="${colorC}$info${reset}"
+              ;;
+              2|5|6|7|8|10|11)# format description and lists
+                # introduce line breaks if needed and align the text
+                maxlength=$(( $(tput cols) - $formattab ))
+                info=$(echo $info | sed 's/#/  /g' | fold -s -w $(( $maxlength - 2 )) | sed "s/^ //;2,$ s/^/$lmulti/")
+              ;;
+              9)# format optional dependencies
+                # remove last separator (#)
+                info=$(echo $info | rev | sed 's/#//' | rev)
+                # store pkgs into an array
+                readarray multiinfo < <(echo $info | sed "s/\#/\n/g")
+                # introduce line breaks if needed and align the text
+                maxlength=$(( $(tput cols) - $formattab ))
+                # format first optional pkg
+                info="$(echo "${multiinfo[0]}" | tr -dc '[[:print:]]' | fold -s -w $(( $maxlength - 2)) | sed "s/^ //;2,$ s/^/$lmulti/")"
+                # from second optional pkg all pkgs have the same format
+                for singleinfo in "${multiinfo[@]:1}"; do
+                    info+="\n$(echo "$singleinfo" | tr -dc '[[:print:]]' | fold -s -w $(( $maxlength - 2)) | sed "s/^ //;s/^/$lmulti/")"
+                done
+              ;;
+              15)# format out of date
+                info=$(echo "${info^}")
+                if $outofdate; then
+                    info="${colorR}"$"Yes""${reset}"
+                else
+                    info="${colorG}"$"No""${reset}"
+                fi
+              ;;
+              16|17)# format dates
+                info=$(date -d @${cowerinfo[$i]})
+              ;;
+            esac
+            
+            # store formatted text
+            formattedinfo+=("${colorW}${infotitle}${linfo}:${reset} ${info}\n") 
+        done
+    
+        # add a line break between pkgs
+        formattedinfo+=("\n")
+    done
+
+    # print formatted info from all packages
+    local IFS=''; echo -ne "${formattedinfo[*]}"
 }
 
 CheckUpdates() {
@@ -1228,6 +1358,7 @@ CheckUpdates() {
             lArepo=3
         fi
     fi
+
 
     if [[ ! $aur ]]; then
         repopkgsQood=($($pacmanbin -Quq $@))
@@ -1637,6 +1768,7 @@ if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
     colorY="\e[1;33m"
     colorB="\e[1;34m"
     colorM="\e[1;35m"
+    colorC="\e[1;36m"
     colorW="\e[1;39m"
 elif [[ -z "$(grep '^Color' '/etc/pacman.conf')" && ($color = 'always' || $color = 'auto') ]]; then
     pacopts+=("--color $color") && coweropts+=("--color=$color")
@@ -1646,6 +1778,7 @@ elif [[ -z "$(grep '^Color' '/etc/pacman.conf')" && ($color = 'always' || $color
     colorY="\e[1;33m"
     colorB="\e[1;34m"
     colorM="\e[1;35m"
+    colorC="\e[1;36m"
     colorW="\e[1;39m"
 else
     [[ $color != 'always' && $color != 'auto' ]] && makeopts+=("--nocolor")
@@ -1691,7 +1824,7 @@ case $operation in
                 [[ $refresh ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
                 [[ ! $refresh ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
             fi
-            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchInfoAur ${pkgs[@]}
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
         # info (-Si, -i) handling
         elif [[ $info ]]; then
             if [[ -z "${pkgs[@]}" ]]; then
@@ -1712,7 +1845,7 @@ case $operation in
                         Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                     fi
                 fi
-                SearchInfoAur ${aurpkgs[@]}
+                InfoAur ${aurpkgs[@]}
             fi
         # clean (-Sc) handling
         elif [[ $cleancache ]]; then
