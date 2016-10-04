@@ -1174,7 +1174,7 @@ InfoAur() {
 
     infolabel=($"Repository" $"Name" $"Version" $"Description" $"URL" $"AUR Page" $"Licenses" $"Keywords" $"Provides" $"Depends on" \
         $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Maintainer" $"Popularity" $"Votes" $"Out of Date" $"Submitted" $"Last Modified")
-    linfo=$(GetLength "${infolabel[@]}")
+    linfo=$(GetLengthUnicode "${infolabel[@]}")
     maxlength=$(($(tput cols) - $linfo - 4))
 
     for i in "${!aurinfopkgs[@]}"; do
@@ -1554,6 +1554,15 @@ GetLength() {
     local length=0 i
     for i in "$@"; do
         x=${#i}
+        [[ $x -gt $length ]] && length=$x
+    done
+    echo $length
+}
+
+GetLengthUnicode() {
+    local length=0 i
+    for i in "$@"; do
+        x=$(echo -n "$i" | wc -m)
         [[ $x -gt $length ]] && length=$x
     done
     echo $length
