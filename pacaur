@@ -1789,7 +1789,7 @@ case $operation in
                 else
                     $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
                 fi
-                (($? > 0)) && exit 1
+                (($? > 0)) && [[ $repo ]] && exit 1
                 [[ $repo ]] && exit 0
             fi
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
