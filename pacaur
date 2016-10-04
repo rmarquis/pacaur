@@ -1419,6 +1419,7 @@ CleanCache() {
             fi
         fi
     fi
+    exit 0
 }
 
 GetIgnoredPkgs() {
