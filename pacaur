@@ -1187,7 +1187,7 @@ InfoAur() {
                 [[ "${aurinfopkgsQname[$j]}" != "${info[0]}" ]] && continue
                 if [[ $(vercmp "${info[1]}" "${aurinfopkgsQver[$j]}") -eq 0 ]]; then
                     printf "${colorW}%-${linfo}s  :${reset} ${colorW}%s${reset} ${colorC}[${reset}${colorG}%s${reset}${colorC}]${reset}\n" "${infolabel[1]}" "${info[0]}" $"installed"
-                elif [[ $(vercmp "${info[1]}" "${aurinfopkgsQver[$j]}") -gt 0 ]]; then
+                elif [[ $(vercmp "${info[1]}" "${aurinfopkgsQver[$j]}") -lt 0 ]]; then
                     printf "${colorW}%-${linfo}s  :${reset} ${colorW}%s${reset} ${colorC}[${reset}${colorG}%s: %s${reset}${colorC}]${reset}\n" "${infolabel[1]}" "${info[0]}" $"installed" "${aurinfopkgsQver[$j]}"
                 else
                     printf "${colorW}%-${linfo}s  :${reset} ${colorW}%s${reset} ${colorC}[${reset}${colorR}%s: %s${reset}${colorC}]${reset}\n" "${infolabel[1]}" "${info[0]}" $"installed" "${aurinfopkgsQver[$j]}"
@@ -1202,16 +1202,26 @@ InfoAur() {
         else
             printf "${colorW}%-${linfo}s  :${reset} ${colorR}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
         fi
-        # description url page
+        # description
+        if [[ $(GetLength "${info[2]}") -gt $maxlength ]]; then
+            # add line breaks if needed and align text
+            info[2]=$(sed 's/ /  /g' <<< ${info[2]} | fold -s -w $(($maxlength - 2)) | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
+        fi
         printf "${colorW}%-${linfo}s  :${reset} %s\n" "${infolabel[3]}" "${info[2]}"
+        # url page
         printf "${colorW}%-${linfo}s  :${reset} ${colorC}%s${reset}\n" "${infolabel[4]}" "${info[3]}"
         printf "${colorW}%-${linfo}s  :${reset} ${colorC}%s${reset}\n" "${infolabel[5]}" "${info[4]}"
         # keywords licenses dependencies
         for j in {5..12}; do
             if [[ -n $(tr -dc '[[:print:]]' <<< ${info[$j]}) ]]; then
-                # add line breaks if needed and align text
-                if [[ $(GetLength "${info[$j]}") -gt $maxlength ]]; then
-                    info[$j]=$(sed 's/ /  /g' <<< ${info[$j]} | fold -s -w $(($maxlength - 2)) | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
+                # handle special optional deps cases
+                if [[ "$j" = '10' ]]; then
+                    info[$j]=$(sed -r 's/\s+\w+:/\n&/g' <<< ${info[$j]} | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
+                else
+                    # add line breaks if needed and align text
+                    if [[ $(GetLength "${info[$j]}") -gt $maxlength ]]; then
+                        info[$j]=$(sed 's/ /  /g' <<< ${info[$j]} | fold -s -w $(($maxlength - 2)) | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
+                    fi
                 fi
                 printf "${colorW}%-${linfo}s  :${reset} %s\n" "${infolabel[$j+1]}" "${info[$j]}"
             else
