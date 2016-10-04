@@ -1356,6 +1356,7 @@ CheckUpdates() {
     [[ $repo && -z "${repopkgsQood[@]}" ]] && exit 1
     [[ $aur && -z "${aurpkgsQood[@]}" ]] && exit 1
     [[ -z "${repopkgsQood[@]}" && -z "${aurpkgsQood[@]}" ]] && exit 1
+    exit 0
 }
 
 CleanCache() {
@@ -1782,9 +1783,13 @@ case $operation in
         # search (-Ss, -s) handling
         if [[ $search ]]; then
             if [[ ! $aur ]]; then
-                [[ $refresh ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
-                [[ ! $refresh ]] && $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
-                [[ $repo ]] && exit
+                if [[ $refresh ]]; then
+                    sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
+                else
+                    $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
+                fi
+                (($? > 0)) && exit 1
+                [[ $repo ]] && exit 0
             fi
             [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
         # info (-Si, -i) handling
