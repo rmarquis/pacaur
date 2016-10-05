@@ -1220,7 +1220,7 @@ InfoAur() {
             if [[ -n $(tr -dc '[[:print:]]' <<< ${info[$j]}) ]]; then
                 # handle special optional deps cases
                 if [[ "$j" = '10' ]]; then
-                    info[$j]=$(sed -r 's/\s+\w+:/\n&/g' <<< ${info[$j]} | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
+                    info[$j]=$(sed -r 's/\S+:/\n&/2g' <<< ${info[$j]} | fold -s -w $(($maxlength - 2)) | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
                 else
                     # add line breaks if needed and align text
                     if [[ $(GetLength "${info[$j]}") -gt $maxlength ]]; then
