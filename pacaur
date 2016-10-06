@@ -1398,6 +1398,7 @@ CleanCache() {
         fi
     fi
     if [[ $AURDEST ]]; then
+        cd $AURDEST || exit 1
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Clones to keep:" $"All packages clones"
         printf "\n%s %s\n" $"AUR clone directory:" "$AURDEST"
         if [[ $count -eq 1 ]]; then
