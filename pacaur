@@ -1822,7 +1822,11 @@ case $operation in
         # sysupgrade (-Su, -u) handling
         elif [[ $upgrade ]]; then
             [[ -n "${pkgs[@]}" ]] && ClassifyPkgs ${pkgs[@]}
-            [[ ! $aur ]] && sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+            if [[ ! $aur ]]; then
+                sudo $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} ${repopkgs[@]}
+                (($? > 0)) && [[ $repo ]] && exit 1
+                [[ $repo ]] && exit 0
+            fi
             [[ ! $repo ]] && [[ $aur ]] && [[ $refresh ]] && [[ -z "${repopkgs[@]}" ]] && sudo $pacmanbin -Sy ${pacopts[@]} ${ignoreopts[@]}
             if [[ -n "${aurpkgs[@]}" ]] && [[ $fallback = true && ! $aur ]]; then
                 if [[ "${#aurpkgs[@]}" -gt 1 ]]; then
