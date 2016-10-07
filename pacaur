@@ -189,8 +189,8 @@ IgnoreChecks() {
 }
 
 DepsSolver() {
-    local i aurpkgsname aurpkgsver aurpkgsaurver
-    # global aurpkgs aurpkgsnover aurdeps deps json errdeps foreignpkgs repodeps depsAname depsAver depsAood depsQver
+    local i aurpkgsname aurpkgsver aurpkgsaurver aurpkgsconflicts
+    # global aurpkgs aurpkgsnover aurpkgsproviders aurdeps deps json errdeps foreignpkgs repodeps depsAname depsAver depsAood depsQver
     Note "i" $"resolving dependencies..."
 
     # remove AUR pkgs versioning
@@ -200,6 +200,31 @@ DepsSolver() {
 
     # set unversionned json
     SetJson ${aurpkgsnover[@]}
+
+    # set targets providers
+    aurpkgsproviders=(${aurpkgsnover[@]})
+    aurpkgsproviders+=($(GetJson "array" "$json" "Provides"))
+    for i in "${!aurpkgsproviders[@]}"; do
+        aurpkgsproviders[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgsproviders[$i]})
+    done
+
+    # check targets conflicts
+    aurpkgsconflicts=($(GetJson "array" "$json" "Conflicts"))
+    if [[ -n "${aurpkgsconflicts[@]}" ]]; then
+        for i in "${!aurpkgsconflicts[@]}"; do
+            aurpkgsconflicts[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgsconflicts[$i]})
+        done
+
+        aurpkgsconflicts=($(grep -xf <(printf '%s\n' "${aurpkgsproviders[@]}") <(printf '%s\n' "${aurpkgsconflicts[@]}")))
+        aurpkgsconflicts=($(tr ' ' '\n' <<< ${aurpkgsconflicts[@]} | LC_COLLATE=C sort -u))
+
+        for i in "${aurpkgsconflicts[@]}"; do
+            [[ ! " ${aurpkgsnover[@]} " =~ " $i " ]] && continue
+            Note "f" $"unresolvable package conflicts detected"
+            Note "e" $"failed to prepare transaction (conflicting dependencies)"
+        done
+    fi
+
     deps=(${aurpkgsnover[@]})
 
     [[ -z "${foreignpkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq))
@@ -247,14 +272,6 @@ FindDepsAur() {
     if [[ -z "${depspkgsaur[@]}" ]]; then
         SetJson ${aurpkgsnover[@]}
         aurversionpkgs=(${aurpkgs[@]})
-
-        # check target providers
-        aurpkgsproviders=($(GetJson "array" "$json" "Provides"))
-        if [[ -n "${aurpkgsproviders[@]}" ]]; then
-            for i in "${!aurpkgsproviders[@]}"; do
-                aurpkgsproviders[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${aurpkgsproviders[$i]})
-            done
-        fi
     else
         SetJson ${depspkgsaur[@]}
         aurversionpkgs=(${prevdepspkgsaur[@]})
@@ -623,7 +640,7 @@ ConflictChecks() {
     for i in "${!Aconflicts[@]}"; do
         Aconflicts[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${Aconflicts[$i]})
     done
-    aurconflicts+=($(grep -xf <(printf '%s\n' "${Aprovides[@]}") <(printf '%s\n' "${allQconflicts[@]}")))
+    aurconflicts=($(grep -xf <(printf '%s\n' "${Aprovides[@]}") <(printf '%s\n' "${allQconflicts[@]}")))
     aurconflicts+=($(grep -xf <(printf '%s\n' "${Aconflicts[@]}") <(printf '%s\n' "${allQprovides[@]}")))
     aurconflicts=($(tr ' ' '\n' <<< ${aurconflicts[@]} | LC_COLLATE=C sort -u))
 
