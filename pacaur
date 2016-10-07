@@ -43,7 +43,6 @@ else
 fi
 
 # set variables
-tmpdir="${TMPDIR:-/tmp}/pacaurtmp-$USER"    # temp directory
 clonedir="${AURDEST:-$usercachedir}"        # clone directory
 editor="${EDITOR:-vi}"                      # build files editor
 displaybuildfiles=diff                      # display build files (none|diff|full)
