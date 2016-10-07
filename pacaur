@@ -65,7 +65,6 @@ source "$configdir/config"
 [[ -r "$userconfigdir/config" ]] && source "$userconfigdir/config"
 
 # set up directories
-[[ ! -d "$tmpdir" ]] && mkdir -p "$tmpdir" -m 700
 [[ ! -d "$clonedir" ]] && mkdir -p "$clonedir" -m 700
 
 #
@@ -1012,8 +1011,8 @@ MakePkgs() {
     fi
 
     # set lock
-    [[ -e "$tmpdir/build.lck" ]] && Note "e" $"build.lck exists in $tmpdir" && exit 1
-    touch "$tmpdir/build.lck"
+    [[ -e "/run/lock/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in /run/lock" && exit 1
+    sudo touch "/run/lock/pacaur.build.lck"
 
     # install provider packages and repo conflicting packages that makepkg --noconfirm cannot handle
     if [[ -n "${repoprovidersconflictingpkgs[@]}" ]]; then
@@ -1140,8 +1139,8 @@ MakePkgs() {
     fi
 
     # remove locks
-    [[ -e "$tmpdir/sudov.lck" ]] && rm "$tmpdir/sudov.lck"
-    rm "$tmpdir/build.lck"
+    sudo rm "/run/lock/pacaur.build.lck"
+    [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
 
     # new orphan packages check
     orphanpkgs=($($pacmanbin -Qdtq))
@@ -1578,8 +1577,8 @@ NothingToDo() {
 }
 
 SudoV() {
-    touch "$tmpdir/sudov.lck"
-    while [[ -e "$tmpdir/sudov.lck" ]]; do
+    touch "/run/user/$UID/pacaur.sudov.lck"
+    while [[ -e "/run/user/$UID/pacaur.sudov.lck" ]]; do
         sudo $pacmanbin -V > /dev/null
         sleep 2
     done
@@ -1588,8 +1587,8 @@ SudoV() {
 trap Cancel INT
 Cancel() {
     echo
-    [[ -e "$tmpdir/sudov.lck" ]] && rm "$tmpdir/sudov.lck"
-    [[ -e "$tmpdir/build.lck" ]] && rm "$tmpdir/build.lck"
+    [[ -e "/run/user/$UID/sudov.lck" ]] && rm "/run/user/$UID/sudov.lck"
+    [[ -e "/run/lock/pacaur.build.lck" ]] && rm "/run/lock/pacaur.build.lck"
     exit
 }
 
@@ -1756,7 +1755,6 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $editor ]] && [[ ! -f /usr/bin/vi ]] && Note "e" $"${colorW}editor${reset} variable unset"
-[[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ $displaybuildfiles = diff && $clonedir = $tmpdir ]] && Note "e" $"${colorW}clonedir${reset} or ${colorW}\$AURDEST${reset} should be set to a non volatile memory location"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
@@ -1814,7 +1812,7 @@ case $operation in
                     fi
                 fi
                 # display info without buffer delay
-                tmpinfo=$(mktemp "$tmpdir/infoaur.XXXX") && InfoAur ${aurpkgs[@]} > $tmpinfo && cat $tmpinfo && rm $tmpinfo
+                tmpinfo=$(mktemp "/run/user/$UID/pacaur.infoaur.XXXX") && InfoAur ${aurpkgs[@]} > $tmpinfo && cat $tmpinfo && rm $tmpinfo
             fi
         # clean (-Sc) handling
         elif [[ $cleancache ]]; then
