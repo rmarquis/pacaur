@@ -413,6 +413,7 @@ SortDepsAur() {
 
         # check AUR deps only
         for j in "${!sortdepspkgs[@]}"; do
+            sortdepspkgs[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${sortdepspkgs[$j]})
             sortdepspkgsaur+=($(GetJson "varvar" "$json" "Name" "${sortdepspkgs[$j]}"))
         done
 
