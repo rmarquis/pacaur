@@ -177,11 +177,11 @@ IgnoreChecks() {
                 fi
             else
                 Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
-                rmaurpkgs+=(${aurpkgs[$i]})
+                rmaurpkgs+=(${checkaurpkgs[$i]})
                 continue
             fi
         fi
-        aurpkgsnover+=(${aurpkgs[$i]})
+        aurpkgsnover+=(${checkaurpkgs[$i]})
     done
 
     aurpkgs=(${aurpkgsnover[@]})
