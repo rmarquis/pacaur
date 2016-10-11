@@ -1402,15 +1402,26 @@ CleanCache() {
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Packages to keep:" $"All locally installed packages"
         printf "\n%s %s\n" $"AUR cache directory:" "$PKGDEST"
         if [[ $count -eq 1 ]]; then
-            if Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
+            if [[ ! $noconfirm ]]; then
+                if Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
+                    printf "%s\n" $"removing old packages from cache..."
+                    paccache -ruq -k0 -c $PKGDEST
+                    paccache -rq -k1 -c $PKGDEST
+                fi
+            else
+                Note "i" $"Do you want to remove all other packages from AUR cache?"
                 printf "%s\n" $"removing old packages from cache..."
                 paccache -ruq -k0 -c $PKGDEST
                 paccache -rq -k1 -c $PKGDEST
             fi
         else
-            if ! Proceed "n" $"Do you want to remove ALL files from AUR cache?"; then
-                printf "%s\n" $"removing all files from AUR cache..."
-                paccache -rq -k0 -c $PKGDEST
+            if [[ ! $noconfirm ]]; then
+                if ! Proceed "n" $"Do you want to remove ALL files from AUR cache?"; then
+                    printf "%s\n" $"removing all files from AUR cache..."
+                    paccache -rq -k0 -c $PKGDEST
+                fi
+            else
+                Note "i" $"Do you want to remove ALL files from AUR cache?"
             fi
         fi
     fi
@@ -1418,14 +1429,24 @@ CleanCache() {
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Sources to keep:" $"All development packages sources"
         printf "\n%s %s\n" $"AUR source cache directory:" "$SRCDEST"
         if [[ $count -eq 1 ]]; then
-            if Proceed "y" $"Do you want to remove all non development files from AUR source cache?"; then
+            if [[ ! $noconfirm ]]; then
+                if Proceed "y" $"Do you want to remove all non development files from AUR source cache?"; then
+                    printf "%s\n" $"removing non development files from source cache..."
+                    rm -f $SRCDEST/* &>/dev/null
+                fi
+            else
+                Note "i" $"Do you want to remove all non development files from AUR source cache?"
                 printf "%s\n" $"removing non development files from source cache..."
                 rm -f $SRCDEST/* &>/dev/null
             fi
         else
-            if ! Proceed "n" $"Do you want to remove ALL files from AUR source cache?"; then
-                printf "%s\n" $"removing all files from AUR source cache..."
-                rm -rf $SRCDEST/* &>/dev/null
+            if [[ ! $noconfirm ]]; then
+                if ! Proceed "n" $"Do you want to remove ALL files from AUR source cache?"; then
+                    printf "%s\n" $"removing all files from AUR source cache..."
+                    rm -rf $SRCDEST/* &>/dev/null
+                fi
+            else
+                Note "i" $"Do you want to remove ALL files from AUR source cache?"
             fi
         fi
     fi
@@ -1434,25 +1455,46 @@ CleanCache() {
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Clones to keep:" $"All packages clones"
         printf "\n%s %s\n" $"AUR clone directory:" "$AURDEST"
         if [[ $count -eq 1 ]]; then
-            if Proceed "y" $"Do you want to remove all uninstalled clones from AUR clone directory?"; then
+            if [[ ! $noconfirm ]]; then
+                if Proceed "y" $"Do you want to remove all uninstalled clones from AUR clone directory?"; then
+                    foreignpkgsbase=($(expac -Q '%n %e' $($pacmanbin -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
+                    printf "%s\n\n" $"removing uninstalled clones from AUR clone cache..."
+                    for clone in *; do
+                        [[ -d "$AURDEST/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf $AURDEST/$clone
+                    done
+                fi
+            else
+                Note "i" $"Do you want to remove all uninstalled clones from AUR clone directory?"
                 foreignpkgsbase=($(expac -Q '%n %e' $($pacmanbin -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
                 printf "%s\n\n" $"removing uninstalled clones from AUR clone cache..."
                 for clone in *; do
-                  [[ -d "$AURDEST/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf $AURDEST/$clone
+                    [[ -d "$AURDEST/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf $AURDEST/$clone
                 done
             fi
-            if Proceed "y" $"Do you want to remove all untracked files from AUR clone directory?"; then
+            if [[ ! $noconfirm ]]; then
+                if Proceed "y" $"Do you want to remove all untracked files from AUR clone directory?"; then
+                    printf "%s\n" $"removing untracked files from AUR clone cache..."
+                    for clone in *; do
+                        [[ -d "$AURDEST/$clone" ]] && git --git-dir="$clone/.git" --work-tree="$clone" clean -ffdx &>/dev/null
+                    done
+                fi
+            else
+                Note "i" $"Do you want to remove all untracked files from AUR clone directory?"
                 printf "%s\n" $"removing untracked files from AUR clone cache..."
                 for clone in *; do
                     [[ -d "$AURDEST/$clone" ]] && git --git-dir="$clone/.git" --work-tree="$clone" clean -ffdx &>/dev/null
                 done
             fi
         else
-            if ! Proceed "n" $"Do you want to remove ALL clones from AUR clone directory?"; then
-                printf "%s\n" $"removing all clones from AUR clone cache..."
-                for clone in *; do
-                    [[ -d "$AURDEST/$clone" ]] && rm -rf $AURDEST/$clone
-                done
+            if [[ ! $noconfirm ]]; then
+                if ! Proceed "n" $"Do you want to remove ALL clones from AUR clone directory?"; then
+                    printf "%s\n" $"removing all clones from AUR clone cache..."
+                    for clone in *; do
+                        [[ -d "$AURDEST/$clone" ]] && rm -rf $AURDEST/$clone
+                    done
+                fi
+            else
+                Note "i" $"Do you want to remove ALL clones from AUR clone directory?"
             fi
         fi
     fi
