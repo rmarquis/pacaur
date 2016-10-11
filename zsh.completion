@@ -59,12 +59,6 @@ _pacaur_opts_commands=(
     '(-h --help)'{-h,--help}'[Display usage]'
 )
 
-_pacaur_opts_standalone=(
-    {-e,--edit}'[Edit target(s) PKGBUILD and view install script]'
-    {-c,--clean}'[Clean target(s) build files]'
-    {-r,--repo}'[Only search, install or clean packages from the repositories]'
-)
-
 _pacaur_opts_extended=(
     {-a,--aur}'[Only search, install or clean packages from the AUR]'
     {-e,--edit}'[Edit target(s) PKGBUILD and view install script]'
@@ -74,10 +68,6 @@ _pacaur_opts_extended=(
     '--noedit[Do not prompt to edit files]'
     '--rebuild[Always rebuild package(s)]'
     '--silent[Silence output]'
-)
-
-_pacaur_opts_extended_update=(
-    '--devel[Consider AUR development packages upgrade]'
 )
 
 # options for passing to _arguments: options common to all commands
@@ -490,11 +480,12 @@ case $args in
         ;;
     S*u*)
         _arguments -s : \
+            '--devel[Consider AUR development packages upgrade]' \
             "$_pacaur_opts_common[@]" \
             "$_pacaur_opts_extended[@]" \
-            "$_pacaur_opts_extended_update[@]" \
+            "$_pacaur_opts_sync_actions[@]" \
             "$_pacaur_opts_sync_modifiers[@]" \
-            '*:search text: '
+            '*:packages:_pacaur_remote_packages'
         ;;
     S*)
         _pacaur_action_sync
