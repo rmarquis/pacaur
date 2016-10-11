@@ -312,10 +312,11 @@ In particular, the following variables are useful:
 
 =item B<PKGDEST>
 
-Determines where the built packages will be stored. The I<-Sc> and I<-Scc> clean
-operations allow to remove the non locally installed cached files and all cached
-files, respectively. If using the existing I</var/cache/pacman/pkg> pacman cache
-directory, ensure your user has proper write permissions.
+Determines where the built packages will be stored. If using the existing
+I</var/cache/pacman/pkg> pacman cache directory, ensure your user has proper
+write permissions. Additionally, if added to the I<CacheDir> path option of
+I<pacman.conf>, the I<-Sc> and I<-Scc> clean operations will enable removal of
+non locally installed cached files and all cached files, respectively.
 
 =item B<SRCDEST>
 

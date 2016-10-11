@@ -1399,24 +1399,6 @@ CheckUpdates() {
 }
 
 CleanCache() {
-    cachedir=($(grep '^CacheDir' '/etc/pacman.conf' | cut -d '=' -f2 | cut -d '#' -f1))
-    [[ $cachedir ]] && cachedir=${cachedir[@]%/} && PKGDEST=${PKGDEST%/}
-    if [[ $PKGDEST  && ! " ${cachedir[@]} " =~ " $PKGDEST " ]]; then
-        [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Packages to keep:" $"All locally installed packages"
-        printf "\n%s %s\n" $"AUR cache directory:" "$PKGDEST"
-        if [[ $count -eq 1 ]]; then
-            if Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
-                printf "%s\n" $"removing old packages from cache..."
-                paccache -ruq -k0 -c $PKGDEST
-                paccache -rq -k1 -c $PKGDEST
-            fi
-        else
-            if ! Proceed "n" $"Do you want to remove ALL files from AUR cache?"; then
-                printf "%s\n" $"removing all files from AUR cache..."
-                paccache -rq -k0 -c $PKGDEST
-            fi
-        fi
-    fi
     if [[ $SRCDEST ]]; then
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Sources to keep:" $"All development packages sources"
         printf "\n%s %s\n" $"AUR source cache directory:" "$SRCDEST"
