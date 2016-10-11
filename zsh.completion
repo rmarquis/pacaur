@@ -75,7 +75,7 @@ _pacaur_opts_common=(
     {-b,--dbpath}'[Alternate database location]:database_location:_files -/'
     '--color[colorize the output]:color options:(always never auto)'
     {-h,--help}'[Display syntax for the given operation]'
-    {-r,--root}'[Set alternate installation root]:installation root:_files -/'
+    {--root}'[Set alternate installation root]:installation root:_files -/'
     {-v,--verbose}'[Be more verbose]'
     '--cachedir[Alternate package cache location]:cache_location:_files -/'
     '--config[An alternate configuration file]:config file:_files'
