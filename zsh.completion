@@ -59,12 +59,6 @@ _pacaur_opts_commands=(
     '(-h --help)'{-h,--help}'[Display usage]'
 )
 
-_pacaur_opts_standalone=(
-    {-e,--edit}'[Edit target(s) PKGBUILD and view install script]'
-    {-c,--clean}'[Clean target(s) build files]'
-    {-r,--repo}'[Only search, install or clean packages from the repositories]'
-)
-
 _pacaur_opts_extended=(
     {-a,--aur}'[Only search, install or clean packages from the AUR]'
     {-e,--edit}'[Edit target(s) PKGBUILD and view install script]'
@@ -76,16 +70,12 @@ _pacaur_opts_extended=(
     '--silent[Silence output]'
 )
 
-_pacaur_opts_extended_update=(
-    '--devel[Consider AUR development packages upgrade]'
-)
-
 # options for passing to _arguments: options common to all commands
 _pacaur_opts_common=(
     {-b,--dbpath}'[Alternate database location]:database_location:_files -/'
     '--color[colorize the output]:color options:(always never auto)'
     {-h,--help}'[Display syntax for the given operation]'
-    {-r,--root}'[Set alternate installation root]:installation root:_files -/'
+    {--root}'[Set alternate installation root]:installation root:_files -/'
     {-v,--verbose}'[Be more verbose]'
     '--cachedir[Alternate package cache location]:cache_location:_files -/'
     '--config[An alternate configuration file]:config file:_files'
@@ -490,11 +480,12 @@ case $args in
         ;;
     S*u*)
         _arguments -s : \
+            '--devel[Consider AUR development packages upgrade]' \
             "$_pacaur_opts_common[@]" \
             "$_pacaur_opts_extended[@]" \
-            "$_pacaur_opts_extended_update[@]" \
+            "$_pacaur_opts_sync_actions[@]" \
             "$_pacaur_opts_sync_modifiers[@]" \
-            '*:search text: '
+            '*:packages:_pacaur_remote_packages'
         ;;
     S*)
         _pacaur_action_sync
