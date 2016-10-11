@@ -169,12 +169,17 @@ IgnoreChecks() {
     done
     for i in "${!checkaurpkgs[@]}"; do
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
-            if [[ ! $upgrade && ! $noconfirm ]]; then
-                if ! Proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+            if [[ ! $upgrade ]]; then
+                if [[ ! $noconfirm ]]; then
+                    if ! Proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                        Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                        rmaurpkgs+=(${checkaurpkgs[$i]})
+                    fi
+                else
                     Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
                     rmaurpkgs+=(${checkaurpkgs[$i]})
-                    continue
                 fi
+                continue
             else
                 Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => ${colorG}${checkaurpkgsAver[$i]}${reset})"
                 rmaurpkgs+=(${checkaurpkgs[$i]})
