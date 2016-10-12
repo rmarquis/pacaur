@@ -277,7 +277,7 @@ _pacaur_action_sync() {
                 "$_pacaur_opts_extended[@]" \
                 "$_pacaur_opts_sync_actions[@]" \
                 "$_pacaur_opts_sync_modifiers[@]" \
-                '*:packages:_pacaur_remote_packages'
+                '*:packages:'$completion_repo
             ;;
     esac
 }
@@ -414,6 +414,16 @@ args=( ${${${(M)words:#-*}#-}:#-*} )
 for tmp in $words; do
     cmds+=("${${_pacaur_opts_commands[(r)*$tmp\[*]%%\[*}#*\)}")
 done
+
+# handle repository filter
+if (( $+words[(r)--aur] || $+words[(r)-S*a*] )); then
+    completion_repo='_pacaur_completions_aur_packages'
+elif (( $+words[(r)--repo] || $+words[(r)-S*r*] )); then
+    completion_repo='_pacaur_completions_all_packages'
+else
+    completion_repo='_pacaur_remote_packages'
+fi
+
 case $args in
     h*)
         if (( ${(c)#args} <= 1 && ${(w)#cmds} <= 1 )); then
@@ -485,7 +495,7 @@ case $args in
             "$_pacaur_opts_extended[@]" \
             "$_pacaur_opts_sync_actions[@]" \
             "$_pacaur_opts_sync_modifiers[@]" \
-            '*:packages:_pacaur_remote_packages'
+            '*:packages:'$completion_repo
         ;;
     S*)
         _pacaur_action_sync
