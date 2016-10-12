@@ -1,8 +1,8 @@
 #compdef pacaur
 
-# 
+#
 # /usr/share/zsh/site-functions/_pacaur
-# 
+#
 
 typeset -A opt_args
 setopt extendedglob
@@ -45,7 +45,7 @@ _pacaur_opts_commands=(
     {-S,--sync}'[Synchronize packages]'
     {-T,--deptest}'[Check if dependencies are installed]'
     {-U,--upgrade}'[Upgrade a package]'
-    
+
     {-s,--search}'[Search AUR package names and descriptions]'
     {-i,--info}'[Show info for target(s)]'
     {-d,--download}'[Download target(s)]'
@@ -75,7 +75,7 @@ _pacaur_opts_common=(
     {-b,--dbpath}'[Alternate database location]:database_location:_files -/'
     '--color[colorize the output]:color options:(always never auto)'
     {-h,--help}'[Display syntax for the given operation]'
-    {--root}'[Set alternate installation root]:installation root:_files -/'
+    '--root[Set alternate installation root]:installation root:_files -/'
     {-v,--verbose}'[Be more verbose]'
     '--cachedir[Alternate package cache location]:cache_location:_files -/'
     '--config[An alternate configuration file]:config file:_files'
