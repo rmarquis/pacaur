@@ -1684,7 +1684,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     update) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
                     force) pacopts+=("--force");;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
-                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); color=never;;
+                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
@@ -1735,7 +1735,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=sync && cleancache=true && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue;;
-            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); color=never;;
+            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
