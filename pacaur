@@ -1797,12 +1797,12 @@ pacmanarg=(${pacmanarg[@]/-a/})
 case $operation in
     download)
         # download (-d) handling
+        ClassifyPkgs ${pkgs[@]}
         if [[ $count -gt 1 ]]; then
-            ClassifyPkgs ${pkgs[@]}
             DepsSolver
             DownloadPkgs ${deps[@]}
         else
-            DownloadPkgs ${pkgs[@]}
+            [[ -n "${aurpkgs[@]}" ]] && DownloadPkgs ${aurpkgs[@]}
         fi
         EditPkgs ${pkgsbase[@]}
         exit;;
