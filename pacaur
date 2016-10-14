@@ -884,6 +884,9 @@ DownloadPkgs() {
             git pull --ff -q
         fi
     done
+
+    # no results check
+    [[ -z "${basepkgs[@]}" ]] && Note "e" $"no results found"
 }
 
 EditPkgs() {
@@ -1802,7 +1805,7 @@ case $operation in
             DepsSolver
             DownloadPkgs ${deps[@]}
         else
-            [[ -n "${aurpkgs[@]}" ]] && DownloadPkgs ${aurpkgs[@]}
+            [[ -n "${aurpkgs[@]}" ]] && DownloadPkgs ${aurpkgs[@]} || exit 1
         fi
         EditPkgs ${pkgsbase[@]}
         exit;;
