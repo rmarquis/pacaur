@@ -1294,15 +1294,17 @@ CheckUpdates() {
 
     GetIgnoredPkgs
 
-    if [[ ! $repo && ($fallback = true || $aur) ]]; then
-        [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
-        SetJson ${foreignpkgs[@]}
-        aurpkgsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
-        aurpkgsAver=($(GetJson "var" "$json" "Version"))
-        aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
-        for i in "${!aurpkgsAname[@]}"; do
-            [[ $(vercmp "${aurpkgsAver[$i]}" "${aurpkgsQver[$i]}") -gt 0 ]] && aurpkgsQood+=(${aurpkgsAname[$i]});
-        done
+    if [[ ! "${opts[@]}" =~ "n" && ! " ${pacopts[@]} " =~ --native && $fallback = true ]]; then
+        [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq ${pacopts[@]})) || foreignpkgs=(${pkgs[@]})
+        if [[ -n "${foreignpkgs[@]}" ]]; then
+            SetJson ${foreignpkgs[@]}
+            aurpkgsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+            aurpkgsAver=($(GetJson "var" "$json" "Version"))
+            aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
+            for i in "${!aurpkgsAname[@]}"; do
+                [[ $(vercmp "${aurpkgsAver[$i]}" "${aurpkgsQver[$i]}") -gt 0 ]] && aurpkgsQood+=(${aurpkgsAname[$i]});
+            done
+        fi
 
         # add devel packages
         if [[ $devel ]]; then
@@ -1351,33 +1353,32 @@ CheckUpdates() {
         fi
     fi
 
-    if [[ ! $aur ]]; then
-        repopkgsQood=($($pacmanbin -Quq $@))
+    repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} $@))
 
-        if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
-            repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
-            repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
-            repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
-            repopkgsQgrp=($(expac -Qv -l "#" '(%G)' "${repopkgsQood[@]}"))
-            for i in "${!repopkgsQood[@]}"; do
-                [[ "${repopkgsQgrp[$i]}" = '(None)' ]] && unset repopkgsQgrp[$i] || repopkgsQgrp[$i]=$(tr '#' ' ' <<< ${repopkgsQgrp[$i]})
-                [[ " ${ignoredpkgs[@]} " =~ " ${repopkgsQood[$i]} " ]] && repopkgsQignore[$i]=$"[ ignored ]"
-            done
-            lname=$(GetLength "${repopkgsQood[@]}")
-            lQver=$(GetLength "${repopkgsQver[@]}")
-            lSver=$(GetLength "${repopkgsSver[@]}")
-            lrepo=$(GetLength "${repopkgsSrepo[@]}")
-            lgrp=$(GetLength "${repopkgsQgrp[@]}")
-        fi
+    if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
+        repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
+        repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
+        repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
+        repopkgsQgrp=($(expac -Qv -l "#" '(%G)' "${repopkgsQood[@]}"))
+        for i in "${!repopkgsQood[@]}"; do
+            [[ "${repopkgsQgrp[$i]}" = '(None)' ]] && unset repopkgsQgrp[$i] || repopkgsQgrp[$i]=$(tr '#' ' ' <<< ${repopkgsQgrp[$i]})
+            [[ " ${ignoredpkgs[@]} " =~ " ${repopkgsQood[$i]} " ]] && repopkgsQignore[$i]=$"[ ignored ]"
+        done
+        lname=$(GetLength "${repopkgsQood[@]}")
+        lQver=$(GetLength "${repopkgsQver[@]}")
+        lSver=$(GetLength "${repopkgsSver[@]}")
+        lrepo=$(GetLength "${repopkgsSrepo[@]}")
+        lgrp=$(GetLength "${repopkgsQgrp[@]}")
     fi
 
-    if [[ ! $repo && -n "${aurpkgsQood[@]}" && ! $quiet ]]; then
+    if [[ -n "${aurpkgsQood[@]}" && ! $quiet ]]; then
         [[ $lAname -gt $lname ]] && lname=$lAname
         [[ $lAQver -gt $lQver ]] && lQver=$lAQver
         [[ $lASver -gt $lSver ]] && lSver=$lASver
     fi
 
-    if [[ ! $aur && -n "${repopkgsQood[@]}" ]]; then
+    if [[ -n "${repopkgsQood[@]}" ]]; then
+        exitrepo=$?
         if [[ ! $quiet ]]; then
             for i in "${!repopkgsQood[@]}"; do
                 printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lQver}s${reset}  ->  ${colorG}%-${lSver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "${repopkgsSrepo[$i]}" "${repopkgsQood[$i]}" "${repopkgsQver[$i]}" "${repopkgsSver[$i]}" "${repopkgsQgrp[$i]}" "${repopkgsQignore[$i]}"
@@ -1386,7 +1387,8 @@ CheckUpdates() {
             tr ' ' '\n' <<< ${repopkgsQood[@]}
         fi
     fi
-    if [[ ! $repo && ($fallback = true || $aur) && -n "${aurpkgsQood[@]}" ]]; then
+    if [[ -n "${aurpkgsQood[@]}" && $fallback = true ]]; then
+        exitaur=$?
         if [[ ! $quiet ]]; then
             for i in "${!aurpkgsAname[@]}"; do
                 printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lQver}s${reset}  ->  ${colorG}%-${lSver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" " " "${aurpkgsQignore[$i]}"
@@ -1395,10 +1397,16 @@ CheckUpdates() {
             tr ' ' '\n' <<< ${aurpkgsQood[@]}
         fi
     fi
-    [[ $repo && -z "${repopkgsQood[@]}" ]] && exit 1
-    [[ $aur && -z "${aurpkgsQood[@]}" ]] && exit 1
-    [[ -z "${repopkgsQood[@]}" && -z "${aurpkgsQood[@]}" ]] && exit 1
-    exit 0
+    # exit code
+    if [[ -n "$exitrepo" && -n "$exitaur" ]]; then
+        [[ $exitrepo -eq 0 || $exitaur -eq 0 ]] && exit 0 || exit 1
+    elif [[ -n "$exitrepo" ]]; then
+        [[ $exitrepo -eq 0 ]] && exit 0 || exit 1
+    elif [[ -n "$exitaur" ]]; then
+        [[ $exitaur -eq 0 ]] && exit 0 || exit 1
+    else
+        exit 1
+    fi
 }
 
 CleanCache() {
@@ -1691,7 +1699,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
-                    foreign) foreign=true;;
+                    foreign) [[ $pacQ ]] && pacopts+=("--foreign"); foreign=true;;
                     ignore=?*) ignoredpkgs+=(${OPTARG#*=}); ignoreopts+=("--ignore ${OPTARG#*=}");;
                     ignore) ignoredpkgs+=(${!OPTIND}); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     color=?*) color=${OPTARG#*=}; pacopts+=("--color ${OPTARG#*=}") && coweropts+=("--color=${OPTARG#*=}");;
@@ -1731,7 +1739,7 @@ while [[ -n "${!OPTIND}" ]]; do
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
             k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); aur='1';;
-            u)  [[ $pacQ ]] && operation=upgrades && coweropts+=("-uq");
+            u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
