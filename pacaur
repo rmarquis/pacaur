@@ -1823,10 +1823,22 @@ case $operation in
                 else
                     $pacmanbin ${pacmanarg[@]} ${pacopts[@]} ${ignoreopts[@]} -- ${pkgs[@]}
                 fi
-                (($? > 0)) && [[ $repo ]] && exit 1
-                [[ $repo ]] && exit 0
+                exitrepo=$?
             fi
-            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && SearchAur ${pkgs[@]}
+            if [[ ! $repo && ($fallback = true || $aur) ]]; then
+                SearchAur ${pkgs[@]}
+                exitaur=$?
+            fi
+            # exit code
+            if [[ -n "$exitrepo" && -n "$exitaur" ]]; then
+                [[ $exitrepo -eq 0 || $exitaur -eq 0 ]] && exit 0 || exit 1
+            elif [[ -n "$exitrepo" ]]; then
+                [[ $exitrepo -eq 0 ]] && exit 0 || exit 1
+            elif [[ -n "$exitaur" ]]; then
+                [[ $exitaur -eq 0 ]] && exit 0 || exit 1
+            else
+                exit 1
+            fi
         # info (-Si, -i) handling
         elif [[ $info ]]; then
             if [[ -z "${pkgs[@]}" ]]; then
