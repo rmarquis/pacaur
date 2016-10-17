@@ -19,19 +19,18 @@ _pacaur() {
             _pacman_file; return 0;
         else
             _pacman &> /dev/null
-            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -d --download -m --makepkg -y --sync -k --check -u --update -v --version -h --help"
+            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -d --download -m --makepkg -y --sync -u --update -k --check -v --version -h --help"
             return 0
         fi
     fi
-    for o in 'D database' 'Q query' 'R remove' 'S sync' 'U upgrade' 'i info' 'd download' 'm makepkg' 'y sync' 'k check' 'u update'; do
+    for o in 'D database' 'Q query' 'R remove' 'S sync' 'U upgrade' 'i info' 'd download' 'm makepkg' 'y sync' 'u update' 'k check'; do
         _arch_incomp "$o" && break
     done
     (($?)) && op="" || op="${o% *}"
     _pacman &> /dev/null
     if [[ "$cur" == -* ]]; then
         case "$op" in
-            S) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo -e --edit --devel --domain --foreign --noconfirm --noedit --rebuild --silent";;
-            Q) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo";;
+            S) _arch_compgen "${COMPREPLY[@]}" "-a --aur -r --repo -e --edit --devel --domain --foreign --noedit --rebuild --silent";;
         esac
     else
         case "$op" in
