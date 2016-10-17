@@ -1338,6 +1338,7 @@ CheckUpdates() {
         if [[ -n "${aurpkgsQood[@]}" && ! $quiet ]]; then
             SetJson ${aurpkgsQood[@]}
             aurpkgsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+            aurpkgsAname=($(expac -Q '%n' "${aurpkgsAname[@]}"))
             aurpkgsAver=($(GetJson "var" "$json" "Version"))
             aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
             for i in "${!aurpkgsAname[@]}"; do
@@ -1353,7 +1354,8 @@ CheckUpdates() {
         fi
     fi
 
-    repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} $@))
+    [[ -n "${pkgs[@]}" ]] && pkgs=($(expac -Q '%n' "${pkgs[@]}"))
+    repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} ${pkgs[@]}))
 
     if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
         repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
