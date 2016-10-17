@@ -1686,14 +1686,20 @@ while [[ -n "${!OPTIND}" ]]; do
         case "$OPT" in
             -)
                 case "$OPTARG" in
-                    search) operation=sync; search=true; coweropts+=("-s"); aur='1';;
-                    info) operation=sync; info=true; coweropts+=("-i"); aur='1';;
+                    search) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--search");
+                        [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; coweropts+=("-s"); aur='1';;
+                    info) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--info");
+                        [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
                     download) operation=download && ((count++));;
                     makepkg) operation=sync; coweropts+=("-f"); aur='1';;
-                    sync) operation=sync; installpkg=true; aur='1';;
-                    check) operation=upgrades; coweropts+=("-uq"); aur='1';;
+                    sync) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--sync");
+                        [[ $pacS ]] && operation=sync; installpkg=true; aur='1';
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
+                    check) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--check");
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; aur='1';;
                     update) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
-                    force) pacopts+=("--force");;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
                     repo) repo='1';;
