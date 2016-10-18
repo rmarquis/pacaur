@@ -1,11 +1,25 @@
-**Read first**
-[Bug reports](https://github.com/rmarquis/pacaur/wiki/Bug-reports)
+###### Important
 
-**Version** (pacaur -v)
+Read me first: [Bug reports](https://github.com/rmarquis/pacaur/wiki/Bug-reports)
 
-**Description of issue**
 
-**Output** (pacaur <your command>)
+###### Version
 
-**Debug output** (bash -x pacaur <your command>)
+`pacaur -v`
+
+
+###### Description
+
+Enter description of issue here
+
+
+###### Output
+
+`pacaur <your command>`
+
+
+###### Debug output
+
+`bash -x pacaur <your command>`
+
 
