@@ -1354,23 +1354,25 @@ CheckUpdates() {
         fi
     fi
 
-    [[ -n "${pkgs[@]}" ]] && pkgs=($(expac -Q '%n' "${pkgs[@]}"))
-    repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} ${pkgs[@]}))
+    if [[ ! "${opts[@]}" =~ "m" && ! " ${pacopts[@]} " =~ --foreign ]]; then
+        [[ -n "${pkgs[@]}" ]] && pkgs=($(expac -Q '%n' "${pkgs[@]}"))
+        repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} ${pkgs[@]}))
 
-    if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
-        repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
-        repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
-        repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
-        repopkgsQgrp=($(expac -Qv -l "#" '(%G)' "${repopkgsQood[@]}"))
-        for i in "${!repopkgsQood[@]}"; do
-            [[ "${repopkgsQgrp[$i]}" = '(None)' ]] && unset repopkgsQgrp[$i] || repopkgsQgrp[$i]=$(tr '#' ' ' <<< ${repopkgsQgrp[$i]})
-            [[ " ${ignoredpkgs[@]} " =~ " ${repopkgsQood[$i]} " ]] && repopkgsQignore[$i]=$"[ ignored ]"
-        done
-        lname=$(GetLength "${repopkgsQood[@]}")
-        lQver=$(GetLength "${repopkgsQver[@]}")
-        lSver=$(GetLength "${repopkgsSver[@]}")
-        lrepo=$(GetLength "${repopkgsSrepo[@]}")
-        lgrp=$(GetLength "${repopkgsQgrp[@]}")
+        if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
+            repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
+            repopkgsSver=($(expac -S -1 '%v' "${repopkgsQood[@]}"))
+            repopkgsSrepo=($(expac -S -1 '%r' "${repopkgsQood[@]}"))
+            repopkgsQgrp=($(expac -Qv -l "#" '(%G)' "${repopkgsQood[@]}"))
+            for i in "${!repopkgsQood[@]}"; do
+                [[ "${repopkgsQgrp[$i]}" = '(None)' ]] && unset repopkgsQgrp[$i] || repopkgsQgrp[$i]=$(tr '#' ' ' <<< ${repopkgsQgrp[$i]})
+                [[ " ${ignoredpkgs[@]} " =~ " ${repopkgsQood[$i]} " ]] && repopkgsQignore[$i]=$"[ ignored ]"
+            done
+            lname=$(GetLength "${repopkgsQood[@]}")
+            lQver=$(GetLength "${repopkgsQver[@]}")
+            lSver=$(GetLength "${repopkgsSver[@]}")
+            lrepo=$(GetLength "${repopkgsSrepo[@]}")
+            lgrp=$(GetLength "${repopkgsQgrp[@]}")
+        fi
     fi
 
     if [[ -n "${aurpkgsQood[@]}" && ! $quiet ]]; then
