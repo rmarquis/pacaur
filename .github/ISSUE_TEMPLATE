@@ -7,6 +7,9 @@ Read me first: [Bug reports](https://github.com/rmarquis/pacaur/wiki/Bug-reports
 
 `pacaur -v`
 
+```
+Paste result of above command here
+```
 
 ###### Description
 
@@ -17,9 +20,15 @@ Enter description of issue here
 
 `pacaur <your command>`
 
+```
+Paste result of above command here
+```
 
 ###### Debug output
 
 `bash -x pacaur <your command>`
 
+```
+Paste result of above command here
+```
 
