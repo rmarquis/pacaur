@@ -1,0 +1,635 @@
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Language: nb\n"
+"X-Source-Language: C\n"
+
+#: pacaur:113
+msgid "${colorW}Starting AUR upgrade...${reset}"
+msgstr "${colorW}Starter AUR oppgradering...${reset}"
+
+#: pacaur:132
+msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+msgstr ""
+
+#: pacaur:168 pacaur:255 pacaur:1348
+msgid "latest"
+msgstr ""
+
+#: pacaur:174
+msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+
+#: pacaur:175 pacaur:179
+msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+msgstr ""
+
+#: pacaur:184
+msgid ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+msgstr ""
+
+#: pacaur:199
+msgid "resolving dependencies..."
+msgstr ""
+
+#: pacaur:229 pacaur:682 pacaur:745
+msgid "unresolvable package conflicts detected"
+msgstr ""
+
+#: pacaur:230 pacaur:683 pacaur:746
+msgid "failed to prepare transaction (conflicting dependencies)"
+msgstr ""
+
+#: pacaur:261
+msgid "no results found for $i"
+msgstr ""
+
+#: pacaur:417
+msgid "dependency cycle detected"
+msgstr ""
+
+#: pacaur:520 pacaur:535
+msgid "${colorW}$i${reset}: ignoring package upgrade"
+msgstr ""
+
+#: pacaur:521 pacaur:527 pacaur:532 pacaur:536
+msgid "Unresolved dependency '${colorW}$i${reset}'"
+msgstr ""
+
+#: pacaur:531
+msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+
+#: pacaur:571
+msgid ""
+"${colorW}There are ${#providers[@]} providers available for "
+"${providersdeps[$i]}:${reset}"
+msgstr ""
+
+#: pacaur:578
+msgid "Enter a number (default=0):"
+msgstr ""
+
+#: pacaur:585
+msgid "invalid value: $nb is not between 0 and $providersnb"
+msgstr ""
+
+#: pacaur:590
+msgid "invalid number: $nb"
+msgstr ""
+
+#: pacaur:632
+msgid "looking for inter-conflicts..."
+msgstr ""
+
+#: pacaur:668 pacaur:737
+msgid "$j and $k are in conflict ($i). Remove $k?"
+msgstr ""
+
+#: pacaur:684 pacaur:747
+msgid "$j and $k are in conflict"
+msgstr ""
+
+#: pacaur:765
+msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
+msgstr ""
+
+#: pacaur:768
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
+"reinstalling"
+msgstr ""
+
+#: pacaur:770
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+msgstr ""
+
+#: pacaur:785
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
+"\")${reset}"
+msgstr ""
+
+#: pacaur:813
+msgid "(cached)"
+msgstr ""
+
+#: pacaur:818 pacaur:851
+msgid "AUR Packages  (${#deps[@]})"
+msgstr ""
+
+#: pacaur:818 pacaur:852
+msgid "Repo Packages (${#repodepspkgs[@]})"
+msgstr ""
+
+#: pacaur:818
+msgid "Old Version"
+msgstr ""
+
+#: pacaur:818
+msgid "New Version"
+msgstr ""
+
+#: pacaur:818
+msgid "Download Size"
+msgstr ""
+
+#: pacaur:840
+msgid "${binarysize[$i]} MiB"
+msgstr ""
+
+#: pacaur:856
+msgid "Repo Download Size:"
+msgstr ""
+
+#: pacaur:856
+msgid "Repo Installed Size:"
+msgstr ""
+
+#: pacaur:856
+msgid "$sumk MiB"
+msgstr ""
+
+#: pacaur:856
+msgid "$summ MiB"
+msgstr ""
+
+#: pacaur:864 pacaur:972
+msgid "installation"
+msgstr ""
+
+#: pacaur:864 pacaur:972
+msgid "download"
+msgstr ""
+
+#: pacaur:865 pacaur:973
+msgid "Proceed with $action?"
+msgstr ""
+
+#: pacaur:873
+msgid "${colorW}Retrieving package(s)...${reset}"
+msgstr ""
+
+#: pacaur:890
+msgid "no results found"
+msgstr ""
+
+#: pacaur:909
+msgid "View $i build files diff?"
+msgstr ""
+
+#: pacaur:911
+msgid "${colorW}$i${reset} build files diff viewed"
+msgstr ""
+
+#: pacaur:916
+msgid "${colorW}$i${reset} build files are up-to-date -- skipping"
+msgstr ""
+
+#: pacaur:920
+msgid "View $i PKGBUILD?"
+msgstr ""
+
+#: pacaur:922 pacaur:946
+msgid "${colorW}$i${reset} PKGBUILD viewed"
+msgstr ""
+
+#: pacaur:925 pacaur:949
+msgid "Could not open ${colorW}$i${reset} PKGBUILD"
+msgstr ""
+
+#: pacaur:931
+msgid "View $j script?"
+msgstr ""
+
+#: pacaur:933 pacaur:954
+msgid "${colorW}$j${reset} script viewed"
+msgstr ""
+
+#: pacaur:936 pacaur:957
+msgid "Could not open ${colorW}$j${reset} script"
+msgstr ""
+
+#: pacaur:966
+msgid "${colorW}$i${reset} errored on exit"
+msgstr ""
+
+#: pacaur:1034
+msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
+msgstr ""
+
+#: pacaur:1047
+msgid "failed to verify ${colorW}$i${reset} integrity"
+msgstr ""
+
+#: pacaur:1053
+msgid "pacaur.build.lck exists in /run/lock"
+msgstr ""
+
+#: pacaur:1058
+msgid ""
+"Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
+"dependencies..."
+msgstr ""
+
+#: pacaur:1082
+msgid "${colorW}$j${reset} is up-to-date -- skipping"
+msgstr ""
+
+#: pacaur:1103
+msgid "Installing ${colorW}$j${reset} cached package..."
+msgstr ""
+
+#: pacaur:1107
+msgid "Package ${colorW}$j${reset} already available in cache"
+msgstr ""
+
+#: pacaur:1116
+msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr ""
+
+#: pacaur:1152
+msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr ""
+
+#: pacaur:1154
+msgid ""
+"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
+"SRCINFO for mismatching data with PKGBUILD."
+msgstr ""
+
+#: pacaur:1172
+msgid "Removing installed AUR dependencies..."
+msgstr ""
+
+#: pacaur:1188
+msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+msgstr ""
+
+#: pacaur:1194
+msgid "failed to build ${colorW}$i${reset} package(s)"
+msgstr ""
+
+#: pacaur:1214
+msgid "Repository"
+msgstr ""
+
+#: pacaur:1214
+msgid "Name"
+msgstr ""
+
+#: pacaur:1214
+msgid "Version"
+msgstr ""
+
+#: pacaur:1214
+msgid "Description"
+msgstr ""
+
+#: pacaur:1214
+msgid "URL"
+msgstr ""
+
+#: pacaur:1214
+msgid "AUR Page"
+msgstr ""
+
+#: pacaur:1214
+msgid "Licenses"
+msgstr ""
+
+#: pacaur:1214
+msgid "Keywords"
+msgstr ""
+
+#: pacaur:1214
+msgid "Provides"
+msgstr ""
+
+#: pacaur:1214
+msgid "Depends on"
+msgstr ""
+
+#: pacaur:1215
+msgid "Make Deps"
+msgstr ""
+
+#: pacaur:1215
+msgid "Optional Deps"
+msgstr ""
+
+#: pacaur:1215
+msgid "Conflicts With"
+msgstr ""
+
+#: pacaur:1215
+msgid "Replaces"
+msgstr ""
+
+#: pacaur:1215
+msgid "Maintainer"
+msgstr ""
+
+#: pacaur:1215
+msgid "Popularity"
+msgstr ""
+
+#: pacaur:1215
+msgid "Votes"
+msgstr ""
+
+#: pacaur:1215
+msgid "Out of Date"
+msgstr ""
+
+#: pacaur:1215
+msgid "Submitted"
+msgstr ""
+
+#: pacaur:1215
+msgid "Last Modified"
+msgstr ""
+
+#: pacaur:1232 pacaur:1234 pacaur:1236
+msgid "installed"
+msgstr ""
+
+#: pacaur:1271
+msgid "None"
+msgstr ""
+
+#: pacaur:1280
+msgid "No"
+msgstr ""
+
+#: pacaur:1282
+msgid "Yes"
+msgstr ""
+
+#: pacaur:1285
+msgid "$(date -d \"@${info[17]}\" \"+%c\")"
+msgstr ""
+
+#: pacaur:1286
+msgid "$(date -d \"@${info[18]}\" \"+%c\")"
+msgstr ""
+
+#: pacaur:1346 pacaur:1369
+msgid "[ ignored ]"
+msgstr ""
+
+#: pacaur:1419
+msgid "Sources to keep:"
+msgstr ""
+
+#: pacaur:1419
+msgid "All development packages sources"
+msgstr ""
+
+#: pacaur:1420
+msgid "AUR source cache directory:"
+msgstr ""
+
+#: pacaur:1422
+msgid "Do you want to remove all non development files from AUR source cache?"
+msgstr ""
+
+#: pacaur:1423
+msgid "removing non development files from source cache..."
+msgstr ""
+
+#: pacaur:1427
+msgid "Do you want to remove ALL files from AUR source cache?"
+msgstr ""
+
+#: pacaur:1428
+msgid "removing all files from AUR source cache..."
+msgstr ""
+
+#: pacaur:1435
+msgid "Clones to keep:"
+msgstr ""
+
+#: pacaur:1435
+msgid "All packages clones"
+msgstr ""
+
+#: pacaur:1436
+msgid "AUR clone directory:"
+msgstr ""
+
+#: pacaur:1438
+msgid "Do you want to remove all uninstalled clones from AUR clone directory?"
+msgstr ""
+
+#: pacaur:1440
+msgid "removing uninstalled clones from AUR clone cache..."
+msgstr ""
+
+#: pacaur:1445
+msgid "Do you want to remove all untracked files from AUR clone directory?"
+msgstr ""
+
+#: pacaur:1446
+msgid "removing untracked files from AUR clone cache..."
+msgstr ""
+
+#: pacaur:1452
+msgid "Do you want to remove ALL clones from AUR clone directory?"
+msgstr ""
+
+#: pacaur:1453
+msgid "removing all clones from AUR clone cache..."
+msgstr ""
+
+#: pacaur:1553
+msgid "Failed to parse JSON"
+msgstr ""
+
+#: pacaur:1561
+msgid "failed to prepare transaction (could not satisfy dependencies)"
+msgstr ""
+
+#: pacaur:1562
+msgid "${Qrequires[@]}: requires $@"
+msgstr ""
+
+#: pacaur:1571
+msgid "$2 [Y/n] "
+msgstr "$2 [J/n] "
+
+#: pacaur:1582
+msgid "$2 [y/N] "
+msgstr "$2 [j/N] "
+
+#: pacaur:1617
+msgid " there is nothing to do"
+msgstr ""
+
+#: pacaur:1637
+msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
+msgstr ""
+
+#: pacaur:1638
+msgid "operations:"
+msgstr ""
+
+#: pacaur:1639
+msgid " pacman extension"
+msgstr ""
+
+#: pacaur:1640
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
+msgstr ""
+
+#: pacaur:1641
+msgid "                    extend pacman operations to the AUR"
+msgstr ""
+
+#: pacaur:1642
+msgid " AUR specific"
+msgstr ""
+
+#: pacaur:1643
+msgid "   -s, --search     search AUR for matching strings"
+msgstr ""
+
+#: pacaur:1644
+msgid "   -i, --info       view package information"
+msgstr ""
+
+#: pacaur:1645
+msgid ""
+"   -d, --download   download target(s) -- pass twice to download AUR "
+"dependencies"
+msgstr ""
+
+#: pacaur:1646
+msgid "   -m, --makepkg    download and make target(s)"
+msgstr ""
+
+#: pacaur:1647
+msgid "   -y, --sync       download, make and install target(s)"
+msgstr ""
+
+#: pacaur:1648
+msgid "   -u, --update     update AUR package(s)"
+msgstr ""
+
+#: pacaur:1649
+msgid "   -k, --check      check for AUR update(s)"
+msgstr ""
+
+#: pacaur:1650 pacaur:1658
+msgid " general"
+msgstr ""
+
+#: pacaur:1651
+msgid "   -v, --version    display version information"
+msgstr ""
+
+#: pacaur:1652
+msgid "   -h, --help       display help information"
+msgstr ""
+
+#: pacaur:1654
+msgid "options:"
+msgstr ""
+
+#: pacaur:1655
+msgid ""
+" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc "
+"operations"
+msgstr ""
+
+#: pacaur:1656
+msgid ""
+"   -a, --aur        only search, build or install target(s) from the AUR"
+msgstr ""
+
+#: pacaur:1657
+msgid ""
+"   -r, --repo       only search, build or install target(s) from the "
+"repositories"
+msgstr ""
+
+#: pacaur:1659
+msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
+msgstr ""
+
+#: pacaur:1660
+msgid "   -q, --quiet      show less information for query and search"
+msgstr ""
+
+#: pacaur:1661
+msgid "   --devel          consider AUR development packages upgrade"
+msgstr ""
+
+#: pacaur:1662
+msgid "   --foreign        consider already installed foreign dependencies"
+msgstr ""
+
+#: pacaur:1663
+msgid ""
+"   --ignore         ignore a package upgrade (can be used more than once)"
+msgstr ""
+
+#: pacaur:1664
+msgid "   --needed         do not reinstall already up-to-date target(s)"
+msgstr ""
+
+#: pacaur:1665
+msgid "   --noconfirm      do not prompt for any confirmation"
+msgstr ""
+
+#: pacaur:1666
+msgid "   --noedit         do not prompt to edit files"
+msgstr ""
+
+#: pacaur:1667
+msgid "   --rebuild        always rebuild package(s)"
+msgstr ""
+
+#: pacaur:1668
+msgid "   --silent         silence output"
+msgstr ""
+
+#: pacaur:1808
+msgid "you cannot perform this operation as root"
+msgstr ""
+
+#: pacaur:1812
+msgid "${colorW}editor${reset} variable unset"
+msgstr ""
+
+#: pacaur:1813
+msgid "${colorW}$clonedir${reset} does not have write permission."
+msgstr ""
+
+#: pacaur:1814 pacaur:1815
+msgid "no targets specified (use -h for help)"
+msgstr ""
+
+#: pacaur:1816
+msgid "target not found"
+msgstr ""
+
+#: pacaur:1876 pacaur:1899 pacaur:1917
+msgid ""
+"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+
+#: pacaur:1878 pacaur:1901 pacaur:1919
+msgid ""
+"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
