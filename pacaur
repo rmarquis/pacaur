@@ -576,8 +576,15 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 printf "\n%s " $"Enter a number (default=0):"
-                read -r -n "$(echo -n $providersnb | wc -m)" nb
-                echo
+		case "$TERM" in
+		    dumb)
+			read -r nb
+			;;
+		    *)
+			read -r -n "$(echo -n $providersnb | wc -m)" nb
+			echo
+			;;
+		esac
 
                 case $nb in
                     [0-9]|[0-9][0-9])
@@ -1570,22 +1577,38 @@ Proceed() {
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
             if [[ ! $noconfirm ]]; then
-                [[ $cleancache ]] && read -r answer || read -r -n 1 answer
+		case "$TERM" in
+		    dumb)
+			read -r answer
+			;;
+		    *)
+			[[ $cleancache ]] && read -r answer || read -r -n 1 answer
+			echo
+			;;
+		esac
             else
                 answer=$Y
+		echo
             fi
-            echo
             case $answer in
                 $Y|$y|'') return 0;;
                 *) return 1;;
             esac;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
             if [[ ! $noconfirm ]]; then
-                [[ $cleancache ]] && read -r answer || read -r -n 1 answer
+		case "$TERM" in
+		    dumb)
+			read -r answer
+			;;
+		    *)
+			[[ $cleancache ]] && read -r answer || read -r -n 1 answer
+			echo
+			;;
+		esac
             else
                 answer=$N
+		echo
             fi
-            echo
             case $answer in
                 $N|$n|'') return 0;;
                 *) return 1;;
