@@ -249,7 +249,7 @@ The available options are:
 
 =item B<editor>
 
-Define the editor. Default is B<$EDITOR>, with a fallback on I<vi>.
+Define the editor. Default is B<$VISUAL>, with a fallback on B<$EDITOR> and I<vi>.
 
 =item B<displaybuildfiles>
 

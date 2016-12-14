@@ -9,7 +9,7 @@
 # The Color and VerbosePkgLists options can be enabled in /etc/pacman.conf.
 # The clone directory can be changed through the $AURDEST environment variable.
 # The makepkg environment variables are also fully honored.
-#editor="${EDITOR:-vi}"                # build files editor
+#editor="${VISUAL:-${EDITOR:-vi}}"     # build files editor
 #displaybuildfiles=diff                # display build files (none|diff|full)
 #fallback=true                         # pacman fallback to the AUR
 #silent=false                          # silence output

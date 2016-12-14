@@ -43,7 +43,7 @@ else
 fi
 
 # set default config variables
-editor="${EDITOR:-vi}"                      # build files editor
+editor="${VISUAL:-${EDITOR:-vi}}"           # build files editor
 displaybuildfiles=diff                      # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
 silent=false                                # silence output
