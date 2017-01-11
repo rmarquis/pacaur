@@ -103,6 +103,7 @@ Core() {
     ConflictChecks
     ReinstallChecks
     OutofdateChecks
+    OrphanChecks
     Prompt
     MakePkgs
 }
@@ -249,6 +250,7 @@ DepsSolver() {
     depsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
     depsAver=($(GetJson "var" "$json" "Version"))
     depsAood=($(GetJson "var" "$json" "OutOfDate"))
+    depsAmain=($(GetJson "var" "$json" "Maintainer"))
     for i in "${!depsAname[@]}"; do
         depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
@@ -762,7 +764,7 @@ ConflictChecks() {
 
 ReinstallChecks() {
     local i depsAtmp
-    # global aurpkgs aurdepspkgs deps aurconflictingpkgs depsAname depsQver depsAver depsAood
+    # global aurpkgs aurdepspkgs deps aurconflictingpkgs depsAname depsQver depsAver depsAood depsAmain
     depsAtmp=(${depsAname[@]})
     for i in "${!depsAtmp[@]}"; do
         [[ ! $foreign ]] && [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
@@ -776,11 +778,11 @@ ReinstallChecks() {
             else
                 Note "w" $"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
                 deps=($(tr ' ' '\n' <<< ${deps[@]} | sed "s/^${depsAname[$i]}$//g"))
-                unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i]
+                unset depsAname[$i] depsQver[$i] depsAver[$i] depsAood[$i] depsAmain[$i]
             fi
         fi
     done
-    [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]})
+    [[ $needed ]] && depsAname=(${depsAname[@]}) && depsQver=(${depsQver[@]}) && depsAver=(${depsAver[@]}) && depsAood=(${depsAood[@]}) && depsAmain=(${depsAmain[@]})
 
     NothingToDo ${deps[@]}
 }
@@ -790,6 +792,14 @@ OutofdateChecks() {
     # global depsAname depsAver depsAood
     for i in "${!depsAname[@]}"; do
         [[ "${depsAood[$i]}" -gt 0 ]] && Note "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "@${depsAood[$i]}" "+%c")${reset}"
+    done
+}
+
+OrphanChecks() {
+    local i
+    # global depsAname depsAver depsAmain
+    for i in "${!depsAname[@]}"; do
+      [[ "${depsAmain[$i]}" == 'null' ]] && Note "w" $"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} is ${colorR}orphaned${reset} in AUR"
     done
 }
 
