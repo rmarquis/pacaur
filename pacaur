@@ -1218,12 +1218,20 @@ SearchAur() {
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
         [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
     fi
+    if ! cower -V > /dev/null; then
+	Note "e" $"cower is not installed, searching the AUR is not available"
+	exit 1
+    fi
     cower ${coweropts[@]} -- $@
 }
 
 InfoAur() {
     local aurinfopkgs info infolabel maxlength linfo lbytes
 
+    if ! cower -V > /dev/null; then
+	Note "e" $"cower is not installed, cannot get info on AUR packages"
+	exit 1
+    fi
     readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%P|%D|%M|%O|%C|%R|%m|%r|%o|%t|%s|%a\n" $@)
     aurinfopkgsQname=($(expac -Q '%n' $@))
     aurinfopkgsQver=($(expac -Q '%v' $@))
