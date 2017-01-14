@@ -1224,7 +1224,7 @@ SearchAur() {
 InfoAur() {
     local aurinfopkgs info infolabel maxlength linfo lbytes
 
-    readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%P|%D|%M|%O|%C|%R|%m|%r|%o|%t|%s|%a\n" $@)
+    readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%P|%D|%M|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
     aurinfopkgsQname=($(expac -Q '%n' $@))
     aurinfopkgsQver=($(expac -Q '%v' $@))
 
@@ -1296,11 +1296,11 @@ InfoAur() {
         if [[ "${info[16]}" = 'no' ]]; then
             printf "${colorW}%-${lbytes[17]}s  :${reset} ${colorG}%s${reset}\n" "${infolabel[17]}" $"No"
         else
-            printf "${colorW}%-${lbytes[17]}s  :${reset} ${colorR}%s${reset}\n" "${infolabel[17]}" $"Yes"
+            printf "${colorW}%-${lbytes[17]}s  :${reset} ${colorR}%s${reset} [%s]\n" "${infolabel[17]}" $"Yes" $"$(date -d "@${info[17]}" "+%c")"
         fi
         # submitted modified
-        printf "${colorW}%-${lbytes[18]}s  :${reset} %s\n" "${infolabel[18]}" $"$(date -d "@${info[17]}" "+%c")"
-        printf "${colorW}%-${lbytes[19]}s  :${reset} %s\n" "${infolabel[19]}" $"$(date -d "@${info[18]}" "+%c")"
+        printf "${colorW}%-${lbytes[18]}s  :${reset} %s\n" "${infolabel[18]}" $"$(date -d "@${info[18]}" "+%c")"
+        printf "${colorW}%-${lbytes[19]}s  :${reset} %s\n" "${infolabel[19]}" $"$(date -d "@${info[19]}" "+%c")"
         echo
     done
 }
