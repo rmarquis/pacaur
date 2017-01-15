@@ -434,7 +434,7 @@ B<[it] - Italiano> - Demenico "NoMore201" Lezzi
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury, TSUYUSATO "MakeNowJust" Kitsune
 
-B<[nl] - Nederlands> - "Yoshi2889"
+B<[nl] - Nederlands> - "Yoshi2889", Willem "14mRh4X0r" Mulder
 
 B<[pl] - Polski> - Tomasz "Ludvick" Niedzielski
 
