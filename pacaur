@@ -365,7 +365,7 @@ FindDepsAur() {
             unset j && j=$(expac -Qs '%n %P' "^${depspkgs[$i]}$" | grep -E "([^a-zA-Z0-9_@\.\+-]${depspkgs[$i]}|^${depspkgs[$i]})" | grep -E "(${depspkgs[$i]}[^a-zA-Z0-9\.\+-]|${depspkgs[$i]}$)" | awk '{print $1}')
             if [[ -n "$j" ]]; then
                 depspkgs[$i]="$j"
-                [[ $devel ]] && [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $j)" ]] && vcsdepspkgs+=($j)
+                [[ $devel ]] && [[ ! " ${ignoredpkgs[@]} " =~ " $j " ]] && [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $j)" ]] && vcsdepspkgs+=($j)
             else
                 foreignpkgs+=(${depspkgs[$i]})
             fi
