@@ -1602,7 +1602,7 @@ Proceed() {
 		echo
             fi
             case $answer in
-                $Y|$y|'') return 0;;
+                $Y|$y|'y'|'') return 0;;
                 *) return 1;;
             esac;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
@@ -1621,7 +1621,7 @@ Proceed() {
 		echo
             fi
             case $answer in
-                $N|$n|'') return 0;;
+                $N|$n|'n'|'') return 0;;
                 *) return 1;;
             esac;;
     esac
