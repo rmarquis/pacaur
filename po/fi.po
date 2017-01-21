@@ -1,0 +1,758 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: pacaur\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Language: fi\n"
+"X-Source-Language: C\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: pacaur:114
+msgid "${colorW}Starting AUR upgrade...${reset}"
+msgstr "${colorW}Aloitetaan AUR päivitys...${reset}"
+
+#: pacaur:133
+msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+msgstr "${colorW}$i${reset} ${colorY}ei löydy${reset} AUR:sta -- ohitetaan"
+
+#: pacaur:169 pacaur:258 pacaur:1366
+msgid "latest"
+msgstr "viimeisin"
+
+#: pacaur:175
+msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr ""
+"${checkaurpkgs[$i]} on IgnorePkg/IgnoreGroup:ssa. Asennetaanko se silti?"
+
+#: pacaur:176 pacaur:181
+msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+msgstr "${colorW}${checkaurpkgs[$i]}${reset}: ohitetaan paketin päivitys"
+
+#: pacaur:186
+msgid ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+msgstr ""
+"${colorW}${checkaurpkgs[$i]}${reset}: ohitetaan paketin päivitys "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorG}${checkaurpkgsAver[$i]}${reset})"
+
+#: pacaur:201
+msgid "resolving dependencies..."
+msgstr "selvitetään riippuvuuksia..."
+
+#: pacaur:231 pacaur:692 pacaur:755
+msgid "unresolvable package conflicts detected"
+msgstr "selvittämättömiä pakettiristiriitoja havaittu"
+
+#: pacaur:232 pacaur:693 pacaur:756
+msgid "failed to prepare transaction (conflicting dependencies)"
+msgstr "tehtävän valmistelu epäonnistui (ristiriitaisia riippuvuuksia)"
+
+#: pacaur:264
+msgid "no results found for $i"
+msgstr "ei tuloksia haulle $i"
+
+#: pacaur:420
+msgid "dependency cycle detected"
+msgstr "kehäriippuvuus havaittu"
+
+#: pacaur:523 pacaur:538
+msgid "${colorW}$i${reset}: ignoring package upgrade"
+msgstr "${colorW}$i${reset}: ohitetaan paketin päivitys"
+
+#: pacaur:524 pacaur:530 pacaur:535 pacaur:539
+msgid "Unresolved dependency '${colorW}$i${reset}'"
+msgstr "Selvittämätön riippuvuus '${colorW}$i${reset}'"
+
+#: pacaur:534
+msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
+msgstr "$i riippuvuus on IgnorePkg/IgnoreGroup:ssa. Asennetaanko se silti?"
+
+#: pacaur:574
+msgid ""
+"${colorW}There are ${#providers[@]} providers available for "
+"${providersdeps[$i]}:${reset}"
+msgstr ""
+"${colorW} ${#providers[@]} tarjoajaa löytyi paketille ${providersdeps[$i]}:"
+"${reset}"
+
+#: pacaur:581
+msgid "Enter a number (default=0):"
+msgstr "Syötä numero (oletus=0):"
+
+#: pacaur:595
+msgid "invalid value: $nb is not between 0 and $providersnb"
+msgstr "virheellinen arvo: $nb ei ole arvojen 0 ja $providersnb välissä"
+
+#: pacaur:600
+msgid "invalid number: $nb"
+msgstr "virheellinen numero: $nb"
+
+#: pacaur:642
+msgid "looking for inter-conflicts..."
+msgstr "Etsitään sisäisiä konflikteja..."
+
+#: pacaur:678 pacaur:747
+msgid "$j and $k are in conflict ($i). Remove $k?"
+msgstr "$j ja $k ovat ristiriidassa ($i). Poistetaanko $k?"
+
+#: pacaur:694 pacaur:757
+msgid "$j and $k are in conflict"
+msgstr "$j ja $k ovat ristiriidassa"
+
+#: pacaur:775
+msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
+msgstr "${colorW}${depsAname[$i]}${reset} viimeisin versio -- noudetaan"
+
+#: pacaur:778
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
+"reinstalling"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} on ajan tasalla -- "
+"uudelleenasennetaan"
+
+#: pacaur:780
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} on ajan tasalla -- "
+"ohitetaan"
+
+#: pacaur:795
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
+"\")${reset}"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} on merkitty ${colorR}"
+"vanhentuneeksi${reset} ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
+"\")${reset}"
+
+#: pacaur:803
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} is ${colorR}orphaned"
+"${reset} in AUR"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} on ${colorR}orpo paketti"
+"${reset} AUR:ssa"
+
+#: pacaur:831
+msgid "(cached)"
+msgstr "(välimuistissa)"
+
+#: pacaur:836 pacaur:869
+msgid "AUR Packages  (${#deps[@]})"
+msgstr "AUR-paketit  (${#deps[@]})"
+
+#: pacaur:836 pacaur:870
+msgid "Repo Packages (${#repodepspkgs[@]})"
+msgstr "Repo-Paketit (${#repodepspkgs[@]})"
+
+#: pacaur:836
+msgid "Old Version"
+msgstr "Vanha versio"
+
+#: pacaur:836
+msgid "New Version"
+msgstr "Uusi versio"
+
+#: pacaur:836
+msgid "Download Size"
+msgstr "Latauksen koko"
+
+#: pacaur:858
+msgid "${binarysize[$i]} MiB"
+msgstr "${binarysize[$i]} MiB"
+
+#: pacaur:874
+msgid "Repo Download Size:"
+msgstr "Latausten koko:"
+
+#: pacaur:874
+msgid "Repo Installed Size:"
+msgstr "Asennettujen pakettien viemä tila:"
+
+#: pacaur:874
+msgid "$sumk MiB"
+msgstr "$sumk MiB"
+
+#: pacaur:874
+msgid "$summ MiB"
+msgstr "$summ MiB"
+
+#: pacaur:882 pacaur:990
+msgid "installation"
+msgstr "asennus"
+
+#: pacaur:882 pacaur:990
+msgid "download"
+msgstr "lataus"
+
+#: pacaur:883 pacaur:991
+msgid "Proceed with $action?"
+msgstr "Jatketaanko $action toimenpidettä?"
+
+#: pacaur:891
+msgid "${colorW}Retrieving package(s)...${reset}"
+msgstr "${colorW}Noudetaan paketteja...${reset}"
+
+#: pacaur:908
+msgid "no results found"
+msgstr "ei hakutuloksia"
+
+# Not sure how to translate build files here.
+#: pacaur:927
+msgid "View $i build files diff?"
+msgstr "Näytetäänkö $i asennustiedostojen diff?"
+
+#: pacaur:929
+msgid "${colorW}$i${reset} build files diff viewed"
+msgstr "${colorW}$i${reset} asennustiedostojen diff katsottu"
+
+#: pacaur:934
+msgid "${colorW}$i${reset} build files are up-to-date -- skipping"
+msgstr "${colorW}$i${reset} asennustiedostot ovat ajan tasalla -- ohitetaan"
+
+# Avata (to open) made more sense here
+#: pacaur:938
+msgid "View $i PKGBUILD?"
+msgstr "Avataanko $i PKGBUILD?"
+
+#: pacaur:940 pacaur:964
+msgid "${colorW}$i${reset} PKGBUILD viewed"
+msgstr "${colorW}$i${reset} PKGBUILD näytetty"
+
+#: pacaur:943 pacaur:967
+msgid "Could not open ${colorW}$i${reset} PKGBUILD"
+msgstr "${colorW}$i${reset}: PKGBUILD:n avaus epäonnistui"
+
+#: pacaur:949
+msgid "View $j script?"
+msgstr "Avataanko $j skripti?"
+
+#: pacaur:951 pacaur:972
+msgid "${colorW}$j${reset} script viewed"
+msgstr "${colorW}$j${reset} skripti näytetty"
+
+#: pacaur:954 pacaur:975
+msgid "Could not open ${colorW}$j${reset} script"
+msgstr "Skriptin ${colorW}$j${reset} avaaminen epäonnistui"
+
+#: pacaur:984
+msgid "${colorW}$i${reset} errored on exit"
+msgstr "${colorW}$i${reset} kohtasi virheen lopettaessa"
+
+#: pacaur:1052
+msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
+msgstr "Tarkistetaan paketin ${colorW}${pkgsdeps[$i]}${reset} eheyttä..."
+
+#: pacaur:1065
+msgid "failed to verify ${colorW}$i${reset} integrity"
+msgstr "${colorW}$i${reset} eheystarkistus epäonnistui"
+
+#: pacaur:1071
+msgid "pacaur.build.lck exists in /run/lock"
+msgstr "pacaur.build.lck löytyy kansiosta /run/lock"
+
+#: pacaur:1076
+msgid ""
+"Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
+"dependencies..."
+msgstr ""
+"Asennetaan ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
+"riippuvuuksia..."
+
+#: pacaur:1100
+msgid "${colorW}$j${reset} is up-to-date -- skipping"
+msgstr "${colorW}$j${reset} on ajan tasalla -- ohitetaan"
+
+#: pacaur:1121
+msgid "Installing ${colorW}$j${reset} cached package..."
+msgstr "Asennetaan pakettia ${colorW}$j${reset} välimuistista..."
+
+#: pacaur:1125
+msgid "Package ${colorW}$j${reset} already available in cache"
+msgstr "Paketti ${colorW}$j${reset} löytyy jo välimuistista"
+
+#: pacaur:1134
+msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr "Käännetään ${colorW}${pkgsdeps[$i]}${reset}..."
+
+#: pacaur:1170
+msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
+msgstr "Asennetaan ${colorW}${pkgsdeps[$i]}${reset}..."
+
+# no idea how to go about this one
+#: pacaur:1172
+msgid ""
+"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
+"SRCINFO for mismatching data with PKGBUILD."
+msgstr ""
+"${colorW}${pkgsdeps[$i]}${reset} pakettien asennus epäonnistui. Tarkista ."
+"SRCINFO nähdäksesi PKGBUILD kanssa virheellisen datan."
+
+#: pacaur:1190
+msgid "Removing installed AUR dependencies..."
+msgstr "Poistetaan asennettuja AUR riippuvuuksia..."
+
+#: pacaur:1206
+msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+msgstr "${colorW}$i${reset} on ${colorY}nyt orpo${reset} paketti"
+
+#: pacaur:1212
+msgid "failed to build ${colorW}$i${reset} package(s)"
+msgstr "Pakettien ${colorW}$i${reset} käännös epäonnistui"
+
+#: pacaur:1232
+msgid "Repository"
+msgstr "Pakettivarasto"
+
+#: pacaur:1232
+msgid "Name"
+msgstr "Nimi"
+
+#: pacaur:1232
+msgid "Version"
+msgstr "Versio"
+
+#: pacaur:1232
+msgid "Description"
+msgstr "Kuvaus"
+
+#: pacaur:1232
+msgid "URL"
+msgstr "URL"
+
+#: pacaur:1232
+msgid "AUR Page"
+msgstr "AUR sivu"
+
+#: pacaur:1232
+msgid "Licenses"
+msgstr "Lisenssit"
+
+#: pacaur:1232
+msgid "Keywords"
+msgstr "Avainsanat"
+
+#: pacaur:1232
+msgid "Provides"
+msgstr "Tarjoaa"
+
+#: pacaur:1232
+msgid "Depends on"
+msgstr "Riippuu"
+
+#: pacaur:1233
+msgid "Make Deps"
+msgstr "Käännösriippuvuudet"
+
+#: pacaur:1233
+msgid "Optional Deps"
+msgstr "Valinnaiset riippuvuudet"
+
+#: pacaur:1233
+msgid "Conflicts With"
+msgstr "Ristiriidassa"
+
+#: pacaur:1233
+msgid "Replaces"
+msgstr "Korvaa"
+
+#: pacaur:1233
+msgid "Maintainer"
+msgstr "Ylläpitäjä"
+
+#: pacaur:1233
+msgid "Popularity"
+msgstr "Suosio"
+
+#: pacaur:1233
+msgid "Votes"
+msgstr "Äänet"
+
+#: pacaur:1233
+msgid "Out of Date"
+msgstr "Vanhentunut"
+
+#: pacaur:1233
+msgid "Submitted"
+msgstr "Lähetetty"
+
+#: pacaur:1233
+msgid "Last Modified"
+msgstr "Muokattu"
+
+#: pacaur:1250 pacaur:1252 pacaur:1254
+msgid "installed"
+msgstr "asennettu"
+
+#: pacaur:1289
+msgid "None"
+msgstr "Ei mitään"
+
+#: pacaur:1298
+msgid "No"
+msgstr "Ei"
+
+#: pacaur:1300
+msgid "Yes"
+msgstr "Kyllä"
+
+#: pacaur:1300
+msgid "$(date -d \"@${info[17]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[17]}\" \"+%c\")"
+
+#: pacaur:1303
+msgid "$(date -d \"@${info[18]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[18]}\" \"+%c\")"
+
+#: pacaur:1304
+msgid "$(date -d \"@${info[19]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[19]}\" \"+%c\")"
+
+#: pacaur:1364 pacaur:1387
+msgid "[ ignored ]"
+msgstr "[ ohitettu ]"
+
+# lähteet/lähdekoodit?
+#: pacaur:1437
+msgid "Sources to keep:"
+msgstr "Pidettävät lähdekoodit:"
+
+#: pacaur:1437
+msgid "All development packages sources"
+msgstr "Kaikki kehityspakettien lähdekoodit"
+
+#: pacaur:1438
+msgid "AUR source cache directory:"
+msgstr "AUR-lähdevälimuistin kansio:"
+
+#: pacaur:1440
+msgid "Do you want to remove all non development files from AUR source cache?"
+msgstr "Haluatko poistaa kaikki ei-kehitystiedostot AUR-lähdevälimuistista?"
+
+#: pacaur:1441
+msgid "removing non development files from source cache..."
+msgstr "Poistetaan ei-kehitystiedoja lähdevälimuistista..."
+
+#: pacaur:1445
+msgid "Do you want to remove ALL files from AUR source cache?"
+msgstr "Haluatko varmasti poistaa KAIKKI tiedostot AUR-lähdevälimuistista?"
+
+#: pacaur:1446
+msgid "removing all files from AUR source cache..."
+msgstr "poistetaan tiedostoja AUR-lähdevälimuistista..."
+
+# klooni? wut
+#: pacaur:1453
+msgid "Clones to keep:"
+msgstr "Pidettävät kloonit:"
+
+#: pacaur:1453
+msgid "All packages clones"
+msgstr "Kaikkien pakettien kloonit"
+
+#: pacaur:1454
+msgid "AUR clone directory:"
+msgstr "AUR kloonauskansio:"
+
+#: pacaur:1456
+msgid "Do you want to remove all uninstalled clones from AUR clone directory?"
+msgstr "Haluatko poistaa kaikki poistetut kloonit AUR kloonikansiosta?"
+
+#: pacaur:1458
+msgid "removing uninstalled clones from AUR clone cache..."
+msgstr "poistetaan poistettuja klooneja AUR kloonivälimuistista"
+
+#: pacaur:1463
+msgid "Do you want to remove all untracked files from AUR clone directory?"
+msgstr "Haluatko poistaa kaikki seuraamattomat tiedostot AUR kloonikansiosta?"
+
+#: pacaur:1464
+msgid "removing untracked files from AUR clone cache..."
+msgstr "poistetaan seuraamattomia tiedostoja AUR kloonivälimuistista..."
+
+#: pacaur:1470
+msgid "Do you want to remove ALL clones from AUR clone directory?"
+msgstr "Haluatko poistaa KAIKKI tiedostot AUR kloonikansiosta?"
+
+#: pacaur:1471
+msgid "removing all clones from AUR clone cache..."
+msgstr "tiedostoja poistetaan AUR kloonivälimuistista..."
+
+#: pacaur:1571
+msgid "Failed to parse JSON"
+msgstr "JSONin lukeminen epäonnistui"
+
+# someone change it to something better
+#: pacaur:1579
+msgid "failed to prepare transaction (could not satisfy dependencies)"
+msgstr "toimenpiteen valmistelu epäonnistui (riippuvuuksia ei saatu täytettyä)"
+
+#: pacaur:1580
+msgid "${Qrequires[@]}: requires $@"
+msgstr "${Qrequires[@]}: vaatii $@"
+
+#: pacaur:1589
+msgid "$2 [Y/n] "
+msgstr "$2 [K/e] "
+
+#: pacaur:1608
+msgid "$2 [y/N] "
+msgstr "$2 [k/E] "
+
+#: pacaur:1651
+msgid " there is nothing to do"
+msgstr " ei mitään tehtävää"
+
+#: pacaur:1671
+msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
+msgstr ""
+"Käyttö:  pacaur <operaatio> [valinnat] [kohteet] -- Katso myös pacaur(8)"
+
+#: pacaur:1672
+msgid "operations:"
+msgstr "operaatiot:"
+
+#: pacaur:1673
+msgid " pacman extension"
+msgstr " pacman komennot"
+
+#: pacaur:1674
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
+msgstr "   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
+
+#: pacaur:1675
+msgid "                    extend pacman operations to the AUR"
+msgstr "                    käytä pacman komentoja myös AUR:ssa"
+
+#: pacaur:1676
+msgid " AUR specific"
+msgstr " AUR komennot"
+
+#: pacaur:1677
+msgid "   -s, --search     search AUR for matching strings"
+msgstr "   -s, --search     hae merkkijonoa AUR:sta"
+
+#: pacaur:1678
+msgid "   -i, --info       view package information"
+msgstr "   -i, --info       Näytä paketin tiedot"
+
+#: pacaur:1679
+msgid ""
+"   -d, --download   download target(s) -- pass twice to download AUR "
+"dependencies"
+msgstr ""
+"   -d, --download   lataa kohteet -- anna kahdesti ladataksesi AUR "
+"riippuvuudet"
+
+#: pacaur:1680
+msgid "   -m, --makepkg    download and make target(s)"
+msgstr "   -m, --makepkg    lataa ja käännä kohteet"
+
+#: pacaur:1681
+msgid "   -y, --sync       download, make and install target(s)"
+msgstr "   -y, --sync       lataa, käännä ja asenna kohteet"
+
+#: pacaur:1682
+msgid "   -u, --update     update AUR package(s)"
+msgstr "   -u, --update     päivitä AUR paketit"
+
+#: pacaur:1683
+msgid "   -k, --check      check for AUR update(s)"
+msgstr "   -k, --check      tarkista AUR päivitykset"
+
+#: pacaur:1684 pacaur:1692
+msgid " general"
+msgstr " yleiset"
+
+#: pacaur:1685
+msgid "   -v, --version    display version information"
+msgstr "   -v, --version    näytä versiotiedot"
+
+#: pacaur:1686
+msgid "   -h, --help       display help information"
+msgstr "   -h, --help       näytä ohje"
+
+#: pacaur:1688
+msgid "options:"
+msgstr "valinnat:"
+
+#: pacaur:1689
+msgid ""
+" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc "
+"operations"
+msgstr ""
+" pacman komennot - voidaan käyttää -S, -Ss, -Si, -Sw, -Su, -Sc  operatioden "
+"kanssa"
+
+#: pacaur:1690
+msgid ""
+"   -a, --aur        only search, build or install target(s) from the AUR"
+msgstr "   -a, --aur        etsi, käännä ja asenna kohteita vain AUR:sta"
+
+#: pacaur:1691
+msgid ""
+"   -r, --repo       only search, build or install target(s) from the "
+"repositories"
+msgstr ""
+"   -r, --repo       etsi, käännä ja asenna kohteita vain pakettivarastoista"
+
+#: pacaur:1693
+msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
+msgstr ""
+"   -e, --edit       muokkaa kohteen PKGBUILDia ja katso asennusskriptiä"
+
+#: pacaur:1694
+msgid "   -q, --quiet      show less information for query and search"
+msgstr "   -q, --quiet      näytä vähemmän tietoja kyselylle ja haulle"
+
+#: pacaur:1695
+msgid "   --devel          consider AUR development packages upgrade"
+msgstr "   --devel          ota huomioon AUR kehityspakettien päivitykset"
+
+#: pacaur:1696
+msgid "   --foreign        consider already installed foreign dependencies"
+msgstr "   --foreign        ota huomioon jo asennetut ulkoiset riippuvuudet"
+
+#: pacaur:1697
+msgid ""
+"   --ignore         ignore a package upgrade (can be used more than once)"
+msgstr "   --ignore         ohittaa paketin päivityksen (voi käyttää monesti)"
+
+#: pacaur:1698
+msgid "   --needed         do not reinstall already up-to-date target(s)"
+msgstr "   --needed         älä uudelleenasenna ajan tasalla olevia kohteita"
+
+#: pacaur:1699
+msgid "   --noconfirm      do not prompt for any confirmation"
+msgstr "   --noconfirm      älä kysy varmistuksia"
+
+#: pacaur:1700
+msgid "   --noedit         do not prompt to edit files"
+msgstr "   --noedit         älä kysy haluatko muokata tiedostoja"
+
+#: pacaur:1701
+msgid "   --rebuild        always rebuild package(s)"
+msgstr "   --rebuild        uudelleenasenna paketit"
+
+#: pacaur:1702
+msgid "   --silent         silence output"
+msgstr "   --silent         hiljennä tulostus"
+
+#: pacaur:1842
+msgid "you cannot perform this operation as root"
+msgstr "et voi tehdä tätä operaatiota root-käyttäjänä"
+
+#: pacaur:1846
+msgid "${colorW}editor${reset} variable unset"
+msgstr "${colorW}editor${reset} muuttuja on asettamatta"
+
+#: pacaur:1847
+msgid "${colorW}$clonedir${reset} does not have write permission."
+msgstr "${colorW}$clonedir${reset} ei ole kirjoitusoikeutta."
+
+#: pacaur:1848 pacaur:1849
+msgid "no targets specified (use -h for help)"
+msgstr "ei määriteltyjä kohteita (-h näyttää ohjeen)"
+
+#: pacaur:1850
+msgid "target not found"
+msgstr "kohdetta ei löydy"
+
+#: pacaur:1910 pacaur:1933 pacaur:1951
+msgid ""
+"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"${colorW}${aurpkgs[*]}${reset} ei löytynyt pakettivarastoista, yritetään "
+"${colorM}AUR${reset}..."
+
+#: pacaur:1912 pacaur:1935 pacaur:1953
+msgid ""
+"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"${colorW}${aurpkgs[*]}${reset} ei löytynyt pakettivarastoista, yritetään "
+"${colorM}AUR${reset}..."
+
+#~ msgid "Packages to keep:"
+#~ msgstr "Pidettävät paketit:"
+
+#~ msgid "All locally installed packages"
+#~ msgstr "Kaikki paikallisesti asennetut paketit"
+
+#~ msgid "removing old packages from cache..."
+#~ msgstr "poistetaan vanhoja paketteja välimuistista..."
+
+# non-volatile?
+#~ msgid ""
+#~ "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to "
+#~ "a non volatile memory location"
+#~ msgstr ""
+#~ "${colorW}clonedir${reset} tai ${colorW}\\$AURDEST${reset} pitäisi olla "
+#~ "asetettuna pysyvään sijaintiin"
+
+#~ msgid "no AUR metadata for ${colorR}${depsAname[$i]}${reset} package"
+#~ msgstr ""
+#~ "AUR metadataa ei löytynyt paketille ${colorR}${depsAname[$i]}${reset}"
+
+# jäsennys?
+#~ msgid ""
+#~ "no AUR metadata for ${colorR}${depsAname[$i]}${reset} package -- "
+#~ "switching to parsing mode"
+#~ msgstr ""
+#~ "AUR metadataa ei löytynyt paketille ${colorR}${depsAname[$i]}${reset} -- "
+#~ "vaihdetaan parseritilaan"
+
+#~ msgid ""
+#~ "Potentially dangerous '${colorR}sudo${reset}' detected in ${colorW}$i"
+#~ "${reset}"
+#~ msgstr ""
+#~ "Mahdollisesti vaarallinen '${colorR}sudo${reset}' havaittu ${colorW}$i"
+#~ "${reset}"
+
+#~ msgid "Do you really want to continue?"
+#~ msgstr "Haluatko varmasti jatkaa?"
+
+#~ msgid "${colorW}$i${reset} cleaning skipped"
+#~ msgstr "${colorW}$i${reset} puhdistus ohitettu"
+
+#~ msgid "Could not clean ${colorW}$i${reset}"
+#~ msgstr "${colorW}$i${reset} ei voitu puhdistaa"
+
+#~ msgid "Build directory cleaned"
+#~ msgstr "Käännöskansio puhdistettu"
+
+#~ msgid "Build directory already cleaned"
+#~ msgstr "Käännöskansio on jo puhdas"
+
+#~ msgid "Could not connect to the AUR"
+#~ msgstr "AUR:iin yhdistäminen epäonnistui"
+
+#~ msgid " AUR only"
+#~ msgstr "vain AUR"
+
+#~ msgid ""
+#~ "   -c, --clean      clean target(s) build files -- can be combined with "
+#~ "the -m, -y, -u operations"
+#~ msgstr ""
+#~ "   -c, --clean      puhdista kohteiden käännöstiedostot -- voidaan "
+#~ "yhdistää -m, -y, -u operaatioihin"
+
+#~ msgid "alternative installation root option not supported"
+#~ msgstr "vaihtoehtoinen asennuskansion juuri -valinta ei ole tuettu"
