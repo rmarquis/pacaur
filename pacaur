@@ -1003,9 +1003,10 @@ MakePkgs() {
     DownloadPkgs ${deps[@]}
     EditPkgs ${basepkgs[@]}
 
-    # current orphan packages
+    # current orphan and optional packages
     oldorphanpkgs=($($pacmanbin -Qdtq))
     oldoptionalpkgs=($($pacmanbin -Qdttq))
+    oldoptionalpkgs=($(grep -xvf <(printf '%s\n' "${oldorphanpkgs[@]}") <(printf '%s\n' "${oldoptionalpkgs[@]}")))
 
     # initialize sudo
     if sudo $pacmanbin -V > /dev/null; then
@@ -1208,6 +1209,7 @@ MakePkgs() {
         Note "w" $"${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
     done
     optionalpkgs=($($pacmanbin -Qdttq))
+    optionalpkgs=($(grep -xvf <(printf '%s\n' "${orphanpkgs[@]}") <(printf '%s\n' "${optionalpkgs[@]}")))
     newoptionalpkgs=($(grep -xvf <(printf '%s\n' "${oldoptionalpkgs[@]}") <(printf '%s\n' "${optionalpkgs[@]}")))
     for i in "${newoptionalpkgs[@]}"; do
         Note "w" $"${colorW}$i${reset} is a ${colorY}new optional${reset} package"
