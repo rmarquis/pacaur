@@ -1206,13 +1206,13 @@ MakePkgs() {
     orphanpkgs=($($pacmanbin -Qdtq))
     neworphanpkgs=($(grep -xvf <(printf '%s\n' "${oldorphanpkgs[@]}") <(printf '%s\n' "${orphanpkgs[@]}")))
     for i in "${neworphanpkgs[@]}"; do
-        Note "w" $"${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+        Note "w" $"${colorW}$i${reset} is now an ${colorY}orphan${reset} package"
     done
     optionalpkgs=($($pacmanbin -Qdttq))
     optionalpkgs=($(grep -xvf <(printf '%s\n' "${orphanpkgs[@]}") <(printf '%s\n' "${optionalpkgs[@]}")))
     newoptionalpkgs=($(grep -xvf <(printf '%s\n' "${oldoptionalpkgs[@]}") <(printf '%s\n' "${optionalpkgs[@]}")))
     for i in "${newoptionalpkgs[@]}"; do
-        Note "w" $"${colorW}$i${reset} is a ${colorY}new optional${reset} package"
+        Note "w" $"${colorW}$i${reset} is now an ${colorY}optional${reset} package"
     done
 
     # makepkg failure check
