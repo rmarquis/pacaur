@@ -995,7 +995,8 @@ EditPkgs() {
 }
 
 MakePkgs() {
-    local oldorphanpkgs neworphanpkgs orphanpkgs pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
+    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs
+    local pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
     # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs json
 
     # download
@@ -1004,6 +1005,7 @@ MakePkgs() {
 
     # current orphan packages
     oldorphanpkgs=($($pacmanbin -Qdtq))
+    oldoptionalpkgs=($($pacmanbin -Qdttq))
 
     # initialize sudo
     if sudo $pacmanbin -V > /dev/null; then
@@ -1199,11 +1201,16 @@ MakePkgs() {
     sudo rm "/run/lock/pacaur.build.lck"
     [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
 
-    # new orphan packages check
+    # new orphan and optional packages check
     orphanpkgs=($($pacmanbin -Qdtq))
     neworphanpkgs=($(grep -xvf <(printf '%s\n' "${oldorphanpkgs[@]}") <(printf '%s\n' "${orphanpkgs[@]}")))
     for i in "${neworphanpkgs[@]}"; do
         Note "w" $"${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
+    done
+    optionalpkgs=($($pacmanbin -Qdttq))
+    newoptionalpkgs=($(grep -xvf <(printf '%s\n' "${oldoptionalpkgs[@]}") <(printf '%s\n' "${optionalpkgs[@]}")))
+    for i in "${newoptionalpkgs[@]}"; do
+        Note "w" $"${colorW}$i${reset} is a ${colorY}new optional${reset} package"
     done
 
     # makepkg failure check
