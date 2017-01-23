@@ -1545,10 +1545,10 @@ GetJson() {
     if json_verify -q <<< "$2"; then
         case "$1" in
             var)
-                json_reformat <<< "$2" | tr -d "\", " | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
+                json_reformat <<< "$2" | tr -d "\", " | perl -ne "print \$& . \"\n\" if /$3:.*/" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
             varvar)
                 json_reformat <<< "$2" | tr -d ", " | sed -e "/\"Name\":\"$4\"/,/}/!d" | \
-                tr -d "\"" | grep -Po "$3:.*" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
+                tr -d "\"" | perl -ne "print \$& . \"\n\" if /$3:.*/" | sed -r "s/$3:/$3#/g" | awk -F "#" '{print $2}';;
             array)
                 json_reformat <<< "$2" | tr -d ", " | sed -e "/^\"$3\"/,/]/!d" | tr -d '\"' \
                 | tr '\n' ' ' | sed "s/] /]\n/g" | cut -d' ' -f 2- | tr -d '[]"' | tr -d '\n';;
