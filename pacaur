@@ -1067,10 +1067,12 @@ MakePkgs() {
         for i in "${errmakepkg[@]}"; do
             Note "f" $"failed to verify ${colorW}$i${reset} integrity"
         done
+        # remove sudo lock
+        [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
         exit 1
     fi
 
-    # set lock
+    # set build lock
     [[ -e "/run/lock/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in /run/lock" && exit 1
     sudo touch "/run/lock/pacaur.build.lck"
 
