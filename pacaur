@@ -1672,7 +1672,7 @@ trap Cancel INT
 Cancel() {
     echo
     [[ -e "/run/lock/pacaur.build.lck" ]] && sudo rm "/run/lock/pacaur.build.lck"
-    [[ -e "/run/user/$UID/sudov.lck" ]] && rm "/run/user/$UID/sudov.lck"
+    [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
     exit
 }
 
