@@ -1244,7 +1244,7 @@ InfoAur() {
         $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Maintainer" $"Popularity" $"Votes" $"Out of Date" $"Submitted" $"Last Modified")
     linfo=$(GetLength "${infolabel[@]}")
     # take into account differences between characters and bytes
-    for i in "${!infolabel[@]}"; do 
+    for i in "${!infolabel[@]}"; do
         (( lbytes[$i] = $(printf "${infolabel[$i]}" | wc -c) - ${#infolabel[$i]} + ${linfo} ))
     done
     maxlength=$(($(tput cols) - $linfo - 4))
@@ -1599,18 +1599,22 @@ Proceed() {
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
             if [[ ! $noconfirm ]]; then
-		case "$TERM" in
-		    dumb)
-			read -r answer
-			;;
-		    *)
-			[[ $cleancache ]] && read -r answer || read -r -n 1 answer
-			echo
-			;;
-		esac
+                case "$TERM" in
+                    dumb)
+                        read -r answer
+                        ;;
+                    *)
+                        if [[ $cleancache ]]; then
+                            read -r answer
+                        else
+                            read -r -n 1 answer
+                            echo
+                        fi
+                        ;;
+                esac
             else
                 answer=$Y
-		echo
+                echo
             fi
             case $answer in
                 $Y|$y|'') return 0;;
@@ -1618,18 +1622,22 @@ Proceed() {
             esac;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
             if [[ ! $noconfirm ]]; then
-		case "$TERM" in
-		    dumb)
-			read -r answer
-			;;
-		    *)
-			[[ $cleancache ]] && read -r answer || read -r -n 1 answer
-			echo
-			;;
-		esac
+                case "$TERM" in
+                    dumb)
+                        read -r answer
+                        ;;
+                    *)
+                        if [[ $cleancache ]]; then
+                            read -r answer
+                        else
+                            read -r -n 1 answer
+                            echo
+                        fi
+                        ;;
+                esac
             else
                 answer=$N
-		echo
+                echo
             fi
             case $answer in
                 $N|$n|'') return 0;;
