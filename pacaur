@@ -261,7 +261,22 @@ DepsSolver() {
     # no results check
     if [[ -n "${errdeps[@]}" ]]; then
         for i in "${errdeps[@]}"; do
-            Note "f" $"no results found for $i"
+            if [[ " ${aurpkgs[@]} " =~ " $i " ]]; then
+                Note "f" $"no results found for $i"
+            else
+                unset tsorterrdeps errdepslist currenterrdep
+                # find relevant tsorted deps chain
+                for j in "${deps[@]}"; do
+                    tsorterrdeps+=($j)
+                    [[ " $j " = " $i " ]] && break
+                done
+                # reverse deps order
+                tsorterrdeps=($(awk '{for (i=NF;i>=1;i--) print $i}' <<< ${tsorterrdeps[@]} | awk -F "\n" '{print}'))
+                errdepslist+=(${tsorterrdeps[0]})
+                FindDepsAurError ${tsorterrdeps[@]}
+                errdepslist=($(awk '{for (i=NF;i>=1;i--) print $i}' <<< ${errdepslist[@]} | awk -F "\n" '{print}'))
+                Note "f" $"no results found for $i (dependency tree: ${errdepslist[*]})"
+            fi
         done
         exit 1
     fi
@@ -455,6 +470,7 @@ SortDepsAur() {
         for j in "${!sortdepspkgs[@]}"; do
             sortdepspkgs[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${sortdepspkgs[$j]})
             sortdepspkgsaur+=($(GetJson "varvar" "$json" "Name" "${sortdepspkgs[$j]}"))
+            [[ " ${errdeps[@]} " =~ " ${sortdepspkgs[$j]} " ]] && sortdepspkgsaur+=("${sortdepspkgs[$j]}")
         done
 
         # prepare tsort list
@@ -477,6 +493,37 @@ SortDepsAur() {
     if [[ -n "${checkedsortdepspkgsaur[@]}" ]]; then
         checkedsortdepspkgsaur=($(tr ' ' '\n' <<< ${checkedsortdepspkgsaur[@]} | sort -u))
         SortDepsAur ${checkedsortdepspkgsaur[@]}
+    fi
+}
+
+FindDepsAurError() {
+    local i nexterrdep nextallerrdeps
+    # global errdepslist tsorterrdeps currenterrdep
+
+    for i in "${tsorterrdeps[@]}"; do
+        [[ ! " ${errdeps[@]} " =~ " $i " ]] && [[ ! " ${errdepslist[@]} " =~ " $i " ]] && nexterrdep="$i" && break
+    done
+
+    [[ -z "${currenterrdep[@]}" ]] && currenterrdep=${tsorterrdeps[0]}
+
+    if [[ ! " ${aurpkgs[@]} " =~ " $nexterrdep " ]]; then
+        nextallerrdeps=($(GetJson "arrayvar" "$json" "Depends" "$nexterrdep"))
+        nextallerrdeps+=($(GetJson "arrayvar" "$json" "MakeDepends" "$nexterrdep"))
+        nextallerrdeps+=($(GetJson "arrayvar" "$json" "CheckDepends" "$nexterrdep"))
+
+        # remove versioning
+        for i in "${!nextallerrdeps[@]}"; do
+            nextallerrdeps[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${nextallerrdeps[$i]})
+        done
+
+        if [[ " ${nextallerrdeps[@]} " =~ " $currenterrdep " ]]; then
+            errdepslist+=("$nexterrdep")
+            currenterrdep=${tsorterrdeps[0]}
+        fi
+        tsorterrdeps=(${tsorterrdeps[@]:1})
+        FindDepsAurError ${tsorterrdeps[@]}
+    else
+        errdepslist+=("$nexterrdep")
     fi
 }
 
