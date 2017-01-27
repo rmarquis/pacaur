@@ -229,7 +229,7 @@ DepsSolver() {
             [[ ! " ${aurpkgsnover[@]} " =~ " $i " ]] && continue
             [[ " $(GetJson "arrayvar" "$json" "Conflicts" "$i") " =~ " $i " ]] && continue
             Note "f" $"unresolvable package conflicts detected"
-            Note "e" $"failed to prepare transaction (conflicting dependencies)"
+            Note "e" $"failed to prepare transaction (conflicting dependencies: $i)"
         done
     fi
 
