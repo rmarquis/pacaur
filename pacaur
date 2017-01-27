@@ -354,9 +354,6 @@ FindDepsAur() {
 
     # remove deps provided by targets
     if [[ -n "${aurpkgsproviders[@]}" ]]; then
-        for i in "${!depspkgs[@]}"; do
-            depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-        done
         depspkgs=($(grep -xvf <(printf '%s\n' "${aurpkgsproviders[@]}") <(printf '%s\n' "${depspkgs[@]}")))
     fi
 
