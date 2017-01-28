@@ -197,7 +197,7 @@ IgnoreChecks() {
 
 DepsSolver() {
     local i aurpkgsname aurpkgsver aurpkgsaurver aurpkgsconflicts
-    # global aurpkgs aurpkgsnover aurpkgsproviders aurdeps deps json errdeps foreignpkgs repodeps depsAname depsAver depsAood depsQver
+    # global aurpkgs aurpkgsnover aurpkgsproviders aurdeps deps json errdeps errdepsnover foreignpkgs repodeps depsAname depsAver depsAood depsQver
     Note "i" $"resolving dependencies..."
 
     # remove AUR pkgs versioning
@@ -260,22 +260,22 @@ DepsSolver() {
 
     # no results check
     if [[ -n "${errdeps[@]}" ]]; then
-        for i in "${errdeps[@]}"; do
-            if [[ " ${aurpkgs[@]} " =~ " $i " ]]; then
-                Note "f" $"no results found for $i"
+        for i in "${!errdepsnover[@]}"; do
+            if [[ " ${aurpkgs[@]} " =~ " ${errdepsnover[$i]} " ]]; then
+                Note "f" $"no results found for ${errdepsnover[$i]}"
             else
                 unset tsorterrdeps errdepslist currenterrdep
                 # find relevant tsorted deps chain
                 for j in "${deps[@]}"; do
                     tsorterrdeps+=($j)
-                    [[ " $j " = " $i " ]] && break
+                    [[ " $j " = " ${errdepsnover[$i]} " ]] && break
                 done
                 # reverse deps order
                 tsorterrdeps=($(awk '{for (i=NF;i>=1;i--) print $i}' <<< ${tsorterrdeps[@]} | awk -F "\n" '{print}'))
                 errdepslist+=(${tsorterrdeps[0]})
                 FindDepsAurError ${tsorterrdeps[@]}
                 errdepslist=($(awk '{for (i=NF;i>=1;i--) print $i}' <<< ${errdepslist[@]} | awk -F "\n" '{print}'))
-                Note "f" $"no results found for $i (dependency tree: ${errdepslist[*]})"
+                Note "f" $"no results found for ${errdeps[$i]} (dependency tree: ${errdepslist[*]})"
             fi
         done
         exit 1
@@ -452,7 +452,7 @@ FindDepsAur() {
 
 SortDepsAur() {
     local i j sortaurpkgs sortdepspkgs sortdepspkgsaur
-    # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur json
+    # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur json errdepsnover
     [[ -z "${checkedsortdepspkgsaur[@]}" ]] && sortaurpkgs=(${aurpkgs[@]}) || sortaurpkgs=(${checkedsortdepspkgsaur[@]})
 
     unset checkedsortdepspkgsaur
@@ -463,11 +463,17 @@ SortDepsAur() {
         sortdepspkgs+=($(GetJson "arrayvar" "$json" "MakeDepends" "${sortaurpkgs[$i]}"))
         sortdepspkgs+=($(GetJson "arrayvar" "$json" "CheckDepends" "${sortaurpkgs[$i]}"))
 
+        # remove versioning
+        for j in "${!errdeps[@]}"; do
+            errdepsnover[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${errdeps[$j]})
+        done
+
         # check AUR deps only
         for j in "${!sortdepspkgs[@]}"; do
             sortdepspkgs[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${sortdepspkgs[$j]})
             sortdepspkgsaur+=($(GetJson "varvar" "$json" "Name" "${sortdepspkgs[$j]}"))
-            [[ " ${errdeps[@]} " =~ " ${sortdepspkgs[$j]} " ]] && sortdepspkgsaur+=("${sortdepspkgs[$j]}")
+            # add erroneous AUR deps
+            [[ " ${errdepsnover[@]} " =~ " ${sortdepspkgs[$j]} " ]] && sortdepspkgsaur+=("${sortdepspkgs[$j]}")
         done
 
         # prepare tsort list
@@ -495,10 +501,10 @@ SortDepsAur() {
 
 FindDepsAurError() {
     local i nexterrdep nextallerrdeps
-    # global errdepslist tsorterrdeps currenterrdep
+    # global errdepsnover errdepslist tsorterrdeps currenterrdep
 
     for i in "${tsorterrdeps[@]}"; do
-        [[ ! " ${errdeps[@]} " =~ " $i " ]] && [[ ! " ${errdepslist[@]} " =~ " $i " ]] && nexterrdep="$i" && break
+        [[ ! " ${errdepsnover[@]} " =~ " $i " ]] && [[ ! " ${errdepslist[@]} " =~ " $i " ]] && nexterrdep="$i" && break
     done
 
     [[ -z "${currenterrdep[@]}" ]] && currenterrdep=${tsorterrdeps[0]}
