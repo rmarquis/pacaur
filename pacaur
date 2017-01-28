@@ -686,7 +686,7 @@ ProviderChecks() {
 }
 
 ConflictChecks() {
-    local allQprovides allQconflicts Aprovides Aconflicts aurconflicts aurAconflicts i j k
+    local allQprovides allQconflicts Aprovides Aconflicts aurconflicts aurAconflicts Qrequires i j k
     local repodepsprovides repodepsconflicts checkedrepodepsconflicts repodepsconflictsname repodepsconflictsver localver repoconflictingpkgs
     # global deps depsAname json aurdepspkgs aurconflictingpkgs aurconflictingpkgsrm depsQver repodepspkgs repoconflictingpkgsrm repoprovidersconflictingpkgs
     Note "i" $"looking for inter-conflicts..."
@@ -741,7 +741,12 @@ ConflictChecks() {
                 else
                     Note "f" $"unresolvable package conflicts detected"
                     Note "f" $"failed to prepare transaction (conflicting dependencies)"
-                    Note "e" $"$j and $k are in conflict"
+                    if [[ $upgrade ]]; then
+                        Qrequires=($(expac -Q '%N' "$i"))
+                        Note "e" $"$j and $k are in conflict (required by ${Qrequires[*]})"
+                    else
+                        Note "e" $"$j and $k are in conflict"
+                    fi
                 fi
             fi
             Aprovides+=($(GetJson "arrayvar" "$json" "Provides" "$j"))
@@ -804,7 +809,12 @@ ConflictChecks() {
                 else
                     Note "f" $"unresolvable package conflicts detected"
                     Note "f" $"failed to prepare transaction (conflicting dependencies)"
-                    Note "e" $"$j and $k are in conflict"
+                    if [[ $upgrade ]]; then
+                        Qrequires=($(expac -Q '%N' "$i"))
+                        Note "e" $"$j and $k are in conflict (required by ${Qrequires[*]})"
+                    else
+                        Note "e" $"$j and $k are in conflict"
+                    fi
                 fi
             fi
             Qprovides=($(expac -Ss '%S' "^$k$"))
