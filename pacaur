@@ -68,13 +68,13 @@ source "$configdir/config"
 
 # source functions
 functiondir="/usr/share/pacaur"
-source "$functiondir/cache.sh.in"
-source "$functiondir/checks.sh.in"
-source "$functiondir/deps.sh.in"
-source "$functiondir/info.sh.in"
-source "$functiondir/main.sh.in"
-source "$functiondir/pkgs.sh.in"
-source "$functiondir/utils.sh.in"
+source "$functiondir/cache.sh"
+source "$functiondir/checks.sh"
+source "$functiondir/deps.sh"
+source "$functiondir/info.sh"
+source "$functiondir/main.sh"
+source "$functiondir/pkgs.sh"
+source "$functiondir/utils.sh"
 
 Usage() {
     printf "%s\n" $"usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
