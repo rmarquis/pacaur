@@ -47,7 +47,6 @@ IgnoreChecks() {
     NothingToDo ${aurpkgs[@]}
 }
 
-
 ProviderChecks() {
     local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
     # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
@@ -453,4 +452,3 @@ CheckRequires() {
         Note "e" $"${Qrequires[@]}: requires $@"
     fi
 }
-

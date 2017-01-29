@@ -1,4 +1,3 @@
-
 DepsSolver() {
     local i aurpkgsname aurpkgsver aurpkgsaurver aurpkgsconflicts
     # global aurpkgs aurpkgsnover aurpkgsproviders aurdeps deps json errdeps errdepsnover foreignpkgs repodeps depsAname depsAver depsAood depsQver
@@ -88,7 +87,6 @@ DepsSolver() {
     # return all binary deps
     FindDepsRepo ${repodeps[@]}
 }
-
 
 FindDepsAur() {
     local depspkgs depspkgstmp depspkgsaurtmp repodepstmp builtpkg vcsdepspkgs assumedepspkgs
@@ -255,7 +253,6 @@ FindDepsAur() {
     fi
 }
 
-
 SortDepsAur() {
     local i j sortaurpkgs sortdepspkgs sortdepspkgsaur
     # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur json errdepsnover
@@ -305,7 +302,6 @@ SortDepsAur() {
     fi
 }
 
-
 FindDepsAurError() {
     local i nexterrdep nextallerrdeps
     # global errdepsnover errdepslist tsorterrdeps currenterrdep
@@ -337,7 +333,6 @@ FindDepsAurError() {
     fi
 }
 
-
 FindDepsRepo() {
     local allrepopkgs providersrepopkgs providersrepopkgsrm i j
     # global repodeps
@@ -366,7 +361,6 @@ FindDepsRepo() {
 
     repodepspkgs=($($pacmanbin -T ${allrepopkgs[@]} | sort -u))
 }
-
 
 IgnoreDepsChecks() {
     local i
