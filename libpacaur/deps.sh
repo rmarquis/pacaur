@@ -1,3 +1,14 @@
+#!/bin/bash
+#
+#   deps.sh - functions related to dependency resolution
+#
+
+##
+# Dependency solver that wraps both pacman and AUR packages dependency
+# resolution.
+#
+# usage: DepsSolver()
+##
 DepsSolver() {
     local i aurpkgsname aurpkgsver aurpkgsaurver aurpkgsconflicts
     # global aurpkgs aurpkgsnover aurpkgsproviders aurdeps deps json errdeps errdepsnover foreignpkgs repodeps depsAname depsAver depsAood depsQver
@@ -93,6 +104,11 @@ DepsSolver() {
     FindDepsRepo ${repodeps[@]}
 }
 
+##
+# Find dependencies of AUR packages.
+#
+# usage: FindDepsAur( $aur_packages )
+##
 FindDepsAur() {
     local depspkgs depspkgstmp depspkgsaurtmp repodepstmp builtpkg vcsdepspkgs assumedepspkgs
     local aurversionpkgs aurversionpkgsname aurversionpkgsver aurversionpkgsaurver i j json
@@ -258,6 +274,11 @@ FindDepsAur() {
     fi
 }
 
+##
+# Sort dependencies to ensure correct resolution order.
+#
+# usage: SortDepsAur( $aur_packages )
+##
 SortDepsAur() {
     local i j sortaurpkgs sortdepspkgs sortdepspkgsaur
     # global checkedsortdepspkgsaur allcheckedsortdepspkgsaur json errdepsnover
@@ -307,6 +328,11 @@ SortDepsAur() {
     fi
 }
 
+##
+# Find dependency errors in AUR packages.
+#
+# usage: FindDepsAurError( $sorted_dependencies )
+##
 FindDepsAurError() {
     local i nexterrdep nextallerrdeps
     # global errdepsnover errdepslist tsorterrdeps currenterrdep
@@ -351,6 +377,11 @@ FindDepsAurError() {
     fi
 }
 
+##
+# Find dependencies of repository packages.
+#
+# usage: FindDepsRepo( $repo_packages )
+##
 FindDepsRepo() {
     local allrepopkgs providersrepopkgs providersrepopkgsrm i j
     # global repodeps
@@ -378,38 +409,4 @@ FindDepsRepo() {
     fi
 
     repodepspkgs=($($pacmanbin -T ${allrepopkgs[@]} | sort -u))
-}
-
-IgnoreDepsChecks() {
-    local i
-    # global ignoredpkgs aurpkgs aurdepspkgs rmaurpkgs deps repodepspkgs
-    [[ -z "${ignoredpkgs[@]}" ]] && return
-
-    # add checked targets
-    deps=(${aurpkgs[@]})
-
-    # check dependencies
-    for i in "${repodepspkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
-            Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
-        fi
-    done
-    for i in "${aurdepspkgs[@]}"; do
-        # skip already checked dependencies
-        [[ " ${aurpkgs[@]} " =~ " $i " ]] && continue
-        [[ " ${rmaurpkgs[@]} " =~ " $i " ]] && Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
-
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            if [[ ! $noconfirm ]]; then
-                if ! Proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                    Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
-                fi
-            else
-                Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
-                Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
-            fi
-        fi
-        deps+=($i)
-    done
 }

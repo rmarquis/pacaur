@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+#   utils.sh - utility functions
+#
+
+##
+# Print the string and ask user to accept or cancel the operation.
+#
+# usage: Proceed( $default_option, $string )
+##
 Proceed() {
     local Y y N n answer
     Y="$(gettext pacman Y)"; y="${Y,,}";
@@ -52,6 +62,12 @@ Proceed() {
     esac
 }
 
+##
+# Print the string with the selected format.
+# Current options: info (i), success (s), warning (w), fail (f), error (e).
+#
+# usage: Note( $option, $string )
+##
 Note() {
     case "$1" in
         i) echo -e "${colorB}::${reset} $2";;       # info
@@ -63,6 +79,11 @@ Note() {
     esac
 }
 
+##
+# Get number of characters of the string.
+#
+# usage: GetLength( $string, {$string_2, $string_3, ...} )
+##
 GetLength() {
     local length=0 i
     for i in "$@"; do
@@ -72,10 +93,21 @@ GetLength() {
     echo $length
 }
 
+##
+# Print a message if there is nothing to do and exit the application. Just
+# return if there is any argument.
+#
+# usage: NothingToDo( $arguments )
+##
 NothingToDo() {
     [[ -z "$@" ]] && printf "%s\n" $" there is nothing to do" && exit || return 0
 }
 
+##
+# Keep sudo permissions active. This command should be run on the background.
+#
+# usage: SudoV() &
+##
 SudoV() {
     touch "$tmpdir/pacaur.sudov.lck"
     while [[ -e "$tmpdir/pacaur.sudov.lck" ]]; do
@@ -85,6 +117,11 @@ SudoV() {
 }
 
 trap Cancel INT
+##
+# Delete lock files and exit the application.
+#
+# usage: Cancel()
+##
 Cancel() {
     echo
     [[ -e "$tmpdir/pacaur.build.lck" ]] && rm "$tmpdir/pacaur.build.lck"

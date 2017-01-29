@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+#   checks.sh - functions related to checking operations
+#
+
+##
+# Check packages that are ignored on upgrade or installation.
+#
+# usage: IgnoreChecks()
+##
 IgnoreChecks() {
     local checkaurpkgs checkaurpkgsAver checkaurpkgsQver i json
     # global aurpkgs rmaurpkgs
@@ -47,6 +57,49 @@ IgnoreChecks() {
     NothingToDo ${aurpkgs[@]}
 }
 
+##
+# Check ignored packages needed as dependencies.
+#
+# usage: IgnoreDepsChecks()
+##
+IgnoreDepsChecks() {
+    local i
+    # global ignoredpkgs aurpkgs aurdepspkgs rmaurpkgs deps repodepspkgs
+    [[ -z "${ignoredpkgs[@]}" ]] && return
+
+    # add checked targets
+    deps=(${aurpkgs[@]})
+
+    # check dependencies
+    for i in "${repodepspkgs[@]}"; do
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+            Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
+        fi
+    done
+    for i in "${aurdepspkgs[@]}"; do
+        # skip already checked dependencies
+        [[ " ${aurpkgs[@]} " =~ " $i " ]] && continue
+        [[ " ${rmaurpkgs[@]} " =~ " $i " ]] && Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
+
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            if [[ ! $noconfirm ]]; then
+                if ! Proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
+                fi
+            else
+                Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
+            fi
+        fi
+        deps+=($i)
+    done
+}
+##
+# Check providers of packages and dependencies.
+#
+# usage: ProviderChecks()
+##
 ProviderChecks() {
     local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
     # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
@@ -139,6 +192,11 @@ ProviderChecks() {
     fi
 }
 
+##
+# Check conflicting packages and dependencies.
+#
+# usage: ConflictChecks()
+##
 ConflictChecks() {
     local allQprovides allQconflicts Aprovides Aconflicts aurconflicts aurAconflicts Qrequires i j k
     local repodepsprovides repodepsconflicts checkedrepodepsconflicts repodepsconflictsname repodepsconflictsver localver repoconflictingpkgs
@@ -277,6 +335,11 @@ ConflictChecks() {
     done
 }
 
+##
+# Check and notify which packages are marked to be reinstalled.
+#
+# usage: ReinstallChecks()
+##
 ReinstallChecks() {
     local i depsAtmp
     # global aurpkgs aurdepspkgs deps aurconflictingpkgs depsAname depsQver depsAver depsAood depsAmain
@@ -302,6 +365,11 @@ ReinstallChecks() {
     NothingToDo ${deps[@]}
 }
 
+##
+# Check out of date packages.
+#
+# usage: OutofdateChecks()
+##
 OutofdateChecks() {
     local i
     # global depsAname depsAver depsAood
@@ -310,6 +378,11 @@ OutofdateChecks() {
     done
 }
 
+##
+# Check orphaned packages.
+#
+# usage: OrphanChecks()
+##
 OrphanChecks() {
     local i
     # global depsAname depsAver depsAmain
@@ -318,6 +391,11 @@ OrphanChecks() {
     done
 }
 
+##
+# Check which packages need to be updated.
+#
+# usage: CheckUpdates( $packages )
+##
 CheckUpdates() {
     local foreignpkgs foreignpkgsbase repopkgsQood repopkgsQver repopkgsSver repopkgsSrepo repopkgsQgrp repopkgsQignore
     local aurpkgsQood aurpkgsAname aurpkgsAver aurpkgsQver aurpkgsQignore i json
@@ -444,6 +522,11 @@ CheckUpdates() {
     fi
 }
 
+##
+# Check that all dependencies required by the packages are satisfied.
+#
+# usage: CheckRequires( $packages )
+##
 CheckRequires() {
     local Qrequires
     Qrequires=($(expac -Q '%n %D' | grep -E " $@[\+]*[^a-zA-Z0-9_@\.\+-]+" | awk '{print $1}' | tr '\n' ' '))

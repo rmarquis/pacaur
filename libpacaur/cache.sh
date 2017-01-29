@@ -1,3 +1,14 @@
+#!/bin/bash
+#
+#   cache.sh - functions related to cache management
+#
+
+##
+# Clean AUR cache, including sources and clone directories. This function let
+# users select what content is deleted.
+#
+# usage: CleanCache( $packages )
+##
 CleanCache() {
     if [[ $SRCDEST ]]; then
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Sources to keep:" $"All development packages sources"

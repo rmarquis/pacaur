@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+#   info.sh - functions to query information
+#
+
+##
+# Search packages in the AUR
+#
+# usage: SearchAur( $packages )
+##
 SearchAur() {
     if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
         [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
@@ -5,6 +15,11 @@ SearchAur() {
     cower ${coweropts[@]} -- $@
 }
 
+##
+# Fetch and print formatted information of AUR packages
+#
+# usage: InfoAur( $aur_packages )
+##
 InfoAur() {
     local aurinfopkgs info infolabel maxlength linfo lbytes
 

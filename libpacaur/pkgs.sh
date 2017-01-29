@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+#   pkgs.sh - functions related to operations with packages
+#
+
+##
+# Classify the list of packages given into repository packages and AUR packages.
+#
+# usage: ClassifyPkgs( $packages )
+##
 ClassifyPkgs() {
     local noaurpkgs norepopkgs
     # global aurpkgs repopkgs
@@ -21,6 +31,12 @@ ClassifyPkgs() {
     fi
 }
 
+##
+# Download AUR packages into their corresponding clone directory. If the clone
+# directory exists, it cleans and updates the package git repository.
+#
+# usage: DownloadPkgs( $aur_packages )
+##
 DownloadPkgs() {
     local i
     # global basepkgs
@@ -44,6 +60,11 @@ DownloadPkgs() {
     [[ -z "${basepkgs[@]}" ]] && Note "e" $"no results found"
 }
 
+##
+# Show PKGBUILD and installation scripts of the AUR packages.
+#
+# usage: EditPkgs( $aur_packages )
+##
 EditPkgs() {
     local viewed timestamp i j erreditpkg
     # global cachedpkgs installscripts editor
@@ -130,6 +151,11 @@ EditPkgs() {
     fi
 }
 
+##
+# Build and install AUR packages using 'makepkg'.
+#
+# usage: MakePkgs()
+##
 MakePkgs() {
     local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs errinstall
     local pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
@@ -366,6 +392,11 @@ MakePkgs() {
     fi
 }
 
+##
+# Get the list of ignored packages from pacman and cower configuration files.
+#
+# usage: GetIgnoredPkgs()
+##
 GetIgnoredPkgs() {
     # global ignoredpkgs
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
@@ -373,6 +404,11 @@ GetIgnoredPkgs() {
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
 
+##
+# Get the complete path of built package.
+#
+# usage: GetBuiltPkg( $package_ver, $package_dest )
+##
 GetBuiltPkg() {
     local pkgext
     # global builtpkg
@@ -386,6 +422,11 @@ GetBuiltPkg() {
     [[ ! -f "$builtpkg" ]] && unset builtpkg
 }
 
+##
+# Get packages base from JSON cache.
+#
+# usage: GetPkgbase( $aur_packages )
+##
 GetPkgbase() {
     local i
     # global json pkgsbase basepkgs
@@ -399,6 +440,11 @@ GetPkgbase() {
     done
 }
 
+##
+# Get install scripts of the AUR package.
+#
+# usage: GetInstallScripts( $aur_package )
+##
 GetInstallScripts() {
     local installscriptspath
     # global installscripts
@@ -409,6 +455,11 @@ GetInstallScripts() {
 }
 
 declare -A jsoncache
+##
+# Configure JSON cache for list of packages.
+#
+# usage: SetJson( $aur_packages )
+##
 SetJson() {
     if [[ $# -eq 0 ]]; then
         json="{}"
@@ -421,6 +472,15 @@ SetJson() {
     fi
 }
 
+##
+# Download JSON information of the list of packages.
+#
+# usage: DownloadJson( $aur_packages )
+#
+# NOTE: This function prints downloaded JSON information, this information can
+# be stored in a array. For example:
+# json_array[$packages]="$(DownloadJson $packages)"
+##
 DownloadJson() {
     local urlencodedpkgs urlargs urlcurl urlarg urlmax j
     urlencodedpkgs=($(sed 's/+/%2b/g;s/@/%40/g' <<< $@)) # pkgname consists of alphanum@._+-
@@ -444,6 +504,24 @@ DownloadJson() {
     fi
 }
 
+##
+# Query information from the JSON cache. This function has several formatting
+# options:
+#   - "var"     : print output formatted to be stored in a variable, process
+#                 the entire JSON cache.
+#   - "varvar"  : print output formatted to be stored in a variable, process
+#                 only one package.
+#   - "array"   : print output formatted to be stored in an array, process
+#                 the entire JSON cache.
+#   - "arrayvar": print output formatted to be stored in an array, process
+#                 only one package.
+#
+# usage: GetJson( $option, $json_info, $query, {$aur_package} )
+#
+# NOTE: This function prints formatted JSON information, this information can
+# be stored in a array or variable depending on the option given. For example:
+# version="$(GetJson "varvar" $json "Version" $package)"
+##
 GetJson() {
     if json_verify -q <<< "$2"; then
         case "$1" in

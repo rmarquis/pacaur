@@ -1,3 +1,13 @@
+#!/bin/bash
+#
+#   main.sh - functions related to top level operations
+#
+
+##
+# Start core functionality of the application.
+#
+# usage: Core()
+##
 Core() {
     GetIgnoredPkgs
     [[ $upgrade ]] && UpgradeAur
@@ -13,6 +23,11 @@ Core() {
     MakePkgs
 }
 
+##
+# Upgrade needed AUR packages.
+#
+# usage: UpgradeAur()
+##
 UpgradeAur() {
     local foreignpkgs allaurpkgs allaurpkgsAver allaurpkgsQver aurforeignpkgs i json
     # global aurpkgs
@@ -51,6 +66,11 @@ UpgradeAur() {
     NothingToDo ${aurpkgs[@]}
 }
 
+##
+# Format output information of the current operation and ask user to continue.
+#
+# usage: Prompt()
+##
 Prompt() {
     local i binaryksize sumk summ builtpkg cachedpkgs strname stroldver strnewver strsize action
     local depsver repodepspkgsver strrepodlsize strrepoinsize strsumk strsumm lreposizelabel lreposize
