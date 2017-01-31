@@ -49,7 +49,7 @@ msgid "no results found for $i"
 msgstr "nenhum resultado encontrado para $i"
 
 #: pacaur:358
-msgid "dependency cycle detected"
+msgid "dependency cycle detected (${depspkgsaur[*]})"
 msgstr ""
 
 #: pacaur:426 pacaur:441
