@@ -67,8 +67,8 @@ msgid "no results found for $i"
 msgstr "geen resultaten gevonden voor $i"
 
 #: pacaur:419
-msgid "dependency cycle detected"
-msgstr "afhankelijkheidscyclus gedetecteerd"
+msgid "dependency cycle detected (${depspkgsaur[*]})"
+msgstr "afhankelijkheidscyclus gedetecteerd (${depspkgsaur[*]})"
 
 #: pacaur:522 pacaur:537
 msgid "${colorW}$i${reset}: ignoring package upgrade"

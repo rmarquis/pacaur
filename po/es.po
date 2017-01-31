@@ -63,8 +63,8 @@ msgstr ""
 "${errdepslist[*]})"
 
 #: pacaur:432
-msgid "dependency cycle detected"
-msgstr "bucle de dependencias detectado"
+msgid "dependency cycle detected (${depspkgsaur[*]})"
+msgstr "bucle de dependencias detectado (${depspkgsaur[*]})"
 
 #: pacaur:573 pacaur:588
 msgid "${colorW}$i${reset}: ignoring package upgrade"
