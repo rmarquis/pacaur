@@ -247,6 +247,11 @@ DepsSolver() {
     SortDepsAur ${aurpkgs[@]}
     deps=($(tsort <<< ${tsortdeps[@]}))
 
+    # error check
+    if (($? > 0)); then
+        Note "e" $"dependency cycle detected"
+    fi
+
     # get AUR packages info
     depsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
     depsAver=($(GetJson "var" "$json" "Version"))
