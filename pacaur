@@ -429,7 +429,7 @@ FindDepsAur() {
     fi
 
     # dependency cycle check
-    [[ -n "${prevdepspkgsaur[@]}" ]] && [[ "${prevdepspkgsaur[*]}" == "${depspkgsaur[*]}" ]] && Note "e" $"dependency cycle detected"
+    [[ -n "${prevdepspkgsaur[@]}" ]] && [[ "${prevdepspkgsaur[*]}" == "${depspkgsaur[*]}" ]] && Note "e" $"dependency cycle detected (${depspkgsaur[*]})"
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # store for AUR version check
