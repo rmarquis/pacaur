@@ -426,6 +426,8 @@ B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "HerrNieschnell", "pszalanski", St
 
 B<[es] - Español> - Germán "gosella" Osella Massa, Ismael "ChuckDaniels87" González
 
+B<[fi] - Suomi> - "durazell"
+
 B<[fr] - Français> - "spider-mario", "Neitsab", Antoine "Nevax07" Gravelot
 
 B<[hu] - Magyar> - "avelkei"
