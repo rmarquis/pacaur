@@ -448,6 +448,8 @@ B<[ru] - Русский> - "kyak"
 
 B<[sk] - Slovenčina> - Pavol "pakapusta" Kapusta, Juraj "DoctorJellyface" Fiala
 
+B<[sl] - Slovenščina> - Žan "tofiffe" Skamljič
+
 B<[sr] - Српски / srpski> - Slobodan "Faenriis" Terzić
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
