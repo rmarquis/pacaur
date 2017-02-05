@@ -264,8 +264,8 @@ msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "${colorW}$i${reset} eheystarkistus epäonnistui"
 
 #: pacaur:1071
-msgid "pacaur.build.lck exists in /run/lock"
-msgstr "pacaur.build.lck löytyy kansiosta /run/lock"
+msgid "pacaur.build.lck exists in /run/user/$UID"
+msgstr "pacaur.build.lck löytyy kansiosta /run/user/$UID"
 
 #: pacaur:1076
 msgid ""
