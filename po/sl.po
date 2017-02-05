@@ -277,8 +277,8 @@ msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "ni bilo mogoče zagotoviti integritete ${colorW}$i${reset}"
 
 #: pacaur:1141
-msgid "pacaur.build.lck exists in /run/lock"
-msgstr "pacaur.build.lck obstaja v /run/lock"
+msgid "pacaur.build.lck exists in /run/user/$UID"
+msgstr "pacaur.build.lck obstaja v /run/user/$UID"
 
 #: pacaur:1146
 msgid ""
