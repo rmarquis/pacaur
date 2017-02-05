@@ -1138,8 +1138,8 @@ MakePkgs() {
     fi
 
     # set build lock
-    [[ -e "/run/lock/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in /run/lock" && exit 1
-    sudo touch "/run/lock/pacaur.build.lck"
+    [[ -e "/run/user/$UID/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in /run/user/$UID" && exit 1
+    touch "/run/user/$UID/pacaur.build.lck"
 
     # install provider packages and repo conflicting packages that makepkg --noconfirm cannot handle
     if [[ -n "${repoprovidersconflictingpkgs[@]}" ]]; then
@@ -1266,7 +1266,7 @@ MakePkgs() {
     fi
 
     # remove locks
-    sudo rm "/run/lock/pacaur.build.lck"
+    rm "/run/user/$UID/pacaur.build.lck"
     [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
 
     # new orphan and optional packages check
@@ -1746,7 +1746,7 @@ SudoV() {
 trap Cancel INT
 Cancel() {
     echo
-    [[ -e "/run/lock/pacaur.build.lck" ]] && sudo rm "/run/lock/pacaur.build.lck"
+    [[ -e "/run/user/$UID/pacaur.build.lck" ]] && rm "/run/user/$UID/pacaur.build.lck"
     [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
     exit
 }
