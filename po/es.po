@@ -270,8 +270,8 @@ msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "fallo al verificar la integridad de ${colorW}$i${reset}"
 
 #: pacaur:1136
-msgid "pacaur.build.lck exists in /run/lock"
-msgstr "pacaur.build.lck existe en /run/lock"
+msgid "pacaur.build.lck exists in /run/user/$UID"
+msgstr "pacaur.build.lck existe en /run/user/$UID"
 
 #: pacaur:1141
 msgid ""
