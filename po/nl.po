@@ -266,8 +266,8 @@ msgid "failed to verify ${colorW}$i${reset} integrity"
 msgstr "kon de integriteit van ${colorW}$i${reset} niet verifiëren"
 
 #: pacaur:1070
-msgid "pacaur.build.lck exists in /run/user/$UID"
-msgstr "pacaur.build.lck bestaat in /run/user/$UID"
+msgid "pacaur.build.lck exists in $tmpdir"
+msgstr "pacaur.build.lck bestaat in $tmpdir"
 
 #: pacaur:1075
 msgid ""
