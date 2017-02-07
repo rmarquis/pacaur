@@ -29,6 +29,7 @@ configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/pacaur"
 userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
 userpacmandir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacman"
 usercachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/pacaur"
+tmpdir="${XDG_RUNTIME_DIR:-/tmp}"
 
 # source makepkg variables
 if [[ -r "$MAKEPKG_CONF" ]]; then
@@ -1133,13 +1134,13 @@ MakePkgs() {
             Note "f" $"failed to verify ${colorW}$i${reset} integrity"
         done
         # remove sudo lock
-        [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
+        [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
         exit 1
     fi
 
     # set build lock
-    [[ -e "/run/user/$UID/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in /run/user/$UID" && exit 1
-    touch "/run/user/$UID/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in $tmpdir" && exit 1
+    touch "$tmpdir/pacaur.build.lck"
 
     # install provider packages and repo conflicting packages that makepkg --noconfirm cannot handle
     if [[ -n "${repoprovidersconflictingpkgs[@]}" ]]; then
@@ -1266,8 +1267,8 @@ MakePkgs() {
     fi
 
     # remove locks
-    rm "/run/user/$UID/pacaur.build.lck"
-    [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
+    rm "$tmpdir/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
 
     # new orphan and optional packages check
     orphanpkgs=($($pacmanbin -Qdtq))
@@ -1736,8 +1737,8 @@ NothingToDo() {
 }
 
 SudoV() {
-    touch "/run/user/$UID/pacaur.sudov.lck"
-    while [[ -e "/run/user/$UID/pacaur.sudov.lck" ]]; do
+    touch "$tmpdir/pacaur.sudov.lck"
+    while [[ -e "$tmpdir/pacaur.sudov.lck" ]]; do
         sudo $pacmanbin -V > /dev/null
         sleep 2
     done
@@ -1746,8 +1747,8 @@ SudoV() {
 trap Cancel INT
 Cancel() {
     echo
-    [[ -e "/run/user/$UID/pacaur.build.lck" ]] && rm "/run/user/$UID/pacaur.build.lck"
-    [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
+    [[ -e "$tmpdir/pacaur.build.lck" ]] && rm "$tmpdir/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
     exit
 }
 
@@ -1997,7 +1998,7 @@ case $operation in
                     fi
                 fi
                 # display info without buffer delay
-                tmpinfo=$(mktemp "/run/user/$UID/pacaur.infoaur.XXXX") && InfoAur ${aurpkgs[@]} > $tmpinfo && cat $tmpinfo && rm $tmpinfo
+                tmpinfo=$(mktemp "$tmpdir/pacaur.infoaur.XXXX") && InfoAur ${aurpkgs[@]} > $tmpinfo && cat $tmpinfo && rm $tmpinfo
             fi
         # clean (-Sc) handling
         elif [[ $cleancache ]]; then
