@@ -1943,7 +1943,11 @@ case $operation in
             DepsSolver
             DownloadPkgs ${deps[@]}
         else
-            [[ -n "${aurpkgs[@]}" ]] && DownloadPkgs ${aurpkgs[@]} || exit 1
+            if [[ -n "${aurpkgs[@]}" ]]; then
+                DownloadPkgs ${aurpkgs[@]}
+            else
+                exit 1
+            fi
         fi
         EditPkgs ${pkgsbase[@]}
         exit;;
