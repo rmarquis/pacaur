@@ -2,6 +2,12 @@
 
 =head1 NAME
 
+=begin HTML
+
+<p><a href="https://gitter.im/rmarquis/pacaur?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"><img src="https://badges.gitter.im/rmarquis/pacaur.svg" alt="Join the chat at https://gitter.im/rmarquis/pacaur"></a></p>
+
+=end HTML
+
 pacaur - an AUR helper that minimizes user interaction
 
 =head1 SYNOPSIS
