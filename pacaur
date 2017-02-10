@@ -1061,7 +1061,7 @@ EditPkgs() {
 }
 
 MakePkgs() {
-    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs
+    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs errinstall
     local pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
     # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs json
 
@@ -1240,8 +1240,12 @@ MakePkgs() {
         if [[ $installpkg || -z "${builtpkgs[@]}" ]]; then
             Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
             # metadata mismatch warning
-            [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]] && Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
-            [[ -n "${builtdepspkgs[@]}" || -n "${builtpkgs[@]}" ]] && sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+            if [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]]; then
+                Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
+                errinstall+=(${pkgsdeps[$i]})
+            else
+                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+            fi
         fi
 
         # set dep status
@@ -1283,8 +1287,8 @@ MakePkgs() {
         Note "w" $"${colorW}$i${reset} is now an ${colorY}optional${reset} package"
     done
 
-    # makepkg failure check
-    if [[ -n "${errmakepkg[@]}" ]]; then
+    # makepkg and install failure check
+    if [[ -n "${errmakepkg[@]}" || -n "${errinstall[@]}" ]]; then
         for i in "${errmakepkg[@]}"; do
             Note "f" $"failed to build ${colorW}$i${reset} package(s)"
         done
