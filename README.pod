@@ -454,3 +454,5 @@ B<[sr] - Српски / srpski> - Slobodan "Faenriis" Terzić
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
 
+B<[zh_CN] - 简化中文> - "kizayoi"
+
