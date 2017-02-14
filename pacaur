@@ -1935,7 +1935,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
-[[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" && -n "$(grep -e "-[DRU]" <<< ${pacmanarg[@]})" && -z "$(grep -e "-[h]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 
 # operations
