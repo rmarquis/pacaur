@@ -4,7 +4,7 @@
 # pacaur: an AUR helper that minimizes user interaction
 #
 
-version="4.7.2"
+version="4.7.5"
 
 #
 # Config
@@ -882,7 +882,7 @@ Prompt() {
         summ=0
         for i in "${!repodepspkgs[@]}"; do
             GetBuiltPkg "${repodepspkgs[$i]}-${repodepsSver[$i]}" '/var/cache/pacman/pkg'
-            [[ $builtpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
+            [[ $builtpkg ]] && binaryksize[$i]=0
             sumk=$((sumk + ${binaryksize[$i]}))
             summ=$((summ + ${binarymsize[$i]}))
         done
@@ -1061,7 +1061,7 @@ EditPkgs() {
 }
 
 MakePkgs() {
-    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs
+    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs errinstall
     local pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
     # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs json
 
@@ -1216,9 +1216,9 @@ MakePkgs() {
         fi
 
         if [[ $silent = true ]]; then
-            makepkg -sfc ${makeopts[@]} --noconfirm &>/dev/null
+            makepkg -sefc ${makeopts[@]} --noconfirm &>/dev/null
         else
-            makepkg -sfc ${makeopts[@]} --noconfirm
+            makepkg -sefc ${makeopts[@]} --noconfirm
         fi
 
         # error check
@@ -1240,8 +1240,12 @@ MakePkgs() {
         if [[ $installpkg || -z "${builtpkgs[@]}" ]]; then
             Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
             # metadata mismatch warning
-            [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]] && Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
-            [[ -n "${builtdepspkgs[@]}" || -n "${builtpkgs[@]}" ]] && sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+            if [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]]; then
+                Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
+                errinstall+=(${pkgsdeps[$i]})
+            else
+                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+            fi
         fi
 
         # set dep status
@@ -1283,8 +1287,8 @@ MakePkgs() {
         Note "w" $"${colorW}$i${reset} is now an ${colorY}optional${reset} package"
     done
 
-    # makepkg failure check
-    if [[ -n "${errmakepkg[@]}" ]]; then
+    # makepkg and install failure check
+    if [[ -n "${errmakepkg[@]}" || -n "${errinstall[@]}" ]]; then
         for i in "${errmakepkg[@]}"; do
             Note "f" $"failed to build ${colorW}$i${reset} package(s)"
         done
@@ -1931,7 +1935,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
-[[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" && -z "$(grep -e "-[h]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 
 # operations
@@ -1943,7 +1947,11 @@ case $operation in
             DepsSolver
             DownloadPkgs ${deps[@]}
         else
-            [[ -n "${aurpkgs[@]}" ]] && DownloadPkgs ${aurpkgs[@]} || exit 1
+            if [[ -n "${aurpkgs[@]}" ]]; then
+                DownloadPkgs ${aurpkgs[@]}
+            else
+                exit 1
+            fi
         fi
         EditPkgs ${pkgsbase[@]}
         exit;;

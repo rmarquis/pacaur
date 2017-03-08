@@ -426,7 +426,7 @@ B<[da] - Dansk> - Filip "filipkemuel" Kemuel
 
 B<[de] - Deutsch> - Marco "BigBoot" Kirchner, "HerrNieschnell", "pszalanski", Stefan "rumpelsepp" Tatschner, Tilman "Tblue" Blumenbach
 
-B<[es] - Español> - Germán "gosella" Osella Massa, Ismael "ChuckDaniels87" González
+B<[es] - Español> - Germán "gosella" Osella Massa, Ismael "ChuckDaniels87" González, Pablo "jristz" Lezaeta Reyes
 
 B<[fi] - Suomi> - "durazell"
 
@@ -453,4 +453,6 @@ B<[sl] - Slovenščina> - Žan "tofiffe" Skamljič
 B<[sr] - Српски / srpski> - Slobodan "Faenriis" Terzić
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
+
+B<[zh_CN] - 简化中文> - "kizayoi"
 
