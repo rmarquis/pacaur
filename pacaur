@@ -4,7 +4,7 @@
 # pacaur: an AUR helper that minimizes user interaction
 #
 
-version="4.6.10"
+version="5.0.0"
 
 #
 # Config
@@ -29,6 +29,7 @@ configdir="${XDG_CONFIG_DIRS:-/etc/xdg}/pacaur"
 userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
 userpacmandir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacman"
 usercachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/pacaur"
+tmpdir="${XDG_RUNTIME_DIR:-/tmp}"
 
 # source makepkg variables
 if [[ -r "$MAKEPKG_CONF" ]]; then
@@ -252,10 +253,10 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
-[[ ! $(command -v "$editor") ]] && Note "e" $"${colorW}editor${reset} variable unset"
+[[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}editor${reset} variable unset"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
-[[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
+[[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" && -z "$(grep -e "-[h]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
 
 # operations
@@ -267,7 +268,11 @@ case $operation in
             DepsSolver
             DownloadPkgs ${deps[@]}
         else
-            [[ -n "${aurpkgs[@]}" ]] && DownloadPkgs ${aurpkgs[@]} || exit 1
+            if [[ -n "${aurpkgs[@]}" ]]; then
+                DownloadPkgs ${aurpkgs[@]}
+            else
+                exit 1
+            fi
         fi
         EditPkgs ${pkgsbase[@]}
         exit;;
@@ -322,7 +327,7 @@ case $operation in
                     fi
                 fi
                 # display info without buffer delay
-                tmpinfo=$(mktemp "/run/user/$UID/pacaur.infoaur.XXXX") && InfoAur ${aurpkgs[@]} > $tmpinfo && cat $tmpinfo && rm $tmpinfo
+                tmpinfo=$(mktemp "$tmpdir/pacaur.infoaur.XXXX") && InfoAur ${aurpkgs[@]} > $tmpinfo && cat $tmpinfo && rm $tmpinfo
             fi
         # clean (-Sc) handling
         elif [[ $cleancache ]]; then
