@@ -251,15 +251,15 @@ msgstr "No se pudo abrir el PKGBUILD de ${colorW}$i${reset}"
 
 #: pacaur:1015
 msgid "View $j script?"
-msgstr "¿Ver el script de instalación $j?"
+msgstr "¿Ver el «script» de instalación $j?"
 
 #: pacaur:1017 pacaur:1038
 msgid "${colorW}$j${reset} script viewed"
-msgstr "visto el script de instalación de ${colorW}$j${reset}"
+msgstr "visto el «script» de instalación de ${colorW}$j${reset}"
 
 #: pacaur:1020 pacaur:1041
 msgid "Could not open ${colorW}$j${reset} script"
-msgstr "No se pudo abrir el script de instalación de ${colorW}$j${reset}"
+msgstr "No se pudo abrir el «script» de instalación de ${colorW}$j${reset}"
 
 #: pacaur:1050
 msgid "${colorW}$i${reset} errored on exit"
@@ -630,8 +630,8 @@ msgstr ""
 #: pacaur:1782
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
-"   -e, --edit       editar el PKGBUILD de objetivo(s) y ver el script de "
-"instalación"
+"   -e, --edit       editar el PKGBUILD de objetivo(s) y ver el «script»"
+"de instalación"
 
 #: pacaur:1783
 msgid "   -q, --quiet      show less information for query and search"
