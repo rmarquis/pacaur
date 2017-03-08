@@ -24,7 +24,7 @@ UpgradeAur() {
     else
         foreignpkgs=($($pacmanbin -Qmq))
         SetJson ${foreignpkgs[@]}
-        allaurpkgs=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+        allaurpkgs=($(GetJson "var" "$json" "Name"))
         allaurpkgsAver=($(GetJson "var" "$json" "Version"))
         allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
         for i in "${!allaurpkgs[@]}"; do
@@ -63,7 +63,7 @@ Prompt() {
         summ=0
         for i in "${!repodepspkgs[@]}"; do
             GetBuiltPkg "${repodepspkgs[$i]}-${repodepsSver[$i]}" '/var/cache/pacman/pkg'
-            [[ $builtpkg ]] && binaryksize=(${binaryksize[@]/${binaryksize[$i]}/0})
+            [[ $builtpkg ]] && binaryksize[$i]=0
             sumk=$((sumk + ${binaryksize[$i]}))
             summ=$((summ + ${binarymsize[$i]}))
         done

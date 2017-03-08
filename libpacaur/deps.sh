@@ -50,8 +50,13 @@ DepsSolver() {
     SortDepsAur ${aurpkgs[@]}
     deps=($(tsort <<< ${tsortdeps[@]}))
 
+    # error check
+    if (($? > 0)); then
+        Note "e" $"dependency cycle detected"
+    fi
+
     # get AUR packages info
-    depsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+    depsAname=($(GetJson "var" "$json" "Name"))
     depsAver=($(GetJson "var" "$json" "Version"))
     depsAood=($(GetJson "var" "$json" "OutOfDate"))
     depsAmain=($(GetJson "var" "$json" "Maintainer"))
@@ -232,7 +237,7 @@ FindDepsAur() {
     fi
 
     # dependency cycle check
-    [[ -n "${prevdepspkgsaur[@]}" ]] && [[ "${prevdepspkgsaur[*]}" == "${depspkgsaur[*]}" ]] && Note "e" $"dependency cycle detected"
+    [[ -n "${prevdepspkgsaur[@]}" ]] && [[ "${prevdepspkgsaur[*]}" == "${depspkgsaur[*]}" ]] && Note "e" $"dependency cycle detected (${depspkgsaur[*]})"
 
     if [[ -n "${depspkgsaur[@]}" ]]; then
         # store for AUR version check

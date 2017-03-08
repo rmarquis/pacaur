@@ -131,7 +131,7 @@ EditPkgs() {
 }
 
 MakePkgs() {
-    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs
+    local oldorphanpkgs neworphanpkgs orphanpkgs oldoptionalpkgs newoptionalpkgs optionalpkgs errinstall
     local pkgsdepslist vcsclients vcschecked aurdevelpkgsAver aurdevelpkgsQver basepkgsupdate checkpkgsdepslist isaurdeps builtpkgs builtdepspkgs i j
     # global deps basepkgs sudoloop pkgsbase pkgsdeps aurpkgs aurdepspkgs depsAver builtpkg errmakepkg repoprovidersconflictingpkgs aurprovidersconflictingpkgs json
 
@@ -204,13 +204,13 @@ MakePkgs() {
             Note "f" $"failed to verify ${colorW}$i${reset} integrity"
         done
         # remove sudo lock
-        [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
+        [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
         exit 1
     fi
 
     # set build lock
-    [[ -e "/run/lock/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in /run/lock" && exit 1
-    sudo touch "/run/lock/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in $tmpdir" && exit 1
+    touch "$tmpdir/pacaur.build.lck"
 
     # install provider packages and repo conflicting packages that makepkg --noconfirm cannot handle
     if [[ -n "${repoprovidersconflictingpkgs[@]}" ]]; then
@@ -286,9 +286,9 @@ MakePkgs() {
         fi
 
         if [[ $silent = true ]]; then
-            makepkg -sfc ${makeopts[@]} --noconfirm &>/dev/null
+            makepkg -sefc ${makeopts[@]} --noconfirm &>/dev/null
         else
-            makepkg -sfc ${makeopts[@]} --noconfirm
+            makepkg -sefc ${makeopts[@]} --noconfirm
         fi
 
         # error check
@@ -310,8 +310,12 @@ MakePkgs() {
         if [[ $installpkg || -z "${builtpkgs[@]}" ]]; then
             Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
             # metadata mismatch warning
-            [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]] && Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
-            [[ -n "${builtdepspkgs[@]}" || -n "${builtpkgs[@]}" ]] && sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+            if [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]]; then
+                Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
+                errinstall+=(${pkgsdeps[$i]})
+            else
+                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+            fi
         fi
 
         # set dep status
@@ -337,8 +341,8 @@ MakePkgs() {
     fi
 
     # remove locks
-    sudo rm "/run/lock/pacaur.build.lck"
-    [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
+    rm "$tmpdir/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
 
     # new orphan and optional packages check
     orphanpkgs=($($pacmanbin -Qdtq))
@@ -353,8 +357,8 @@ MakePkgs() {
         Note "w" $"${colorW}$i${reset} is now an ${colorY}optional${reset} package"
     done
 
-    # makepkg failure check
-    if [[ -n "${errmakepkg[@]}" ]]; then
+    # makepkg and install failure check
+    if [[ -n "${errmakepkg[@]}" || -n "${errinstall[@]}" ]]; then
         for i in "${errmakepkg[@]}"; do
             Note "f" $"failed to build ${colorW}$i${reset} package(s)"
         done

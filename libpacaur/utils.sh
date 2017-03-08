@@ -77,8 +77,8 @@ NothingToDo() {
 }
 
 SudoV() {
-    touch "/run/user/$UID/pacaur.sudov.lck"
-    while [[ -e "/run/user/$UID/pacaur.sudov.lck" ]]; do
+    touch "$tmpdir/pacaur.sudov.lck"
+    while [[ -e "$tmpdir/pacaur.sudov.lck" ]]; do
         sudo $pacmanbin -V > /dev/null
         sleep 2
     done
@@ -87,7 +87,7 @@ SudoV() {
 trap Cancel INT
 Cancel() {
     echo
-    [[ -e "/run/lock/pacaur.build.lck" ]] && sudo rm "/run/lock/pacaur.build.lck"
-    [[ -e "/run/user/$UID/pacaur.sudov.lck" ]] && rm "/run/user/$UID/pacaur.sudov.lck"
+    [[ -e "$tmpdir/pacaur.build.lck" ]] && rm "$tmpdir/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
     exit
 }

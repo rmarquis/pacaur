@@ -10,7 +10,7 @@ IgnoreChecks() {
 
     # check targets
     SetJson ${aurpkgsnover[@]}
-    checkaurpkgs=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+    checkaurpkgs=($(GetJson "var" "$json" "Name"))
     errdeps+=($(grep -xvf <(printf '%s\n' "${aurpkgsnover[@]}") <(printf '%s\n' "${checkaurpkgs[@]}")))
     errdeps+=($(grep -xvf <(printf '%s\n' "${checkaurpkgs[@]}") <(printf '%s\n' "${aurpkgsnover[@]}")))
     unset aurpkgsnover
@@ -329,7 +329,7 @@ CheckUpdates() {
         [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq ${pacopts[@]})) || foreignpkgs=(${pkgs[@]})
         if [[ -n "${foreignpkgs[@]}" ]]; then
             SetJson ${foreignpkgs[@]}
-            aurpkgsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+            aurpkgsAname=($(GetJson "var" "$json" "Name"))
             aurpkgsAver=($(GetJson "var" "$json" "Version"))
             aurpkgsQver=($(expac -Q '%v' ${aurpkgsAname[@]}))
             for i in "${!aurpkgsAname[@]}"; do
@@ -368,7 +368,7 @@ CheckUpdates() {
 
         if [[ -n "${aurpkgsQood[@]}" && ! $quiet ]]; then
             SetJson ${aurpkgsQood[@]}
-            aurpkgsAname=($(GetJson "var" "$json" "Name" | LC_COLLATE=C sort))
+            aurpkgsAname=($(GetJson "var" "$json" "Name"))
             aurpkgsAname=($(expac -Q '%n' "${aurpkgsAname[@]}"))
             aurpkgsAver=($(GetJson "var" "$json" "Version"))
             aurpkgsQver=($(expac -Q '%v' "${aurpkgsAname[@]}"))
