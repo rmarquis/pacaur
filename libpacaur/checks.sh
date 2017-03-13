@@ -326,7 +326,7 @@ CheckUpdates() {
     GetIgnoredPkgs
 
     if [[ ! "${opts[@]}" =~ "n" && ! " ${pacopts[@]} " =~ --native && $fallback = true ]]; then
-        [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq ${pacopts[@]})) || foreignpkgs=(${pkgs[@]})
+        [[ -z "${pkgs[@]}" ]] && foreignpkgs=($($pacmanbin -Qmq)) || foreignpkgs=(${pkgs[@]})
         if [[ -n "${foreignpkgs[@]}" ]]; then
             SetJson ${foreignpkgs[@]}
             aurpkgsAname=($(GetJson "var" "$json" "Name"))
@@ -345,20 +345,20 @@ CheckUpdates() {
                 done
             else
                 foreignpkgsbase=($(expac -Q '%n %e' ${foreignpkgs[@]} | awk '{if ($2 == "(null)") print $1; else print $2}'))
-                for i in "${foreignpkgsbase[@]}"; do
-                    if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]]; then
-                        [[ ! -d "$clonedir/$i" ]] && DownloadPkgs "$i" &>/dev/null
-                        cd "$clonedir/$i"
-                        # silent extraction and pkgver update only
+                foreignpkgsnobase=($(expac -Q '%n' ${foreignpkgs[@]}))
+                for i in "${!foreignpkgsbase[@]}"; do
+                    if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${foreignpkgsbase[$i]})" ]]; then
+                        [[ ! -d "$clonedir/${foreignpkgsbase[$i]}" ]] && DownloadPkgs "${foreignpkgsbase[$i]}" &>/dev/null
+                        cd "$clonedir/${foreignpkgsbase[$i]}"# silent extraction and pkgver update only
                         makepkg -od --noprepare --skipinteg &>/dev/null
                         # retrieve updated version
                         aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
                         aurdevelpkgsAver=${aurdevelpkgsAver[0]}
-                        aurdevelpkgsQver=$(expac -Qs '%v' "^$i$")
+                        aurdevelpkgsQver=$(expac -Qs '%v' "^${foreignpkgsbase[$i]}$")
                         if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver") -ge 0 ]]; then
                             continue
                         else
-                            aurpkgsQood+=($i)
+                            aurpkgsQood+=(${foreignpkgsnobase[$i]})
                             aurpkgsQoodAver+=($aurdevelpkgsAver)
                         fi
                     fi
@@ -375,7 +375,7 @@ CheckUpdates() {
             for i in "${!aurpkgsAname[@]}"; do
                 [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsAname[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
                 if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${aurpkgsAname[$i]})" ]]; then
-                    [[ ! $needed ]] && aurpkgsAver[$i]=$"latest" || aurpkgsAver[$i]=${aurpkgsQoodAver[$i]}
+                    [[ ! $needed ]] && aurpkgsAver[$i]=$"latest"
                 fi
             done
             lAname=$(GetLength "${aurpkgsAname[@]}")

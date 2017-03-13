@@ -410,11 +410,15 @@ GetInstallScripts() {
 
 declare -A jsoncache
 SetJson() {
-    # global json
-    if [[ -z "${jsoncache[$@]}" ]]; then
-        jsoncache[$@]="$(DownloadJson $@)"
+    if [[ $# -eq 0 ]]; then
+        json="{}"
+    else
+        # global json
+        if [[ -z "${jsoncache[$@]}" ]]; then
+            jsoncache[$@]="$(DownloadJson $@)"
+        fi
+        json="${jsoncache[$@]}"
     fi
-    json="${jsoncache[$@]}"
 }
 
 DownloadJson() {
