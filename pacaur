@@ -1457,7 +1457,7 @@ CheckUpdates() {
 
     if [[ ! "${opts[@]}" =~ "m" && ! " ${pacopts[@]} " =~ --foreign ]]; then
         [[ -n "${pkgs[@]}" ]] && pkgs=($(expac -Q '%n' "${pkgs[@]}"))
-        repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} ${pkgs[@]}))
+        repopkgsQood=($($pacmanbin -Qunq ${pkgs[@]}))
 
         if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
             repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
