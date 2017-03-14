@@ -31,6 +31,18 @@ userpacmandir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacman"
 usercachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/pacaur"
 tmpdir="${XDG_RUNTIME_DIR:-/tmp}"
 
+# preserve environment variables
+[[ -n ${PKGDEST} ]] && _PKGDEST=${PKGDEST}
+[[ -n ${SRCDEST} ]] && _SRCDEST=${SRCDEST}
+[[ -n ${SRCPKGDEST} ]] && _SRCPKGDEST=${SRCPKGDEST}
+[[ -n ${LOGDEST} ]] && _LOGDEST=${LOGDEST}
+[[ -n ${BUILDDIR} ]] && _BUILDDIR=${BUILDDIR}
+[[ -n ${PKGEXT} ]] && _PKGEXT=${PKGEXT}
+[[ -n ${SRCEXT} ]] && _SRCEXT=${SRCEXT}
+[[ -n ${GPGKEY} ]] && _GPGKEY=${GPGKEY}
+[[ -n ${PACKAGER} ]] && _PACKAGER=${PACKAGER}
+[[ -n ${CARCH} ]] && _CARCH=${CARCH}
+
 # source makepkg variables
 if [[ -r "$MAKEPKG_CONF" ]]; then
     source "$MAKEPKG_CONF"
@@ -42,6 +54,18 @@ else
         source "$HOME/.makepkg.conf"
     fi
 fi
+
+# restore environement variables
+PKGDEST=${_PKGDEST:-$PKGDEST}
+SRCDEST=${_SRCDEST:-$SRCDEST}
+SRCPKGDEST=${_SRCPKGDEST:-$SRCPKGDEST}
+LOGDEST=${_LOGDEST:-$LOGDEST}
+BUILDDIR=${_BUILDDIR:-$BUILDDIR}
+PKGEXT=${_PKGEXT:-$PKGEXT}
+SRCEXT=${_SRCEXT:-$SRCEXT}
+GPGKEY=${_GPGKEY:-$GPGKEY}
+PACKAGER=${_PACKAGER:-$PACKAGER}
+CARCH=${_CARCH:-$CARCH}
 
 # set default config variables
 editor="${VISUAL:-${EDITOR:-vi}}"           # build files editor
