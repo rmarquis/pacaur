@@ -117,7 +117,8 @@ Display the help message and quit.
 =item B<-a, --aur>
 
 When used with pacman extended operations, only search, download, build, install
-or update I<target(s)> from the AUR.
+or update I<target(s)> from the AUR. When combined with I<-Syu>, only the I<-Sy>
+operation is run for the repositories.
 
 =item B<-r, --repo>
 
