@@ -334,7 +334,20 @@ FindDepsAurError() {
         tsorterrdeps=(${tsorterrdeps[@]:1})
         FindDepsAurError ${tsorterrdeps[@]}
     else
-        errdepslist+=("$nexterrdep")
+        for i in "${!aurpkgs[@]}"; do
+            nextallerrdeps=($(GetJson "arrayvar" "$json" "Depends" "${aurpkgs[$i]}"))
+            nextallerrdeps+=($(GetJson "arrayvar" "$json" "MakeDepends" "${aurpkgs[$i]}"))
+            nextallerrdeps+=($(GetJson "arrayvar" "$json" "CheckDepends" "${aurpkgs[$i]}"))
+
+            # remove versioning
+            for j in "${!nextallerrdeps[@]}"; do
+                nextallerrdeps[$j]=$(awk -F ">|<|=" '{print $1}' <<< ${nextallerrdeps[$j]})
+            done
+
+            if [[ " ${nextallerrdeps[@]} " =~ " $currenterrdep " ]]; then
+                errdepslist+=("${aurpkgs[$i]}")
+            fi
+        done
     fi
 }
 

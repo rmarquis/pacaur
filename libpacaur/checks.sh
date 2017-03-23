@@ -387,7 +387,7 @@ CheckUpdates() {
 
     if [[ ! "${opts[@]}" =~ "m" && ! " ${pacopts[@]} " =~ --foreign ]]; then
         [[ -n "${pkgs[@]}" ]] && pkgs=($(expac -Q '%n' "${pkgs[@]}"))
-        repopkgsQood=($($pacmanbin -Qunq ${pacopts[@]} ${pkgs[@]}))
+        repopkgsQood=($($pacmanbin -Qunq ${pkgs[@]}))
 
         if [[ -n "${repopkgsQood[@]}" && ! $quiet ]]; then
             repopkgsQver=($(expac -Q '%v' "${repopkgsQood[@]}"))
@@ -429,7 +429,7 @@ CheckUpdates() {
                 printf "${colorB}::${reset} ${colorM}%-${lrepo}s${reset}  ${colorW}%-${lname}s${reset}  ${colorR}%-${lQver}s${reset}  ->  ${colorG}%-${lSver}s${reset}  ${colorB}%-${lgrp}s${reset}  ${colorY}%s${reset}\n" "aur" "${aurpkgsAname[$i]}" "${aurpkgsQver[$i]}" "${aurpkgsAver[$i]}" " " "${aurpkgsQignore[$i]}"
             done
         else
-            tr ' ' '\n' <<< ${aurpkgsQood[@]}
+            tr ' ' '\n' <<< ${aurpkgsQood[@]} | sort -u
         fi
     fi
     # exit code
