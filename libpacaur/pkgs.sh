@@ -58,7 +58,7 @@ EditPkgs() {
             if [[ ! $displaybuildfiles = none ]]; then
                 if [[ $displaybuildfiles = diff && -e ".git/HEAD.prev" ]]; then
                     # show diff
-                    diffcmd="git log -p --stat $(cut -f1 .git/HEAD.prev).. -- . ':!\.SRCINFO'"
+                    diffcmd="git diff $(cut -f1 .git/HEAD.prev) -- . ':!\.SRCINFO'"
                     if [[ -n "$(eval "$diffcmd")" ]]; then
                         if Proceed "y" $"View $i build files diff?"; then
                             eval "$diffcmd"
