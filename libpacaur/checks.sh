@@ -535,3 +535,4 @@ CheckRequires() {
         Note "e" $"${Qrequires[@]}: requires $@"
     fi
 }
+# vim:set ts=4 sw=2 et:

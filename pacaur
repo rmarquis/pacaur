@@ -93,10 +93,11 @@ source "$configdir/config"
 
 # source functions
 functiondir="/usr/share/pacaur"
+source "$functiondir/aur.sh"
 source "$functiondir/cache.sh"
 source "$functiondir/checks.sh"
 source "$functiondir/deps.sh"
-source "$functiondir/info.sh"
+source "$functiondir/json.sh"
 source "$functiondir/main.sh"
 source "$functiondir/pkgs.sh"
 source "$functiondir/utils.sh"

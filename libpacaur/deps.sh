@@ -410,3 +410,4 @@ FindDepsRepo() {
 
     repodepspkgs=($($pacmanbin -T ${allrepopkgs[@]} | sort -u))
 }
+# vim:set ts=4 sw=2 et:

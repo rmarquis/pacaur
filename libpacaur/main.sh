@@ -172,3 +172,4 @@ Cancel() {
     [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
     exit
 }
+# vim:set ts=4 sw=2 et:

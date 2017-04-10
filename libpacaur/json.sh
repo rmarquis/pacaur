@@ -87,3 +87,4 @@ GetJson() {
         Note "e" $"Failed to parse JSON"
     fi
 }
+# vim:set ts=4 sw=2 et:
