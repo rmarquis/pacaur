@@ -373,7 +373,7 @@ case $operation in
                     Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                 fi
             fi
-            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core ${aurpkgs[@]}
+            [[ ! $repo ]] && [[ $fallback = true || $aur ]] && Core
         # sync (-S, -y), downloadonly (-Sw, -m), refresh (-Sy)
         else
             if [[ -z "${pkgs[@]}" ]]; then
@@ -391,7 +391,7 @@ case $operation in
                         Note "w" $"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
                     fi
                 fi
-                Core ${aurpkgs[@]}
+                Core
             fi
         fi
         exit;;
