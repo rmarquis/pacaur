@@ -1,7 +1,50 @@
 #!/bin/bash
 #
-#   info.sh - functions to query information
+#   aur.sh - functions related to AUR operations
 #
+
+##
+# Upgrade needed AUR packages.
+#
+# usage: UpgradeAur()
+##
+UpgradeAur() {
+    local foreignpkgs allaurpkgs allaurpkgsAver allaurpkgsQver aurforeignpkgs i json
+    # global aurpkgs
+    Note "i" $"${colorW}Starting AUR upgrade...${reset}"
+
+    # selective upgrade switch
+    if [[ $selective && -n ${pkgs[@]} ]]; then
+        aurpkgs+=(${pkgs[@]})
+    else
+        foreignpkgs=($($pacmanbin -Qmq))
+        SetJson ${foreignpkgs[@]}
+        allaurpkgs=($(GetJson "var" "$json" "Name"))
+        allaurpkgsAver=($(GetJson "var" "$json" "Version"))
+        allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
+        for i in "${!allaurpkgs[@]}"; do
+            [[ $(vercmp "${allaurpkgsAver[$i]}" "${allaurpkgsQver[$i]}") -gt 0 ]] && aurpkgs+=(${allaurpkgs[$i]});
+        done
+    fi
+
+    # foreign packages check
+    aurforeignpkgs=($(grep -xvf <(printf '%s\n' "${allaurpkgs[@]}") <(printf '%s\n' "${foreignpkgs[@]}")))
+    for i in "${aurforeignpkgs[@]}"; do
+        Note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
+    done
+
+    # add devel packages
+    if [[ $devel ]]; then
+        for i in "${allaurpkgs[@]}"; do
+            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgs+=($i)
+        done
+    fi
+
+    # avoid possible duplicate
+    aurpkgs=($(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u))
+
+    NothingToDo ${aurpkgs[@]}
+}
 
 ##
 # Search packages in the AUR

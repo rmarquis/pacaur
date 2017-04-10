@@ -3,6 +3,8 @@
 #   main.sh - functions related to top level operations
 #
 
+trap Cancel INT
+
 ##
 # Start core functionality of the application.
 #
@@ -21,49 +23,6 @@ Core() {
     OrphanChecks
     Prompt
     MakePkgs
-}
-
-##
-# Upgrade needed AUR packages.
-#
-# usage: UpgradeAur()
-##
-UpgradeAur() {
-    local foreignpkgs allaurpkgs allaurpkgsAver allaurpkgsQver aurforeignpkgs i json
-    # global aurpkgs
-    Note "i" $"${colorW}Starting AUR upgrade...${reset}"
-
-    # selective upgrade switch
-    if [[ $selective && -n ${pkgs[@]} ]]; then
-        aurpkgs+=(${pkgs[@]})
-    else
-        foreignpkgs=($($pacmanbin -Qmq))
-        SetJson ${foreignpkgs[@]}
-        allaurpkgs=($(GetJson "var" "$json" "Name"))
-        allaurpkgsAver=($(GetJson "var" "$json" "Version"))
-        allaurpkgsQver=($(expac -Q '%v' ${allaurpkgs[@]}))
-        for i in "${!allaurpkgs[@]}"; do
-            [[ $(vercmp "${allaurpkgsAver[$i]}" "${allaurpkgsQver[$i]}") -gt 0 ]] && aurpkgs+=(${allaurpkgs[$i]});
-        done
-    fi
-
-    # foreign packages check
-    aurforeignpkgs=($(grep -xvf <(printf '%s\n' "${allaurpkgs[@]}") <(printf '%s\n' "${foreignpkgs[@]}")))
-    for i in "${aurforeignpkgs[@]}"; do
-        Note "w" $"${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
-    done
-
-    # add devel packages
-    if [[ $devel ]]; then
-        for i in "${allaurpkgs[@]}"; do
-            [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $i)" ]] && aurpkgs+=($i)
-        done
-    fi
-
-    # avoid possible duplicate
-    aurpkgs=($(tr ' ' '\n' <<< ${aurpkgs[@]} | sort -u))
-
-    NothingToDo ${aurpkgs[@]}
 }
 
 ##
@@ -150,4 +109,66 @@ Prompt() {
     if ! Proceed "y" $"Proceed with $action?"; then
         exit
     fi
+}
+
+##
+# Print application usage commands.
+#
+# usage: Usage()
+##
+Usage() {
+    printf "%s\n" $"usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
+    printf "%s\n" $"operations:"
+    printf "%s\n" $" pacman extension"
+    printf "%s\n" $"   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
+    printf "%s\n" $"                    extend pacman operations to the AUR"
+    printf "%s\n" $" AUR specific"
+    printf "%s\n" $"   -s, --search     search AUR for matching strings"
+    printf "%s\n" $"   -i, --info       view package information"
+    printf "%s\n" $"   -d, --download   download target(s) -- pass twice to download AUR dependencies"
+    printf "%s\n" $"   -m, --makepkg    download and make target(s)"
+    printf "%s\n" $"   -y, --sync       download, make and install target(s)"
+    printf "%s\n" $"   -u, --update     update AUR package(s)"
+    printf "%s\n" $"   -k, --check      check for AUR update(s)"
+    printf "%s\n" $" general"
+    printf "%s\n" $"   -v, --version    display version information"
+    printf "%s\n" $"   -h, --help       display help information"
+    echo
+    printf "%s\n" $"options:"
+    printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc operations"
+    printf "%s\n" $"   -a, --aur        only search, build or install target(s) from the AUR"
+    printf "%s\n" $"   -r, --repo       only search, build or install target(s) from the repositories"
+    printf "%s\n" $" general"
+    printf "%s\n" $"   -e, --edit       edit target(s) PKGBUILD and view install script"
+    printf "%s\n" $"   -q, --quiet      show less information for query and search"
+    printf "%s\n" $"   --devel          consider AUR development packages upgrade"
+    printf "%s\n" $"   --foreign        consider already installed foreign dependencies"
+    printf "%s\n" $"   --ignore         ignore a package upgrade (can be used more than once)"
+    printf "%s\n" $"   --needed         do not reinstall already up-to-date target(s)"
+    printf "%s\n" $"   --noconfirm      do not prompt for any confirmation"
+    printf "%s\n" $"   --noedit         do not prompt to edit files"
+    printf "%s\n" $"   --rebuild        always rebuild package(s)"
+    printf "%s\n" $"   --silent         silence output"
+    echo
+}
+
+##
+# Print application version.
+#
+# usage: Version()
+##
+Version() {
+    echo "pacaur $version"
+}
+
+##
+# Delete lock files and exit the application.
+#
+# usage: Cancel()
+##
+Cancel() {
+    echo
+    [[ -e "$tmpdir/pacaur.build.lck" ]] && rm "$tmpdir/pacaur.build.lck"
+    [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
+    exit
 }

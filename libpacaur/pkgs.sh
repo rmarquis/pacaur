@@ -461,15 +461,11 @@ declare -A jsoncache
 # usage: SetJson( $aur_packages )
 ##
 SetJson() {
-    if [[ $# -eq 0 ]]; then
-        json="{}"
-    else
-        # global json
-        if [[ -z "${jsoncache[$@]}" ]]; then
-            jsoncache[$@]="$(DownloadJson $@)"
-        fi
-        json="${jsoncache[$@]}"
+    # global json
+    if [[ -z "${jsoncache[$@]}" ]]; then
+        jsoncache[$@]="$(DownloadJson $@)"
     fi
+    json="${jsoncache[$@]}"
 }
 
 ##

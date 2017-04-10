@@ -101,46 +101,6 @@ source "$functiondir/main.sh"
 source "$functiondir/pkgs.sh"
 source "$functiondir/utils.sh"
 
-Usage() {
-    printf "%s\n" $"usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
-    printf "%s\n" $"operations:"
-    printf "%s\n" $" pacman extension"
-    printf "%s\n" $"   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
-    printf "%s\n" $"                    extend pacman operations to the AUR"
-    printf "%s\n" $" AUR specific"
-    printf "%s\n" $"   -s, --search     search AUR for matching strings"
-    printf "%s\n" $"   -i, --info       view package information"
-    printf "%s\n" $"   -d, --download   download target(s) -- pass twice to download AUR dependencies"
-    printf "%s\n" $"   -m, --makepkg    download and make target(s)"
-    printf "%s\n" $"   -y, --sync       download, make and install target(s)"
-    printf "%s\n" $"   -u, --update     update AUR package(s)"
-    printf "%s\n" $"   -k, --check      check for AUR update(s)"
-    printf "%s\n" $" general"
-    printf "%s\n" $"   -v, --version    display version information"
-    printf "%s\n" $"   -h, --help       display help information"
-    echo
-    printf "%s\n" $"options:"
-    printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc operations"
-    printf "%s\n" $"   -a, --aur        only search, build or install target(s) from the AUR"
-    printf "%s\n" $"   -r, --repo       only search, build or install target(s) from the repositories"
-    printf "%s\n" $" general"
-    printf "%s\n" $"   -e, --edit       edit target(s) PKGBUILD and view install script"
-    printf "%s\n" $"   -q, --quiet      show less information for query and search"
-    printf "%s\n" $"   --devel          consider AUR development packages upgrade"
-    printf "%s\n" $"   --foreign        consider already installed foreign dependencies"
-    printf "%s\n" $"   --ignore         ignore a package upgrade (can be used more than once)"
-    printf "%s\n" $"   --needed         do not reinstall already up-to-date target(s)"
-    printf "%s\n" $"   --noconfirm      do not prompt for any confirmation"
-    printf "%s\n" $"   --noedit         do not prompt to edit files"
-    printf "%s\n" $"   --rebuild        always rebuild package(s)"
-    printf "%s\n" $"   --silent         silence output"
-    echo
-}
-
-Version() {
-    echo "pacaur $version"
-}
-
 #
 # Main
 #

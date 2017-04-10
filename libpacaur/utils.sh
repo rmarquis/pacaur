@@ -115,16 +115,3 @@ SudoV() {
         sleep 2
     done
 }
-
-trap Cancel INT
-##
-# Delete lock files and exit the application.
-#
-# usage: Cancel()
-##
-Cancel() {
-    echo
-    [[ -e "$tmpdir/pacaur.build.lck" ]] && rm "$tmpdir/pacaur.build.lck"
-    [[ -e "$tmpdir/pacaur.sudov.lck" ]] && rm "$tmpdir/pacaur.sudov.lck"
-    exit
-}
