@@ -486,12 +486,12 @@ msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: 需要 $@"
 
 #: pacaur:1670
-msgid "$2 [Y/n] "
-msgstr "$2 [Y/n] "
+msgid "$2 [Y/n]"
+msgstr "$2 [Y/n]"
 
 #: pacaur:1693
-msgid "$2 [y/N] "
-msgstr "$2 [y/N] "
+msgid "$2 [y/N]"
+msgstr "$2 [y/N]"
 
 #: pacaur:1740
 msgid " there is nothing to do"
