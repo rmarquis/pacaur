@@ -365,12 +365,12 @@ msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: kræver $@"
 
 #: pacaur:1302
-msgid "$2 [Y/n] "
-msgstr "$2 [J/n] "
+msgid "$2 [Y/n]"
+msgstr "$2 [J/n]"
 
 #: pacaur:1309
-msgid "$2 [y/N] "
-msgstr "$2 [j/N] "
+msgid "$2 [y/N]"
+msgstr "$2 [j/N]"
 
 #: pacaur:1340
 msgid " there is nothing to do"
