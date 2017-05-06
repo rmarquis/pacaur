@@ -13,7 +13,7 @@ Proceed() {
     Y="$(gettext pacman Y)"; y="${Y,,}";
     N="$(gettext pacman N)"; n="${N,,}"
     case "$1" in
-        y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [Y/n] "
+        y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$Y/$n] "
             if [[ ! $noconfirm ]]; then
                 case "$TERM" in
                     dumb)
@@ -36,7 +36,7 @@ Proceed() {
                 $Y|$y|'') return 0;;
                 *) return 1;;
             esac;;
-        n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" $"$2 [y/N] "
+        n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$y/$N] "
             if [[ ! $noconfirm ]]; then
                 case "$TERM" in
                     dumb)
