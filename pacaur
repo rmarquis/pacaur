@@ -1600,6 +1600,8 @@ CleanCache() {
 GetIgnoredPkgs() {
     # global ignoredpkgs
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
+    local ignoredgrps=$(grep '^IgnoreGroup' '/etc/pacman.conf' | awk -F '=' '{print $NF}')
+    [[ -n $ignoredgrps ]] && ignoredpkgs+=($($pacmanbin -Qq --groups $ignoredgrps 2>/dev/null | tr '\n' ' '))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | awk -F '=' '{print $NF}' | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
