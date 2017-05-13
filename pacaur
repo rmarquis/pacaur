@@ -82,7 +82,7 @@ clonedir="${AURDEST:-$usercachedir}"        # clone directory
 
 # set AUR variables
 aururl="aur.archlinux.org"
-aurrpc="/rpc.php?type=info&v=5"
+aurrpc="/rpc/?type=info&v=5"
 
 # source xdg config
 source "$configdir/config"

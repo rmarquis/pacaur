@@ -32,8 +32,8 @@ DownloadJson() {
     urlencodedpkgs=($(sed 's/+/%2b/g;s/@/%40/g' <<< $@)) # pkgname consists of alphanum@._+-
     urlarg='&arg[]='
     urlargs="$(printf "$urlarg%s" "${urlencodedpkgs[@]}")"
-    urlmax=8125
-    # ensure the URI length is shorter than 8190 bytes (52 for AUR path, 13 reserved)
+    urlmax=4400
+    # ensure the URI length is shorter than 4444 bytes (44 for AUR path)
     if [[ "${#urlargs}" -lt $urlmax ]]; then
         curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs"
     else
