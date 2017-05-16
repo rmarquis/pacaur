@@ -59,6 +59,9 @@ operations and their related options to the pacman binary.
 Search for packages with the I<target(s)> as the search term(s). Queries with
 multiple targets will return the result of the intersection of all query
 results. Extended regex patterns as defined by POSIX are allowed.
+The output will display the name, version, votes and popularity values of each
+package. The flagged status will also be indicated by a <!> symbol or a colored
+version string if colored output is enabled.
 
 =item B<-i, --info>
 
