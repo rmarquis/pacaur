@@ -120,6 +120,7 @@ ClassifyPkgs() {
 
 Core() {
     GetIgnoredPkgs
+    GetIgnoredGrps
     [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
     DepsSolver
@@ -172,9 +173,9 @@ UpgradeAur() {
 }
 
 IgnoreChecks() {
-    local checkaurpkgs checkaurpkgsAver checkaurpkgsQver i json
+    local checkaurpkgs checkaurpkgsAver checkaurpkgsAgrp checkaurpkgsQver i json
     # global aurpkgs rmaurpkgs
-    [[ -z "${ignoredpkgs[@]}" ]] && return
+    [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
     # remove AUR pkgs versioning
     for i in "${!aurpkgs[@]}"; do
@@ -194,7 +195,9 @@ IgnoreChecks() {
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
     for i in "${!checkaurpkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
+        unset checkaurpkgsAgrp
+        checkaurpkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "${checkaurpkgs[$i]}"))
+        if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " || " ${ignoredgrps[@]} " =~ " $checkaurpkgsAgrp " ]]; then
             if [[ ! $upgrade ]]; then
                 if [[ ! $noconfirm ]]; then
                     if ! Proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
@@ -1602,6 +1605,12 @@ GetIgnoredPkgs() {
     ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | awk -F '=' '{print $NF}' | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
+}
+
+GetIgnoredGrps() {
+    # global ignoredgrps
+    ignoredgrps+=($(grep '^IgnoreGroup' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
+    ignoredgrps=(${ignoredgrps[@]//,/ })
 }
 
 GetInstallScripts() {
