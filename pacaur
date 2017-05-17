@@ -615,7 +615,9 @@ IgnoreDepsChecks() {
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+        unset repodepspkgsQgrp
+        [[ -n "${ignoredgrps[@]}" ]] && repodepspkgsQgrp=$(expac -Ss '%n %G' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $2}')
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " || " ${ignoredgrps[@]} " =~ " $repodepspkgsQgrp " ]]; then
             Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
             Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
         fi
