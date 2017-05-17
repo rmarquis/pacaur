@@ -607,8 +607,8 @@ FindDepsRepo() {
 
 IgnoreDepsChecks() {
     local i
-    # global ignoredpkgs aurpkgs aurdepspkgs rmaurpkgs deps repodepspkgs
-    [[ -z "${ignoredpkgs[@]}" ]] && return
+    # global ignoredpkgs aurpkgs aurdepspkgs aurdepspkgsgrp rmaurpkgs deps repodepspkgs
+    [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
     # add checked targets
     deps=(${aurpkgs[@]})
@@ -625,7 +625,9 @@ IgnoreDepsChecks() {
         [[ " ${aurpkgs[@]} " =~ " $i " ]] && continue
         [[ " ${rmaurpkgs[@]} " =~ " $i " ]] && Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
 
-        if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+        unset aurdepspkgsgrp
+        aurdepspkgsgrp=($(GetJson "arrayvar" "$json" "Groups" "${aurdepspkgs[$i]}"))
+        if [[ " ${ignoredpkgs[@]} " =~ " $i " || " ${ignoredgrps[@]} " =~ " $aurdepspkgsgrp " ]]; then
             if [[ ! $noconfirm ]]; then
                 if ! Proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
