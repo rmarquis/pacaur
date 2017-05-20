@@ -173,7 +173,7 @@ UpgradeAur() {
 }
 
 IgnoreChecks() {
-    local checkaurpkgs checkaurpkgsAver checkaurpkgsAgrp checkaurpkgsQver i json
+    local checkaurpkgs checkaurpkgsAver checkaurpkgsAgrp checkaurpkgsQver checkaurpkgsQgrp i json
     # global aurpkgs rmaurpkgs
     [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
@@ -199,9 +199,13 @@ IgnoreChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
             isignored=true
         elif [[ -n "${ignoredgrps[@]}" ]]; then
-            unset checkaurpkgsAgrp
+            unset checkaurpkgsAgrp checkaurpkgsQgrp
             checkaurpkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "${checkaurpkgs[$i]}"))
             for j in "${checkaurpkgsAgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+            checkaurpkgsQgrp=($(expac -Q '%G' "${checkaurpkgs[$i]}"))
+            for j in "${checkaurpkgsQgrp[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
             done
         fi
@@ -616,7 +620,7 @@ FindDepsRepo() {
 
 IgnoreDepsChecks() {
     local i
-    # global ignoredpkgs aurpkgs aurdepspkgs aurdepspkgsgrp rmaurpkgs deps repodepspkgs
+    # global ignoredpkgs aurpkgs aurdepspkgs aurdepspkgsAgrp aurdepspkgsQgrp repodepspkgsSgrp repodepspkgsQgrp rmaurpkgs deps repodepspkgs
     [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
     # add checked targets
@@ -628,8 +632,12 @@ IgnoreDepsChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             isignored=true
         elif [[ -n "${ignoredgrps[@]}" ]]; then
-            unset repodepspkgsQgrp
-            repodepspkgsQgrp=($(expac -Ss '%n %G' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $2}'))
+            unset repodepspkgsSgrp repodepspkgsQgrp
+            repodepspkgsSgrp=($(expac -S '%G' "$i"))
+            for j in "${repodepspkgsSgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+            repodepspkgsQgrp=($(expac -Q '%G' "$i"))
             for j in "${repodepspkgsQgrp[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
             done
@@ -649,9 +657,13 @@ IgnoreDepsChecks() {
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             isignored=true
         elif [[ -n "${ignoredgrps[@]}" ]]; then
-            unset aurdepspkgsgrp
-            aurdepspkgsgrp=($(GetJson "arrayvar" "$json" "Groups" "$i"))
-            for j in "${aurdepspkgsgrp[@]}"; do
+            unset aurdepspkgsAgrp aurdepspkgsQgrp
+            aurdepspkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "$i"))
+            for j in "${aurdepspkgsAgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+            aurdepspkgsQgrp=($(expac -Q '%G' "$i"))
+            for j in "${aurdepspkgsQgrp[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
             done
         fi
