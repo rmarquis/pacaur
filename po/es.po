@@ -150,7 +150,7 @@ msgid ""
 "\")${reset}"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} ha sido marcado como "
-"${colorR}obsoleto${reset} el ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
+"${colorR}desactualizado${reset} el ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
 "\")${reset}"
 
 #: pacaur:869
@@ -399,7 +399,7 @@ msgstr "Votos"
 
 #: pacaur:1314
 msgid "Out of Date"
-msgstr "Obsoleto"
+msgstr "Desactualizado"
 
 #: pacaur:1314
 msgid "Submitted"
