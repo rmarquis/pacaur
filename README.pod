@@ -59,6 +59,9 @@ operations and their related options to the pacman binary.
 Search for packages with the I<target(s)> as the search term(s). Queries with
 multiple targets will return the result of the intersection of all query
 results. Extended regex patterns as defined by POSIX are allowed.
+Along the name of every package which belong to AUR there will be two numbers: votes and popularity, as you can find them on AUR website.
+Packages flagged with <!> are packages out of date.
+
 
 =item B<-i, --info>
 
