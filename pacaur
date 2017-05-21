@@ -214,12 +214,12 @@ IgnoreChecks() {
             if [[ ! $upgrade ]]; then
                 if [[ ! $noconfirm ]]; then
                     if ! Proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                        Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                        Note "w" $"skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
                         rmaurpkgs+=(${checkaurpkgs[$i]})
                         continue
                     fi
                 else
-                    Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                    Note "w" $"skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
                     rmaurpkgs+=(${checkaurpkgs[$i]})
                     continue
                 fi
@@ -644,7 +644,11 @@ IgnoreDepsChecks() {
         fi
 
         if [[ $isignored = true ]]; then
-            Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+            if [[ ! $upgrade ]]; then
+                Note "w" $"skipping target: ${colorW}$i${reset}"
+            else
+                Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+            fi
             Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
         fi
     done
@@ -671,10 +675,15 @@ IgnoreDepsChecks() {
         if [[ $isignored = true ]]; then
             if [[ ! $noconfirm ]]; then
                 if ! Proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    Note "w" $"skipping target: ${colorW}$i${reset}"
                     Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
                 fi
             else
-                Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                if [[ ! $upgrade ]]; then
+                    Note "w" $"skipping target: ${colorW}$i${reset}"
+                else
+                    Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                fi
                 Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
@@ -718,15 +727,15 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 printf "\n%s " $"Enter a number (default=0):"
-		case "$TERM" in
-		    dumb)
-			read -r nb
-			;;
-		    *)
-			read -r -n "$(echo -n $providersnb | wc -m)" nb
-			echo
-			;;
-		esac
+                case "$TERM" in
+                    dumb)
+                    read -r nb
+                    ;;
+                    *)
+                    read -r -n "$(echo -n $providersnb | wc -m)" nb
+                    echo
+                    ;;
+                esac
 
                 case $nb in
                     [0-9]|[0-9][0-9])
