@@ -405,6 +405,17 @@ GetIgnoredPkgs() {
 }
 
 ##
+# Get the list of ignored packages groups from pacman configuration files.
+#
+# usage: GetIgnoredGrps()
+##
+GetIgnoredGrps() {
+    # global ignoredgrps
+    ignoredgrps+=($(grep '^IgnoreGroup' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
+    ignoredgrps=(${ignoredgrps[@]//,/ })
+}
+
+##
 # Get the complete path of built package.
 #
 # usage: GetBuiltPkg( $package_ver, $package_dest )

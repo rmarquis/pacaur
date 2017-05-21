@@ -9,9 +9,9 @@
 # usage: IgnoreChecks()
 ##
 IgnoreChecks() {
-    local checkaurpkgs checkaurpkgsAver checkaurpkgsQver i json
+    local checkaurpkgs checkaurpkgsAver checkaurpkgsAgrp checkaurpkgsQver checkaurpkgsQgrp i json
     # global aurpkgs rmaurpkgs
-    [[ -z "${ignoredpkgs[@]}" ]] && return
+    [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
     # remove AUR pkgs versioning
     for i in "${!aurpkgs[@]}"; do
@@ -31,16 +31,31 @@ IgnoreChecks() {
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
     for i in "${!checkaurpkgs[@]}"; do
+        unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
+            isignored=true
+        elif [[ -n "${ignoredgrps[@]}" ]]; then
+            unset checkaurpkgsAgrp checkaurpkgsQgrp
+            checkaurpkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "${checkaurpkgs[$i]}"))
+            for j in "${checkaurpkgsAgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+            checkaurpkgsQgrp=($(expac -Q '%G' "${checkaurpkgs[$i]}"))
+            for j in "${checkaurpkgsQgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+        fi
+
+        if [[ $isignored = true ]]; then
             if [[ ! $upgrade ]]; then
                 if [[ ! $noconfirm ]]; then
                     if ! Proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
-                        Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                        Note "w" $"skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
                         rmaurpkgs+=(${checkaurpkgs[$i]})
                         continue
                     fi
                 else
-                    Note "w" $"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
+                    Note "w" $"skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
                     rmaurpkgs+=(${checkaurpkgs[$i]})
                     continue
                 fi
@@ -64,16 +79,35 @@ IgnoreChecks() {
 ##
 IgnoreDepsChecks() {
     local i
-    # global ignoredpkgs aurpkgs aurdepspkgs rmaurpkgs deps repodepspkgs
-    [[ -z "${ignoredpkgs[@]}" ]] && return
+    # global ignoredpkgs aurpkgs aurdepspkgs aurdepspkgsAgrp aurdepspkgsQgrp repodepspkgsSgrp repodepspkgsQgrp rmaurpkgs deps repodepspkgs
+    [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
     # add checked targets
     deps=(${aurpkgs[@]})
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
+        unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
-            Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+            isignored=true
+        elif [[ -n "${ignoredgrps[@]}" ]]; then
+            unset repodepspkgsSgrp repodepspkgsQgrp
+            repodepspkgsSgrp=($(expac -S '%G' "$i"))
+            for j in "${repodepspkgsSgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+            repodepspkgsQgrp=($(expac -Q '%G' "$i"))
+            for j in "${repodepspkgsQgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+        fi
+
+        if [[ $isignored = true ]]; then
+            if [[ ! $upgrade ]]; then
+                Note "w" $"skipping target: ${colorW}$i${reset}"
+            else
+                Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+            fi
             Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
         fi
     done
@@ -82,13 +116,33 @@ IgnoreDepsChecks() {
         [[ " ${aurpkgs[@]} " =~ " $i " ]] && continue
         [[ " ${rmaurpkgs[@]} " =~ " $i " ]] && Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
 
+        unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
+            isignored=true
+        elif [[ -n "${ignoredgrps[@]}" ]]; then
+            unset aurdepspkgsAgrp aurdepspkgsQgrp
+            aurdepspkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "$i"))
+            for j in "${aurdepspkgsAgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+            aurdepspkgsQgrp=($(expac -Q '%G' "$i"))
+            for j in "${aurdepspkgsQgrp[@]}"; do
+                [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
+            done
+        fi
+
+        if [[ $isignored = true ]]; then
             if [[ ! $noconfirm ]]; then
                 if ! Proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
+                    Note "w" $"skipping target: ${colorW}$i${reset}"
                     Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
                 fi
             else
-                Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                if [[ ! $upgrade ]]; then
+                    Note "w" $"skipping target: ${colorW}$i${reset}"
+                else
+                    Note "w" $"${colorW}$i${reset}: ignoring package upgrade"
+                fi
                 Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
             fi
         fi
@@ -136,15 +190,15 @@ ProviderChecks() {
             while [[ $nb -lt 0 || $nb -ge ${#providers} ]]; do
 
                 printf "\n%s " $"Enter a number (default=0):"
-		case "$TERM" in
-		    dumb)
-			read -r nb
-			;;
-		    *)
-			read -r -n "$(echo -n $providersnb | wc -m)" nb
-			echo
-			;;
-		esac
+                case "$TERM" in
+                    dumb)
+                    read -r nb
+                    ;;
+                    *)
+                    read -r -n "$(echo -n $providersnb | wc -m)" nb
+                    echo
+                    ;;
+                esac
 
                 case $nb in
                     [0-9]|[0-9][0-9])

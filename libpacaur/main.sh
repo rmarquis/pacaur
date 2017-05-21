@@ -12,6 +12,7 @@ trap Cancel INT
 ##
 Core() {
     GetIgnoredPkgs
+    GetIgnoredGrps
     [[ $upgrade ]] && UpgradeAur
     IgnoreChecks
     DepsSolver
