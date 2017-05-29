@@ -412,7 +412,7 @@ If you feel great pity for the present maintainer that has to constantly cope
 with users that don't want to read man pages and refuse to take responsibility
 for their own system, you can send me funny cat pictures. Alternatively, you
 can send a donation via PayPal to the above email address or via Gratipay at
-https://gratipay/pacaur/.
+https://gratipay.com/pacaur/.
 
 I would also suggest to donate to a charitable organization of your choice
 should you believe that your money could make a bigger difference there.
