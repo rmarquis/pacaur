@@ -75,6 +75,7 @@ silent=false                                # silence output
 sortby=popularity                           # sort method (name|votes|popularity)
 sortorder=descending                        # sort order (ascending|descending)
 sudoloop=true                               # prevent sudo timeout
+use_proxy=true                              # use proxy in *_proxy variables?
 
 # set variables
 pacmanbin="${PACMAN:-pacman}"               # pacman binary
@@ -2001,6 +2002,12 @@ while [[ -n "${!OPTIND}" ]]; do
     shift $OPTIND
     OPTIND=1
 done
+
+# proxy
+if [[ "$use_proxy" == "true" ]];then
+  unset http_proxy
+  unset https_proxy
+fi
 
 # color
 if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then

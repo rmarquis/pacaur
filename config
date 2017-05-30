@@ -16,4 +16,5 @@
 #sortby=popularity                     # sort method (name|votes|popularity)
 #sortorder=descending                  # sort order (ascending|descending)
 #sudoloop=true                         # prevent sudo timeout
+#use_proxy=true                        # use proxy defined in *_proxy variables?
 
