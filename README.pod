@@ -439,7 +439,7 @@ B<[fr] - Français> - "spider-mario", "Neitsab", Antoine "Nevax07" Gravelot
 
 B<[hu] - Magyar> - "avelkei"
 
-B<[it] - Italiano> - Demenico "NoMore201" Lezzi
+B<[it] - Italiano> - Demenico "NoMore201" Lezzi, Giovanni "ItachiSan" Santini
 
 B<[ja] - 日本語> - Colin "fosskers" Woodbury, TSUYUSATO "MakeNowJust" Kitsune
 
