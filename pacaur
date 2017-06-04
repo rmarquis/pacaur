@@ -55,7 +55,7 @@ else
     fi
 fi
 
-# restore environement variables
+# restore environment variables
 PKGDEST=${_PKGDEST:-$PKGDEST}
 SRCDEST=${_SRCDEST:-$SRCDEST}
 SRCPKGDEST=${_SRCPKGDEST:-$SRCPKGDEST}
