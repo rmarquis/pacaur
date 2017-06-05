@@ -1002,9 +1002,13 @@ Prompt() {
             [[ "${depsQver[$i]}" =~ '#' ]] && unset depsQver[$i]
         done
         # show detailed output
-        printf "\n${colorW}%-${lname}s  %-${lver}s  %-${lver}s${reset}\n\n" "$straurname" "$stroldver" "$strnewver"
+        printf "\n${colorW}%-${lname}s  %-${lver}s  %s${reset}\n\n" "$straurname" "$stroldver" "$strnewver"
         for i in "${!deps[@]}"; do
-            printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}" "${depsAcached[$i]}";
+            if [ -n "${depsAcached[$i]}" ]; then
+                printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %s\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}" "${depsAcached[$i]}";
+            else
+                printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%s${reset}\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}";
+            fi
         done
 
         if [[ -n "${repodepspkgs[@]}" ]]; then
