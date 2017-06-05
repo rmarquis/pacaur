@@ -30,6 +30,7 @@ userconfigdir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacaur"
 userpacmandir="${XDG_CONFIG_HOME:-${HOME}/.config}/pacman"
 usercachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/pacaur"
 tmpdir="${XDG_RUNTIME_DIR:-/tmp}"
+PACCONF=/etc/pacman.conf
 
 # preserve environment variables
 [[ -n ${PKGDEST} ]] && _PKGDEST=${PKGDEST}
@@ -990,7 +991,7 @@ Prompt() {
         unset builtpkg
     done
 
-    if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
+    if [[ -n "$(grep '^VerbosePkgLists' "$PACCONF")" ]]; then
         straurname=$"AUR Packages  (${#deps[@]})"; strreponame=$"Repo Packages (${#repodepspkgs[@]})"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
         depsArepo=(${depsAname[@]/#/aur/})
         lname=$(GetLength ${depsArepo[@]} ${repodepsSrepo[@]} "$straurname" "$strreponame")
@@ -1654,7 +1655,7 @@ CleanCache() {
 
 GetIgnoredPkgs() {
     # global ignoredpkgs
-    ignoredpkgs+=($(grep '^IgnorePkg' '/etc/pacman.conf' | awk -F '=' '{print $NF}' | tr -d "'\""))
+    ignoredpkgs+=($(grep '^IgnorePkg' "$PACCONF" | awk -F '=' '{print $NF}' | tr -d "'\""))
     [[ -e "$HOME/.config/cower/config" ]] && ignoredpkgs+=($(grep '^IgnorePkg' "$HOME/.config/cower/config" | awk -F '=' '{print $NF}' | tr -d "'\""))
     ignoredpkgs=(${ignoredpkgs[@]//,/ })
 }
@@ -1941,6 +1942,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     ignore) ignoredpkgs+=(${!OPTIND}); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
                     color=?*) color=${OPTARG#*=}; pacopts+=("--color ${OPTARG#*=}") && coweropts+=("--color=${OPTARG#*=}");;
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
+                    config) PACCONF=${!OPTIND}; pacopts+=("--${OPTARG}");shift ;;
                     ignore-ood) coweropts+=("--ignore-ood");;
                     no-ignore-ood) coweropts+=("--no-ignore-ood");;
                     sort=?*) coweropts+=("--sort ${OPTARG#*=}");;
@@ -2003,7 +2005,7 @@ while [[ -n "${!OPTIND}" ]]; do
 done
 
 # color
-if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
+if [[ -n "$(grep '^Color' "$PACCONF")" && $color != 'never' ]]; then
     [[ $color = 'always' ]] && coweropts+=("--color=always") || coweropts+=("--color=auto")
     reset="\e[0m"
     colorR="\e[1;31m"
@@ -2013,7 +2015,7 @@ if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
     colorM="\e[1;35m"
     colorC="\e[1;36m"
     colorW="\e[1;39m"
-elif [[ -z "$(grep '^Color' '/etc/pacman.conf')" && ($color = 'always' || $color = 'auto') ]]; then
+elif [[ -z "$(grep '^Color' "$PACCONF")" && ($color = 'always' || $color = 'auto') ]]; then
     pacopts+=("--color $color") && coweropts+=("--color=$color")
     reset="\e[0m"
     colorR="\e[1;31m"
