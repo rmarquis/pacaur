@@ -1790,8 +1790,8 @@ Proceed() {
                 echo
             fi
             case $answer in
-                $Y|$y|'') return 0;;
-                *) return 1;;
+                $N|$n) return 1;;
+                *) return 0;;
             esac;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$y/$N] "
             if [[ ! $noconfirm ]]; then
@@ -1813,8 +1813,8 @@ Proceed() {
                 echo
             fi
             case $answer in
-                $N|$n|'') return 0;;
-                *) return 1;;
+                $Y|$y) return 1;;
+                *) return 0;;
             esac;;
     esac
 }
