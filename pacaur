@@ -299,7 +299,7 @@ DepsSolver() {
     depsAood=($(GetJson "var" "$json" "OutOfDate"))
     depsAmain=($(GetJson "var" "$json" "Maintainer"))
     for i in "${!depsAname[@]}"; do
-        depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
+        depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$" | head -1)
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
     done
@@ -1258,7 +1258,7 @@ MakePkgs() {
             # check split packages update
             unset basepkgsupdate checkpkgsdepslist
             for j in "${pkgsdepslist[@]}"; do
-                aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
+                aurdevelpkgsQver=$(expac -Qs '%v' "^$j$" | head -1)
                 if [[ -n $aurdevelpkgsQver && $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver") -ge 0 ]] && [[ $needed && ! $rebuild ]]; then
                     Note "w" $"${colorW}$j${reset} is up-to-date -- skipping"
                     continue
@@ -1516,7 +1516,7 @@ CheckUpdates() {
                         # retrieve updated version
                         aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
                         aurdevelpkgsAver=${aurdevelpkgsAver[0]}
-                        aurdevelpkgsQver=$(expac -Qs '%v' "^${foreignpkgsbase[$i]}$")
+                        aurdevelpkgsQver=$(expac -Qs '%v' "^${foreignpkgsbase[$i]}$" | head -1)
                         if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver") -ge 0 ]]; then
                             continue
                         else
