@@ -285,7 +285,7 @@ ConflictChecks() {
 
         for j in "${aurAconflicts[@]}"; do
             unset k Aprovides
-            k=$(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
+            k=$(expac -Qs '%n %P' "^$i$" | head -1 | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " $j " ]] && continue # skip if downloading target only
             [[ "$j" == "$k" || -z "$k" ]] && continue # skip if reinstalling or if no conflict exists
 
@@ -295,7 +295,7 @@ ConflictChecks() {
                     aurconflictingpkgs+=($j $k)
                     aurconflictingpkgsrm+=($k)
                     for l in "${!depsAname[@]}"; do
-                        [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$")
+                        [[ " ${depsAname[$l]} " =~ "$k" ]] && depsQver[$l]=$(expac -Qs '%v' "^$k$" | head -1)
                     done
                     Aprovides+=($(GetJson "arrayvar" "$json" "Provides" "$j"))
                     # remove AUR versioning
@@ -361,7 +361,7 @@ ConflictChecks() {
         unset Qprovides
         repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]$i" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
         for j in "${repoSconflicts[@]}"; do
-            unset k && k=$(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
+            unset k && k=$(expac -Qs '%n %P' "^$i$" | head -1 | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ "$j" == "$k" || -z "$k" ]] && continue # skip when no conflict with repopkgs
 
             if [[ ! $noconfirm && ! " ${repoconflictingpkgs[@]} " =~ " $k " ]]; then
@@ -486,7 +486,7 @@ CheckUpdates() {
                         # retrieve updated version
                         aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
                         aurdevelpkgsAver=${aurdevelpkgsAver[0]}
-                        aurdevelpkgsQver=$(expac -Qs '%v' "^${foreignpkgsbase[$i]}$")
+                        aurdevelpkgsQver=$(expac -Qs '%v' "^${foreignpkgsbase[$i]}$" | head -1)
                         if [[ $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver") -ge 0 ]]; then
                             continue
                         else

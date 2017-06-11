@@ -72,7 +72,7 @@ DepsSolver() {
     depsAood=($(GetJson "var" "$json" "OutOfDate"))
     depsAmain=($(GetJson "var" "$json" "Maintainer"))
     for i in "${!depsAname[@]}"; do
-        depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$")
+        depsQver[$i]=$(expac -Qs '%v' "^${depsAname[$i]}$" | head -1)
         [[ -z "${depsQver[$i]}" ]] && depsQver[$i]="#"  # avoid empty elements shift
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]] && depsAver[$i]=$"latest"
     done
@@ -198,7 +198,7 @@ FindDepsAur() {
         unset vcsdepspkgs
         for i in "${!depspkgs[@]}"; do
             depspkgs[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${depspkgs[$i]})
-            unset j && j=$(expac -Qs '%n %P' "^${depspkgs[$i]}$" | grep -E "([^a-zA-Z0-9_@\.\+-]${depspkgs[$i]}|^${depspkgs[$i]})" | grep -E "(${depspkgs[$i]}[^a-zA-Z0-9\.\+-]|${depspkgs[$i]}$)" | awk '{print $1}')
+            unset j && j=$(expac -Qs '%n %P' "^${depspkgs[$i]}$" | head -1 | grep -E "([^a-zA-Z0-9_@\.\+-]${depspkgs[$i]}|^${depspkgs[$i]})" | grep -E "(${depspkgs[$i]}[^a-zA-Z0-9\.\+-]|${depspkgs[$i]}$)" | awk '{print $1}')
             if [[ -n "$j" ]]; then
                 depspkgs[$i]="$j"
                 [[ $devel ]] && [[ ! " ${ignoredpkgs[@]} " =~ " $j " ]] && [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< $j)" ]] && vcsdepspkgs+=($j)
@@ -399,7 +399,7 @@ FindDepsRepo() {
     # remove pactree deps of default providers if non default provider is already installed
     if [[ -n "${providersrepopkgs[@]}" ]]; then
         for i in "${providersrepopkgs[@]}"; do
-            j=$(expac -Qs '%n %P' "^$i$" | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
+            j=$(expac -Qs '%n %P' "^$i$" | head -1 | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ -n "$j" ]] && [[ "$j" != "$(expac -Ss '%n' "^$i$" | tr '\n' ' ' | awk '{print $1}')" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
         done
         if [[ -n "${providersrepopkgsrm[@]}" ]]; then

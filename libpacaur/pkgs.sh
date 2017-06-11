@@ -262,7 +262,7 @@ MakePkgs() {
             # check split packages update
             unset basepkgsupdate checkpkgsdepslist
             for j in "${pkgsdepslist[@]}"; do
-                aurdevelpkgsQver=$(expac -Qs '%v' "^$j$")
+                aurdevelpkgsQver=$(expac -Qs '%v' "^$j$" | head -1)
                 if [[ -n $aurdevelpkgsQver && $(vercmp "$aurdevelpkgsQver" "$aurdevelpkgsAver") -ge 0 ]] && [[ $needed && ! $rebuild ]]; then
                     Note "w" $"${colorW}$j${reset} is up-to-date -- skipping"
                     continue
