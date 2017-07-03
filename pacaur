@@ -308,7 +308,7 @@ DepsSolver() {
     if [[ -n "${errdeps[@]}" ]]; then
         for i in "${!errdepsnover[@]}"; do
             if [[ " ${aurpkgsnover[@]} " =~ " ${errdepsnover[$i]} " ]]; then
-                Note "f" $"no results found for ${errdepsnover[$i]}"
+                Note "f" $"no results found for ${errdeps[$i]}"
             else
                 unset tsorterrdeps errdepslist currenterrdep
                 # find relevant tsorted deps chain
