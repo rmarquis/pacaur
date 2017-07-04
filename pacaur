@@ -1929,7 +1929,7 @@ while [[ -n "${!OPTIND}" ]]; do
                         [[ $pacS ]] && operation=sync; installpkg=true; aur='1';
                         [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
                     check) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--check");
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; aur='1';;
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; pacopts+=("--foreign");;
                     update) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
@@ -1975,7 +1975,7 @@ while [[ -n "${!OPTIND}" ]]; do
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); aur='1';;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); pacopts+=("--foreign");;
             u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
