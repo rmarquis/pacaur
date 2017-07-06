@@ -1218,7 +1218,7 @@ MakePkgs() {
             fi
             (($? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
             # silent extraction and pkgver update only
-            makepkg -od --skipinteg ${makeopts[@]} &>/dev/null
+            makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
         fi
     done
     if [[ -n "${errmakepkg[@]}" ]]; then
