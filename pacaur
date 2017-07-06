@@ -32,6 +32,7 @@ usercachedir="${XDG_CACHE_HOME:-${HOME}/.cache}/pacaur"
 tmpdir="${XDG_RUNTIME_DIR:-/tmp}"
 
 # preserve environment variables
+[[ -n ${PACMAN} ]] && _PACMAN=${PACMAN}
 [[ -n ${PKGDEST} ]] && _PKGDEST=${PKGDEST}
 [[ -n ${SRCDEST} ]] && _SRCDEST=${SRCDEST}
 [[ -n ${SRCPKGDEST} ]] && _SRCPKGDEST=${SRCPKGDEST}
@@ -56,6 +57,7 @@ else
 fi
 
 # restore environment variables
+PACMAN=${_PACMAN:-$PACMAN}
 PKGDEST=${_PKGDEST:-$PKGDEST}
 SRCDEST=${_SRCDEST:-$SRCDEST}
 SRCPKGDEST=${_SRCPKGDEST:-$SRCPKGDEST}
@@ -239,6 +241,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}editor${reset} variable unset"
+[[ "$PACMAN" = $(basename "$0") ]] && Note "e" $"you cannot use ${colorW}pacaur${reset} as PACMAN environment variable"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission."
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" && -z "$(grep -e "-[h]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
