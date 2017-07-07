@@ -1408,16 +1408,16 @@ MakePkgs() {
 }
 
 SearchAur() {
-    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
-        [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
+    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${auropts[@]})" ]]; then
+        [[ $sortorder = descending ]] && auropts+=("--rsort=$sortby") || auropts+=("--sort=$sortby");
     fi
-    cower ${coweropts[@]} -- $@
+    cower ${auropts[@]} -- $@
 }
 
 InfoAur() {
     local aurinfopkgs info infolabel maxlength linfo lbytes
 
-    readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%G|%P|%D|%M|%K|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
+    readarray aurinfopkgs < <(cower ${auropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%G|%P|%D|%M|%K|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
     aurinfopkgsQname=($(expac -Q '%n' $@))
     aurinfopkgsQver=($(expac -Q '%v' $@))
 
@@ -1937,11 +1937,11 @@ while [[ -n "${!OPTIND}" ]]; do
             -)
                 case "$OPTARG" in
                     search) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--search");
-                        [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; coweropts+=("-s"); aur='1';;
+                        [[ $pacS ]] && operation=sync && search=true && auropts+=("-s");
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; auropts+=("-s"); aur='1';;
                     info) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--info");
-                        [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
+                        [[ $pacS ]] && operation=sync && info=true && auropts+=("-i");
+                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; auropts+=("-i"); aur='1';;
                     download) operation=download && ((count++));;
                     makepkg) operation=sync; aur='1';;
                     sync) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--sync");
@@ -1951,23 +1951,23 @@ while [[ -n "${!OPTIND}" ]]; do
                         [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; pacopts+=("--foreign");;
                     update) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
-                    quiet) quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
+                    quiet) quiet=true; pacopts+=("--quiet"); auropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
                     repo) repo='1';;
                     aur) aur='1';;
                     devel) devel=true;;
                     foreign) [[ $pacQ ]] && pacopts+=("--foreign"); foreign=true;;
                     ignore=?*) ignoredpkgs+=(${OPTARG#*=}); ignoreopts+=("--ignore ${OPTARG#*=}");;
                     ignore) ignoredpkgs+=(${!OPTIND}); ignoreopts+=("--ignore ${!OPTIND}"); shift;;
-                    color=?*) color=${OPTARG#*=}; pacopts+=("--color ${OPTARG#*=}") && coweropts+=("--color=${OPTARG#*=}");;
-                    color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && coweropts+=("--color=${!OPTIND}"); shift;;
-                    ignore-ood) coweropts+=("--ignore-ood");;
-                    no-ignore-ood) coweropts+=("--no-ignore-ood");;
-                    sort=?*) coweropts+=("--sort ${OPTARG#*=}");;
-                    sort) coweropts+=("--sort ${!OPTIND}"); shift;;
-                    rsort=?*) coweropts+=("--rsort ${OPTARG#*=}");;
-                    rsort) coweropts+=("--rsort ${!OPTIND}"); shift;;
-                    by=?*) coweropts+=("--by ${OPTARG#*=}");;
-                    by) coweropts+=("--by ${!OPTIND}"); shift;;
+                    color=?*) color=${OPTARG#*=}; pacopts+=("--color ${OPTARG#*=}") && auropts+=("--color=${OPTARG#*=}");;
+                    color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && auropts+=("--color=${!OPTIND}"); shift;;
+                    ignore-ood) auropts+=("--ignore-ood");;
+                    no-ignore-ood) auropts+=("--no-ignore-ood");;
+                    sort=?*) auropts+=("--sort ${OPTARG#*=}");;
+                    sort) auropts+=("--sort ${!OPTIND}"); shift;;
+                    rsort=?*) auropts+=("--rsort ${OPTARG#*=}");;
+                    rsort) auropts+=("--rsort ${!OPTIND}"); shift;;
+                    by=?*) auropts+=("--by ${OPTARG#*=}");;
+                    by) auropts+=("--by ${!OPTIND}"); shift;;
                     asdep|asdeps) pacopts+=("--asdeps"); makeopts+=("--asdeps");;
                     needed) needed=true; pacopts+=("--needed"); makeopts+=("--needed");;
                     nodeps) nodeps=true; pacopts+=("--nodeps"); makeopts+=("--nodeps"); ((count++));;
@@ -1977,24 +1977,24 @@ while [[ -n "${!OPTIND}" ]]; do
                     noedit) noedit=true;;
                     rebuild) rebuild=true;;
                     silent) silent=true; makeopts+=("--log");;
-                    domain=?*) aururl=${OPTARG#*=}; coweropts+=("--domain ${OPTARG#*=}");;
-                    domain) aururl=${!OPTIND}; coweropts+=("--domain ${!OPTIND}"); shift;;
+                    domain=?*) aururl=${OPTARG#*=}; auropts+=("--domain ${OPTARG#*=}");;
+                    domain) aururl=${!OPTIND}; auropts+=("--domain ${!OPTIND}"); shift;;
                     root=?*) pacopts+=("--root ${OPTARG#*=}");;
                     root) pacopts+=("--root ${!OPTIND}"); shift;;
                     version) Version; exit;;
                     help) Usage; exit;;
                     *) pacopts+=("--$OPTARG");;
                 esac;;
-            s)  [[ $pacS ]] && operation=sync && search=true && coweropts+=("-s");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; coweropts+=("-s"); aur='1';;
-            i)  [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
+            s)  [[ $pacS ]] && operation=sync && search=true && auropts+=("-s");
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; auropts+=("-s"); aur='1';;
+            i)  [[ $pacS ]] && operation=sync && info=true && auropts+=("-i");
+                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; auropts+=("-i"); aur='1';;
             d)  [[ $pacS ]] && nodeps=true && pacopts+=("--nodeps") && makeopts+=("--nodeps") && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
             m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; coweropts+=("-uq"); pacopts+=("--foreign");;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; auropts+=("-uq"); pacopts+=("--foreign");;
             u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true;
                 [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
@@ -2002,7 +2002,7 @@ while [[ -n "${!OPTIND}" ]]; do
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=sync && cleancache=true && ((count++));
                 [[ $pac || $pacQ || $pacS ]] && continue;;
-            q)  quiet=true; pacopts+=("--quiet"); coweropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
+            q)  quiet=true; pacopts+=("--quiet"); auropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
             r)  repo='1';;
             a)  aur='1';;
             Q)  pacQ='1';;
@@ -2023,7 +2023,7 @@ done
 
 # color
 if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
-    [[ $color = 'always' ]] && coweropts+=("--color=always") || coweropts+=("--color=auto")
+    [[ $color = 'always' ]] && auropts+=("--color=always") || auropts+=("--color=auto")
     reset="\e[0m"
     colorR="\e[1;31m"
     colorG="\e[1;32m"
@@ -2033,7 +2033,7 @@ if [[ -n "$(grep '^Color' '/etc/pacman.conf')" && $color != 'never' ]]; then
     colorC="\e[1;36m"
     colorW="\e[1;39m"
 elif [[ -z "$(grep '^Color' '/etc/pacman.conf')" && ($color = 'always' || $color = 'auto') ]]; then
-    pacopts+=("--color $color") && coweropts+=("--color=$color")
+    pacopts+=("--color $color") && auropts+=("--color=$color")
     reset="\e[0m"
     colorR="\e[1;31m"
     colorG="\e[1;32m"
@@ -2052,7 +2052,7 @@ pacmanarg=(${pacmanarg[@]/-r/})
 pacmanarg=(${pacmanarg[@]/-a/})
 [[ $operation = sync && ! $search && ! $info && ! $cleancache ]] && [[ "$EUID" -eq 0 ]] && Note "e" $"you cannot perform this operation as root"
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
-[[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
+[[ $pacS ]] && [[ $search && $info ]] && auropts=(${auropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
 [[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}\$VISUAL${reset} and ${colorW}\$EDITOR${reset} environment variables not set or defined ${colorW}editor${reset} not found"
 [[ "$PACMAN" = $(basename "$0") ]] && Note "e" $"you cannot use ${colorW}pacaur${reset} as PACMAN environment variable"
