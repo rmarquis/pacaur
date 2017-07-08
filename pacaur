@@ -331,6 +331,9 @@ DepsSolver() {
 
     # return all binary deps
     FindDepsRepo ${repodeps[@]}
+
+    # avoid possible duplicate
+    repodepspkgs=($(tr ' ' '\n' <<< ${repodepspkgs[@]} | sort -u))
 }
 
 FindDepsAur() {
@@ -592,32 +595,49 @@ FindDepsAurError() {
 }
 
 FindDepsRepo() {
-    local allrepopkgs providersrepopkgs providersrepopkgsrm i j
-    # global repodeps
+    local allrepodepspkgs repodepspkgstmp
+    # global repodeps repodepspkgs
     [[ -z "${repodeps[@]}" ]] && return
 
     # reduce root binary deps
     repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
 
-    for i in "${repodeps[@]}"; do
-        allrepopkgs+=($(pactree -su "$i"))
-        providersrepopkgs+=($(pactree -s "$i" | grep " provides " | awk '{print $NF}' | sort -u))
-    done
-    providersrepopkgs=($(tr ' ' '\n' <<< ${providersrepopkgs[@]} | sort -u))
+    # add initial repodeps
+    [[ -z "${repodepspkgs[@]}" ]] && repodepspkgs=(${repodeps[@]})
 
-    # remove pactree deps of default providers if non default provider is already installed
-    if [[ -n "${providersrepopkgs[@]}" ]]; then
-        for i in "${providersrepopkgs[@]}"; do
-            j=$(expac -Qs '%n %P' "^$i$" | head -1 | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
-            [[ -n "$j" ]] && [[ "$j" != "$(expac -Ss '%n' "^$i$" | tr '\n' ' ' | awk '{print $1}')" ]] && providersrepopkgsrm+=($(pactree -su "$i"))
-        done
-        if [[ -n "${providersrepopkgsrm[@]}" ]]; then
-            providersrepopkgsrm=($($pacmanbin -T ${providersrepopkgsrm[@]} | sort -u))
-            allrepopkgs=($(grep -xvf <(printf '%s\n' "${providersrepopkgsrm[@]}") <(printf '%s\n' "${allrepopkgs[@]}")))
-        fi
+    # get non installed repo deps
+    allrepodepspkgs=($(expac -S '%E' ${repodeps[@]})) # no version check needed as all deps are binary
+    [[ -n "${allrepodepspkgs[@]}" ]] && repodepspkgstmp=($($pacmanbin -T ${allrepodepspkgs[@]} | sort -u))
+
+    if [[ -n "${repodepspkgstmp[@]}" ]]; then
+        repodepspkgs+=(${repodepspkgstmp[@]})
+
+        repodeps=(${repodepspkgstmp[@]})
+        FindDepsRepo ${repodeps[@]}
     fi
+}
 
-    repodepspkgs=($($pacmanbin -T ${allrepopkgs[@]} | sort -u))
+FindDepsRepoProvider() {
+    local allrepodepspkgs providerrepodepspkgstmp
+    # global repodeps repodepspkgs
+    [[ -z "${providerspkgs[@]}" ]] && return
+
+    # reduce root binary deps
+    providerspkgs=($(tr ' ' '\n' <<< ${providerspkgs[@]} | sort -u))
+
+    # add initial repodeps
+    [[ -z "${providerspkgspkgs[@]}" ]] && providerspkgspkgs=(${providerspkgs[@]})
+
+    # get non installed repo deps
+    allproviderrepodepspkgs=($(expac -S '%E' ${providerspkgs[@]})) # no version check needed as all deps are binary
+    [[ -n "${allproviderrepodepspkgs[@]}" ]] && providerrepodepspkgstmp=($($pacmanbin -T ${allproviderrepodepspkgs[@]} | sort -u))
+
+    if [[ -n "${providerrepodepspkgstmp[@]}" ]]; then
+        repodepspkgs+=(${providerrepodepspkgstmp[@]})
+
+        providerspkgs=(${providerrepodepspkgstmp[@]})
+        FindDepsRepoProvider ${providerspkgs[@]}
+    fi
 }
 
 IgnoreDepsChecks() {
@@ -694,13 +714,16 @@ IgnoreDepsChecks() {
 }
 
 ProviderChecks() {
-    local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
+    local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb
     # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
     [[ -z "${repodepspkgs[@]}" ]] && return
 
-    allproviders=($(expac -S '%S' "${repodepspkgs[@]}" | sort -u))
+    # filter directly provided deps
+    noprovidersdeps=($(expac -S '%n' ${repodepspkgs[@]}))
+    providersdeps=($(grep -xvf <(printf '%s\n' "${noprovidersdeps[@]}") <(printf '%s\n' "${repodepspkgs[@]}")))
+
     # remove installed providers
-    providersdeps=($($pacmanbin -T ${allproviders[@]} | sort -u))
+    providersdeps=($($pacmanbin -T ${providersdeps[@]} | sort -u))
 
     for i in "${!providersdeps[@]}"; do
         providers=($(expac -Ss '%n' "^${providersdeps[$i]}$" | sort -u))
@@ -754,27 +777,15 @@ ProviderChecks() {
             local nb=0
         fi
         providerspkgs+=(${providers[$nb]})
-        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
     done
 
+    # add selected providers to repo deps
+    repodepspkgs+=(${providerspkgs[@]})
+
+    # store for installation
     repoprovidersconflictingpkgs+=(${providerspkgs[@]})
 
-    # pactree always return default choice so update binary deps list
-    if [[ -n "${rmproviderpkgs[@]}" ]]; then
-        # remove deps of default providers
-        for i in "${rmproviderpkgs[@]}"; do
-            providerpkgsrm+=($(pactree -su "$i"))
-        done
-        providerpkgsrm=($($pacmanbin -T ${providerpkgsrm[@]} | sort -u))
-        repodepspkgs=($(grep -xvf <(printf '%s\n' "${providerpkgsrm[@]}") <(printf '%s\n' "${repodepspkgs[@]}")))
-
-        # add deps of selected providers instead
-        providerspkgs=($(tr '|' ' ' <<< ${providerspkgs[@]}))
-        for i in "${providerspkgs[@]}"; do
-            providerdeps+=($(pactree -su "$i"))
-        done
-        repodepspkgs+=($($pacmanbin -T ${providerdeps[@]} | sort -u))
-    fi
+    FindDepsRepoProvider ${providerspkgs[@]}
 
     # get binary packages info
     if [[ -n "${repodepspkgs[@]}" ]]; then
