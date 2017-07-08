@@ -28,11 +28,11 @@ manual build process with makepkg and its configuration options, as well as
 being knowledgeable about sudo and gpg configuration.
 
 Two sets of command line options are provided: commands which call the pacman
-binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Sc, -Qu)>,
-and commands which are AUR specific B<(-s, -i, -m, -y, -u, -k)>. As such,
-pacaur can be used by users who prefer to have a single tool to manage the
-official and AUR repositories, or by users who prefer to keep their AUR
-frontend separated from pacman.
+binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc)>,
+and commands which are AUR specific B<(sync, search, info, downloadonly, susupgrade,
+upgrades)>. As such, pacaur can be used by users who prefer to have a
+single tool to manage the official and AUR repositories, or by users who prefer
+to keep their AUR frontend separated from pacman.
 
 =head1 OPERATIONS
 
@@ -40,12 +40,12 @@ frontend separated from pacman.
 
 =over 4
 
-=item B<-S, -Ss, -Si, -Sw, -Su, -Sc, -Qu>
+=item B<-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc>
 
 Pacaur wraps all B<pacman operations> and by default extends respectively its
-install, search, info, download only, update, clean and check updates functions
-to the AUR. This extension behavior is optional and can be disabled with the
-I<fallback> variable in the config file. Pacaur will also pass any other pacman
+sync, search, info, download only, system upgrade, upgrades check and clean
+functions to the AUR. This extension behavior is optional and can be disabled with
+the I<fallback> variable in the config file. Pacaur will also pass any other pacman
 operations and their related options to the pacman binary.
 
 =back
@@ -54,7 +54,12 @@ operations and their related options to the pacman binary.
 
 =over 4
 
-=item B<-s, --search>
+=item B<sync>
+
+Clone build files, build and install I<target(s)>. Missing dependencies will be
+automatically installed as required.
+
+=item B<search>
 
 Search for packages with the I<target(s)> as the search term(s). Queries with
 multiple targets will return the result of the intersection of all query
@@ -63,28 +68,23 @@ The output will display the name, version, votes and popularity values of each
 package. The flagged status will also be indicated by a <!> symbol or a colored
 version string if colored output is enabled.
 
-=item B<-i, --info>
+=item B<info>
 
 Show info for I<target(s)>.
 
-=item B<-m, --makepkg>
+=item B<downloadonly>
 
 Clone build files and build I<target(s)>. Missing dependencies will be installed
 as required to ensure the build to succeed, before being automatically
 uninstalled.
 
-=item B<-y, --sync>
-
-Clone build files, build and install I<target(s)>. Missing dependencies will be
-automatically installed as required.
-
-=item B<-u, --update>
+=item B<sysupgrade>
 
 Update foreign packages in the AUR. Without any arguments, all manually
 installed packages will be updated. If I<target(s)> are supplied, only those
 packages will be updated.
 
-=item B<-k, --check>
+=item B<upgrades>
 
 Check foreign packages for updates in the AUR. Without any arguments, all
 manually installed packages will be checked. If I<target(s)> are supplied, only
