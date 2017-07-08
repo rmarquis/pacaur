@@ -129,7 +129,7 @@ while [[ -n "${!OPTIND}" ]]; do
                         [[ $pacS ]] && operation=sync && info=true && coweropts+=("-i");
                         [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; coweropts+=("-i"); aur='1';;
                     download) operation=download && ((count++));;
-                    makepkg) operation=sync; coweropts+=("-f"); aur='1';;
+                    makepkg) operation=sync; aur='1';;
                     sync) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--sync");
                         [[ $pacS ]] && operation=sync; installpkg=true; aur='1';
                         [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
