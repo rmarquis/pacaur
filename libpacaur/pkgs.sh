@@ -222,7 +222,7 @@ MakePkgs() {
             fi
             (($? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
             # silent extraction and pkgver update only
-            makepkg -od --skipinteg ${makeopts[@]} &>/dev/null
+            makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
         fi
     done
     if [[ -n "${errmakepkg[@]}" ]]; then
@@ -335,9 +335,11 @@ MakePkgs() {
         # install
         if [[ $installpkg || -z "${builtpkgs[@]}" ]]; then
             Note "i" $"Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
-            # metadata mismatch warning
+            # inform about missing name suffix and metadata mismatch
             if [[ -z "${builtdepspkgs[@]}" && -z "${builtpkgs[@]}" ]]; then
-                Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
+                Note "f" $"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install."
+                Note "f" $"ensure package version does not mismatch between .SRCINFO and PKGBUILD"
+                Note "f" $"ensure package name has a VCS suffix if this is a devel package"
                 errinstall+=(${pkgsdeps[$i]})
             else
                 sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm

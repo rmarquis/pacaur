@@ -80,8 +80,8 @@ DepsSolver() {
     # no results check
     if [[ -n "${errdeps[@]}" ]]; then
         for i in "${!errdepsnover[@]}"; do
-            if [[ " ${aurpkgs[@]} " =~ " ${errdepsnover[$i]} " ]]; then
-                Note "f" $"no results found for ${errdepsnover[$i]}"
+            if [[ " ${aurpkgsnover[@]} " =~ " ${errdepsnover[$i]} " ]]; then
+                Note "f" $"no results found for ${errdeps[$i]}"
             else
                 unset tsorterrdeps errdepslist currenterrdep
                 # find relevant tsorted deps chain
