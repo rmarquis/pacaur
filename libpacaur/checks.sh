@@ -92,7 +92,7 @@ IgnoreDepsChecks() {
             isignored=true
         elif [[ -n "${ignoredgrps[@]}" ]]; then
             unset repodepspkgsSgrp repodepspkgsQgrp
-            repodepspkgsSgrp=($(expac -S '%G' "$i"))
+            repodepspkgsSgrp=($(expac -S -1 '%G' "$i"))
             for j in "${repodepspkgsSgrp[@]}"; do
                 [[ " ${ignoredgrps[@]} " =~ " $j " ]] && isignored=true
             done
@@ -160,7 +160,7 @@ ProviderChecks() {
     [[ -z "${repodepspkgs[@]}" ]] && return
 
     # filter directly provided deps
-    noprovidersdeps=($(expac -S '%n' ${repodepspkgs[@]}))
+    noprovidersdeps=($(expac -S -1 '%n' ${repodepspkgs[@]}))
     providersdeps=($(grep -xvf <(printf '%s\n' "${noprovidersdeps[@]}") <(printf '%s\n' "${repodepspkgs[@]}")))
 
     # remove installed providers
@@ -323,8 +323,8 @@ ConflictChecks() {
     # repo conflicts
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepsprovides=(${repodepspkgs[@]})
-        repodepsprovides+=($(expac -S '%S' "${repodepspkgs[@]}")) # no versioning
-        repodepsconflicts=($(expac -S '%H' "${repodepspkgs[@]}"))
+        repodepsprovides+=($(expac -S -1 '%S' "${repodepspkgs[@]}")) # no versioning
+        repodepsconflicts=($(expac -S -1 '%H' "${repodepspkgs[@]}"))
 
         # versioning check
         unset checkedrepodepsconflicts
@@ -353,7 +353,7 @@ ConflictChecks() {
 
     for i in "${repoconflicts[@]}"; do
         unset Qprovides
-        repoSconflicts=($(expac -S '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]$i" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
+        repoSconflicts=($(expac -S -1 '%n %C %S' "${repodepspkgs[@]}" | grep -E "[^a-zA-Z0-9_@\.\+-]$i" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}'))
         for j in "${repoSconflicts[@]}"; do
             unset k && k=$(expac -Qs '%n %P' "^$i$" | head -1 | grep -E "([^a-zA-Z0-9_@\.\+-]$i|^$i)" | grep -E "($i[^a-zA-Z0-9\.\+-]|$i$)" | awk '{print $1}')
             [[ "$j" == "$k" || -z "$k" ]] && continue # skip when no conflict with repopkgs
