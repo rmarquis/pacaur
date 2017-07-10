@@ -155,13 +155,16 @@ IgnoreDepsChecks() {
 # usage: ProviderChecks()
 ##
 ProviderChecks() {
-    local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb rmproviderpkgs providerpkgsrm
+    local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb
     # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
     [[ -z "${repodepspkgs[@]}" ]] && return
 
-    allproviders=($(expac -S '%S' "${repodepspkgs[@]}" | sort -u))
+    # filter directly provided deps
+    noprovidersdeps=($(expac -S '%n' ${repodepspkgs[@]}))
+    providersdeps=($(grep -xvf <(printf '%s\n' "${noprovidersdeps[@]}") <(printf '%s\n' "${repodepspkgs[@]}")))
+
     # remove installed providers
-    providersdeps=($($pacmanbin -T ${allproviders[@]} | sort -u))
+    providersdeps=($($pacmanbin -T ${providersdeps[@]} | sort -u))
 
     for i in "${!providersdeps[@]}"; do
         providers=($(expac -Ss '%n' "^${providersdeps[$i]}$" | sort -u))
@@ -215,27 +218,18 @@ ProviderChecks() {
             local nb=0
         fi
         providerspkgs+=(${providers[$nb]})
-        [[ $nb -ne 0 ]] && rmproviderpkgs+=(${providersdeps[$i]})
     done
 
+    # add selected providers to repo deps
+    repodepspkgs+=(${providerspkgs[@]})
+
+    # add selected providers to repo deps
+    repodepspkgs+=(${providerspkgs[@]})
+
+    # store for installation
     repoprovidersconflictingpkgs+=(${providerspkgs[@]})
 
-    # pactree always return default choice so update binary deps list
-    if [[ -n "${rmproviderpkgs[@]}" ]]; then
-        # remove deps of default providers
-        for i in "${rmproviderpkgs[@]}"; do
-            providerpkgsrm+=($(pactree -su "$i"))
-        done
-        providerpkgsrm=($($pacmanbin -T ${providerpkgsrm[@]} | sort -u))
-        repodepspkgs=($(grep -xvf <(printf '%s\n' "${providerpkgsrm[@]}") <(printf '%s\n' "${repodepspkgs[@]}")))
-
-        # add deps of selected providers instead
-        providerspkgs=($(tr '|' ' ' <<< ${providerspkgs[@]}))
-        for i in "${providerspkgs[@]}"; do
-            providerdeps+=($(pactree -su "$i"))
-        done
-        repodepspkgs+=($($pacmanbin -T ${providerdeps[@]} | sort -u))
-    fi
+    FindDepsRepoProvider ${providerspkgs[@]}
 
     # get binary packages info
     if [[ -n "${repodepspkgs[@]}" ]]; then
