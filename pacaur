@@ -104,6 +104,12 @@ source "$functiondir/main.sh"
 source "$functiondir/pkgs.sh"
 source "$functiondir/utils.sh"
 
+Deprecated() {
+    Note "w" "${colorW}Note:${reset} The ${colorW}AUR specific commands${reset} short options ${colorW}-y, -s, -i, -d, -m, -u, k${reset} and their"
+    Note "w" "respective long options are now ${colorY}deprecated${reset} and ${colorY}will be removed${reset} in a future release."
+    Note "w" "Please use the new explicit ${colorW}sync, search, info, downloadonly, sysupgrade, upgrades${reset} commands."
+}
+
 #
 # Main
 #
@@ -125,25 +131,25 @@ while [[ -n "${!OPTIND}" ]]; do
         sysupgrade) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1'; shift $OPTIND;;
         upgrades) operation=upgrades; pacopts+=("--foreign"); shift $OPTIND;;
     esac
-    while getopts ":sidmykufecqrahvxVDFQRSTUbglnoptw-:" OPT; do
+    while getopts "sidmykufecqrahvxVDFQRSTUbglnoptw-:" OPT; do
         pacmanarg+=("-$OPT");
         case "$OPT" in
             -)
                 case "$OPTARG" in
                     search) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--search");
                         [[ $pacS ]] && operation=sync && search=true && auropts+=("-s");
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; auropts+=("-s"); aur='1';;
+                        [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; search=true; auropts+=("-s"); aur='1';;
                     info) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--info");
                         [[ $pacS ]] && operation=sync && info=true && auropts+=("-i");
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; auropts+=("-i"); aur='1';;
-                    download) operation=download && ((count++));;
-                    makepkg) operation=sync; aur='1';;
+                        [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; info=true; auropts+=("-i"); aur='1';;
+                    download) deprecated='1'; operation=download && ((count++));;
+                    makepkg) deprecated='1'; operation=sync; aur='1';;
                     sync) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--sync");
                         [[ $pacS ]] && operation=sync; installpkg=true; aur='1';
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
+                        [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; installpkg=true; aur='1';;
                     check) [[ $pac || $pacS || $pacQ ]] && pacopts+=("--check");
-                        [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; pacopts+=("--foreign");;
-                    update) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
+                        [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=upgrades; pacopts+=("--foreign");;
+                    update) deprecated='1'; operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
                     edit) edit=true; [[ ! $pacQ && ! $operation ]] && operation=editpkg;;
                     quiet) quiet=true; pacopts+=("--quiet"); auropts+=("-q"); [[ $search || $operation = upgrades ]] && color=never;;
                     repo) repo='1';;
@@ -180,18 +186,18 @@ while [[ -n "${!OPTIND}" ]]; do
                     *) pacopts+=("--$OPTARG");;
                 esac;;
             s)  [[ $pacS ]] && operation=sync && search=true && auropts+=("-s");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; search=true; auropts+=("-s"); aur='1';;
+                [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; search=true; auropts+=("-s"); aur='1';;
             i)  [[ $pacS ]] && operation=sync && info=true && auropts+=("-i");
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; info=true; auropts+=("-i"); aur='1';;
+                [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; info=true; auropts+=("-i"); aur='1';;
             d)  [[ $pacS ]] && nodeps=true && pacopts+=("--nodeps") && makeopts+=("--nodeps") && ((count++));
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=download && ((count++));;
-            m)  [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; aur='1';;
+                [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=download && ((count++));;
+            m)  [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; aur='1';;
             y)  [[ $pacS ]] && operation=sync && refresh=true;
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; installpkg=true; aur='1';;
-            k)  [[ $pac || $pacQ || $pacS ]] && continue || operation=upgrades; auropts+=("-uq"); pacopts+=("--foreign");;
+                [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; installpkg=true; aur='1';;
+            k)  [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=upgrades; auropts+=("-uq"); pacopts+=("--foreign");;
             u)  [[ $pacQ ]] && operation=upgrades;
                 [[ $pacS ]] && operation=sync && upgrade=true;
-                [[ $pac || $pacQ || $pacS ]] && continue || operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
+                [[ $pac || $pacQ || $pacS ]] && continue || deprecated='1'; operation=sync; upgrade=true; installpkg=true; selective=true; aur='1';;
             e)  [[ $pacQ ]] && pacopts+=("--explicit") && continue || edit=true;
                 [[ ! $operation ]] && operation=editpkg;;
             c)  [[ $pacS ]] && operation=sync && cleancache=true && ((count++));
@@ -254,6 +260,9 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
 [[ -z "${pkgs[@]}" && -n "$(grep -e "-[RU]" <<< ${pacmanarg[@]})" && -z "$(grep -e "-[h]" <<< ${pacmanarg[@]})" ]] && Note "e" $"no targets specified (use -h for help)"
 [[ $repo && $aur ]] && Note "e" $"target not found"
+
+# deprecation warning
+[[ $deprecated ]] && [[ ! $quiet ]] && Deprecated
 
 # operations
 case $operation in
