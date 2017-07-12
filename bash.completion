@@ -4,7 +4,7 @@
 # /usr/share/bash-completion/completions/pacaur
 #
 
-_cower_pkg() {
+_aur_pkg() {
     # at least 2 characters required due to AUR limitation
     COMPREPLY+=($(compgen -W "$(cower -sq -- ^$cur 2>/dev/null)" -- $cur))
 }
@@ -16,14 +16,16 @@ _pacaur() {
     cur=$(_get_cword)
     if ((COMP_CWORD == 1)); then
         if [[ $cur != -* ]]; then
-            _pacman_file; return 0;
+            _arch_compgen "${COMPREPLY[@]}" "sync search info downloadonly sysupgrade upgrades"
+            _pacman_file
+            return 0
         else
             _pacman &> /dev/null
-            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -m --makepkg -y --sync -u --update -k --check -v --version -h --help"
+            _arch_compgen "${COMPREPLY[@]}" "-v --version -h --help"
             return 0
         fi
     fi
-    for o in 'D database' 'Q query' 'R remove' 'S sync' 'U upgrade' 'i info' 'm makepkg' 'y sync' 'u update' 'k check'; do
+    for o in 'D database' 'F files' 'Q query' 'R remove' 'S sync' 'T deptest' 'U upgrade' 'V version'; do
         _arch_incomp "$o" && break
     done
     (($?)) && op="" || op="${o% *}"
@@ -34,9 +36,9 @@ _pacaur() {
         esac
     else
         case "$op" in
-            S) _pacman_pkg Slq; _cower_pkg;; # No fallback var support.
-            d|i|m|y) _cower_pkg;;
-            k|u) _pacman_pkg Qqm;;
+            S) _pacman_pkg Slq; _aur_pkg;; # No fallback var support.
+            info|downloadonly|sync) _aur_pkg;;
+            sysupgrade|upgrades) _pacman_pkg Qqm;;
         esac
     fi
 }
