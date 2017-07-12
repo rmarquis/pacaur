@@ -328,7 +328,11 @@ MakePkgs() {
         for j in "${pkgsdepslist[@]}"; do
             unset builtpkg
             [[ $aurdevelpkgsAver ]] && depsAver="$aurdevelpkgsAver" || depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
-            GetBuiltPkg "$j-$depsAver" "$clonedir/${basepkgs[$i]}"
+            if [[ $PKGDEST ]]; then
+                GetBuiltPkg "$j-$depsAver" "$PKGDEST"
+            else
+                GetBuiltPkg "$j-$depsAver" "$clonedir/${basepkgs[$i]}"
+            fi
             [[ " ${aurdepspkgs[@]} " =~ " $j " ]] && builtdepspkgs+=($builtpkg) || builtpkgs+=($builtpkg)
         done
 
