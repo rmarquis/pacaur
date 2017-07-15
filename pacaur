@@ -1640,38 +1640,80 @@ CheckUpdates() {
 }
 
 CleanCache() {
+    cachedir=($(grep '^CacheDir' '/etc/pacman.conf' | cut -d '=' -f2 | cut -d '#' -f1))
+    [[ $cachedir ]] && cachedir=${cachedir[@]%/} && PKGDEST=${PKGDEST%/}
+
+    if [[ $PKGDEST && ! " ${cachedir[@]} " =~ " $PKGDEST " ]]; then
+        [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Packages to keep:" $"All locally installed packages"
+        printf "\n%s %s\n" $"AUR cache directory:" "$PKGDEST"
+        if [[ $count -eq 1 ]]; then
+            if Proceed "y" $"Do you want to remove all other packages from AUR cache?"; then
+                printf "%s\n" $"removing old packages from cache..."
+                for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
+                    pkgname=$(sed "s#\(.*\)-.*-.*#\1#g" <<< $i)
+                    [[ $i != $(expac -Q '%n-%v' "$pkgname") ]] && rm "$PKGDEST/$i-*"
+                done
+            fi
+        else
+            if ! Proceed "n" $"Do you want to remove ALL files from AUR cache?"; then
+                printf "%s\n" $"removing all files from AUR cache..."
+                rm "$PKGDEST"/* &>/dev/null
+            fi
+        fi
+    fi
+
     if [[ $SRCDEST ]]; then
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Sources to keep:" $"All development packages sources"
         printf "\n%s %s\n" $"AUR source cache directory:" "$SRCDEST"
         if [[ $count -eq 1 ]]; then
             if Proceed "y" $"Do you want to remove all non development files from AUR source cache?"; then
                 printf "%s\n" $"removing non development files from source cache..."
-                rm -f $SRCDEST/* &>/dev/null
+                rm -f "$SRCDEST"/* &>/dev/null
             fi
         else
             if ! Proceed "n" $"Do you want to remove ALL files from AUR source cache?"; then
                 printf "%s\n" $"removing all files from AUR source cache..."
-                rm -rf $SRCDEST/* &>/dev/null
+                rm -rf "$SRCDEST"/* &>/dev/null
             fi
         fi
     fi
     if [[ -d "$clonedir" ]]; then
         cd $clonedir
-        [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Clones to keep:" $"All packages clones"
+        if [[ $count -eq 1 ]]; then
+            if [[ -z "${pkgs[@]}" ]]; then
+                printf "\n%s\n %s\n" $"Clones to keep:" $"All locally installed clones"
+            else
+                printf "\n%s\n %s\n" $"Clones to keep:" $"All other locally installed clones"
+            fi
+        fi
         printf "\n%s %s\n" $"AUR clone directory:" "$clonedir"
         if [[ $count -eq 1 ]]; then
-            if Proceed "y" $"Do you want to remove all uninstalled clones from AUR clone directory?"; then
-                foreignpkgsbase=($(expac -Q '%n %e' $($pacmanbin -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
-                printf "%s\n\n" $"removing uninstalled clones from AUR clone cache..."
-                for clone in *; do
-                    [[ -d "$clonedir/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf "$clonedir/$clone"
-                done
-            fi
-            if Proceed "y" $"Do you want to remove all untracked files from AUR clone directory?"; then
-                printf "%s\n" $"removing untracked files from AUR clone cache..."
-                for clone in *; do
-                    [[ -d "$clonedir/$clone" ]] && git --git-dir="$clone/.git" --work-tree="$clone" clean -ffdx &>/dev/null
-                done
+            foreignpkgsbase=($(expac -Q '%n %e' $($pacmanbin -Qmq) | awk '{if ($2 == "(null)") print $1; else print $2}'))
+            # get target
+            if [[ -n "${pkgs[@]}" ]]; then
+                pkgsbase=($(expac -Q %e ${pkgs[@]}))
+                aurpkgsbase=($(grep -xf <(printf '%s\n' "${pkgsbase[@]}") <(printf '%s\n' "${foreignpkgsbase[@]}")))
+                if Proceed "y" $"Do you want to remove ${aurpkgsbase[*]} clones from AUR clone directory?"; then
+                    printf "%s\n\n" $"removing uninstalled clones from AUR clone cache..."
+                    for clone in "${aurpkgsbase[@]}"; do
+                        [[ -d "$clonedir/$clone" ]] && rm -rf "$clonedir/$clone"
+                    done
+                fi
+            else
+                if Proceed "y" $"Do you want to remove all uninstalled clones from AUR clone directory?"; then
+                    printf "%s\n\n" $"removing uninstalled clones from AUR clone cache..."
+                    for clone in *; do
+                        [[ -d "$clonedir/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf "$clonedir/$clone"
+                    done
+                fi
+                #if [[ ! $PKGDEST || ! $SRCDEST ]]; then # pacman 5.1
+                    if Proceed "y" $"Do you want to remove all untracked files from AUR clone directory?"; then
+                        printf "%s\n" $"removing untracked files from AUR clone cache..."
+                        for clone in *; do
+                            [[ -d "$clonedir/$clone" ]] && git --git-dir="$clone/.git" --work-tree="$clone" clean -ffdx &>/dev/null
+                        done
+                    fi
+                #fi
             fi
         else
             if ! Proceed "n" $"Do you want to remove ALL clones from AUR clone directory?"; then
@@ -1896,7 +1938,7 @@ Usage() {
     printf "%s\n" $"usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
     printf "%s\n" $"operations:"
     printf "%s\n" $" pacman extension"
-    printf "%s\n" $"   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc"
+    printf "%s\n" $"   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
     printf "%s\n" $"                    extend pacman operations to the AUR"
     printf "%s\n" $" AUR specific"
     printf "%s\n" $"   sync             download, make and install target(s)"
@@ -1905,12 +1947,14 @@ Usage() {
     printf "%s\n" $"   downloadonly     download and make target(s)"
     printf "%s\n" $"   sysupgrade       update AUR package(s)"
     printf "%s\n" $"   upgrades         check for AUR update(s)"
+    printf "%s\n" $"   clean            clean AUR package(s) and clone(s)"
+    printf "%s\n" $"   cleanall         clean all AUR packages and clones"
     printf "%s\n" $" general"
     printf "%s\n" $"   -v, --version    display version information"
     printf "%s\n" $"   -h, --help       display help information"
     echo
     printf "%s\n" $"options:"
-    printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc operations"
+    printf "%s\n" $" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc, -Scc operations"
     printf "%s\n" $"   -a, --aur        only search, build or install target(s) from the AUR"
     printf "%s\n" $"   -r, --repo       only search, build or install target(s) from the repositories"
     printf "%s\n" $" general"
@@ -1934,7 +1978,7 @@ Version() {
 Deprecated() {
     Note "w" "${colorW}Note:${reset} The ${colorW}AUR specific commands${reset} short options ${colorW}-y, -s, -i, -d, -m, -u, k${reset} and their"
     Note "w" "respective long options are now ${colorY}deprecated${reset} and ${colorY}will be removed${reset} in a future release."
-    Note "w" "Please use the new explicit ${colorW}sync, search, info, downloadonly, sysupgrade, upgrades${reset} commands."
+    Note "w" "Please use the new explicit ${colorW}sync, search, info, downloadonly, sysupgrade, upgrades, clean, cleanall${reset} commands."
 }
 
 #
@@ -1957,6 +2001,8 @@ while [[ -n "${!OPTIND}" ]]; do
         downloadonly) operation=sync; aur='1'; shift $OPTIND;;
         sysupgrade) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1'; shift $OPTIND;;
         upgrades) operation=upgrades; pacopts+=("--foreign"); shift $OPTIND;;
+        clean) operation=sync; cleancache=true; aur='1'; count=1; shift $OPTIND;;
+        cleanall) operation=sync; cleancache=true; aur='1'; count=2; shift $OPTIND;;
     esac
     while getopts "sidmykufecqrahvxVDFQRSTUbglnoptw-:" OPT; do
         pacmanarg+=("-$OPT");

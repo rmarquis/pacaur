@@ -28,15 +28,16 @@ manual build process with makepkg and its configuration options, as well as
 being knowledgeable about sudo and gpg configuration.
 
 Two sets of command line options are provided: commands which call the pacman
-binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc)>,
-and commands which are AUR specific B<(sync, search, info, downloadonly, susupgrade,
-upgrades)>. As such, pacaur can be used by users who prefer to have a
-single tool to manage the official and AUR repositories, or by users who prefer
-to keep their AUR frontend separated from pacman.
+binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc)>,
+and commands which are AUR specific B<(sync, search, info, downloadonly,
+susupgrade, upgrades, clean, cleanall)>. As such, pacaur can be used by users
+who prefer to have a single tool to manage the official and AUR repositories, or
+by users who prefer to keep their AUR frontend separated from pacman.
 
-B<Note:> The AUR specific commands short options B<(-y, -s, -i, -d, -m, -u, -k)> and
-their respective long options B<(--sync, --search, --info, --download, --makepkg,
---update, --check)> are now I<deprecated> and will I<be removed> in a future release.
+B<Note:> The AUR specific commands short options B<(-y, -s, -i, -d, -m, -u, -k)>
+and their respective long options B<(--sync, --search, --info, --download,
+--makepkg, --update, --check)> are now I<deprecated> and will I<be removed> in a
+future release.
 
 =head1 OPERATIONS
 
@@ -44,13 +45,13 @@ their respective long options B<(--sync, --search, --info, --download, --makepkg
 
 =over 4
 
-=item B<-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc>
+=item B<-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc>
 
 Pacaur wraps all B<pacman operations> and by default extends respectively its
-sync, search, info, download only, system upgrade, upgrades check and clean
-functions to the AUR. This extension behavior is optional and can be disabled with
-the I<fallback> variable in the config file. Pacaur will also pass any other pacman
-operations and their related options to the pacman binary.
+sync, search, info, download only, system upgrade, upgrades check, clean and
+clean all functions to the AUR. This extension behavior is optional and can be
+disabled with the I<fallback> variable in the config file. Pacaur will also pass
+any other pacman operations and their related options to the pacman binary.
 
 =back
 
@@ -93,6 +94,19 @@ packages will be updated.
 Check foreign packages for updates in the AUR. Without any arguments, all
 manually installed packages will be checked. If I<target(s)> are supplied, only
 those packages will be checked.
+
+=item B<clean>
+
+Clean foreign packages and clones. Offer to remove all non locally installed
+built packages from defined I<PKGDEST> cache, all non development files from
+defined I<SRCDEST> cache, and all uninstalled clones from AUR clones directory.
+If I<target(s)> are supplied, only those specific clones will be removed.
+
+=item B<cleanall>
+
+Clean all foreign packages and clones. Offer to remove all built packages from
+defined I<PKGDEST>, all sources in defined I<SRCDEST>, and all local clones from
+clones directory.
 
 =back
 
