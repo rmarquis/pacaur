@@ -52,6 +52,8 @@ _pacaur_opts_commands=(
     {downloadonly}'[Download and make target(s)]'
     {upgrades}'[Check for AUR update(s)]'
     {sysupgrades}'[Update AUR package(s)]'
+    {clean}'[Clean AUR package(s) and clone(s)]'
+    {cleanall}'[Clean all AUR packages and clones]'
     {-h,--help}'[Display usage]'
     '-V[Display pacman version]'
     {-v,--version}'[Display pacaur version]'

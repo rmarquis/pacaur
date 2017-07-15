@@ -107,7 +107,7 @@ source "$functiondir/utils.sh"
 Deprecated() {
     Note "w" "${colorW}Note:${reset} The ${colorW}AUR specific commands${reset} short options ${colorW}-y, -s, -i, -d, -m, -u, k${reset} and their"
     Note "w" "respective long options are now ${colorY}deprecated${reset} and ${colorY}will be removed${reset} in a future release."
-    Note "w" "Please use the new explicit ${colorW}sync, search, info, downloadonly, sysupgrade, upgrades${reset} commands."
+    Note "w" "Please use the new explicit ${colorW}sync, search, info, downloadonly, sysupgrade, upgrades, clean, cleanall${reset} commands."
 }
 
 #
@@ -130,6 +130,8 @@ while [[ -n "${!OPTIND}" ]]; do
         downloadonly) operation=sync; aur='1'; shift $OPTIND;;
         sysupgrade) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1'; shift $OPTIND;;
         upgrades) operation=upgrades; pacopts+=("--foreign"); shift $OPTIND;;
+        clean) operation=sync; cleancache=true; aur='1'; count=1; shift $OPTIND;;
+        cleanall) operation=sync; cleancache=true; aur='1'; count=2; shift $OPTIND;;
     esac
     while getopts "sidmykufecqrahvxVDFQRSTUbglnoptw-:" OPT; do
         pacmanarg+=("-$OPT");
