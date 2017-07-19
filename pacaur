@@ -2054,7 +2054,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 [[ $pacS ]] && pacmanarg=(${pacmanarg[@]/-e/})
 [[ $pacS ]] && [[ $search && $info ]] && coweropts=(${coweropts[@]/-i/})
 [[ $pacS ]] && [[ $cleancache ]] && unset search info upgrade
-[[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}editor${reset} variable unset"
+[[ ! $(command -v "${editor%% *}") ]] && Note "e" $"${colorW}\$VISUAL${reset} and ${colorW}\$EDITOR${reset} environment variables or ${colorW}editor${reset} config option not set"
 [[ "$PACMAN" = $(basename "$0") ]] && Note "e" $"you cannot use ${colorW}pacaur${reset} as PACMAN environment variable"
 [[ ! -w "$clonedir" ]] && Note "e" $"${colorW}$clonedir${reset} does not have write permission"
 [[ -z "${pkgs[@]}" ]] && [[ $operation = download || $operation = sync || $operation = editpkg ]] && [[ ! $refresh && ! $upgrade && ! $cleancache ]] && Note "e" $"no targets specified (use -h for help)"
