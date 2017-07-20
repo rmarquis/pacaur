@@ -1417,12 +1417,12 @@ SearchAur() {
 InfoAur() {
     local aurinfopkgs info infolabel maxlength linfo lbytes
 
-    readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%G|%P|%D|%M|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
+    readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%G|%P|%D|%M|%K|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
     aurinfopkgsQname=($(expac -Q '%n' $@))
     aurinfopkgsQver=($(expac -Q '%v' $@))
 
     infolabel=($"Repository" $"Name" $"Version" $"Description" $"URL" $"AUR Page" $"Licenses" $"Keywords" $"Groups" $"Provides" $"Depends on" \
-        $"Make Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Maintainer" $"Popularity" $"Votes" $"Out of Date" $"Submitted" $"Last Modified")
+        $"Make Deps" $"Check Deps" $"Optional Deps" $"Conflicts With" $"Replaces" $"Maintainer" $"Popularity" $"Votes" $"Out of Date" $"Submitted" $"Last Modified")
     linfo=$(GetLength "${infolabel[@]}")
     # take into account differences between characters and bytes
     for i in "${!infolabel[@]}"; do
@@ -1465,10 +1465,10 @@ InfoAur() {
         printf "${colorW}%-${lbytes[4]}s  :${reset} ${colorC}%s${reset}\n" "${infolabel[4]}" "${info[3]}"
         printf "${colorW}%-${lbytes[5]}s  :${reset} ${colorC}%s${reset}\n" "${infolabel[5]}" "${info[4]}"
         # keywords licenses dependencies
-        for j in {5..13}; do
+        for j in {5..14}; do
             if [[ -n $(tr -dc '[[:print:]]' <<< ${info[$j]}) ]]; then
                 # handle special optional deps cases
-                if [[ "$j" = '11' ]]; then
+                if [[ "$j" = '12' ]]; then
                     info[$j]=$(sed -r 's/\S+:/\n&/2g' <<< ${info[$j]} | fold -s -w $(($maxlength - 2)) | sed "s/^ //;2,$ s/^/\\x1b[$(($linfo + 4))C/")
                 else
                     # add line breaks if needed and align text
@@ -1482,18 +1482,18 @@ InfoAur() {
             fi
         done
         # maintainer popularity votes
-        for j in {14..16}; do
+        for j in {15..17}; do
             printf "${colorW}%-${lbytes[$j+1]}s  :${reset} %s\n" "${infolabel[$j+1]}" "${info[$j]}"
         done
         # outofdate
-        if [[ "${info[17]}" = 'no' ]]; then
-            printf "${colorW}%-${lbytes[18]}s  :${reset} ${colorG}%s${reset}\n" "${infolabel[18]}" $"No"
+        if [[ "${info[18]}" = 'no' ]]; then
+            printf "${colorW}%-${lbytes[19]}s  :${reset} ${colorG}%s${reset}\n" "${infolabel[19]}" $"No"
         else
-            printf "${colorW}%-${lbytes[18]}s  :${reset} ${colorR}%s${reset} [%s]\n" "${infolabel[18]}" $"Yes" $"$(date -d "@${info[18]}" "+%c")"
+            printf "${colorW}%-${lbytes[19]}s  :${reset} ${colorR}%s${reset} [%s]\n" "${infolabel[19]}" $"Yes" $"$(date -d "@${info[19]}" "+%c")"
         fi
         # submitted modified
-        printf "${colorW}%-${lbytes[19]}s  :${reset} %s\n" "${infolabel[19]}" $"$(date -d "@${info[19]}" "+%c")"
         printf "${colorW}%-${lbytes[20]}s  :${reset} %s\n" "${infolabel[20]}" $"$(date -d "@${info[20]}" "+%c")"
+        printf "${colorW}%-${lbytes[21]}s  :${reset} %s\n" "${infolabel[21]}" $"$(date -d "@${info[21]}" "+%c")"
         echo
     done
 }
