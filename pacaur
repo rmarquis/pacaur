@@ -1450,7 +1450,7 @@ InfoAur() {
             printf "${colorW}%-${linfo}s  :${reset} ${colorW}%s${reset}\n" "${infolabel[1]}" "${info[0]}"
         fi
         # version
-        if [[ "${info[17]}" = 'no' ]]; then
+        if [[ "${info[18]}" = 'no' ]]; then
             printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorG}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
         else
             printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorR}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
