@@ -1434,26 +1434,26 @@ InfoAur() {
         IFS='|' read -ra info <<< "${aurinfopkgs[$i]}"
         # repo
         printf "${colorW}%-${lbytes[0]}s  :${reset} ${colorM}aur${reset}\n" "${infolabel[0]}"
-        # name and installed status
+        # name
+        printf "${colorW}%-${lbytes[1]}s  :${reset} ${colorW}%s${reset}\n" "${infolabel[1]}" "${info[0]}"
+        # version and installed status
         if [[ " ${aurinfopkgsQname[@]} " =~ " ${info[0]} " ]]; then
             for j in "${!aurinfopkgsQname[@]}"; do
                 [[ "${aurinfopkgsQname[$j]}" != "${info[0]}" ]] && continue
                 if [[ $(vercmp "${info[1]}" "${aurinfopkgsQver[$j]}") -eq 0 ]]; then
-                    printf "${colorW}%-${lbytes[1]}s  :${reset} ${colorW}%s${reset} ${colorC}[${reset}${colorG}%s${reset}${colorC}]${reset}\n" "${infolabel[1]}" "${info[0]}" $"installed"
+                    printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorG}%s${reset} ${colorC}[${reset}${colorG}%s${reset}${colorC}]${reset}\n" "${infolabel[2]}" "${info[1]}" $"installed"
                 elif [[ $(vercmp "${info[1]}" "${aurinfopkgsQver[$j]}") -lt 0 ]]; then
-                    printf "${colorW}%-${lbytes[1]}s  :${reset} ${colorW}%s${reset} ${colorC}[${reset}${colorG}%s: %s${reset}${colorC}]${reset}\n" "${infolabel[1]}" "${info[0]}" $"installed" "${aurinfopkgsQver[$j]}"
+                    printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorG}%s${reset} ${colorC}[${reset}${colorG}%s: %s${reset}${colorC}]${reset}\n" "${infolabel[2]}" "${info[1]}" $"installed" "${aurinfopkgsQver[$j]}"
                 else
-                    printf "${colorW}%-${lbytes[1]}s  :${reset} ${colorW}%s${reset} ${colorC}[${reset}${colorR}%s: %s${reset}${colorC}]${reset}\n" "${infolabel[1]}" "${info[0]}" $"installed" "${aurinfopkgsQver[$j]}"
+                    printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorG}%s${reset} ${colorC}[${reset}${colorR}%s: %s${reset}${colorC}]${reset}\n" "${infolabel[2]}" "${info[1]}" $"installed" "${aurinfopkgsQver[$j]}"
                 fi
             done
         else
-            printf "${colorW}%-${linfo}s  :${reset} ${colorW}%s${reset}\n" "${infolabel[1]}" "${info[0]}"
-        fi
-        # version
-        if [[ "${info[18]}" = 'no' ]]; then
-            printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorG}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
-        else
-            printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorR}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
+            if [[ "${info[18]}" = 'no' ]]; then
+                printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorG}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
+            else
+                printf "${colorW}%-${lbytes[2]}s  :${reset} ${colorR}%s${reset}\n" "${infolabel[2]}" "${info[1]}"
+            fi
         fi
         # description
         if [[ $(GetLength "${info[2]}") -gt $maxlength ]]; then
