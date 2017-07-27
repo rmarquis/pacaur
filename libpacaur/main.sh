@@ -126,7 +126,6 @@ Usage() {
     printf "%s\n" $" AUR specific"
     printf "%s\n" $"   -s, --search     search AUR for matching strings"
     printf "%s\n" $"   -i, --info       view package information"
-    printf "%s\n" $"   -d, --download   download target(s) -- pass twice to download AUR dependencies"
     printf "%s\n" $"   -m, --makepkg    download and make target(s)"
     printf "%s\n" $"   -y, --sync       download, make and install target(s)"
     printf "%s\n" $"   -u, --update     update AUR package(s)"

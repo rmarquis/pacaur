@@ -250,7 +250,7 @@ pacmanarg=(${pacmanarg[@]/-a/})
 # operations
 case $operation in
     download)
-        # download (-d) handling
+        # download (-d) handling (deprecated)
         ClassifyPkgs ${pkgs[@]}
         if [[ $count -gt 1 ]]; then
             DepsSolver

@@ -29,7 +29,7 @@ being knowledgeable about sudo and gpg configuration.
 
 Two sets of command line options are provided: commands which call the pacman
 binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Sc, -Qu)>,
-and commands which are AUR specific B<(-s, -i, -d, -m, -y, -u, -k)>. As such,
+and commands which are AUR specific B<(-s, -i, -m, -y, -u, -k)>. As such,
 pacaur can be used by users who prefer to have a single tool to manage the
 official and AUR repositories, or by users who prefer to keep their AUR
 frontend separated from pacman.
@@ -66,11 +66,6 @@ version string if colored output is enabled.
 =item B<-i, --info>
 
 Show info for I<target(s)>.
-
-=item B<-d, --download>
-
-Clone the I<target(s)> build files. Pass this option twice to fetch uninstalled
-dependencies (done recursively).
 
 =item B<-m, --makepkg>
 

@@ -48,7 +48,6 @@ _pacaur_opts_commands=(
 
     {-s,--search}'[Search AUR package names and descriptions]'
     {-i,--info}'[Show info for target(s)]'
-    {-d,--download}'[Download target(s)]'
     {-m,--makepkg}'[Download and make target(s)]'
     {-y,--sync}'[Download, make and install target(s)]'
     {-k,--check}'[Check for AUR update(s)]'

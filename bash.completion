@@ -19,11 +19,11 @@ _pacaur() {
             _pacman_file; return 0;
         else
             _pacman &> /dev/null
-            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -d --download -m --makepkg -y --sync -u --update -k --check -v --version -h --help"
+            _arch_compgen "${COMPREPLY[@]}" "-s --search -i --info -m --makepkg -y --sync -u --update -k --check -v --version -h --help"
             return 0
         fi
     fi
-    for o in 'D database' 'Q query' 'R remove' 'S sync' 'U upgrade' 'i info' 'd download' 'm makepkg' 'y sync' 'u update' 'k check'; do
+    for o in 'D database' 'Q query' 'R remove' 'S sync' 'U upgrade' 'i info' 'm makepkg' 'y sync' 'u update' 'k check'; do
         _arch_incomp "$o" && break
     done
     (($?)) && op="" || op="${o% *}"
