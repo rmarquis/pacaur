@@ -183,10 +183,10 @@ UpgradeAur() {
 # usage: SearchAur( $packages )
 ##
 SearchAur() {
-    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${coweropts[@]})" ]]; then
-        [[ $sortorder = descending ]] && coweropts+=("--rsort=$sortby") || coweropts+=("--sort=$sortby");
+    if [[ -z "$(grep -E "\-\-[r]?sort" <<< ${auropts[@]})" ]]; then
+        [[ $sortorder = descending ]] && auropts+=("--rsort=$sortby") || auropts+=("--sort=$sortby");
     fi
-    cower ${coweropts[@]} -- $@
+    cower ${auropts[@]} -- $@
 }
 
 ##
@@ -197,7 +197,7 @@ SearchAur() {
 InfoAur() {
     local aurinfopkgs info infolabel maxlength linfo lbytes
 
-    readarray aurinfopkgs < <(cower ${coweropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%G|%P|%D|%M|%K|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
+    readarray aurinfopkgs < <(cower ${auropts[@]} --format "%n|%v|%d|%u|%p|%L|%W|%G|%P|%D|%M|%K|%O|%C|%R|%m|%r|%o|%t|%w|%s|%a\n" $@)
     aurinfopkgsQname=($(expac -Q '%n' $@))
     aurinfopkgsQver=($(expac -Q '%v' $@))
 
