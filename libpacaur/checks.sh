@@ -27,7 +27,7 @@ IgnoreChecks() {
 
     checkaurpkgsAver=($(GetJson "var" "$json" "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
-    # set always the latest revision for devel packages
+    # set always the latest revision for devel packages since RPC can be outdated
     for i in "${!checkaurpkgs[@]}"; do
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
@@ -88,7 +88,7 @@ IgnoreDepsChecks() {
     # add checked targets
     deps=(${aurpkgs[@]})
 
-    # check repos dependencies
+    # check repo dependencies
     for i in "${repodepspkgs[@]}"; do
         unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
@@ -241,7 +241,7 @@ ProviderChecks() {
 
     FindDepsRepoProvider ${providerspkgs[@]}
 
-    # get binary packages info
+    # get repo packages info
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
@@ -403,11 +403,11 @@ ReinstallChecks() {
     # global aurpkgs aurdepspkgs deps aurconflictingpkgs depsAname depsQver depsAver depsAood depsAmain
     depsAtmp=(${depsAname[@]})
     for i in "${!depsAtmp[@]}"; do
-        # check and skip packages with conflicts
+        # check and skip packages with conflicts to avoid false positive
         [[ ! $foreign ]] && [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
-        # devel packages are never considered to be reinstalled, use always lastest revision without check
+        # devel packages are not considered, VCS packages version is not checked by design since it is a slow operation
         if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]]; then
             Note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else

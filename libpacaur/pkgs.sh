@@ -305,7 +305,7 @@ MakePkgs() {
         # build
         Note "i" $"Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 
-        # build then remove binary deps
+        # install then remove repo dependencies
         makeopts=(${makeopts[@]/-r/})
 
         if [[ ! $installpkg ]]; then
@@ -372,7 +372,7 @@ MakePkgs() {
             Note "i" $"Removing installed AUR dependencies..."
             sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
         fi
-        # read removed conflicting packages
+        # readd previously removed conflicting packages
         [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --ask 36 --asdeps --needed --noconfirm
         [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --ask 36 --asdeps --needed --noconfirm
     fi
