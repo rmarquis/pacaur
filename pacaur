@@ -102,7 +102,11 @@ ClassifyPkgs() {
     # global aurpkgs repopkgs
     if [[ $fallback = true ]]; then
         [[ $repo ]] && repopkgs=(${pkgs[@]})
-        [[ $aur ]] && aurpkgs=(${pkgs[@]})
+        if [[ $aur ]]; then
+            for i in "${pkgs[@]}"; do
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) # search aur/pkgs in AUR
+            done
+        fi
         if [[ ! $repo && ! $aur ]]; then
             unset noaurpkgs
             for i in "${pkgs[@]}"; do
@@ -116,7 +120,13 @@ ClassifyPkgs() {
             repopkgs=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${noaurpkgs[@]}")))
         fi
     else
-        [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
+        if [[ ! $aur ]]; then
+            repopkgs=(${pkgs[@]})
+        else
+            for i in "${pkgs[@]}"; do
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) # search aur/pkgs in AUR
+            done
+        fi
     fi
 }
 
