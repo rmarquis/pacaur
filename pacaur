@@ -1230,8 +1230,12 @@ MakePkgs() {
                 makepkg -f --verifysource ${makeopts[@]}
             fi
             (($? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
-            # silent extraction and pkgver update only
-            makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
+            # extraction, prepare and pkgver update
+            if [[ $silent = true ]]; then
+                makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
+            else
+                makepkg -odC --skipinteg ${makeopts[@]}
+            fi
         fi
     done
     if [[ -n "${errmakepkg[@]}" ]]; then
