@@ -104,7 +104,8 @@ ClassifyPkgs() {
         [[ $repo ]] && repopkgs=(${pkgs[@]})
         if [[ $aur ]]; then
             for i in "${pkgs[@]}"; do
-                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) # search aur/pkgs in AUR
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) && continue # search aur/pkgs in AUR
+                aurpkgs+=($i)
             done
         fi
         if [[ ! $repo && ! $aur ]]; then
@@ -124,7 +125,8 @@ ClassifyPkgs() {
             repopkgs=(${pkgs[@]})
         else
             for i in "${pkgs[@]}"; do
-                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) # search aur/pkgs in AUR
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) && continue # search aur/pkgs in AUR
+                aurpkgs+=($i)
             done
         fi
     fi
