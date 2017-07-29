@@ -1570,7 +1570,7 @@ CheckUpdates() {
             for i in "${!aurpkgsAname[@]}"; do
                 [[ " ${ignoredpkgs[@]} " =~ " ${aurpkgsAname[$i]} " ]] && aurpkgsQignore[$i]=$"[ ignored ]"
                 if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${aurpkgsAname[$i]})" ]]; then
-                    [[ ! $needed ]] && aurpkgsAver[$i]=$"latest"
+                    [[ ! $needed ]] && aurpkgsAver[$i]=$"latest" || aurpkgsAver[$i]=${aurpkgsQoodAver[$i]}
                 fi
             done
             lAname=$(GetLength "${aurpkgsAname[@]}")
