@@ -13,7 +13,12 @@ ClassifyPkgs() {
     # global aurpkgs repopkgs
     if [[ $fallback = true ]]; then
         [[ $repo ]] && repopkgs=(${pkgs[@]})
-        [[ $aur ]] && aurpkgs=(${pkgs[@]})
+        if [[ $aur ]]; then
+            for i in "${pkgs[@]}"; do
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) && continue # search aur/pkgs in AUR
+                aurpkgs+=($i)
+            done
+        fi
         if [[ ! $repo && ! $aur ]]; then
             unset noaurpkgs
             for i in "${pkgs[@]}"; do
@@ -27,7 +32,14 @@ ClassifyPkgs() {
             repopkgs=($(grep -xvf <(printf '%s\n' "${aurpkgs[@]}") <(printf '%s\n' "${noaurpkgs[@]}")))
         fi
     else
-        [[ ! $aur ]] && repopkgs=(${pkgs[@]}) || aurpkgs=(${pkgs[@]})
+        if [[ ! $aur ]]; then
+            repopkgs=(${pkgs[@]})
+        else
+            for i in "${pkgs[@]}"; do
+                [[ $i == aur/* ]] && aurpkgs+=(${i:4}) && continue # search aur/pkgs in AUR
+                aurpkgs+=($i)
+            done
+        fi
     fi
 }
 
@@ -224,8 +236,12 @@ MakePkgs() {
                 makepkg -f --verifysource ${makeopts[@]}
             fi
             (($? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
-            # silent extraction and pkgver update only
-            makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
+            # extraction, prepare and pkgver update
+            if [[ $silent = true ]]; then
+                makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
+            else
+                makepkg -odC --skipinteg ${makeopts[@]}
+            fi
         fi
     done
 
