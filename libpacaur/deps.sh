@@ -397,7 +397,7 @@ FindDepsRepo() {
     [[ -z "${repodepspkgs[@]}" ]] && repodepspkgs=(${repodeps[@]})
 
     # get non installed repo deps
-    allrepodepspkgs=($(expac -S -1 '%E' ${repodeps[@]})) # no version check needed as all deps are repo
+    allrepodepspkgs=($(expac -S -1 '%E' ${repodeps[@]})) # no version check needed as all deps are repo deps
     [[ -n "${allrepodepspkgs[@]}" ]] && repodepspkgstmp=($($pacmanbin -T ${allrepodepspkgs[@]} | sort -u))
 
     if [[ -n "${repodepspkgstmp[@]}" ]]; then
@@ -425,7 +425,7 @@ FindDepsRepoProvider() {
     [[ -z "${providerspkgspkgs[@]}" ]] && providerspkgspkgs=(${providerspkgs[@]})
 
     # get non installed repo deps
-    allproviderrepodepspkgs=($(expac -S -1 '%E' ${providerspkgs[@]})) # no version check needed as all deps are repo
+    allproviderrepodepspkgs=($(expac -S -1 '%E' ${providerspkgs[@]})) # no version check needed as all deps are repo deps
     [[ -n "${allproviderrepodepspkgs[@]}" ]] && providerrepodepspkgstmp=($($pacmanbin -T ${allproviderrepodepspkgs[@]} | sort -u))
 
     if [[ -n "${providerrepodepspkgstmp[@]}" ]]; then

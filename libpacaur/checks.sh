@@ -27,7 +27,7 @@ IgnoreChecks() {
 
     checkaurpkgsAver=($(GetJson "var" "$json" "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
-    # set always the latest revision for devel packages since RPC can be outdated
+    # set always the latest revision for devel packages since the RPC data is static only
     for i in "${!checkaurpkgs[@]}"; do
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
