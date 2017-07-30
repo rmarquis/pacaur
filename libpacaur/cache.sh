@@ -10,6 +10,7 @@
 # usage: CleanCache( $packages )
 ##
 CleanCache() {
+    # clean AUR sources cache
     if [[ $SRCDEST ]]; then
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Sources to keep:" $"All development packages sources"
         printf "\n%s %s\n" $"AUR source cache directory:" "$SRCDEST"
@@ -25,6 +26,7 @@ CleanCache() {
             fi
         fi
     fi
+    # clean clone directory cache
     if [[ -d "$clonedir" ]]; then
         cd $clonedir
         [[ $count -eq 1 ]] && printf "\n%s\n %s\n" $"Clones to keep:" $"All packages clones"

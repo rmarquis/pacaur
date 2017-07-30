@@ -100,7 +100,7 @@ DepsSolver() {
         exit 1
     fi
 
-    # return all binary deps
+    # return all repo deps
     FindDepsRepo ${repodeps[@]}
 
     # avoid possible duplicate
@@ -216,13 +216,13 @@ FindDepsAur() {
             depspkgstmp+=($(grep -xvf <(printf '%s\n' "${vcsdepspkgs[@]}") <(printf '%s\n' "${depspkgs[@]}")))
             depspkgs=($(tr ' ' '\n' <<< ${depspkgstmp[@]} | LC_COLLATE=C sort -u))
         fi
-        # remove installed binary packages only
+        # remove installed repo packages only
         if [[ $foreign ]]; then
             depspkgs=($(grep -xf <(printf '%s\n' "${depspkgs[@]}") <(printf '%s\n' "${foreignpkgs[@]}")))
         fi
     fi
 
-    # split binary and AUR depends pkgs
+    # split repo and AUR depends pkgs
     unset depspkgsaur
     if [[ -n "${depspkgs[@]}" ]]; then
         # remove all pkgs versioning
@@ -390,14 +390,14 @@ FindDepsRepo() {
     # global repodeps repodepspkgs
     [[ -z "${repodeps[@]}" ]] && return
 
-    # reduce root binary deps
+    # reduce root repo deps
     repodeps=($(tr ' ' '\n' <<< ${repodeps[@]} | sort -u))
 
     # add initial repodeps
     [[ -z "${repodepspkgs[@]}" ]] && repodepspkgs=(${repodeps[@]})
 
     # get non installed repo deps
-    allrepodepspkgs=($(expac -S -1 '%E' ${repodeps[@]})) # no version check needed as all deps are binary
+    allrepodepspkgs=($(expac -S -1 '%E' ${repodeps[@]})) # no version check needed as all deps are repo deps
     [[ -n "${allrepodepspkgs[@]}" ]] && repodepspkgstmp=($($pacmanbin -T ${allrepodepspkgs[@]} | sort -u))
 
     if [[ -n "${repodepspkgstmp[@]}" ]]; then
@@ -418,14 +418,14 @@ FindDepsRepoProvider() {
     # global repodeps repodepspkgs
     [[ -z "${providerspkgs[@]}" ]] && return
 
-    # reduce root binary deps
+    # reduce root repo deps
     providerspkgs=($(tr ' ' '\n' <<< ${providerspkgs[@]} | sort -u))
 
     # add initial repodeps
     [[ -z "${providerspkgspkgs[@]}" ]] && providerspkgspkgs=(${providerspkgs[@]})
 
     # get non installed repo deps
-    allproviderrepodepspkgs=($(expac -S -1 '%E' ${providerspkgs[@]})) # no version check needed as all deps are binary
+    allproviderrepodepspkgs=($(expac -S -1 '%E' ${providerspkgs[@]})) # no version check needed as all deps are repo deps
     [[ -n "${allproviderrepodepspkgs[@]}" ]] && providerrepodepspkgstmp=($($pacmanbin -T ${allproviderrepodepspkgs[@]} | sort -u))
 
     if [[ -n "${providerrepodepspkgstmp[@]}" ]]; then

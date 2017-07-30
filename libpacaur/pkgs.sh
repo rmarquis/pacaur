@@ -75,6 +75,7 @@ EditPkgs() {
         cd "$clonedir/$i" || exit 1
         unset timestamp
         GetInstallScripts $i
+        # ask for showing files and diff when edit argument is not used
         if [[ ! $edit ]]; then
             if [[ ! $displaybuildfiles = none ]]; then
                 if [[ $displaybuildfiles = diff && -e ".git/HEAD.prev" ]]; then
@@ -136,6 +137,7 @@ EditPkgs() {
         fi
     done
 
+    # handle errors on viewing package install script and pkgbuild
     if [[ -n "${erreditpkg[@]}" ]]; then
         for i in "${erreditpkg[@]}"; do
             Note "f" $"${colorW}$i${reset} errored on exit"
@@ -212,6 +214,7 @@ MakePkgs() {
             fi
         done
 
+        # verify source integrity
         if [[ ! $builtpkg || $rebuild ]]; then
             cd "$clonedir/${basepkgs[$i]}" || exit 1
             Note "i" $"Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
@@ -225,6 +228,8 @@ MakePkgs() {
             makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
         fi
     done
+
+    # handle errors on integrity check
     if [[ -n "${errmakepkg[@]}" ]]; then
         for i in "${errmakepkg[@]}"; do
             Note "f" $"failed to verify ${colorW}$i${reset} integrity"
@@ -300,7 +305,7 @@ MakePkgs() {
         # build
         Note "i" $"Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 
-        # install then remove binary deps
+        # install then remove repo dependencies
         makeopts=(${makeopts[@]/-r/})
 
         if [[ ! $installpkg ]]; then
@@ -367,7 +372,7 @@ MakePkgs() {
             Note "i" $"Removing installed AUR dependencies..."
             sudo $pacmanbin -Rsn ${aurdepspkgs[@]} --noconfirm
         fi
-        # readd removed conflicting packages
+        # readd previously removed conflicting packages
         [[ -n "${aurconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${aurconflictingpkgsrm[@]} --ask 36 --asdeps --needed --noconfirm
         [[ -n "${repoconflictingpkgsrm[@]}" ]] && sudo $pacmanbin -S ${repoconflictingpkgsrm[@]} --ask 36 --asdeps --needed --noconfirm
     fi

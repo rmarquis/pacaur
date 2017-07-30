@@ -16,7 +16,7 @@ Proceed() {
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$Y/$n] "
             if [[ ! $noconfirm ]]; then
                 case "$TERM" in
-                    dumb)
+                    dumb) # handle line buffering on dumb terminals
                         read -r answer
                         ;;
                     *)
@@ -39,7 +39,7 @@ Proceed() {
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$y/$N] "
             if [[ ! $noconfirm ]]; then
                 case "$TERM" in
-                    dumb)
+                    dumb) # handle line buffering on dumb terminals
                         read -r answer
                         ;;
                     *)

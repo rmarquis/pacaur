@@ -27,6 +27,7 @@ IgnoreChecks() {
 
     checkaurpkgsAver=($(GetJson "var" "$json" "Version"))
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
+    # set always the latest revision for devel packages since the RPC data is static only
     for i in "${!checkaurpkgs[@]}"; do
         [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
     done
@@ -34,6 +35,7 @@ IgnoreChecks() {
         unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " ${checkaurpkgs[$i]} " ]]; then
             isignored=true
+        # check ignored groups
         elif [[ -n "${ignoredgrps[@]}" ]]; then
             unset checkaurpkgsAgrp checkaurpkgsQgrp
             checkaurpkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "${checkaurpkgs[$i]}"))
@@ -48,6 +50,7 @@ IgnoreChecks() {
 
         if [[ $isignored = true ]]; then
             if [[ ! $upgrade ]]; then
+                # ask for installing ignored package
                 if [[ ! $noconfirm ]]; then
                     if ! Proceed "y" $"${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                         Note "w" $"skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
@@ -85,11 +88,12 @@ IgnoreDepsChecks() {
     # add checked targets
     deps=(${aurpkgs[@]})
 
-    # check dependencies
+    # check repo dependencies
     for i in "${repodepspkgs[@]}"; do
         unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             isignored=true
+        # check ignored groups
         elif [[ -n "${ignoredgrps[@]}" ]]; then
             unset repodepspkgsSgrp repodepspkgsQgrp
             repodepspkgsSgrp=($(expac -S -1 '%G' "$i"))
@@ -102,6 +106,7 @@ IgnoreDepsChecks() {
             done
         fi
 
+        # check unresolved ignored dependencies
         if [[ $isignored = true ]]; then
             if [[ ! $upgrade ]]; then
                 Note "w" $"skipping target: ${colorW}$i${reset}"
@@ -111,6 +116,7 @@ IgnoreDepsChecks() {
             Note "e" $"Unresolved dependency '${colorW}$i${reset}'"
         fi
     done
+    # check aur dependencies
     for i in "${aurdepspkgs[@]}"; do
         # skip already checked dependencies
         [[ " ${aurpkgs[@]} " =~ " $i " ]] && continue
@@ -119,6 +125,7 @@ IgnoreDepsChecks() {
         unset isignored
         if [[ " ${ignoredpkgs[@]} " =~ " $i " ]]; then
             isignored=true
+        # check ignored groups
         elif [[ -n "${ignoredgrps[@]}" ]]; then
             unset aurdepspkgsAgrp aurdepspkgsQgrp
             aurdepspkgsAgrp=($(GetJson "arrayvar" "$json" "Groups" "$i"))
@@ -131,7 +138,9 @@ IgnoreDepsChecks() {
             done
         fi
 
+        # check unresolved ignored dependencies
         if [[ $isignored = true ]]; then
+            # ask for installing ignored dependencies
             if [[ ! $noconfirm ]]; then
                 if ! Proceed "y" $"$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"; then
                     Note "w" $"skipping target: ${colorW}$i${reset}"
@@ -184,6 +193,7 @@ ProviderChecks() {
             [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
         fi
 
+        # select providers, select default provider=0 if noconfirm option is set
         if [[ ! $noconfirm ]]; then
             Note "i" $"${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
             expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
@@ -231,7 +241,7 @@ ProviderChecks() {
 
     FindDepsRepoProvider ${providerspkgs[@]}
 
-    # get binary packages info
+    # get repo packages info
     if [[ -n "${repodepspkgs[@]}" ]]; then
         repodepspkgs=($(expac -S -1 '%n' "${repodepspkgs[@]}" | LC_COLLATE=C sort -u))
         repodepsSver=($(expac -S -1 '%v' "${repodepspkgs[@]}"))
@@ -393,9 +403,11 @@ ReinstallChecks() {
     # global aurpkgs aurdepspkgs deps aurconflictingpkgs depsAname depsQver depsAver depsAood depsAmain
     depsAtmp=(${depsAname[@]})
     for i in "${!depsAtmp[@]}"; do
+        # check and skip packages with conflicts to avoid false positive
         [[ ! $foreign ]] && [[ ! " ${aurpkgs[@]} " =~ " ${depsAname[$i]} " || " ${aurconflictingpkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
+        # devel packages are not considered, VCS packages version is not checked by design since it is a slow operation
         if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]]; then
             Note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else

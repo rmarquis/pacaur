@@ -35,6 +35,7 @@ Prompt() {
     local i binaryksize sumk summ builtpkg cachedpkgs strname stroldver strnewver strsize action
     local depsver repodepspkgsver strrepodlsize strrepoinsize strsumk strsumm lreposizelabel lreposize
     # global repodepspkgs repodepsSver depsAname depsAver depsArepo depsAcached lname lver lsize deps depsQver repodepspkgs repodepsSrepo repodepsQver repodepsSver
+
     # compute binary size
     if [[ -n "${repodepspkgs[@]}" ]]; then
         binaryksize=($(expac -S -1 '%k' "${repodepspkgs[@]}"))
@@ -59,6 +60,7 @@ Prompt() {
         unset builtpkg
     done
 
+    # use output verbosity options from pacman config file
     if [[ -n "$(grep '^VerbosePkgLists' '/etc/pacman.conf')" ]]; then
         straurname=$"AUR Packages  (${#deps[@]})"; strreponame=$"Repo Packages (${#repodepspkgs[@]})"; stroldver=$"Old Version"; strnewver=$"New Version"; strsize=$"Download Size"
         depsArepo=(${depsAname[@]/#/aur/})
@@ -76,6 +78,7 @@ Prompt() {
             printf "%-${lname}s  ${colorR}%-${lver}s${reset}  ${colorG}%-${lver}s${reset}  %${lsize}s\n" "${depsArepo[$i]}" "${depsQver[$i]}" "${depsAver[$i]}" "${depsAcached[$i]}";
         done
 
+        # format and print binary size
         if [[ -n "${repodepspkgs[@]}" ]]; then
             for i in "${!repodepspkgs[@]}"; do
                 binarysize[$i]=$(awk '{ printf("%.2f\n", $1/$2) }' <<< "${binaryksize[$i]} 1048576")
@@ -97,6 +100,7 @@ Prompt() {
         [[ -n "${repodepspkgs[@]}" ]] && printf "${colorW}%-16s${reset} %s\n" $"Repo Packages (${#repodepspkgs[@]})" "$repodepspkgsver"
     fi
 
+    # show total download and installed size of the operation
     if [[ -n "${repodepspkgs[@]}" ]]; then
         strrepodlsize=$"Repo Download Size:"; strrepoinsize=$"Repo Installed Size:"; strsumk=$"$sumk MiB"; strsumm=$"$summ MiB"
         lreposizelabel=$(GetLength "$strrepodlsize" "$strrepoinsize")
