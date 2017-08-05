@@ -1843,12 +1843,15 @@ CheckRequires() {
 }
 
 Proceed() {
-    local Y y N n answer
+    local Y y N n answer ret
     Y="$(gettext pacman Y)"; y="${Y,,}";
     N="$(gettext pacman N)"; n="${N,,}"
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$Y/$n] "
-            if [[ ! $noconfirm ]]; then
+            if [[ $noconfirm ]]; then
+              return 0
+            fi
+            while true; do
                 case "$TERM" in
                     dumb)
                         read -r answer
@@ -1857,21 +1860,21 @@ Proceed() {
                         if [[ $cleancache ]]; then
                             read -r answer
                         else
-                            read -r -n 1 answer
-                            echo
+                            read -s -r -n 1 answer
                         fi
                         ;;
                 esac
-            else
-                answer=$Y
-                echo
-            fi
-            case $answer in
-                $Y|$y|'') return 0;;
-                *) return 1;;
-            esac;;
+                case $answer in
+                    $Y|$y|'') ret=0; break;;
+                    $N|$n) ret=1; break;;
+                esac
+            done;;
         n)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$y/$N] "
-            if [[ ! $noconfirm ]]; then
+            if [[ $noconfirm ]]; then
+                echo
+                return 0
+            fi
+            while true; do
                 case "$TERM" in
                     dumb)
                         read -r answer
@@ -1880,20 +1883,20 @@ Proceed() {
                         if [[ $cleancache ]]; then
                             read -r answer
                         else
-                            read -r -n 1 answer
-                            echo
+                            read -s -r -n 1 answer
                         fi
                         ;;
                 esac
-            else
-                answer=$N
-                echo
-            fi
-            case $answer in
-                $N|$n|'') return 0;;
-                *) return 1;;
-            esac;;
+                case $answer in
+                    $N|$n|'') ret=0; break;;
+                    $Y|$y) ret=1; break;;
+                esac
+            done;;
     esac
+    if [[ $TERM != dumb ]] && ! [[ $cleancache ]]; then
+        echo "$answer"
+    fi
+    return $ret
 }
 
 Note() {
