@@ -30,7 +30,7 @@ being knowledgeable about sudo and gpg configuration.
 Two sets of command line options are provided: commands which call the pacman
 binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc)>,
 and commands which are AUR specific B<(sync, search, info, downloadonly,
-susupgrade, upgrades, clean, cleanall)>. As such, pacaur can be used by users
+sysupgrade, upgrades, clean, cleanall)>. As such, pacaur can be used by users
 who prefer to have a single tool to manage the official and AUR repositories, or
 by users who prefer to keep their AUR frontend separated from pacman.
 
@@ -62,7 +62,7 @@ any other pacman operations and their related options to the pacman binary.
 =item B<sync>
 
 Clone build files, build and install I<target(s)>. Missing dependencies will be
-automatically installed as required.
+automatically installed as needed.
 
 =item B<search>
 
@@ -80,8 +80,7 @@ Show info for I<target(s)>.
 =item B<downloadonly>
 
 Clone build files and build I<target(s)>. Missing dependencies will be installed
-as required to ensure the build to succeed, before being automatically
-uninstalled.
+as needed for the build process, and removed automatically afterwards.
 
 =item B<sysupgrade>
 
