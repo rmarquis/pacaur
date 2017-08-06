@@ -1849,7 +1849,8 @@ Proceed() {
     case "$1" in
         y)  printf "${colorB}%s${reset} ${colorW}%s${reset}" "::" "$2 [$Y/$n] "
             if [[ $noconfirm ]]; then
-              return 0
+                echo
+                return 0
             fi
             while true; do
                 case "$TERM" in
