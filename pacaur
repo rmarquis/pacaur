@@ -1245,9 +1245,9 @@ MakePkgs() {
             # extraction, prepare and pkgver update
             Note "i" $"Preparing ${colorW}${pkgsdeps[$i]}${reset}..."
             if [[ $silent = true ]]; then
-                makepkg -odC --skipinteg ${makeopts[@]} &>/dev/null
+                makepkg -od --skipinteg ${makeopts[@]} &>/dev/null
             else
-                makepkg -odC --skipinteg ${makeopts[@]}
+                makepkg -od --skipinteg ${makeopts[@]}
             fi
             (($? > 0)) && errmakepkg+=(${pkgsdeps[$i]})
         fi
