@@ -128,7 +128,7 @@ while [[ -n "${!OPTIND}" ]]; do
         info) operation=sync; info=true; auropts+=("-i"); aur='1'; shift $OPTIND;;
         search) operation=sync; search=true; auropts+=("-s"); aur='1'; shift $OPTIND;;
         buildonly) operation=sync; aur='1'; shift $OPTIND;;
-        update) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1'; shift $OPTIND;;
+        upgrade) operation=sync; upgrade=true; installpkg=true; selective=true; aur='1'; shift $OPTIND;;
         check) operation=upgrades; pacopts+=("--foreign"); shift $OPTIND;;
         clean) operation=sync; cleancache=true; aur='1'; count=1; shift $OPTIND;;
         cleanall) operation=sync; cleancache=true; aur='1'; count=2; shift $OPTIND;;
