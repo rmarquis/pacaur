@@ -16,7 +16,7 @@ _pacaur() {
     cur=$(_get_cword)
     if ((COMP_CWORD == 1)); then
         if [[ $cur != -* ]]; then
-            _arch_compgen "${COMPREPLY[@]}" "sync search info downloadonly sysupgrade upgrades clean cleanall"
+            _arch_compgen "${COMPREPLY[@]}" "sync search info buildonly update check clean cleanall"
             _pacman_file
             return 0
         else
@@ -37,8 +37,8 @@ _pacaur() {
     else
         case "$op" in
             S) _pacman_pkg Slq; _aur_pkg;; # No fallback var support.
-            info|downloadonly|sync) _aur_pkg;;
-            sysupgrade|upgrades) _pacman_pkg Qqm;;
+            info|buildonly|sync) _aur_pkg;;
+            update|check) _pacman_pkg Qqm;;
         esac
     fi
 }
