@@ -29,8 +29,8 @@ being knowledgeable about sudo and gpg configuration.
 
 Two sets of command line options are provided: commands which call the pacman
 binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc)>,
-and commands which are AUR specific B<(sync, search, info, downloadonly,
-sysupgrade, upgrades, clean, cleanall)>. As such, pacaur can be used by users
+and commands which are AUR specific B<(sync, search, info, buildonly,
+update, check, clean, cleanall)>. As such, pacaur can be used by users
 who prefer to have a single tool to manage the official and AUR repositories, or
 by users who prefer to keep their AUR frontend separated from pacman.
 
@@ -77,18 +77,18 @@ version string if colored output is enabled.
 
 Show info for I<target(s)>.
 
-=item B<downloadonly>
+=item B<buildonly>
 
 Clone build files and build I<target(s)>. Missing dependencies will be installed
 as needed for the build process, and removed automatically afterwards.
 
-=item B<sysupgrade>
+=item B<update>
 
 Update foreign packages in the AUR. Without any arguments, all manually
 installed packages will be updated. If I<target(s)> are supplied, only those
 packages will be updated.
 
-=item B<upgrades>
+=item B<check>
 
 Check foreign packages for updates in the AUR. Without any arguments, all
 manually installed packages will be checked. If I<target(s)> are supplied, only
@@ -170,7 +170,7 @@ installed foreign dependencies when solving the dependency tree.
 
 =item B<--ignore> I<target(s)>
 
-Ignore a I<target> upgrade. Can be used more than once. Also accepts a comma
+Ignore a I<target> update. Can be used more than once. Also accepts a comma
 delimited list as a single argument. Packages listed in pacman and cower's
 I<IgnorePkg> directive are honored.
 
