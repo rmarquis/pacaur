@@ -30,7 +30,7 @@ being knowledgeable about sudo and gpg configuration.
 Two sets of command line options are provided: commands which call the pacman
 binary and extend it with AUR functions B<(-S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc)>,
 and commands which are AUR specific B<(sync, search, info, buildonly,
-update, check, clean, cleanall)>. As such, pacaur can be used by users
+upgrade, check, clean, cleanall)>. As such, pacaur can be used by users
 who prefer to have a single tool to manage the official and AUR repositories, or
 by users who prefer to keep their AUR frontend separated from pacman.
 
@@ -82,15 +82,15 @@ Show info for I<target(s)>.
 Clone build files and build I<target(s)>. Missing dependencies will be installed
 as needed for the build process, and removed automatically afterwards.
 
-=item B<update>
+=item B<upgrade>
 
 Update foreign packages in the AUR. Without any arguments, all manually
-installed packages will be updated. If I<target(s)> are supplied, only those
-packages will be updated.
+installed packages will be upgraded. If I<target(s)> are supplied, only those
+packages will be upgraded.
 
 =item B<check>
 
-Check foreign packages for updates in the AUR. Without any arguments, all
+Check foreign packages for upgrades in the AUR. Without any arguments, all
 manually installed packages will be checked. If I<target(s)> are supplied, only
 those packages will be checked.
 
@@ -131,14 +131,14 @@ Display the help message and quit.
 
 =item B<-a, --aur>
 
-When used with pacman extended operations, only search, download, build, install
-or update I<target(s)> from the AUR. When combined with I<-Syu>, only the I<-Sy>
+When used with pacman extended operations, only search, build, install, upgrade
+or clean I<target(s)> from the AUR. When combined with I<-Syu>, only the I<-Sy>
 operation is run for the repositories.
 
 =item B<-r, --repo>
 
-When used with pacman extended operations, only search, download, build, install
-or update I<target(s)> from the repositories.
+When used with pacman extended operations, only search, build, install, upgrade
+or clean I<target(s)> from the repositories.
 
 =back
 
@@ -148,7 +148,7 @@ or update I<target(s)> from the repositories.
 
 =item B<-e, --edit>
 
-Edit build files when downloading or building I<target(s)>. Overrides the
+Edit build files when cloning or building I<target(s)>. Overrides the
 I<displaybuildfiles> config option and always fully shows the build files.
 Can also be used as a standalone command.
 
@@ -159,18 +159,18 @@ package names and not version, group, and description information.
 
 =item B<--devel>
 
-When used with update and check operations, also consider AUR development
+When used with upgrade and check operations, also consider AUR development
 packages. Supported are I<cvs>, I<svn>, I<git>, I<hg>, I<bzr> and I<darcs>
 development packages, as well as I<nightly> build packages.
 
 =item B<--foreign>
 
-When used with build, install and update operations, also consider already
+When used with buildonly, sync and upgrade operations, also consider already
 installed foreign dependencies when solving the dependency tree.
 
 =item B<--ignore> I<target(s)>
 
-Ignore a I<target> update. Can be used more than once. Also accepts a comma
+Ignore a I<target> upgrade. Can be used more than once. Also accepts a comma
 delimited list as a single argument. Packages listed in pacman and cower's
 I<IgnorePkg> directive are honored.
 
@@ -337,7 +337,7 @@ non locally installed cached files and all cached files, respectively.
 =item B<SRCDEST>
 
 Determines where the source of packages will be stored. This will speed up the
-update of development packages. The I<-Sc> and I<-Scc> clean operations allow
+upgrade of development packages. The I<-Sc> and I<-Scc> clean operations allow
 to remove the non development packages source files and all source files,
 respectively.
 

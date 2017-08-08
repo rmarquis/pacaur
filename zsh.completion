@@ -46,12 +46,12 @@ _pacaur_opts_commands=(
     {-T,--deptest}'[Check if dependencies are installed]'
     {-U,--upgrade}'[Upgrade a package]'
 
-    {sync}'[Download, make and install target(s)]'
+    {sync}'[Clone, build and install target(s)]'
     {search}'[Search AUR package names and descriptions]'
     {info}'[Show info for target(s)]'
-    {buildonly}'[Download and build target(s)]'
-    {update}'[Update AUR package(s)]'
-    {check}'[Check for AUR update(s)]'
+    {buildonly}'[Clone and build target(s)]'
+    {upgrade}'[Upgrade AUR package(s)]'
+    {check}'[Check for AUR upgrade(s)]'
     {clean}'[Clean AUR package(s) and clone(s)]'
     {cleanall}'[Clean all AUR packages and clones]'
     {-h,--help}'[Display usage]'
@@ -61,9 +61,9 @@ _pacaur_opts_commands=(
 )
 
 _pacaur_opts_extended=(
-    {-a,--aur}'[Only search, install or clean packages from the AUR]'
+    {-a,--aur}'[Only search, build, install or clean target(s) from the AUR]'
     {-e,--edit}'[Edit target(s) PKGBUILD and view install script]'
-    {-r,--repo}'[Only search, install or clean packages from the repositories]'
+    {-r,--repo}'[Only search, build, install or clean target(s) from the repositories]'
     '--domain[Point at another domain]'
     '--foreign[Consider already installed foreign dependencies]'
     '--noedit[Do not prompt to edit files]'
