@@ -21,7 +21,7 @@ CleanCache() {
                 printf "%s\n" $"removing old packages from cache..."
                 for i in $(ls $PKGDEST | sed "s#\(.*\)-.*#\1#g" ); do
                     pkgname=$(sed "s#\(.*\)-.*-.*#\1#g" <<< $i)
-                    [[ $i != $(expac -Q '%n-%v' "$pkgname") ]] && rm "$PKGDEST/$i-*"
+                    [[ $i != $(expac -Q '%n-%v' "$pkgname") ]] && rm "$PKGDEST"/$i-*
                 done
             fi
         else
