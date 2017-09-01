@@ -657,8 +657,8 @@ IgnoreDepsChecks() {
     # global ignoredpkgs aurpkgs aurdepspkgs aurdepspkgsAgrp aurdepspkgsQgrp repodepspkgsSgrp repodepspkgsQgrp rmaurpkgs deps repodepspkgs
     [[ -z "${ignoredpkgs[@]}" && -z "${ignoredgrps[@]}" ]] && return
 
-    # add checked targets
-    deps=(${aurpkgs[@]})
+    # add checked targets and preserve tsorted order
+    deps=(${deps[@]:0:${#aurpkgs[@]}})
 
     # check dependencies
     for i in "${repodepspkgs[@]}"; do
