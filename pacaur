@@ -70,7 +70,7 @@ PACKAGER=${_PACKAGER:-$PACKAGER}
 CARCH=${_CARCH:-$CARCH}
 
 # set default config variables
-editor="${VISUAL:-${EDITOR:-vi}}"           # build files editor
+editor="${VISUAL:-${EDITOR:-nano}}"         # build files editor
 displaybuildfiles=diff                      # display build files (none|diff|full)
 fallback=true                               # pacman fallback to the AUR
 silent=false                                # silence output
