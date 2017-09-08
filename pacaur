@@ -1261,6 +1261,9 @@ MakePkgs() {
         exit 1
     fi
 
+    # check database lock
+    [[ -e "/var/lib/pacman/db.lck" ]] && Note "e" $"db.lck exists in /var/lib/pacman" && exit 1
+
     # set build lock
     [[ -e "$tmpdir/pacaur.build.lck" ]] && Note "e" $"pacaur.build.lck exists in $tmpdir" && exit 1
     touch "$tmpdir/pacaur.build.lck"
