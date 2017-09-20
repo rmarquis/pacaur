@@ -5,35 +5,35 @@ msgstr ""
 "PO-Revision-Date: \n"
 "Last-Translator: Slobodan Terzić <Xabre@archlinux.info>\n"
 "Language-Team: \n"
+"Language: sr@latin\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sr@latin\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.3\n"
 
-#: pacaur:115
+#: pacaur:154
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "${colorW}Pokrećem nadogradnju AUR-a...${reset}"
 
-#: pacaur:134
+#: pacaur:173
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr "${colorW}$i${reset} ${colorY}ne postoji${reset} u AUR-u — preskačem"
 
-#: pacaur:164 pacaur:220 pacaur:1158
+#: pacaur:209 pacaur:318 pacaur:1580
 msgid "latest"
 msgstr "poslednja"
 
-#: pacaur:169
+#: pacaur:230
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "${checkaurpkgs[$i]} je u ignorisanoj grupi/ignorisanim paketima. Svejedno "
 "instalirati?"
 
-#: pacaur:170
-msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
-msgstr "${colorW}${checkaurpkgs[$i]}${reset}: ignorišem nadogradnju paketa"
+#: pacaur:231 pacaur:236
+msgid "skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
+msgstr "preskačem ciljeve: ${colorW}${checkaurpkgs[$i]}${reset}"
 
-#: pacaur:175
+#: pacaur:241
 msgid ""
 "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
@@ -43,33 +43,56 @@ msgstr ""
 "(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:189
+#: pacaur:256
 msgid "resolving dependencies..."
 msgstr "razrešavam zavisnosti..."
 
-#: pacaur:225
-msgid "no results found for $i"
-msgstr "nema rezultata za $i"
+#: pacaur:286 pacaur:865 pacaur:933
+msgid "unresolvable package conflicts detected"
+msgstr "otkriven nerazrešiv sukob paketa"
 
-#: pacaur:364
+#: pacaur:287
+msgid "failed to prepare transaction (conflicting dependencies: $i)"
+msgstr "neuspela priprema prenosa (sukob zavisnosti: $i)"
+
+#: pacaur:307
 msgid "dependency cycle detected"
 msgstr "otkrivena petlja zavisnosti"
 
-#: pacaur:432 pacaur:447
+#: pacaur:325
+msgid "no results found for ${errdeps[$i]}"
+msgstr "nema rezultata za ${errdeps[$i]}"
+
+#: pacaur:338
+msgid ""
+"no results found for ${errdeps[$i]} (dependency tree: ${errdepslist[*]})"
+msgstr ""
+"nisu pronađeni rezultati za ${errdeps[$i]} stablo zavisnosti: "
+"${errdepslist[*]})"
+
+#: pacaur:495
+msgid "dependency cycle detected (${depspkgsaur[*]})"
+msgstr "otkrivena petlja zavisnosti (${depspkgsaur[*]})"
+
+#: pacaur:682 pacaur:712 pacaur:717
+msgid "skipping target: ${colorW}$i${reset}"
+msgstr "preskačem cilj: ${colorW}$i${reset}"
+
+#: pacaur:684 pacaur:719
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: ignorišem nadogradnju paketa"
 
-#: pacaur:433 pacaur:439 pacaur:444 pacaur:448
+#: pacaur:686 pacaur:692 pacaur:713 pacaur:721
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "Nerazrešena zavisnost '${colorW}$i${reset}'"
 
-#: pacaur:443
+#: pacaur:711
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr ""
 "Zavisnost $i je u ignorisanoj grupi/ignorisanim paketima. Svejedno "
 "instalirati?"
 
-#: pacaur:476
+#: pacaur:759
 msgid ""
 "${colorW}There are ${#providers[@]} providers available for "
 "${providersdeps[$i]}:${reset}"
@@ -77,43 +100,43 @@ msgstr ""
 "${colorW}Dostupno je ${#providers[@]} dostavljača za ${providersdeps[$i]}:"
 "${reset}"
 
-#: pacaur:483
+#: pacaur:766
 msgid "Enter a number (default=0):"
 msgstr "Unesite broj (podrazumevano = 0):"
 
-#: pacaur:490
+#: pacaur:780
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "neispravna vrednost: $nb nije između 0 i $providersnb"
 
-#: pacaur:495
+#: pacaur:785
 msgid "invalid number: $nb"
 msgstr "neispravan broj: $nb"
 
-#: pacaur:537
+#: pacaur:815
 msgid "looking for inter-conflicts..."
 msgstr "tražim međusukobe..."
 
-#: pacaur:573 pacaur:642
+#: pacaur:851 pacaur:925
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j i $k su u sukobu ($i). Ukloniti $k?"
 
-#: pacaur:587 pacaur:650
-msgid "unresolvable package conflicts detected"
-msgstr "otkriven nerazrešiv sukob paketa"
-
-#: pacaur:588 pacaur:651
+#: pacaur:866 pacaur:934
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "neuspela priprema prenosa (sukob zavisnosti)"
 
-#: pacaur:589 pacaur:652
+#: pacaur:869 pacaur:937
+msgid "$j and $k are in conflict (required by ${Qrequires[*]})"
+msgstr "$j i $k su u sukobu (zahetvano od ${Qrequires[*]})"
+
+#: pacaur:871 pacaur:939
 msgid "$j and $k are in conflict"
 msgstr "$j i $k su u sukobu"
 
-#: pacaur:670
+#: pacaur:958
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} poslednja verzija — dobavljam"
 
-#: pacaur:673
+#: pacaur:961
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
 "reinstalling"
@@ -121,135 +144,154 @@ msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} je ažuran — ponovo "
 "instaliram"
 
-#: pacaur:675
+#: pacaur:963
 msgid ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} je ažuran — preskačem"
 
-#: pacaur:690
+#: pacaur:978
 msgid ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
-"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%Y-%m-%d"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
 "\")${reset}"
 msgstr ""
 "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} je označen kao ${colorR}"
-"zastareo${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%d. %m. %Y"
-"\")${reset}"
+"zastareo${reset} ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c\")${reset}"
 
-#: pacaur:718
+#: pacaur:986
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} is ${colorR}orphaned"
+"${reset} in AUR"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} je ${colorR}siročić"
+"${reset} u AUR-u"
+
+#: pacaur:1014
 msgid "(cached)"
 msgstr "(keširano)"
 
-#: pacaur:723 pacaur:745
-msgid "Name"
-msgstr "Ime"
+#: pacaur:1019 pacaur:1052
+msgid "AUR Packages  (${#deps[@]})"
+msgstr "Paketi iz AUR-a  (${#deps[@]})"
 
-#: pacaur:723 pacaur:745
+#: pacaur:1019 pacaur:1053
+msgid "Repo Packages (${#repodepspkgs[@]})"
+msgstr "Paketi iz riznica (${#repodepspkgs[@]})"
+
+#: pacaur:1019
 msgid "Old Version"
 msgstr "Stara verzija"
 
-#: pacaur:723 pacaur:745
+#: pacaur:1019
 msgid "New Version"
 msgstr "Nova verzija"
 
-#: pacaur:723 pacaur:745
+#: pacaur:1019
 msgid "Download Size"
 msgstr "Veličina preuzimanja"
 
-#: pacaur:734 pacaur:758
-msgid "AUR Packages  (${#deps[@]}):"
-msgstr "Paketi iz AUR-a (${#deps[@]}):"
-
-#: pacaur:744 pacaur:759
-msgid "Repo Packages (${#repodepspkgs[@]}):"
-msgstr "Paketi iz riznica (${#repodepspkgs[@]}):"
-
-#: pacaur:747
+#: pacaur:1041
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} MiB"
 
-#: pacaur:763
+#: pacaur:1057
 msgid "Repo Download Size:"
 msgstr "Veličina preuzimanja iz riznica:"
 
-#: pacaur:763
+#: pacaur:1057
 msgid "Repo Installed Size:"
 msgstr "Veličina instalacije iz riznica:"
 
-#: pacaur:763
+#: pacaur:1057
 msgid "$sumk MiB"
 msgstr "$sumk MiB"
 
-#: pacaur:763
+#: pacaur:1057
 msgid "$summ MiB"
 msgstr "$summ MiB"
 
-#: pacaur:772 pacaur:870
+#: pacaur:1065 pacaur:1173
 msgid "installation"
 msgstr "instalacijom"
 
-#: pacaur:772 pacaur:870
+#: pacaur:1065 pacaur:1173
 msgid "download"
 msgstr "preuzimanjem"
 
-#: pacaur:773 pacaur:871
+#: pacaur:1066 pacaur:1174
 msgid "Proceed with $action?"
 msgstr "Nastaviti sa $action?"
 
-#: pacaur:782
+#: pacaur:1074
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}Dobavljam paket(e)...${reset}"
 
-#: pacaur:819
+#: pacaur:1091
+msgid "no results found"
+msgstr "nisu pronađeni rezultati"
+
+#: pacaur:1110
 msgid "View $i build files diff?"
 msgstr "Pregledati razliku fajlova gradnje za $i ?"
 
-#: pacaur:821
+#: pacaur:1112
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "razlika fajlova gradnje za ${colorW}$i${reset} je pregledana"
 
-#: pacaur:825
+#: pacaur:1117
 msgid "${colorW}$i${reset} build files are up-to-date -- skipping"
 msgstr "Fajlovi gradnje za ${colorW}$i${reset} su ažurni — preskačem"
 
-#: pacaur:829
+#: pacaur:1121
 msgid "View $i PKGBUILD?"
 msgstr "Pregledati PKGBUILD za $i?"
 
-#: pacaur:831 pacaur:853
+#: pacaur:1123 pacaur:1147
 msgid "${colorW}$i${reset} PKGBUILD viewed"
-msgstr "PKGBUILD za ${colorW}$i${reset}  je pregledan"
+msgstr "PKGBUILD za ${colorW}$i${reset} je pregledan"
 
-#: pacaur:833 pacaur:855
+#: pacaur:1126 pacaur:1150
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
-msgstr "ne mogu da otvorim PKGBUILD za ${colorW}$i${reset}"
+msgstr "Ne mogu da otvorim PKGBUILD za ${colorW}$i${reset}"
 
-#: pacaur:839
+#: pacaur:1132
 msgid "View $j script?"
 msgstr "Pregledati skriptu $j ?"
 
-#: pacaur:841 pacaur:860
+#: pacaur:1134 pacaur:1155
 msgid "${colorW}$j${reset} script viewed"
 msgstr "Skripta ${colorW}$j${reset} je pregledana"
 
-#: pacaur:843 pacaur:862
+#: pacaur:1137 pacaur:1158
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "Ne mogu da otvorim skriptu ${colorW}$j${reset}"
 
-#: pacaur:932
+#: pacaur:1167
+msgid "${colorW}$i${reset} errored on exit"
+msgstr "${colorW}$i${reset} dade grešku na izlazu"
+
+#: pacaur:1238
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "Proveravam integritet ${colorW}${pkgsdeps[$i]}${reset}"
 
-#: pacaur:944
-msgid "failed to verify ${colorW}$i${reset} integrity"
-msgstr "greška pri proveri integriteta ${colorW}$i${reset}"
+#: pacaur:1246
+msgid "Preparing ${colorW}${pkgsdeps[$i]}${reset}..."
+msgstr "Pripremam ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:949
-msgid "build.lck exists in $tmpdir"
-msgstr "build.lck postoji u $tmpdir"
+#: pacaur:1257
+msgid "failed to verify integrity or prepare ${colorW}$i${reset} package"
+msgstr "neuspela overa itegriteta ili priprema paketa ${colorW}$i${reset}"
 
-#: pacaur:954
+#: pacaur:1265
+msgid "db.lck exists in /var/lib/pacman"
+msgstr "db.lck postoji u /var/lib/pacman"
+
+#: pacaur:1268
+msgid "pacaur.build.lck exists in $tmpdir"
+msgstr "pacaur.build.lck postoji u $tmpdir"
+
+#: pacaur:1273
 msgid ""
 "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
 "dependencies..."
@@ -257,297 +299,509 @@ msgstr ""
 "Instaliram zavisnosti za "
 "${colorW}${repoprovidersconflictingpkgs[@]}${reset}..."
 
-#: pacaur:978
+#: pacaur:1297
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}$j${reset} je ažuran -- preskačem"
 
-#: pacaur:999
+#: pacaur:1318
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "Instaliram keširani paket ${colorW}$i${reset}..."
 
-#: pacaur:1003
+#: pacaur:1322
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "Paket ${colorW}$j${reset} je već dostupan u kešu"
 
-#: pacaur:1012
+#: pacaur:1331
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "Gradim paket(e) ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:1048
+#: pacaur:1371
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "Instaliram paket(e) ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:1050
-msgid ""
-"${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
-"SRCINFO for mismatching data with PKGBUILD."
-msgstr ""
-"Neuspela instalacija paketa ${colorW}${pkgsdeps[$i]}${reset}. Proverite "
-"saglasnost podataka u .SRCINFO sa PKGBUILD-om."
+#: pacaur:1374
+msgid "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install."
+msgstr "Neuspela instalacija ${colorW}${pkgsdeps[$i]}${reset}."
 
-#: pacaur:1068
+#: pacaur:1375
+msgid "ensure package version does not mismatch between .SRCINFO and PKGBUILD"
+msgstr "postarajte se da se verzije u .SRCINFO i PKGBUILD poklapaju"
+
+#: pacaur:1376
+msgid "ensure package name has a VCS suffix if this is a devel package"
+msgstr ""
+"postarajte se da ime paketa sadrži VCS sufiks ako je ovo razvojni paket"
+
+#: pacaur:1397
 msgid "Removing installed AUR dependencies..."
 msgstr "Uklanjam instalirane zavisnosti iz AUR-a..."
 
-#: pacaur:1084
-msgid "${colorW}$i${reset} is a ${colorY}new orphan${reset} package"
-msgstr "${colorW}$i${reset} ije ${colorY}novi paket siročić${reset}"
+#: pacaur:1413
+msgid "${colorW}$i${reset} is now an ${colorY}orphan${reset} package"
+msgstr "${colorW}$i${reset} je sada paket ${colorY}siročić${reset}"
 
-#: pacaur:1089
+#: pacaur:1419
+msgid "${colorW}$i${reset} is now an ${colorY}optional${reset} package"
+msgstr "${colorW}$i${reset} je sada ${colorY}opcioni${reset} paket"
+
+#: pacaur:1425
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "neuspela gradnja paketa ${colorW}$i${reset}"
 
-#: pacaur:1116 pacaur:1157
+#: pacaur:1445
+msgid "Repository"
+msgstr "Riznica"
+
+#: pacaur:1445
+msgid "Name"
+msgstr "Ime"
+
+#: pacaur:1445
+msgid "Version"
+msgstr "Verzija"
+
+#: pacaur:1445
+msgid "Description"
+msgstr "Opis"
+
+#: pacaur:1445
+msgid "URL"
+msgstr "URL"
+
+#: pacaur:1445
+msgid "AUR Page"
+msgstr "AUR stranica"
+
+#: pacaur:1445
+msgid "Licenses"
+msgstr "Licence"
+
+#: pacaur:1445
+msgid "Keywords"
+msgstr "Ključne reči"
+
+#: pacaur:1445
+msgid "Groups"
+msgstr "Grupe"
+
+#: pacaur:1445
+msgid "Provides"
+msgstr "Dostavlja"
+
+#: pacaur:1445
+msgid "Depends on"
+msgstr "Zavisi od"
+
+#: pacaur:1446
+msgid "Make Deps"
+msgstr "Zavisnosti gradnje"
+
+#: pacaur:1446
+msgid "Check Deps"
+msgstr "Zavisnosti provere"
+
+#: pacaur:1446
+msgid "Optional Deps"
+msgstr "Opcione zavisnosti"
+
+#: pacaur:1446
+msgid "Conflicts With"
+msgstr "U sukobu sa"
+
+#: pacaur:1446
+msgid "Replaces"
+msgstr "Smenjuje"
+
+#: pacaur:1446
+msgid "Maintainer"
+msgstr "Održavalac"
+
+#: pacaur:1446
+msgid "Popularity"
+msgstr "Popularnost"
+
+#: pacaur:1446
+msgid "Votes"
+msgstr "Glasova"
+
+#: pacaur:1446
+msgid "Out of Date"
+msgstr "Zastareo"
+
+#: pacaur:1446
+msgid "Submitted"
+msgstr "Priložen"
+
+#: pacaur:1446
+msgid "Last Modified"
+msgstr "Poslednja izmena"
+
+#: pacaur:1465 pacaur:1467 pacaur:1469
+msgid "installed"
+msgstr "instaliran"
+
+#: pacaur:1502
+msgid "None"
+msgstr "Nema"
+
+#: pacaur:1511
+msgid "No"
+msgstr "Ne"
+
+#: pacaur:1513
+msgid "Yes"
+msgstr "Da"
+
+#: pacaur:1513
+msgid "$(date -d \"@${info[19]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[19]}\" \"+%c\")"
+
+#: pacaur:1516
+msgid "$(date -d \"@${info[20]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[20]}\" \"+%c\")"
+
+#: pacaur:1517
+msgid "$(date -d \"@${info[21]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[21]}\" \"+%c\")"
+
+#: pacaur:1578 pacaur:1601
 msgid "[ ignored ]"
 msgstr "[ignorisan]"
 
-#: pacaur:1172
+#: pacaur:1654
 msgid "Packages to keep:"
 msgstr "Paketi koje treba zadržati:"
 
-#: pacaur:1172
+#: pacaur:1654
 msgid "All locally installed packages"
 msgstr "svi lokalno instalirani paketi"
 
-#: pacaur:1173
+#: pacaur:1655
 msgid "AUR cache directory:"
 msgstr "Fascikla AUR-ovog keša:"
 
-#: pacaur:1175
+#: pacaur:1657
 msgid "Do you want to remove all other packages from AUR cache?"
 msgstr "Želite li da uklonite sve ostale pakete iz keša?"
 
-#: pacaur:1176
+#: pacaur:1658
 msgid "removing old packages from cache..."
 msgstr "uklanjam stare pakete iz keša..."
 
-#: pacaur:1180
+#: pacaur:1665
 msgid "Do you want to remove ALL files from AUR cache?"
 msgstr "Želite li da uklonite SVE fajlove iz AUR-ovog keša?"
 
-#: pacaur:1181
+#: pacaur:1666
 msgid "removing all files from AUR cache..."
 msgstr "uklanjam sve fajlove iz AUR-ovog keša..."
 
-#: pacaur:1187
+#: pacaur:1673
 msgid "Sources to keep:"
 msgstr "Izvori koje treba zadržati:"
 
-#: pacaur:1187
+#: pacaur:1673
 msgid "All development packages sources"
 msgstr "svi izvori razvojnih paketa"
 
-#: pacaur:1188
+#: pacaur:1674
 msgid "AUR source cache directory:"
 msgstr "Fascikla  AUR-ovog keša izvora:"
 
-#: pacaur:1190
+#: pacaur:1676
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr "Želite li da uklonite sve ne-razvojne fajlove iz AUR-ovog keša izvora?"
 
-#: pacaur:1191
+#: pacaur:1677
 msgid "removing non development files from source cache..."
 msgstr "uklanjam sve ne-razvojne fajlove iz AUR-ovog keša izvora..."
 
-#: pacaur:1195
+#: pacaur:1681
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "Želite li da uklonite SVE fajlove iz AUR-ovog keša izvora?"
 
-#: pacaur:1196
+#: pacaur:1682
 msgid "removing all files from AUR source cache..."
-msgstr "uklanjam sve fajlove iz AUR-ovog keša. izvora.."
+msgstr "uklanjam sve fajlove iz AUR-ovog keša izvora.."
 
-#: pacaur:1288
+#: pacaur:1691 pacaur:1693
+msgid "Clones to keep:"
+msgstr "Klonovi koje treba zadržati:"
+
+#: pacaur:1691
+msgid "All locally installed clones"
+msgstr "svi lokalno instalirani klonovi"
+
+#: pacaur:1693
+msgid "All other locally installed clones"
+msgstr "svi ostali lokalno instalirani klonovi"
+
+#: pacaur:1696
+msgid "AUR clone directory:"
+msgstr "Fascikla AUR-ovih klonova:"
+
+#: pacaur:1703
+msgid ""
+"Do you want to remove ${aurpkgsbase[*]} clones from AUR clone directory?"
+msgstr ""
+"Želite li da uklonite sve klonove ${aurpkgsbase[*]} iz fascikle AUR-ovih "
+"klonova?"
+
+#: pacaur:1704 pacaur:1711
+msgid "removing uninstalled clones from AUR clone cache..."
+msgstr "uklanjam sve deinstalirane klonove iz AUR-ovog keša klonova..."
+
+#: pacaur:1710
+msgid "Do you want to remove all uninstalled clones from AUR clone directory?"
+msgstr "Želite li da uklonite sve deinstalirane pakete iz keša?"
+
+#: pacaur:1717
+msgid "Do you want to remove all untracked files from AUR clone directory?"
+msgstr "Želite li da uklonite sve nepraćene pakete iz keša?"
+
+#: pacaur:1718
+msgid "removing untracked files from AUR clone cache..."
+msgstr "uklanjam sve nepraćene fajlove iz AUR-ovog keša klonova..."
+
+#: pacaur:1726
+msgid "Do you want to remove ALL clones from AUR clone directory?"
+msgstr "Želite li da uklonite SVE klonove iz AUR-ovog keša?"
+
+#: pacaur:1727
+msgid "removing all clones from AUR clone cache..."
+msgstr "uklanjam sve klonove iz AUR-ovog keša..."
+
+#: pacaur:1837
+msgid "Failed to parse JSON"
+msgstr " Ne mogu da rasčlanim JSON "
+
+#: pacaur:1845
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr "neuspela priprema prenosa (ne mogu da zadovoljim zavisnosti)"
 
-#: pacaur:1289
+#: pacaur:1846
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: zahteva $@"
 
-#: pacaur:1298
-msgid "$2 [Y/n] "
-msgstr "$2 [D/n] "
-
-#: pacaur:1305
-msgid "$2 [y/N] "
-msgstr "$2 [d/N] "
-
-#: pacaur:1336
+#: pacaur:1922
 msgid " there is nothing to do"
 msgstr " nema se šta činiti"
 
-#: pacaur:1356
+#: pacaur:1942
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr ""
-"upotreba:  pacaur <operacija> [opcije] [cilj(evi)] — Takođe pogledati "
-"pacaur(8)"
+"upotreba:  pacaur <operacija> [opcije] [ciljevi] — Takođe pogledati pacaur(8)"
 
-#: pacaur:1357
+#: pacaur:1943
 msgid "operations:"
-msgstr "Operacije:"
+msgstr "operacije:"
 
-#: pacaur:1358
+#: pacaur:1944
 msgid " pacman extension"
-msgstr "nadgradnja pakmena"
+msgstr " nadgradnja pakmena"
 
-#: pacaur:1359
+#: pacaur:1945
 msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
 msgstr "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
 
-#: pacaur:1360
+#: pacaur:1946
 msgid "                    extend pacman operations to the AUR"
-msgstr "                    proširuju Pacmanove operacije i na AUR"
+msgstr "                    proširuju Pakmenove operacije i na AUR"
 
-#: pacaur:1361
+#: pacaur:1947
 msgid " AUR specific"
-msgstr "specifično za AUR"
+msgstr " specifično za AUR"
 
-#: pacaur:1362
-msgid "   -s, --search     search AUR for matching strings"
-msgstr "   -s, --search     pretražuje AUR prema poklopljenoj nisci"
+#: pacaur:1948
+msgid "   sync             clone, build and install target(s)"
+msgstr "   sync       klonira, gradi i instalira cilj(eve)"
 
-#: pacaur:1363
-msgid "   -i, --info       view package information"
-msgstr "   -i, --info       prikazuje podatke o paketu"
+#: pacaur:1949
+msgid "   search           search AUR for matching strings"
+msgstr "   search     pretražuje AUR prema poklopljenoj nisci"
 
-#: pacaur:1364
-msgid ""
-"   -d, --download   download target(s) -- pass twice to download AUR "
-"dependencies"
-msgstr ""
-"   -d, --download   preuzima cilj(eve) — proslediti dvaput za preuzimanje "
-"zavisnosti iz AUR-a"
+#: pacaur:1950
+msgid "   info             view package information"
+msgstr "   info       prikazuje podatke o paketu"
 
-#: pacaur:1365
-msgid "   -m, --makepkg    download and make target(s)"
-msgstr "   -m, --makepkg    preuzima i gradi cilj(eve)"
+#: pacaur:1951
+msgid "   buildonly        clone and build target(s)"
+msgstr "   buildonly        klonira i gradi cilj(eve)"
 
-#: pacaur:1366
-msgid "   -y, --sync       download, make and install target(s)"
-msgstr "   -y, --sync       preuzima, gradi i instalira cilj(eve)"
+#: pacaur:1952
+msgid "   upgrade          upgrade AUR package(s)"
+msgstr "   update     nadograđuje pakete iz AUR-a"
 
-#: pacaur:1367
-msgid "   -k, --check      check for AUR update(s)"
-msgstr "   -k, --check      potražuje nadogradnje u AUR-u"
+#: pacaur:1953
+msgid "   check            check for AUR upgrade(s)"
+msgstr "   check      traži nadogradnje u AUR-u"
 
-#: pacaur:1368
-msgid "   -u, --update     update AUR package(s)"
-msgstr "   -u, --update     nadograđuje paket(e) iz AUR-a"
+#: pacaur:1954
+msgid "   clean            clean AUR package(s) and clone(s)"
+msgstr "   clean            čisti AUR pakete i klonove"
 
-#: pacaur:1369 pacaur:1377
+#: pacaur:1955
+msgid "   cleanall         clean all AUR packages and clones"
+msgstr "   cleanall         čisti sve AUR pakete i klonove"
+
+#: pacaur:1956 pacaur:1964
 msgid " general"
-msgstr "Opšte"
+msgstr " opšte"
 
-#: pacaur:1370
+#: pacaur:1957
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    prikazuje podatke o verziji"
 
-#: pacaur:1371
+#: pacaur:1958
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       prikazuje pomoć"
 
-#: pacaur:1373
+#: pacaur:1960
 msgid "options:"
 msgstr "opcije:"
 
-#: pacaur:1374
+#: pacaur:1961
 msgid ""
-" pacman extension - can be used with the -S, -Ss, -Si, -Sii, -Sw, -Su, -Qu, -"
-"Sc, -Scc operations"
+" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc, -Scc "
+"operations"
 msgstr ""
-"proširenje pakmena - mogu se koristiti opracije -S, -Ss, -Si, -Sii, -Sw, -Su, "
-"-Qu, -Sc, -Scc"
+" proširenje pakmena - mogu se koristiti uz operacije -S, -Ss, -Si, -Sw, -Su, -"
+"Sc, -Scc"
 
-#: pacaur:1375
+#: pacaur:1962
 msgid ""
-"   -a, --aur        only search, build or install target(s) from the AUR"
+"   -a, --aur        only search, build, install or clean target(s) from the "
+"AUR"
 msgstr ""
-"   -a, --aur        pretražuje, gradi ili instalira samo cilj(eve) iz AUR-a"
+"   -a, --aur        samo pretražuje, gradi ili instalira samo cilj(eve) iz "
+"AUR-a"
 
-#: pacaur:1376
+#: pacaur:1963
 msgid ""
-"   -r, --repo       only search, build or install target(s) from the "
+"   -r, --repo       only search, build, install or clean target(s) from the "
 "repositories"
 msgstr ""
-"   -r, --repo       pretražuje, gradi ili instalira samo cilj(eve) iz riznica"
+"   -r, --repo       samo pretražuje, gradi ili instalira samo cilj(eve) iz "
+"riznica"
 
-#: pacaur:1378
+#: pacaur:1965
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr ""
-"   -e, --edit       uređivanje PKGBUILD-(ove) cilj(eva) i pregledanje "
-"instalacionih skripti"
+"   -e, --edit       uređivanje PKGBUILDova ciljeva i pregled instalacionih "
+"skripti"
 
-#: pacaur:1379
+#: pacaur:1966
 msgid "   -q, --quiet      show less information for query and search"
 msgstr "   -q, --quiet      prikazuje manje informacija za upite i pretragu"
 
-#: pacaur:1380
+#: pacaur:1967
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr "   --devel          razmatra samo nadogradnje razvojnih paketa iz AUR-a"
 
-#: pacaur:1381
+#: pacaur:1968
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr "   --foreign        razmatra već instalirane strane zavisnosti"
 
-#: pacaur:1382
+#: pacaur:1969
 msgid ""
 "   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr ""
 "   --ignore         ignoriše nadogradnju paketa (može se koristiti više puta)"
 
-#: pacaur:1383
+#: pacaur:1970
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --needed         ne instalira ponovo već ažurne ciljeve"
 
-#: pacaur:1384
+#: pacaur:1971
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      ne traži nikakve potvrde"
 
-#: pacaur:1385
+#: pacaur:1972
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         ne nudi uređivanje fajlova"
 
-#: pacaur:1386
+#: pacaur:1973
 msgid "   --rebuild        always rebuild package(s)"
-msgstr "   --rebuild        uvek ponovo gradi paket(e)"
+msgstr "   --rebuild        uvek ponovo gradi pakete"
 
-#: pacaur:1387
+#: pacaur:1974
 msgid "   --silent         silence output"
 msgstr "   --silent         prigušuje izlaz"
 
-#: pacaur:1511
+#: pacaur:2130
 msgid "you cannot perform this operation as root"
 msgstr "nije dozvoljeno izvršavanje ove operacije kao koreni korisnik"
 
-#: pacaur:1515
-msgid "${colorW}editor${reset} variable unset"
-msgstr "Promenjiva ${colorW}editor${reset} nije postavljena"
-
-#: pacaur:1516
+#: pacaur:2134
 msgid ""
-"${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to a "
-"non volatile memory location"
+"${colorW}\\$VISUAL${reset} and ${colorW}\\$EDITOR${reset} environment "
+"variables not set or defined ${colorW}editor${reset} not found"
 msgstr ""
-"${colorW}clonedir${reset} ili ${colorW}\\$AURDEST${reset} ne bi trebale biti "
-"postavljene na nestalnu memorijsku lokaciju"
+"Promenjive okruženja ${colorW}\\$VISUAL${reset} i ${colorW}\\$EDITOR${reset} "
+"nisu postavljene ili zadati ${colorW}uređivač${reset} nije nađen"
 
-#: pacaur:1517
-msgid "${colorW}$clonedir${reset} does not have write permission."
-msgstr "Nema dozvola upisa za ${colorW}$clonedir${reset}."
+#: pacaur:2135
+msgid "you cannot use ${colorW}pacaur${reset} as PACMAN environment variable"
+msgstr ""
+"${colorW}pacaur${reset} se ne može koristiti kao promenjiva okruženja PACMAN"
 
-#: pacaur:1518
+#: pacaur:2136
+msgid "${colorW}$clonedir${reset} does not have write permission"
+msgstr "Nema dozvola upisa u ${colorW}$clonedir${reset}"
+
+#: pacaur:2137 pacaur:2138
 msgid "no targets specified (use -h for help)"
 msgstr "nisu naznačeni ciljevi (koristite -h za pomoć)"
 
-#: pacaur:1519
+#: pacaur:2139
 msgid "target not found"
 msgstr "cilj nije nađen"
 
-#: pacaur:1560 pacaur:1572 pacaur:1584
+#: pacaur:2206 pacaur:2229 pacaur:2247
 msgid ""
-"Package(s) ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
 "${colorM}AUR${reset}..."
 msgstr ""
-"Sledeći paketi nisu dostupni u riznicama, pa tražim u ${colorM}AUR-u"
-"${reset}: ${colorW}${aurpkgs[*]}${reset}..."
+"U riznicama nema ${colorW}${aurpkgs[*]}${reset}, probam ${colorM}AUR"
+"${reset}..."
+
+#: pacaur:2208 pacaur:2231 pacaur:2249
+msgid ""
+"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"U riznicama nema ${colorW}${aurpkgs[*]}${reset}, probam ${colorM}AUR"
+"${reset}..."
+
+#~ msgid "failed to verify ${colorW}$i${reset} integrity"
+#~ msgstr "greška pri proveri integriteta ${colorW}$i${reset}"
+
+#~ msgid ""
+#~ "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
+#~ "SRCINFO for mismatching data with PKGBUILD."
+#~ msgstr ""
+#~ "Neuspela instalacija paketa ${colorW}${pkgsdeps[$i]}${reset}. Proverite "
+#~ "saglasnost podataka u .SRCINFO sa PKGBUILD-om."
+
+#~ msgid "$2 [Y/n] "
+#~ msgstr "$2 [D/n] "
+
+#~ msgid "$2 [y/N] "
+#~ msgstr "$2 [d/N] "
+
+#~ msgid ""
+#~ "   -d, --download   download target(s) -- pass twice to download AUR "
+#~ "dependencies"
+#~ msgstr ""
+#~ "   -d, --download   preuzima cilj(eve) — proslediti dvaput za preuzimanje "
+#~ "zavisnosti iz AUR-a"
+
+#~ msgid "   -m, --makepkg    download and make target(s)"
+#~ msgstr "   -m, --makepkg    preuzima i gradi cilj(eve)"
+
+#~ msgid ""
+#~ "${colorW}clonedir${reset} or ${colorW}\\$AURDEST${reset} should be set to "
+#~ "a non volatile memory location"
+#~ msgstr ""
+#~ "${colorW}clonedir${reset} ili ${colorW}\\$AURDEST${reset} ne bi trebale "
+#~ "biti postavljene na nestalnu memorijsku lokaciju"
