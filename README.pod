@@ -476,5 +476,5 @@ B<[sr] - Српски / srpski> - Slobodan "Faenriis" Terzić
 
 B<[tr] - Türkçe> - Volkan "wakeup" Gezer
 
-B<[zh_CN] - 简化中文> - "kizayoi"
+B<[zh_CN] - 简体中文> - "Victorique Ko"
 
