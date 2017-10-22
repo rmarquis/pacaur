@@ -35,7 +35,7 @@ DownloadJson() {
     urlmax=4400
     # ensure the URI length is shorter than 4444 bytes (44 for AUR path)
     if [[ "${#urlargs}" -lt $urlmax ]]; then
-        curl -sfg --compressed -C 0 "https://$aururl$aurrpc$urlargs"
+        curl -sfg --compressed -C 0 -w "" "https://$aururl$aurrpc$urlargs"
     else
         # split and merge json stream
         j=0
@@ -46,7 +46,7 @@ DownloadJson() {
             urlcurl[$j]=${urlcurl[$j]}${urlarg}${urlencodedpkgs[$i]}
         done
         urlargs="$(printf "https://$aururl$aurrpc%s " "${urlcurl[@]}")"
-        curl -sfg --compressed -C 0 $urlargs | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/g;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
+        curl -sfg --compressed -C 0 -w "" $urlargs | sed 's/\(]}{\)\([A-Za-z0-9":,]\+[[]\)/,/g;s/\("resultcount":\)\([0-9]\+\)/"resultcount":0/g'
     fi
 }
 
