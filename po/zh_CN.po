@@ -287,7 +287,7 @@ msgstr "正在删除已安装的 AUR 依赖..."
 
 #: pacaur:1281
 msgid "${colorW}$i${reset} is now an ${colorY}orphan${reset} package"
-msgstr "${colorW}$i${reset} 现在是 ${colorY}无人维护的${reset} 软件包"
+msgstr "${colorW}$i${reset} 现在是 ${colorY}不被需要的${reset} 软件包"
 
 #: pacaur:1287
 msgid "${colorW}$i${reset} is now an ${colorY}optional${reset} package"
