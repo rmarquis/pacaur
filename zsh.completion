@@ -165,6 +165,11 @@ _pacaur_opts_sync_modifiers=(
     '--force[Overwrite conflicting files]'
 )
 
+# handles check subcommand
+_pacaur_action_check() {
+    _arguments -s : \
+        "*:check:((--devel\:'Consider AUR development packages upgrade' --needed\:'Do not reinstall up to date packages'))"
+}
 # handles --help subcommand
 _pacaur_action_help() {
     _arguments -s : \
@@ -248,7 +253,7 @@ _pacaur_action_sync() {
         state=sync_clean
     elif (( $+words[(r)--groups] )); then
         state=sync_group
-    elif (( $+words[(r)--search] )); then
+    elif (( $+words[(r)--search] || $+words[(r)search] )); then
         state=sync_search
     fi
 
@@ -417,7 +422,7 @@ for tmp in $words; do
 done
 
 # handle repository filter
-if (( $+words[(r)--aur] || $+words[(r)-S*a*] )); then
+if (( $+words[(r)--aur] || $+words[(r)-S*a*] || $+words[(r)sync] )); then
     completion_repo='_pacaur_completions_aur_packages'
 elif (( $+words[(r)--repo] || $+words[(r)-S*r*] )); then
     completion_repo='_pacaur_completions_all_packages'
@@ -514,38 +519,46 @@ case $args in
         _pacaur_action_version
         ;;
     *)
-
-        case ${(M)words:#--*} in
-            *--help*)
-                if (( ${(w)#cmds} == 1 )); then
-                    _pacaur_action_help
-                else
-                    return 0;
-                fi
-                ;;
-            *--sync*)
+        case ${words[2]:#-*} in
+            sync*)
                 _pacaur_action_sync
                 ;;
-            *--query*)
-                _pacaur_action_query
-                ;;
-            *--remove*)
-                _pacaur_action_remove
-                ;;
-            *--deptest*)
-                _pacaur_action_deptest
-                ;;
-            *--database*)
-                _pacaur_action_database
-                ;;
-            *--version*)
-                _pacaur_action_version
-                ;;
-            *--upgrade*)
+            upgrade*)
                 _pacaur_action_upgrade
                 ;;
+            check*)
+                _pacaur_action_check
+                ;;
+            search*)
+                _pacaur_action_sync
             *)
-                _pacaur_action_none
+                case ${(M)words:#--*} in
+                    *--help*)
+                        if (( ${(w)#cmds} == 1 )); then
+                            _pacaur_action_help
+                        else
+                            return 0;
+                        fi
+                        ;;
+                    *--version*)
+                        _pacaur_action_version
+                        ;;
+                    *--query*)
+                        _pacaur_action_query
+                        ;;
+                    *--remove*)
+                        _pacaur_action_remove
+                        ;;
+                    *--deptest*)
+                        _pacaur_action_deptest
+                        ;;
+                    *--database*)
+                        _pacaur_action_database
+                        ;;
+                    *)
+                        _pacaur_action_none
+                        ;;
+                esac
                 ;;
         esac
         ;;
