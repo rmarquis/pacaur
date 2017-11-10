@@ -56,7 +56,8 @@ _pacaur_opts_commands=(
     cleanall\:'Clean all AUR packages and clones'
     {-h,--help}\:'Display usage'
     '-V\:Display pacman version'
-    {-v,--version}\:'Display pacaur version'))"
+    {-v,--version}\:'Display pacaur version'
+    ))"
 )
 
 _pacaur_opts_extended=(
