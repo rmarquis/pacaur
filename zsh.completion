@@ -39,25 +39,24 @@ fi
 
 # options for passing to _arguments: main pacaur commands
 _pacaur_opts_commands=(
-    {-D,--database}'[Modify database]'
-    {-Q,--query}'[Query the package database]'
-    {-R,--remove}'[Remove a package from the system]'
-    {-S,--sync}'[Synchronize packages]'
-    {-T,--deptest}'[Check if dependencies are installed]'
-    {-U,--upgrade}'[Upgrade a package]'
-
-    {sync}'[Clone, build and install target(s)]'
-    {search}'[Search AUR package names and descriptions]'
-    {info}'[Show info for target(s)]'
-    {buildonly}'[Clone and build target(s)]'
-    {upgrade}'[Upgrade AUR package(s)]'
-    {check}'[Check for AUR upgrade(s)]'
-    {clean}'[Clean AUR package(s) and clone(s)]'
-    {cleanall}'[Clean all AUR packages and clones]'
-    {-h,--help}'[Display usage]'
-    '-V[Display pacman version]'
-    {-v,--version}'[Display pacaur version]'
-    '(-h --help)'{-h,--help}'[Display usage]'
+    ":pacaur_commands:((
+    {-D,--database}\:'Modify database'
+    {-Q,--query}\:'Query the package database'
+    {-R,--remove}\:'Remove a package from the system'
+    {-S,--sync}\:'Synchronize packages'
+    {-T,--deptest}\:'Check if dependencies are installed'
+    {-U,--upgrade}\:'Upgrade a package'
+    sync\:'Clone, build and install target(s)'
+    search\:'Search AUR package names and descriptions'
+    info\:'Show info for target(s)'
+    buildonly\:'Clone and build target(s)'
+    upgrade\:'Upgrade AUR package(s)'
+    check\:'Check for AUR upgrade(s)'
+    clean\:'Clean AUR package(s) and clone(s)'
+    cleanall\:'Clean all AUR packages and clones'
+    {-h,--help}\:'Display usage'
+    '-V\:Display pacman version'
+    {-v,--version}\:'Display pacaur version'))"
 )
 
 _pacaur_opts_extended=(
