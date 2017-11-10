@@ -39,25 +39,25 @@ fi
 
 # options for passing to _arguments: main pacaur commands
 _pacaur_opts_commands=(
-    {-D,--database}'[Modify database]'
-    {-Q,--query}'[Query the package database]'
-    {-R,--remove}'[Remove a package from the system]'
-    {-S,--sync}'[Synchronize packages]'
-    {-T,--deptest}'[Check if dependencies are installed]'
-    {-U,--upgrade}'[Upgrade a package]'
-
-    {sync}'[Clone, build and install target(s)]'
-    {search}'[Search AUR package names and descriptions]'
-    {info}'[Show info for target(s)]'
-    {buildonly}'[Clone and build target(s)]'
-    {upgrade}'[Upgrade AUR package(s)]'
-    {check}'[Check for AUR upgrade(s)]'
-    {clean}'[Clean AUR package(s) and clone(s)]'
-    {cleanall}'[Clean all AUR packages and clones]'
-    {-h,--help}'[Display usage]'
-    '-V[Display pacman version]'
-    {-v,--version}'[Display pacaur version]'
-    '(-h --help)'{-h,--help}'[Display usage]'
+    ":pacaur_commands:((
+    {-D,--database}\:'Modify database'
+    {-Q,--query}\:'Query the package database'
+    {-R,--remove}\:'Remove a package from the system'
+    {-S,--sync}\:'Synchronize packages'
+    {-T,--deptest}\:'Check if dependencies are installed'
+    {-U,--upgrade}\:'Upgrade a package'
+    sync\:'Clone, build and install target(s)'
+    search\:'Search AUR package names and descriptions'
+    info\:'Show info for target(s)'
+    buildonly\:'Clone and build target(s)'
+    upgrade\:'Upgrade AUR package(s)'
+    check\:'Check for AUR upgrade(s)'
+    clean\:'Clean AUR package(s) and clone(s)'
+    cleanall\:'Clean all AUR packages and clones'
+    {-h,--help}\:'Display usage'
+    '-V\:Display pacman version'
+    {-v,--version}\:'Display pacaur version'
+    ))"
 )
 
 _pacaur_opts_extended=(
@@ -165,6 +165,36 @@ _pacaur_opts_sync_modifiers=(
     '--force[Overwrite conflicting files]'
 )
 
+# handles check subcommand
+_pacaur_action_check() {
+    _arguments -s : \
+        "*:check:(( --devel\:'Consider AUR development packages upgrade' ))"
+}
+
+# handles info subcommand
+_pacaur_action_info() {
+   _arguments -s : \
+        "$_pacaur_opts_common[@]" \
+        "$_pacaur_opts_extended[@]" \
+        "$_pacaur_opts_sync_actions[@]" \
+        "$_pacaur_opts_sync_modifiers[@]" \
+        '*:info:_pacaur_completions_aur_packages'
+}
+
+# handles clean subcommand
+_pacaur_action_clean() {
+    if [[ $AURDEST ]] then;
+        CLONEDIR=$AURDEST
+    elif [[ $XDG_CACHE_HOME && -a $XDG_CACHE_HOME/pacaur ]]; then
+        CLONEDIR=$XDG_CACHE_HOME/pacaur
+    else
+        CLONEDIR=$HOME/.cache/pacaur
+    fi
+    _arguments -s :  \
+        "*:clean:($(ls $CLONEDIR))" \
+        "$_pacaur_opts_common[@]"
+ }
+
 # handles --help subcommand
 _pacaur_action_help() {
     _arguments -s : \
@@ -248,7 +278,7 @@ _pacaur_action_sync() {
         state=sync_clean
     elif (( $+words[(r)--groups] )); then
         state=sync_group
-    elif (( $+words[(r)--search] )); then
+    elif (( $+words[(r)--search] || $+words[(r)search] )); then
         state=sync_search
     fi
 
@@ -417,7 +447,12 @@ for tmp in $words; do
 done
 
 # handle repository filter
-if (( $+words[(r)--aur] || $+words[(r)-S*a*] )); then
+if [[ $words[2] != -* ]]; then
+    isaur=1
+else
+    isaur=0
+fi
+if (( $+words[(r)--aur] || $+words[(r)-S*a*] || $isaur  )); then
     completion_repo='_pacaur_completions_aur_packages'
 elif (( $+words[(r)--repo] || $+words[(r)-S*r*] )); then
     completion_repo='_pacaur_completions_all_packages'
@@ -514,41 +549,70 @@ case $args in
         _pacaur_action_version
         ;;
     *)
-
-        case ${(M)words:#--*} in
-            *--help*)
-                if (( ${(w)#cmds} == 1 )); then
-                    _pacaur_action_help
-                else
-                    return 0;
-                fi
-                ;;
-            *--sync*)
-                _pacaur_action_sync
-                ;;
-            *--query*)
-                _pacaur_action_query
-                ;;
-            *--remove*)
-                _pacaur_action_remove
-                ;;
-            *--deptest*)
-                _pacaur_action_deptest
-                ;;
-            *--database*)
-                _pacaur_action_database
-                ;;
-            *--version*)
-                _pacaur_action_version
-                ;;
-            *--upgrade*)
-                _pacaur_action_upgrade
-                ;;
-            *)
-                _pacaur_action_none
-                ;;
-        esac
-        ;;
+        if [[ ${words[2]} != -* && ${CURRENT} -gt 2  ]] then
+            case ${words[2]} in
+                sync)
+                    _pacaur_action_sync
+                    ;;
+                upgrade)
+                    _arguments -s : \
+                        '--devel[Consider AUR development packages upgrade]' \
+                        '--needed[Do not reinstall up to date packages]' \
+                        "$_pacaur_opts_common[@]" \
+                        "$_pacaur_opts_extended[@]" \
+                        "$_pacaur_opts_sync_modifiers[@]" \
+                        '*:packages:'$completion_repo
+                    ;;
+                check)
+                    _pacaur_action_check
+                    ;;
+                search)
+                    _pacaur_action_sync
+                    ;;
+                info)
+                    _pacaur_action_info
+                    ;;
+                buildonly)
+                    _pacaur_action_sync
+                    ;;
+                clean)
+                    _pacaur_action_clean
+                    ;;
+                cleanall)
+                    _arguments -s : \
+                        "$_pacaur_opts_common[@]"
+                    ;;
+            esac
+        else
+            case ${(M)words:#--*} in
+                    *--help*)
+                        if (( ${(w)#cmds} == 1 )); then
+                            _pacaur_action_help
+                        else
+                            return 0;
+                        fi
+                        ;;
+                    *--version*)
+                        _pacaur_action_version
+                        ;;
+                    *--query*)
+                        _pacaur_action_query
+                        ;;
+                    *--remove*)
+                        _pacaur_action_remove
+                        ;;
+                    *--deptest*)
+                        _pacaur_action_deptest
+                        ;;
+                    *--database*)
+                        _pacaur_action_database
+                        ;;
+                    *)
+                        _pacaur_action_none
+                        ;;
+                esac
+        fi
+;;
 esac
 
 # vim:set ts=4 sw=2 et:
