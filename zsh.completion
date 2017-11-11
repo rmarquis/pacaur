@@ -170,6 +170,17 @@ _pacaur_action_check() {
     _arguments -s : \
         "*:check:((--devel\:'Consider AUR development packages upgrade' --needed\:'Do not reinstall up to date packages'))"
 }
+
+# handles info subcommand
+_pacaur_action_info() {
+   _arguments -s : \
+        "$_pacaur_opts_common[@]" \
+        "$_pacaur_opts_extended[@]" \
+        "$_pacaur_opts_sync_actions[@]" \
+        "$_pacaur_opts_sync_modifiers[@]" \
+        '*:info:_pacaur_completions_aur_packages'
+}
+
 # handles --help subcommand
 _pacaur_action_help() {
     _arguments -s : \
@@ -422,7 +433,12 @@ for tmp in $words; do
 done
 
 # handle repository filter
-if (( $+words[(r)--aur] || $+words[(r)-S*a*] || $+words[(r)sync] )); then
+if [[ $words[2] != -* ]]; then
+    isaur=1
+else
+    isaur=0
+fi
+if (( $+words[(r)--aur] || $+words[(r)-S*a*] || $isaur  )); then
     completion_repo='_pacaur_completions_aur_packages'
 elif (( $+words[(r)--repo] || $+words[(r)-S*r*] )); then
     completion_repo='_pacaur_completions_all_packages'
@@ -519,20 +535,29 @@ case $args in
         _pacaur_action_version
         ;;
     *)
-        case ${words[2]:#-*} in
-            sync*)
-                _pacaur_action_sync
-                ;;
-            upgrade*)
-                _pacaur_action_upgrade
-                ;;
-            check*)
-                _pacaur_action_check
-                ;;
-            search*)
-                _pacaur_action_sync
-            *)
-                case ${(M)words:#--*} in
+        if [[ ${words[2]} != -* && ${CURRENT} -gt 2  ]] then
+            case ${words[2]} in
+                sync)
+                    _pacaur_action_sync
+                    ;;
+                upgrade)
+                    _pacaur_action_upgrade
+                    ;;
+                check)
+                    _pacaur_action_check
+                    ;;
+                search)
+                    _pacaur_action_sync
+                    ;;
+                info)
+                    _pacaur_action_info
+                    ;;
+                buildonly) 
+                    _pacaur_action_sync
+                    ;;
+            esac
+        else
+            case ${(M)words:#--*} in
                     *--help*)
                         if (( ${(w)#cmds} == 1 )); then
                             _pacaur_action_help
@@ -558,10 +583,9 @@ case $args in
                     *)
                         _pacaur_action_none
                         ;;
-                esac
-                ;;
-        esac
-        ;;
+                esac      
+        fi
+;;
 esac
 
 # vim:set ts=4 sw=2 et:
