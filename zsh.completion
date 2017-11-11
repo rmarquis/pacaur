@@ -181,6 +181,20 @@ _pacaur_action_info() {
         '*:info:_pacaur_completions_aur_packages'
 }
 
+# handles clean subcommand
+_pacaur_action_clean() {
+    if [[ $AURDEST ]] then;
+        CLONEDIR=$AURDEST
+    elif [[ $XDG_CACHE_HOME && -a $XDG_CACHE_HOME/pacaur ]]; then
+        CLONEDIR=$XDG_CACHE_HOME/pacaur
+    else
+        CLONEDIR=$HOME/.cache/pacaur 
+    fi
+    _arguments -s :  \
+        "*:clean:($(ls $CLONEDIR))" \
+        "$_pacaur_opts_common[@]"
+ }        
+
 # handles --help subcommand
 _pacaur_action_help() {
     _arguments -s : \
@@ -554,6 +568,13 @@ case $args in
                     ;;
                 buildonly) 
                     _pacaur_action_sync
+                    ;;
+                clean)
+                    _pacaur_action_clean
+                    ;;
+                cleanall)
+                    _arguments -s : \
+                        "$_pacaur_opts_common[@]"                   
                     ;;
             esac
         else
