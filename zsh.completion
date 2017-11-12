@@ -168,7 +168,7 @@ _pacaur_opts_sync_modifiers=(
 # handles check subcommand
 _pacaur_action_check() {
     _arguments -s : \
-        "*:check:((--devel\:'Consider AUR development packages upgrade' --needed\:'Do not reinstall up to date packages'))"
+        "*:check:(( --devel\:'Consider AUR development packages upgrade' ))"
 }
 
 # handles info subcommand
@@ -552,10 +552,16 @@ case $args in
         if [[ ${words[2]} != -* && ${CURRENT} -gt 2  ]] then
             case ${words[2]} in
                 sync)
-                    _pacaur_action_sync
+                    _pacaur_action_sync 
                     ;;
                 upgrade)
-                    _pacaur_action_upgrade
+                    _arguments -s : \
+                        '--devel[Consider AUR development packages upgrade]' \
+                        '--needed[Do not reinstall up to date packages]' \
+                        "$_pacaur_opts_common[@]" \
+                        "$_pacaur_opts_extended[@]" \
+                        "$_pacaur_opts_sync_modifiers[@]" \
+                        '*:packages:'$completion_repo
                     ;;
                 check)
                     _pacaur_action_check
