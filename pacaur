@@ -1192,7 +1192,7 @@ MakePkgs() {
     oldoptionalpkgs=($(grep -xvf <(printf '%s\n' "${oldorphanpkgs[@]}") <(printf '%s\n' "${oldoptionalpkgs[@]}")))
 
     # initialize sudo
-    if sudo -n $pacmanbin -V > /dev/null || sudo -v; then
+    if sudo -n $pacmanbin -V &> /dev/null || sudo -v; then
         [[ $sudoloop = true ]] && SudoV &
     fi
 
