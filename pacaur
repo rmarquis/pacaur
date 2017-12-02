@@ -2039,6 +2039,7 @@ while [[ -n "${!OPTIND}" ]]; do
                     color) color=${!OPTIND}; pacopts+=("--color ${!OPTIND}") && auropts+=("--color=${!OPTIND}"); shift;;
                     ignore-ood) auropts+=("--ignore-ood");;
                     no-ignore-ood) auropts+=("--no-ignore-ood");;
+                    literal) auropts+=("--literal");;
                     sort=?*) auropts+=("--sort ${OPTARG#*=}");;
                     sort) auropts+=("--sort ${!OPTIND}"); shift;;
                     rsort=?*) auropts+=("--rsort ${OPTARG#*=}");;
