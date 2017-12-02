@@ -221,6 +221,11 @@ results marked as out of date, respectively. The default is to not ignore result
 marked as out of date. This can be changed with the I<IgnoreOOD> option in the
 cower config file.
 
+=item B<--literal>
+
+When searching the AUR, disable regex search and interpret target as a literal
+string.
+
 =item B<--sort> <KEY>, B<--rsort> <KEY>
 
 When searching the AUR, sort the results in ascending or descending order,
