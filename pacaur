@@ -1069,7 +1069,7 @@ Prompt() {
 }
 
 DownloadPkgs() {
-    local i
+    local i errgit
     # global basepkgs
     Note "i" $"${colorW}Retrieving package(s)...${reset}"
     GetPkgbase $@
@@ -1085,7 +1085,16 @@ DownloadPkgs() {
             [[ "$displaybuildfiles" = diff ]] && git rev-parse HEAD > ".git/HEAD.prev"
             git pull --ff -q
         fi
+        (($? > 0)) && errgit+=($i)
     done
+
+    # error check
+    if [[ -n "${errgit[@]}" ]]; then
+        for i in "${errgit[@]}"; do
+            Note "f" $"failed to retrieve ${colorW}$i${reset} package"
+        done
+        exit 1
+    fi
 
     # no results check
     [[ -z "${basepkgs[@]}" ]] && Note "e" $"no results found"
