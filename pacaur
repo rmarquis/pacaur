@@ -1316,7 +1316,7 @@ MakePkgs() {
             if [[ $builtpkg ]]; then
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     Note "i" $"Installing ${colorW}$j${reset} cached package..."
-                    sudo $pacmanbin -Ud $builtpkg --ask 36 --noconfirm
+                    sudo $pacmanbin -Ud $builtpkg --ask 36 ${pacopts[@]/--quiet} --noconfirm
                     [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     Note "w" $"Package ${colorW}$j${reset} already available in cache"
@@ -1376,7 +1376,7 @@ MakePkgs() {
                 Note "f" $"ensure package name has a VCS suffix if this is a devel package"
                 errinstall+=(${pkgsdeps[$i]})
             else
-                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]/--quiet} --noconfirm
             fi
         fi
 
