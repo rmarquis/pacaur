@@ -50,7 +50,7 @@ ClassifyPkgs() {
 # usage: DownloadPkgs( $aur_packages )
 ##
 DownloadPkgs() {
-    local i
+    local i errgit
     # global basepkgs
     Note "i" $"${colorW}Retrieving package(s)...${reset}"
     GetPkgbase $@
@@ -66,7 +66,16 @@ DownloadPkgs() {
             [[ "$displaybuildfiles" = diff ]] && git rev-parse HEAD > ".git/HEAD.prev"
             git pull --ff -q
         fi
+        (($? > 0)) && errgit+=($i)
     done
+
+    # error check
+    if [[ -n "${errgit[@]}" ]]; then
+        for i in "${errgit[@]}"; do
+            Note "f" $"failed to retrieve ${colorW}$i${reset} package"
+        done
+        exit 1
+    fi
 
     # no results check
     [[ -z "${basepkgs[@]}" ]] && Note "e" $"no results found"
@@ -185,7 +194,7 @@ MakePkgs() {
     oldoptionalpkgs=($(grep -xvf <(printf '%s\n' "${oldorphanpkgs[@]}") <(printf '%s\n' "${oldoptionalpkgs[@]}")))
 
     # initialize sudo
-    if sudo $pacmanbin -V > /dev/null; then
+    if sudo -n $pacmanbin -V > /dev/null || sudo -v; then
         [[ $sudoloop = true ]] && SudoV &
     fi
 
@@ -204,12 +213,12 @@ MakePkgs() {
 
     # integrity check
     for i in "${!basepkgs[@]}"; do
-        # get splitted packages list
+        # get split packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
         # cache check
         unset builtpkg
-        if [[ -z "$(grep -E "\-(bzr|git|hg|svn|nightly.*)$" <<< ${basepkgs[$i]})" ]]; then
+        if [[ -z "$(grep -E "\-(bzr|git|hg|svn|daily.*|nightly.*
             for j in "${pkgsdepslist[@]}"; do
                 depsAver="$(GetJson "varvar" "$json" "Version" "$j")"
                 [[ $PKGDEST && ! $rebuild ]] && GetBuiltPkg "$j-$depsAver" "$PKGDEST"
@@ -273,14 +282,14 @@ MakePkgs() {
     # main
     for i in "${!basepkgs[@]}"; do
 
-        # get splitted packages list
+        # get split packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
         cd "$clonedir/${basepkgs[$i]}" || exit 1
 
         # build devel if necessary only (supported protocols only)
         unset aurdevelpkgsAver
-        if [[ -n "$(grep -E "\-(bzr|git|hg|svn|nightly.*)$" <<< ${basepkgs[$i]})" ]]; then
+        if [[ -n "$(grep -E "\-(bzr|git|hg|svn|daily.*|nightly.*
             # retrieve updated version
             aurdevelpkgsAver=($(makepkg --packagelist | awk -F "-" '{print $(NF-2)"-"$(NF-1)}'))
             aurdevelpkgsAver=${aurdevelpkgsAver[0]}
@@ -312,7 +321,7 @@ MakePkgs() {
             if [[ $builtpkg ]]; then
                 if [[ " ${aurdepspkgs[@]} " =~ " $j " || $installpkg ]]; then
                     Note "i" $"Installing ${colorW}$j${reset} cached package..."
-                    sudo $pacmanbin -Ud $builtpkg --ask 36 --noconfirm
+                    sudo $pacmanbin -Ud $builtpkg --ask 36 ${pacopts[@]/--quiet} --noconfirm
                     [[ ! " ${aurpkgs[@]} " =~ " $j " ]] && sudo $pacmanbin -D $j --asdeps ${pacopts[@]} &>/dev/null
                 else
                     Note "w" $"Package ${colorW}$j${reset} already available in cache"
@@ -372,7 +381,7 @@ MakePkgs() {
                 Note "f" $"ensure package name has a VCS suffix if this is a devel package"
                 errinstall+=(${pkgsdeps[$i]})
             else
-                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]} --noconfirm
+                sudo $pacmanbin -Ud ${builtdepspkgs[@]} ${builtpkgs[@]} --ask 36 ${pacopts[@]/--quiet} --noconfirm
             fi
         fi
 

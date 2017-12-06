@@ -29,7 +29,7 @@ IgnoreChecks() {
     checkaurpkgsQver=($(expac -Q '%v' "${checkaurpkgs[@]}"))
     # set always the latest revision for devel packages since the RPC data is static only
     for i in "${!checkaurpkgs[@]}"; do
-        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${checkaurpkgs[$i]})" ]] && checkaurpkgsAver[$i]=$"latest"
+        [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|daily.*|nightly.*
     done
     for i in "${!checkaurpkgs[@]}"; do
         unset isignored
@@ -408,7 +408,7 @@ ReinstallChecks() {
         [[ -z "${depsQver[$i]}" || "${depsQver[$i]}" = '#' || $(vercmp "${depsAver[$i]}" "${depsQver[$i]}") -gt 0 ]] && continue
         [[ ! $installpkg && ! " ${aurdepspkgs[@]} " =~ " ${depsAname[$i]} " ]] && continue
         # devel packages are not considered, VCS packages version is not checked by design since it is a slow operation
-        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|nightly.*)$" <<< ${depsAname[$i]})" ]]; then
+        if [[ -n "$(grep -E "\-(cvs|svn|git|hg|bzr|darcs|daily.*|nightly.*
             Note "w" $"${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
         else
             if [[ ! $needed ]]; then
