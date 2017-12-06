@@ -161,7 +161,7 @@ package names and not version, group, and description information.
 
 When used with upgrade and check operations, also consider AUR development
 packages. Supported are I<cvs>, I<svn>, I<git>, I<hg>, I<bzr> and I<darcs>
-development packages, as well as I<nightly> build packages.
+development packages, as well as I<daily> and I<nightly> build packages.
 
 =item B<--foreign>
 
@@ -179,7 +179,7 @@ I<IgnorePkg> directive are honored.
 Do not reinstall I<target(s)> that are already up-to-date. The build of
 development packages that are found up-to-date after the source checkout will
 be skipped. Supported are I<svn>, I<git>, I<hg> and I<bzr> development
-packages, as well as I<nightly> build packages.
+packages, as well as I<daily> and I<nightly> build packages.
 
 =item B<--noconfirm>
 
