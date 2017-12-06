@@ -1220,7 +1220,7 @@ MakePkgs() {
 
     # integrity check
     for i in "${!basepkgs[@]}"; do
-        # get splitted packages list
+        # get split packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
         # cache check
@@ -1286,7 +1286,7 @@ MakePkgs() {
     # main
     for i in "${!basepkgs[@]}"; do
 
-        # get splitted packages list
+        # get split packages list
         pkgsdepslist=($(awk -F "," '{for (k=1;k<=NF;k++) print $k}' <<< ${pkgsdeps[$i]}))
 
         cd "$clonedir/${basepkgs[$i]}" || exit 1
