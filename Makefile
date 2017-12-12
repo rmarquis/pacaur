@@ -19,7 +19,7 @@ doc:
 # aux
 install:
 	@echo "Installing..."
-	@install -D -m644 ./config $(DESTDIR)$(PREFIX)/etc/xdg/pacaur/config
+	@install -D -m644 ./config $(DESTDIR)/etc/xdg/pacaur/config
 	@install -D -m755 ./pacaur $(DESTDIR)$(PREFIX)/bin/pacaur
 	@install -D -m644 ./bash.completion $(DESTDIR)$(PREFIX)/share/bash-completion/completions/pacaur
 	@install -D -m644 ./zsh.completion $(DESTDIR)$(PREFIX)/share/zsh/site-functions/_pacaur
@@ -32,7 +32,7 @@ install:
 
 uninstall:
 	@echo "Uninstalling..."
-	@$(RM) $(DESTDIR)$(PREFIX)/etc/xdg/pacaur/config
+	@$(RM) $(DESTDIR)/etc/xdg/pacaur/config
 	@$(RM) $(DESTDIR)$(PREFIX)/bin/pacaur
 	@$(RM) $(DESTDIR)$(PREFIX)/share/bash-completion/completions/pacaur
 	@$(RM) $(DESTDIR)$(PREFIX)/share/zsh/site-functions/_pacaur
