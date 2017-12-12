@@ -1722,14 +1722,14 @@ CleanCache() {
                         [[ -d "$clonedir/$clone" && ! " ${foreignpkgsbase[@]} " =~ " $clone " ]] && rm -rf "$clonedir/$clone"
                     done
                 fi
-                #if [[ ! $PKGDEST || ! $SRCDEST ]]; then # pacman 5.1
+                if [[ ! $PKGDEST || ! $SRCDEST ]]; then
                     if Proceed "y" $"Do you want to remove all untracked files from AUR clone directory?"; then
                         printf "%s\n" $"removing untracked files from AUR clone cache..."
                         for clone in *; do
                             [[ -d "$clonedir/$clone" ]] && git --git-dir="$clone/.git" --work-tree="$clone" clean -ffdx &>/dev/null
                         done
                     fi
-                #fi
+                fi
             fi
         else
             if ! Proceed "n" $"Do you want to remove ALL clones from AUR clone directory?"; then
