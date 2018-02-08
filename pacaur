@@ -618,8 +618,14 @@ FindDepsRepo() {
     [[ -z "${repodepspkgs[@]}" ]] && repodepspkgs=(${repodeps[@]})
 
     # get non installed repo deps
-    allrepodepspkgs=($(expac -S -1 '%E' ${repodeps[@]})) # no version check needed as all deps are binary
+    unset allrepodepspkgs repodepspkgstmp
+    [[ -n "${repodeps[@]}" ]] && allrepodepspkgs=($(expac -S -1 '%E' ${repodeps[@]})) # no version check needed as all deps are binary
     [[ -n "${allrepodepspkgs[@]}" ]] && repodepspkgstmp=($($pacmanbin -T ${allrepodepspkgs[@]} | sort -u))
+
+    # remove duplicate
+    if [[ -n "${repodepspkgstmp[@]}" ]]; then
+        repodepspkgstmp=($(grep -xvf <(printf '%s\n' "${repodepspkgs[@]}") <(printf '%s\n' "${repodepspkgstmp[@]}")))
+    fi
 
     if [[ -n "${repodepspkgstmp[@]}" ]]; then
         repodepspkgs+=(${repodepspkgstmp[@]})
@@ -637,12 +643,15 @@ FindDepsRepoProvider() {
     # reduce root binary deps
     providerspkgs=($(tr ' ' '\n' <<< ${providerspkgs[@]} | sort -u))
 
-    # add initial repodeps
-    [[ -z "${providerspkgspkgs[@]}" ]] && providerspkgspkgs=(${providerspkgs[@]})
-
     # get non installed repo deps
-    allproviderrepodepspkgs=($(expac -S -1 '%E' ${providerspkgs[@]})) # no version check needed as all deps are binary
+    unset allproviderrepodepspkgs providerrepodepspkgstmp
+    [[ -n "${providerspkgs[@]}" ]] && allproviderrepodepspkgs=($(expac -S -1 '%E' ${providerspkgs[@]})) # no version check needed as all deps are binary
     [[ -n "${allproviderrepodepspkgs[@]}" ]] && providerrepodepspkgstmp=($($pacmanbin -T ${allproviderrepodepspkgs[@]} | sort -u))
+
+    # remove duplicate
+    if [[ -n "${providerrepodepspkgstmp[@]}" ]]; then
+        providerrepodepspkgstmp=($(grep -xvf <(printf '%s\n' "${repodepspkgs[@]}") <(printf '%s\n' "${providerrepodepspkgstmp[@]}")))
+    fi
 
     if [[ -n "${providerrepodepspkgstmp[@]}" ]]; then
         repodepspkgs+=(${providerrepodepspkgstmp[@]})
