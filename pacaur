@@ -735,7 +735,7 @@ IgnoreDepsChecks() {
 }
 
 ProviderChecks() {
-    local allproviders providersdeps providers repodepspkgsprovided providerspkgs provided nb providersnb
+    local allproviders providersdeps providersdepsnover providers repodepspkgsprovided providerspkgs provided nb providersnb
     # global repodepspkgs repoprovidersconflictingpkgs repodepsSver repodepsSrepo repodepsQver
     [[ -z "${repodepspkgs[@]}" ]] && return
 
@@ -747,7 +747,38 @@ ProviderChecks() {
     providersdeps=($($pacmanbin -T ${providersdeps[@]} | sort -u))
 
     for i in "${!providersdeps[@]}"; do
+        # check versioning
+        unset providersdepsname providersdepsver providersdepsSname providersdepsSver
+        providersdepsname=${providersdeps[$i]} && providersdepsname=${providersdepsname%[><]*} && providersdepsname=${providersdepsname%=*}
+        providersdepsver=${providersdeps[$i]} && providersdepsver=${providersdepsver#*=} && providersdepsver=${providersdepsver#*[><]}
+        providersdepsSname=($(expac -Ss '%n' ^${providersdepsname[$i]}$))
+        providersdepsSver=($(expac -Ss '%v' ^${providersdepsname[$i]}$))
+
+        case "${providersdeps[$i]}" in
+            *">"*|*"<"*|*"="*)
+                for j in "${!providersdepsSname[@]}"; do
+                    # found in repo but version not correct
+                    case "${providersdeps[$i]}" in
+                        *">="*) [[ $(vercmp "$providersdepsver" "${providersdepsSver[j]}") -ge 0 ]] && continue;;
+                        *"<="*) [[ $(vercmp "$providersdepsver" "${providersdepsSver[j]}") -le 0 ]] && continue;;
+                        *">"*)  [[ $(vercmp "$providersdepsver" "${providersdepsSver[j]}") -gt 0 ]] && continue;;
+                        *"<"*)  [[ $(vercmp "$providersdepsver" "${providersdepsSver[j]}") -lt 0 ]] && continue;;
+                        *"="*)  [[ $(vercmp "$providersdepsver" "${providersdepsSver[j]}") -eq 0 ]] && continue;;
+                    esac
+                    providersdepsnover+=("${providersdepsSname[j]}")
+                done
+            ;;
+        esac
+
+        # remove versioning
+        providersdeps[$i]=$(awk -F ">|<|=" '{print $1}' <<< ${providersdeps[$i]})
+
+        # list providers
         providers=($(expac -Ss '%n' "^${providersdeps[$i]}$" | sort -u))
+
+        # filter out non matching versioned providers
+        [[ -n "${providersdepsnover[@]}" ]] && providers=($(grep -xf <(printf '%s\n' "${providersdepsnover[@]}") <(printf '%s\n' "${providers[@]}")))
+
         [[ ! ${#providers[@]} -gt 1 ]] && continue
 
         # skip if provided in dependency chain
