@@ -779,8 +779,6 @@ ProviderChecks() {
         # filter out non matching versioned providers
         [[ -n "${providersdepsnover[@]}" ]] && providers=($(grep -xf <(printf '%s\n' "${providersdepsnover[@]}") <(printf '%s\n' "${providers[@]}")))
 
-        [[ ! ${#providers[@]} -gt 1 ]] && continue
-
         # skip if provided in dependency chain
         unset repodepspkgsprovided
         for j in "${!providers[@]}"; do
@@ -795,7 +793,7 @@ ProviderChecks() {
             [[ " ${provided[@]} " =~ " ${providersdeps[$i]} " ]] && continue
         fi
 
-        if [[ ! $noconfirm ]]; then
+        if [[ ! $noconfirm && ${#providers[@]} -gt 1 ]]; then
             Note "i" $"${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
             expac -S -1 '   %!) %n (%r) ' "${providers[@]}"
 
