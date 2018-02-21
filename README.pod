@@ -34,11 +34,6 @@ upgrade, check, clean, cleanall)>. As such, pacaur can be used by users
 who prefer to have a single tool to manage the official and AUR repositories, or
 by users who prefer to keep their AUR frontend separated from pacman.
 
-B<Note:> The AUR specific commands short options B<(-y, -s, -i, -d, -m, -u, -k)>
-and their respective long options B<(--sync, --search, --info, --download,
---makepkg, --update, --check)> are now I<deprecated> and will I<be removed> in a
-future release.
-
 =head1 OPERATIONS
 
 =head2 Pacman extension operations
