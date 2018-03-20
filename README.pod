@@ -421,12 +421,6 @@ internet connection working correctly, ensure your local I<DNS server> is
 correctly configured to improve name lookups. Using Google's primary DNS
 (8.8.8.8 and 8.8.4.4) might also help.
 
-=item B<alternative installation root>
-
-The alternative installation root I<-r /path> short option of pacman is not
-supported. Use the I<--root /path> long option instead, or chroot to the new
-path and use pacaur from there instead.
-
 =back
 
 =head1 SEE ALSO

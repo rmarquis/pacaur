@@ -2104,8 +2104,8 @@ while [[ -n "${!OPTIND}" ]]; do
                     silent) silent=true; makeopts+=("--log");;
                     domain=?*) aururl=${OPTARG#*=}; auropts+=("--domain ${OPTARG#*=}");;
                     domain) aururl=${!OPTIND}; auropts+=("--domain ${!OPTIND}"); shift;;
-                    root=?*) pacopts+=("--root ${OPTARG#*=}");;
-                    root) pacopts+=("--root ${!OPTIND}"); shift;;
+                    sysroot=?*) pacopts+=("--sysroot ${OPTARG#*=}");;
+                    sysroot) pacopts+=("--sysroot ${!OPTIND}"); shift;;
                     version) Version; exit;;
                     help) Usage; exit;;
                     *) pacopts+=("--$OPTARG");;
