@@ -1,646 +1,781 @@
 # Translators:
-# kizayoi <kizayoip@gmail.com>, 2017
+# Victorique Ko <victorique.ko@outlook.com>, 2017
 msgid ""
 msgstr ""
-"Last-Translator: kizayoi <kizayoip@gmail.com>\n"
+"Last-Translator: Victorique Ko <victorique.ko@outlook.com>\n"
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: pacaur:115
+#: pacaur:154
 msgid "${colorW}Starting AUR upgrade...${reset}"
 msgstr "${colorW}正在开始 AUR 升级...${reset}"
 
-#: pacaur:134
+#: pacaur:173
 msgid "${colorW}$i${reset} is ${colorY}not present${reset} in AUR -- skipping"
 msgstr "AUR 中 ${colorY}不存在${reset} ${colorW}$i${reset} -- 跳过"
 
-#: pacaur:170 pacaur:264 pacaur:1447
+#: pacaur:209 pacaur:318 pacaur:1580
 msgid "latest"
 msgstr "最新版"
 
-#: pacaur:176
+#: pacaur:230
 msgid "${checkaurpkgs[$i]} is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr "${checkaurpkgs[$i]} 位于 IgnorePkg/IgnoreGroup 中. 确定要安装吗?"
 
-#: pacaur:177 pacaur:182
-msgid "${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade"
-msgstr "${colorW}${checkaurpkgs[$i]}${reset}: 正在忽略软件包升级"
+#: pacaur:231 pacaur:236
+msgid "skipping target: ${colorW}${checkaurpkgs[$i]}${reset}"
+msgstr "正在跳过目标: ${colorW}${checkaurpkgs[$i]}${reset}"
 
-#: pacaur:187
+#: pacaur:241
 msgid ""
-"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade (${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorW}${checkaurpkgs[$i]}${reset}: ignoring package upgrade "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 msgstr ""
-"${colorW}${checkaurpkgs[$i]}${reset}: 正在忽略软件包升级 (${colorR}${checkaurpkgsQver[$i]}${reset} => "
+"${colorW}${checkaurpkgs[$i]}${reset}: 正在忽略软件包升级 "
+"(${colorR}${checkaurpkgsQver[$i]}${reset} => "
 "${colorG}${checkaurpkgsAver[$i]}${reset})"
 
-#: pacaur:202
+#: pacaur:256
 msgid "resolving dependencies..."
 msgstr "正在解决依赖关系..."
 
-#: pacaur:232 pacaur:748 pacaur:816
+#: pacaur:286 pacaur:865 pacaur:933
 msgid "unresolvable package conflicts detected"
 msgstr "检测到无法解决的软件包冲突"
 
-#: pacaur:233
+#: pacaur:287
 msgid "failed to prepare transaction (conflicting dependencies: $i)"
 msgstr "未能准备事务处理 (依赖冲突: $i)"
 
-#: pacaur:253
+#: pacaur:307
 msgid "dependency cycle detected"
 msgstr "检测到循环依赖"
 
-#: pacaur:271
-msgid "no results found for ${errdepsnover[$i]}"
-msgstr "未找到 ${errdepsnover[$i]} 的结果"
+#: pacaur:325
+msgid "no results found for ${errdeps[$i]}"
+msgstr "未找到 ${errdeps[$i]} 的结果"
 
-#: pacaur:284
-msgid "no results found for ${errdeps[$i]} (dependency tree: ${errdepslist[*]})"
+#: pacaur:338
+msgid ""
+"no results found for ${errdeps[$i]} (dependency tree: ${errdepslist[*]})"
 msgstr "未找到 ${errdeps[$i]} 的结果 (依赖树: ${errdepslist[*]})"
 
-#: pacaur:438
+#: pacaur:495
 msgid "dependency cycle detected (${depspkgsaur[*]})"
 msgstr "检测到循环依赖 (${depspkgsaur[*]})"
 
-#: pacaur:579 pacaur:594
+#: pacaur:682 pacaur:712 pacaur:717
+msgid "skipping target: ${colorW}$i${reset}"
+msgstr "正在跳过目标: ${colorW}$i${reset}"
+
+#: pacaur:684 pacaur:719
 msgid "${colorW}$i${reset}: ignoring package upgrade"
 msgstr "${colorW}$i${reset}: 正在忽略软件包升级"
 
-#: pacaur:580 pacaur:586 pacaur:591 pacaur:595
+#: pacaur:686 pacaur:692 pacaur:713 pacaur:721
 msgid "Unresolved dependency '${colorW}$i${reset}'"
 msgstr "无法解决的依赖 '${colorW}$i${reset}'"
 
-#: pacaur:590
+#: pacaur:711
 msgid "$i dependency is in IgnorePkg/IgnoreGroup. Install anyway?"
 msgstr "$i 的依赖位于 IgnorePkg/IgnoreGroup 中. 确定要安装吗?"
 
-#: pacaur:630
-msgid "${colorW}There are ${#providers[@]} providers available for ${providersdeps[$i]}:${reset}"
-msgstr "${colorW}有 ${#providers[@]} 个提供者可用于 ${providersdeps[$i]}:${reset}"
+#: pacaur:759
+msgid ""
+"${colorW}There are ${#providers[@]} providers available for "
+"${providersdeps[$i]}:${reset}"
+msgstr ""
+"${colorW}有 ${#providers[@]} 个提供者可用于 ${providersdeps[$i]}:${reset}"
 
-#: pacaur:637
+#: pacaur:766
 msgid "Enter a number (default=0):"
 msgstr "输入数字 (默认=0):"
 
-#: pacaur:651
+#: pacaur:780
 msgid "invalid value: $nb is not between 0 and $providersnb"
 msgstr "无效值: $nb 不在 0 和 $providersnb 之间"
 
-#: pacaur:656
+#: pacaur:785
 msgid "invalid number: $nb"
 msgstr "无效数字: %nb"
 
-#: pacaur:698
+#: pacaur:815
 msgid "looking for inter-conflicts..."
 msgstr "正在查找相互冲突..."
 
-#: pacaur:734 pacaur:808
+#: pacaur:851 pacaur:925
 msgid "$j and $k are in conflict ($i). Remove $k?"
 msgstr "$j 和 $k 有冲突 ($i). 删除 $k 吗?"
 
-#: pacaur:749 pacaur:817
+#: pacaur:866 pacaur:934
 msgid "failed to prepare transaction (conflicting dependencies)"
 msgstr "未能准备事务处理 (依赖冲突)"
 
-#: pacaur:752 pacaur:820
+#: pacaur:869 pacaur:937
 msgid "$j and $k are in conflict (required by ${Qrequires[*]})"
 msgstr "$j 和 $k 有冲突 (被 ${Qrequires[*]} 所需要)"
 
-#: pacaur:754 pacaur:822
+#: pacaur:871 pacaur:939
 msgid "$j and $k are in conflict"
 msgstr "$j 和 $k 有冲突"
 
-#: pacaur:841
+#: pacaur:958
 msgid "${colorW}${depsAname[$i]}${reset} latest revision -- fetching"
 msgstr "${colorW}${depsAname[$i]}${reset} 的最新版本 -- 正在获取"
 
-#: pacaur:844
-msgid "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- reinstalling"
-msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} 已是最新 -- 正在重新安装"
+#: pacaur:961
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- "
+"reinstalling"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} 已是最新 -- 正在重新安装"
 
-#: pacaur:846
-msgid "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
+#: pacaur:963
+msgid ""
+"${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} is up to date -- skipping"
 msgstr "${colorW}${depsAname[$i]}-${depsQver[$i]}${reset} 已是最新 -- 跳过"
 
-#: pacaur:861
+#: pacaur:978
 msgid ""
-"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}out of date${reset} on ${colorY}$(date -d "
-"\"@${depsAood[$i]}\" \"+%c\")${reset}"
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} has been flagged ${colorR}"
+"out of date${reset} on ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c"
+"\")${reset}"
 msgstr ""
-"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} 已经在 ${colorY}$(date -d \"@${depsAood[$i]}\" \"+%c\")${reset} 被标"
-"记为 ${color}过期${reset}"
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} 已经在 ${colorY}$(date -d "
+"\"@${depsAood[$i]}\" \"+%c\")${reset} 被标记为 ${color}过期${reset}"
 
-#: pacaur:869
-msgid "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} is ${colorR}orphaned${reset} in AUR"
-msgstr "${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} 在 AUR 中是 ${colorR}无人维护的${reset}"
+#: pacaur:986
+msgid ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} is ${colorR}orphaned"
+"${reset} in AUR"
+msgstr ""
+"${colorW}${depsAname[$i]}-${depsAver[$i]}${reset} 在 AUR 中是 ${colorR}无人"
+"维护的${reset}"
 
-#: pacaur:897
+#: pacaur:1014
 msgid "(cached)"
 msgstr "(已缓存)"
 
-#: pacaur:902 pacaur:935
+#: pacaur:1019 pacaur:1052
 msgid "AUR Packages  (${#deps[@]})"
 msgstr "AUR 软件包  (${#deps[@]})"
 
-#: pacaur:902 pacaur:936
+#: pacaur:1019 pacaur:1053
 msgid "Repo Packages (${#repodepspkgs[@]})"
 msgstr "软件库软件包  (${#repodepspkgs[@]})"
 
-#: pacaur:902
+#: pacaur:1019
 msgid "Old Version"
 msgstr "旧版本"
 
-#: pacaur:902
+#: pacaur:1019
 msgid "New Version"
 msgstr "新版本"
 
-#: pacaur:902
+#: pacaur:1019
 msgid "Download Size"
 msgstr "下载大小"
 
-#: pacaur:924
+#: pacaur:1041
 msgid "${binarysize[$i]} MiB"
 msgstr "${binarysize[$i]} MiB"
 
-#: pacaur:940
+#: pacaur:1057
 msgid "Repo Download Size:"
 msgstr "软件库下载大小:"
 
-#: pacaur:940
+#: pacaur:1057
 msgid "Repo Installed Size:"
 msgstr "软件库安装大小:"
 
-#: pacaur:940
+#: pacaur:1057
 msgid "$sumk MiB"
 msgstr "$sumk MiB"
 
-#: pacaur:940
+#: pacaur:1057
 msgid "$summ MiB"
 msgstr "$summ MiB"
 
-#: pacaur:948 pacaur:1056
+#: pacaur:1065 pacaur:1173
 msgid "installation"
 msgstr "安装"
 
-#: pacaur:948 pacaur:1056
+#: pacaur:1065 pacaur:1173
 msgid "download"
 msgstr "下载"
 
-#: pacaur:949 pacaur:1057
+#: pacaur:1066 pacaur:1174
 msgid "Proceed with $action?"
 msgstr "继续 $action 吗?"
 
-#: pacaur:957
+#: pacaur:1074
 msgid "${colorW}Retrieving package(s)...${reset}"
 msgstr "${colorW}正在恢复软件包...${reset}"
 
-#: pacaur:974
+#: pacaur:1091
 msgid "no results found"
 msgstr "未找到结果"
 
-#: pacaur:993
+#: pacaur:1110
 msgid "View $i build files diff?"
 msgstr "要查看 $i 构建文件的差异吗?"
 
-#: pacaur:995
+#: pacaur:1112
 msgid "${colorW}$i${reset} build files diff viewed"
 msgstr "已查看 ${colorW}$i${reset} 构建文件的差异"
 
-#: pacaur:1000
+#: pacaur:1117
 msgid "${colorW}$i${reset} build files are up-to-date -- skipping"
 msgstr "${colorW}$i${reset} 构建文件已是最新 -- 跳过"
 
-#: pacaur:1004
+#: pacaur:1121
 msgid "View $i PKGBUILD?"
 msgstr "要查看 $i 的 PKGBUILD 吗?"
 
-#: pacaur:1006 pacaur:1030
+#: pacaur:1123 pacaur:1147
 msgid "${colorW}$i${reset} PKGBUILD viewed"
 msgstr "已查看 ${colorW}$i${reset} 的 PKGBUILD"
 
-#: pacaur:1009 pacaur:1033
+#: pacaur:1126 pacaur:1150
 msgid "Could not open ${colorW}$i${reset} PKGBUILD"
 msgstr "无法打开 ${colorW}$i${reset} 的 PKGBUILD"
 
-#: pacaur:1015
+#: pacaur:1132
 msgid "View $j script?"
 msgstr "要查看 $j 的脚本吗?"
 
-#: pacaur:1017 pacaur:1038
+#: pacaur:1134 pacaur:1155
 msgid "${colorW}$j${reset} script viewed"
 msgstr "已查看 $j 的脚本"
 
-#: pacaur:1020 pacaur:1041
+#: pacaur:1137 pacaur:1158
 msgid "Could not open ${colorW}$j${reset} script"
 msgstr "无法打开 ${colorW}$j${reset} 的脚本"
 
-#: pacaur:1050
+#: pacaur:1167
 msgid "${colorW}$i${reset} errored on exit"
 msgstr "${colorW}$i${reset} 退出时错误"
 
-#: pacaur:1121
+#: pacaur:1238
 msgid "Checking ${colorW}${pkgsdeps[$i]}${reset} integrity..."
 msgstr "正在检查 ${colorW}${pkgsdeps[$i]}${reset} 的完整性..."
 
-#: pacaur:1134
-msgid "failed to verify ${colorW}$i${reset} integrity"
-msgstr "未能验证 ${colorW}$i${reset} 的完整性"
+#: pacaur:1246
+msgid "Preparing ${colorW}${pkgsdeps[$i]}${reset}..."
+msgstr "正在准备 ${colorW}${pkgsdeps[$i]}${reset}..."
 
-#: pacaur:1142
+#: pacaur:1257
+msgid "failed to verify integrity or prepare ${colorW}$i${reset} package"
+msgstr "无法验证完整性或准备 ${colorW}$i${reset} 软件包"
+
+#: pacaur:1265
+msgid "db.lck exists in /var/lib/pacman"
+msgstr "/var/lib/pacman 中已存在 db.lck"
+
+#: pacaur:1268
 msgid "pacaur.build.lck exists in $tmpdir"
 msgstr "pacaur.build.lck 存在于 $tmpdir"
 
-#: pacaur:1147
-msgid "Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} dependencies..."
-msgstr "正在安装 ${colorW}${repoprovidersconflictingpkgs[@]}${reset} 的依赖..."
+#: pacaur:1273
+msgid ""
+"Installing ${colorW}${repoprovidersconflictingpkgs[@]}${reset} "
+"dependencies..."
+msgstr ""
+"正在安装 ${colorW}${repoprovidersconflictingpkgs[@]}${reset} 的依赖..."
 
-#: pacaur:1171
+#: pacaur:1297
 msgid "${colorW}$j${reset} is up-to-date -- skipping"
 msgstr "${colorW}$j${reset} 已是最新 -- 跳过"
 
-#: pacaur:1192
+#: pacaur:1318
 msgid "Installing ${colorW}$j${reset} cached package..."
 msgstr "正在安装 ${colorW}$j${reset} 已缓存的软件包..."
 
-#: pacaur:1196
+#: pacaur:1322
 msgid "Package ${colorW}$j${reset} already available in cache"
 msgstr "软件包 ${colorW}$j${reset} 已经在缓存中可用"
 
-#: pacaur:1205
+#: pacaur:1331
 msgid "Building ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "正在构建 ${colorW}${pkgsdeps[$i]}${reset} 软件包..."
 
-#: pacaur:1241
+#: pacaur:1371
 msgid "Installing ${colorW}${pkgsdeps[$i]}${reset} package(s)..."
 msgstr "正在安装 ${colorW}${pkgsdeps[$i]}${reset} 软件包..."
 
-#: pacaur:1244
-msgid "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check .SRCINFO for mismatching data with PKGBUILD."
-msgstr "${colorW}${pkgsdeps[$i]}${reset} 软件包未能安装. 检查 .SRCINFO 中与 PKGBUILD 不匹配的数据."
+#: pacaur:1374
+msgid "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install."
+msgstr "无法安装 ${colorW}${pkgsdeps[$i]}${reset} 软件包。"
 
-#: pacaur:1265
+#: pacaur:1375
+msgid "ensure package version does not mismatch between .SRCINFO and PKGBUILD"
+msgstr "请确保 .SRCINFO 和 PKGBUILD 中的软件包版本号相匹配"
+
+#: pacaur:1376
+msgid "ensure package name has a VCS suffix if this is a devel package"
+msgstr "如果这是一个开发版本的软件包，请确保包名称具有 VCS 后缀"
+
+#: pacaur:1397
 msgid "Removing installed AUR dependencies..."
 msgstr "正在删除已安装的 AUR 依赖..."
 
-#: pacaur:1281
+#: pacaur:1413
 msgid "${colorW}$i${reset} is now an ${colorY}orphan${reset} package"
 msgstr "${colorW}$i${reset} 现在是 ${colorY}无人维护的${reset} 软件包"
 
-#: pacaur:1287
+#: pacaur:1419
 msgid "${colorW}$i${reset} is now an ${colorY}optional${reset} package"
 msgstr "${colorW}$i${reset} 现在是 ${colorY}可选的${reset} 软件包"
 
-#: pacaur:1293
+#: pacaur:1425
 msgid "failed to build ${colorW}$i${reset} package(s)"
 msgstr "未能构建 ${colorW}$i${reset} 软件包"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Repository"
 msgstr "软件库"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Name"
 msgstr "名称"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Version"
 msgstr "版本"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Description"
 msgstr "描述"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "URL"
 msgstr "URL"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "AUR Page"
 msgstr "AUR 页面"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Licenses"
 msgstr "许可协议"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Keywords"
 msgstr "关键词"
 
-#: pacaur:1313
+#: pacaur:1445
+msgid "Groups"
+msgstr "组"
+
+#: pacaur:1445
 msgid "Provides"
 msgstr "提供"
 
-#: pacaur:1313
+#: pacaur:1445
 msgid "Depends on"
 msgstr "依赖于"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Make Deps"
 msgstr "编译依赖"
 
-#: pacaur:1314
+#: pacaur:1446
+msgid "Check Deps"
+msgstr "测试依赖"
+
+#: pacaur:1446
 msgid "Optional Deps"
 msgstr "可选依赖"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Conflicts With"
 msgstr "冲突"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Replaces"
 msgstr "取代"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Maintainer"
 msgstr "维护者"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Popularity"
 msgstr "受欢迎度"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Votes"
 msgstr "得票"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Out of Date"
 msgstr "过期状态"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Submitted"
 msgstr "提交人"
 
-#: pacaur:1314
+#: pacaur:1446
 msgid "Last Modified"
 msgstr "最后更新"
 
-#: pacaur:1331 pacaur:1333 pacaur:1335
+#: pacaur:1465 pacaur:1467 pacaur:1469
 msgid "installed"
 msgstr "已安装"
 
-#: pacaur:1370
+#: pacaur:1502
 msgid "None"
 msgstr "无"
 
-#: pacaur:1379
+#: pacaur:1511
 msgid "No"
 msgstr "否"
 
-#: pacaur:1381
+#: pacaur:1513
 msgid "Yes"
 msgstr "是"
 
-#: pacaur:1381
-msgid "$(date -d \"@${info[17]}\" \"+%c\")"
-msgstr "$(date -d \"@${info[17]}\" \"+%c\")"
-
-#: pacaur:1384
-msgid "$(date -d \"@${info[18]}\" \"+%c\")"
-msgstr "$(date -d \"@${info[18]}\" \"+%c\")"
-
-#: pacaur:1385
+#: pacaur:1513
 msgid "$(date -d \"@${info[19]}\" \"+%c\")"
 msgstr "$(date -d \"@${info[19]}\" \"+%c\")"
 
-#: pacaur:1445 pacaur:1468
+#: pacaur:1516
+msgid "$(date -d \"@${info[20]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[20]}\" \"+%c\")"
+
+#: pacaur:1517
+msgid "$(date -d \"@${info[21]}\" \"+%c\")"
+msgstr "$(date -d \"@${info[21]}\" \"+%c\")"
+
+#: pacaur:1578 pacaur:1601
 msgid "[ ignored ]"
 msgstr "[ 已忽略 ]"
 
-#: pacaur:1518
+#: pacaur:1654
+msgid "Packages to keep:"
+msgstr "保留的软件包:"
+
+#: pacaur:1654
+msgid "All locally installed packages"
+msgstr "所有本地安装的软件包"
+
+#: pacaur:1655
+msgid "AUR cache directory:"
+msgstr "AUR 缓存目录:"
+
+#: pacaur:1657
+msgid "Do you want to remove all other packages from AUR cache?"
+msgstr "你要从 AUR 缓存删除所有其它软件包吗?"
+
+#: pacaur:1658
+msgid "removing old packages from cache..."
+msgstr "正在从 AUR 缓存删除旧软件包..."
+
+#: pacaur:1665
+msgid "Do you want to remove ALL files from AUR cache?"
+msgstr "你要从 AUR 缓存删除所有文件吗?"
+
+#: pacaur:1666
+msgid "removing all files from AUR cache..."
+msgstr "正在从 AUR 缓存删除所有文件..."
+
+#: pacaur:1673
 msgid "Sources to keep:"
 msgstr "要保留的源代码:"
 
-#: pacaur:1518
+#: pacaur:1673
 msgid "All development packages sources"
 msgstr "所有开发版本软件包的源代码"
 
-#: pacaur:1519
+#: pacaur:1674
 msgid "AUR source cache directory:"
 msgstr "AUR 源代码缓存目录:"
 
-#: pacaur:1521
+#: pacaur:1676
 msgid "Do you want to remove all non development files from AUR source cache?"
 msgstr "你要从 AUR 源代码缓存删除所有非开发版本的文件吗?"
 
-#: pacaur:1522
+#: pacaur:1677
 msgid "removing non development files from source cache..."
 msgstr "正在从 AUR 源代码缓存删除非开发版本的文件..."
 
-#: pacaur:1526
+#: pacaur:1681
 msgid "Do you want to remove ALL files from AUR source cache?"
 msgstr "你要从 AUR 源代码缓存删除所有文件吗?"
 
-#: pacaur:1527
+#: pacaur:1682
 msgid "removing all files from AUR source cache..."
 msgstr "正在从 AUR 源代码缓存删除所有文件..."
 
-#: pacaur:1534
+#: pacaur:1691 pacaur:1693
 msgid "Clones to keep:"
 msgstr "要保留的克隆:"
 
-#: pacaur:1534
-msgid "All packages clones"
-msgstr "所有软件包的克隆"
+#: pacaur:1691
+msgid "All locally installed clones"
+msgstr "所有本地安装的克隆"
 
-#: pacaur:1535
+#: pacaur:1693
+msgid "All other locally installed clones"
+msgstr "所有其他本地安装的克隆"
+
+#: pacaur:1696
 msgid "AUR clone directory:"
 msgstr "AUR 克隆目录:"
 
-#: pacaur:1537
-msgid "Do you want to remove all uninstalled clones from AUR clone directory?"
-msgstr "你要从 AUR 克隆目录删除所有未安装的克隆吗?"
+#: pacaur:1703
+msgid ""
+"Do you want to remove ${aurpkgsbase[*]} clones from AUR clone directory?"
+msgstr "你要从 AUR 克隆目录删除 ${aurpkgsbase[*]} 吗?"
 
-#: pacaur:1539
+#: pacaur:1704 pacaur:1711
 msgid "removing uninstalled clones from AUR clone cache..."
 msgstr "正在从 AUR 克隆目录删除所有未安装的克隆..."
 
-#: pacaur:1544
+#: pacaur:1710
+msgid "Do you want to remove all uninstalled clones from AUR clone directory?"
+msgstr "你要从 AUR 克隆目录删除所有未安装的克隆吗?"
+
+#: pacaur:1717
 msgid "Do you want to remove all untracked files from AUR clone directory?"
 msgstr "你要从 AUR 克隆目录删除所有未跟踪的文件吗?"
 
-#: pacaur:1545
+#: pacaur:1718
 msgid "removing untracked files from AUR clone cache..."
 msgstr "正在从 AUR 克隆目录删除所有未跟踪的文件..."
 
-#: pacaur:1551
+#: pacaur:1726
 msgid "Do you want to remove ALL clones from AUR clone directory?"
 msgstr "你要从 AUR 克隆目录删除所有克隆吗?"
 
-#: pacaur:1552
+#: pacaur:1727
 msgid "removing all clones from AUR clone cache..."
 msgstr "正在从 AUR 克隆目录删除所有克隆..."
 
-#: pacaur:1652
+#: pacaur:1837
 msgid "Failed to parse JSON"
 msgstr "未能解析 JSON"
 
-#: pacaur:1660
+#: pacaur:1845
 msgid "failed to prepare transaction (could not satisfy dependencies)"
 msgstr "未能准备事务处理 (无法满足依赖)"
 
-#: pacaur:1661
+#: pacaur:1846
 msgid "${Qrequires[@]}: requires $@"
 msgstr "${Qrequires[@]}: 需要 $@"
 
-#: pacaur:1670
-msgid "$2 [Y/n] "
-msgstr "$2 [Y/n] "
-
-#: pacaur:1693
-msgid "$2 [y/N] "
-msgstr "$2 [y/N] "
-
-#: pacaur:1740
+#: pacaur:1922
 msgid " there is nothing to do"
 msgstr " 今日无事可做"
 
-#: pacaur:1760
+#: pacaur:1942
 msgid "usage:  pacaur <operation> [options] [target(s)] -- See also pacaur(8)"
 msgstr "用法: pacaur <操作> [选项] [目标] -- 参见 pacaur(8)"
 
-#: pacaur:1761
+#: pacaur:1943
 msgid "operations:"
 msgstr "操作:"
 
-#: pacaur:1762
+#: pacaur:1944
 msgid " pacman extension"
 msgstr " pacman 扩展"
 
-#: pacaur:1763
-msgid "   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
-msgstr "   -S, -Ss, -Si, -Sw, -Su, -Sc, -Qu"
+#: pacaur:1945
+msgid "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
+msgstr "   -S, -Ss, -Si, -Sw, -Su, -Qu, -Sc, -Scc"
 
-#: pacaur:1764
+#: pacaur:1946
 msgid "                    extend pacman operations to the AUR"
 msgstr "                    扩展 pacman 操作到 AUR"
 
-#: pacaur:1765
+#: pacaur:1947
 msgid " AUR specific"
 msgstr " AUR 特定"
 
-#: pacaur:1766
-msgid "   -s, --search     search AUR for matching strings"
-msgstr "   -s, --search     搜索 AUR 以匹配字符串"
+#: pacaur:1948
+msgid "   sync             clone, build and install target(s)"
+msgstr "   sync             下载、构建并安装目标"
 
-#: pacaur:1767
-msgid "   -i, --info       view package information"
-msgstr "   -i, --info       查看软件包的信息"
+#: pacaur:1949
+msgid "   search           search AUR for matching strings"
+msgstr "   search           搜索 AUR 以匹配字符串"
 
-#: pacaur:1768
-msgid "   -d, --download   download target(s) -- pass twice to download AUR dependencies"
-msgstr "   -d, --download   下载目标 -- 使用两次来下载 AUR 依赖"
+#: pacaur:1950
+msgid "   info             view package information"
+msgstr "   info             查看软件包的信息"
 
-#: pacaur:1769
-msgid "   -m, --makepkg    download and make target(s)"
-msgstr "   -m, --makepkg    下载并构建目标"
+#: pacaur:1951
+msgid "   buildonly        clone and build target(s)"
+msgstr "   buildonly        总是重新构建软件包"
 
-#: pacaur:1770
-msgid "   -y, --sync       download, make and install target(s)"
-msgstr "   -y, --sync       下载、构建并安装目标"
+#: pacaur:1952
+msgid "   upgrade          upgrade AUR package(s)"
+msgstr "   upgrade          升级 AUR 软件包"
 
-#: pacaur:1771
-msgid "   -u, --update     update AUR package(s)"
-msgstr "   -u, --update     升级 AUR 软件包"
+#: pacaur:1953
+msgid "   check            check for AUR upgrade(s)"
+msgstr "   check            检查 AUR 更新"
 
-#: pacaur:1772
-msgid "   -k, --check      check for AUR update(s)"
-msgstr "   -k, --check      检查 AUR 更新"
+#: pacaur:1954
+msgid "   clean            clean AUR package(s) and clone(s)"
+msgstr "   clean            清除 AUR 软件包和克隆"
 
-#: pacaur:1773 pacaur:1781
+#: pacaur:1955
+msgid "   cleanall         clean all AUR packages and clones"
+msgstr "   cleanall         清除所有 AUR 软件包和克隆"
+
+#: pacaur:1956 pacaur:1964
 msgid " general"
 msgstr " 一般"
 
-#: pacaur:1774
+#: pacaur:1957
 msgid "   -v, --version    display version information"
 msgstr "   -v, --version    显示版本信息"
 
-#: pacaur:1775
+#: pacaur:1958
 msgid "   -h, --help       display help information"
 msgstr "   -h, --help       显示帮助信息"
 
-#: pacaur:1777
+#: pacaur:1960
 msgid "options:"
 msgstr "选项:"
 
-#: pacaur:1778
-msgid " pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc operations"
-msgstr " pacman 扩展 - 可以和 -S, -Ss, -Si, -Sw, -Su, -Sc 操作一起使用"
+#: pacaur:1961
+msgid ""
+" pacman extension - can be used with the -S, -Ss, -Si, -Sw, -Su, -Sc, -Scc "
+"operations"
+msgstr " pacman 扩展 - 可以和 -S, -Ss, -Si, -Sw, -Su, -Sc, -Scc 操作一起使用"
 
-#: pacaur:1779
-msgid "   -a, --aur        only search, build or install target(s) from the AUR"
-msgstr "   -a, --aur        仅从 AUR 搜索、构建或安装目标"
+#: pacaur:1962
+msgid ""
+"   -a, --aur        only search, build, install or clean target(s) from the "
+"AUR"
+msgstr "   -a, --aur        仅从 AUR 搜索、构建、安装或清除目标"
 
-#: pacaur:1780
-msgid "   -r, --repo       only search, build or install target(s) from the repositories"
-msgstr "   -r, --repo       仅从软件库搜索、构建或安装目标"
+#: pacaur:1963
+msgid ""
+"   -r, --repo       only search, build, install or clean target(s) from the "
+"repositories"
+msgstr "   -r, --repo       仅从软件库搜索、构建、安装或清除目标"
 
-#: pacaur:1782
+#: pacaur:1965
 msgid "   -e, --edit       edit target(s) PKGBUILD and view install script"
 msgstr "   -e, --edit       编辑目标的 PKGBUILD 并查看安装脚本"
 
-#: pacaur:1783
+#: pacaur:1966
 msgid "   -q, --quiet      show less information for query and search"
 msgstr "   -q, --quiet      在查询和搜索时显示较少的信息"
 
-#: pacaur:1784
+#: pacaur:1967
 msgid "   --devel          consider AUR development packages upgrade"
 msgstr "   --devel          考虑升级 AUR 开发版本软件包"
 
-#: pacaur:1785
+#: pacaur:1968
 msgid "   --foreign        consider already installed foreign dependencies"
 msgstr "   --foreign        考虑已安装的外部依赖"
 
-#: pacaur:1786
-msgid "   --ignore         ignore a package upgrade (can be used more than once)"
+#: pacaur:1969
+msgid ""
+"   --ignore         ignore a package upgrade (can be used more than once)"
 msgstr "   --ignore         忽略软件包升级 (可多次使用)"
 
-#: pacaur:1787
+#: pacaur:1970
 msgid "   --needed         do not reinstall already up-to-date target(s)"
 msgstr "   --needed         不重新安装已是最新的目标"
 
-#: pacaur:1788
+#: pacaur:1971
 msgid "   --noconfirm      do not prompt for any confirmation"
 msgstr "   --noconfirm      不提示任何确认"
 
-#: pacaur:1789
+#: pacaur:1972
 msgid "   --noedit         do not prompt to edit files"
 msgstr "   --noedit         不提示编辑文件"
 
-#: pacaur:1790
+#: pacaur:1973
 msgid "   --rebuild        always rebuild package(s)"
 msgstr "   --rebuild        总是重新构建软件包"
 
-#: pacaur:1791
+#: pacaur:1974
 msgid "   --silent         silence output"
 msgstr "   --silent         静默输出"
 
-#: pacaur:1931
+#: pacaur:2130
 msgid "you cannot perform this operation as root"
 msgstr "你不能以 root 身份执行这个操作"
 
-#: pacaur:1935
-msgid "${colorW}editor${reset} variable unset"
-msgstr "未设置 ${colorW}editor${reset} 变量"
+#: pacaur:2134
+msgid ""
+"${colorW}\\$VISUAL${reset} and ${colorW}\\$EDITOR${reset} environment "
+"variables not set or defined ${colorW}editor${reset} not found"
+msgstr ""
+"环境变量 ${colorW}\\$VISUAL${reset} 和 ${colorW}\\$EDITOR${reset} 均未设置或"
+"定义 找不到 ${colorW}editor${reset}"
 
-#: pacaur:1936
-msgid "${colorW}$clonedir${reset} does not have write permission."
-msgstr "${colorW}$clonedir${reset} 没有写入权限."
+#: pacaur:2135
+msgid "you cannot use ${colorW}pacaur${reset} as PACMAN environment variable"
+msgstr "你不能用 ${colorW}pacaur${reset} 作为 PACMAN 环境变量"
 
-#: pacaur:1937 pacaur:1938
+#: pacaur:2136
+msgid "${colorW}$clonedir${reset} does not have write permission"
+msgstr "${colorW}$clonedir${reset} 没有写入权限"
+
+#: pacaur:2137 pacaur:2138
 msgid "no targets specified (use -h for help)"
 msgstr "没有指定目标 (使用 -h 获取帮助)"
 
-#: pacaur:1939
+#: pacaur:2139
 msgid "target not found"
 msgstr "未找到目标"
 
-#: pacaur:2003 pacaur:2026 pacaur:2044
-msgid "Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-msgstr "未在软件库中找到软件包 ${colorW}${aurpkgs[*]}${reset}, 正在尝试 ${colorM}AUR${reset}..."
+#: pacaur:2206 pacaur:2229 pacaur:2247
+msgid ""
+"Packages ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"未在软件库中找到软件包 ${colorW}${aurpkgs[*]}${reset}, 正在尝试 ${colorM}AUR"
+"${reset}..."
 
-#: pacaur:2005 pacaur:2028 pacaur:2046
-msgid "Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying ${colorM}AUR${reset}..."
-msgstr "未在软件库中找到软件包 ${colorW}${aurpkgs[*]}${reset}, 正在尝试 ${colorM}AUR${reset}..."
+#: pacaur:2208 pacaur:2231 pacaur:2249
+msgid ""
+"Package ${colorW}${aurpkgs[*]}${reset} not found in repositories, trying "
+"${colorM}AUR${reset}..."
+msgstr ""
+"未在软件库中找到软件包 ${colorW}${aurpkgs[*]}${reset}, 正在尝试 ${colorM}AUR"
+"${reset}..."
+
+#~ msgid "failed to verify ${colorW}$i${reset} integrity"
+#~ msgstr "未能验证 ${colorW}$i${reset} 的完整性"
+
+#~ msgid ""
+#~ "${colorW}${pkgsdeps[$i]}${reset} package(s) failed to install. Check ."
+#~ "SRCINFO for mismatching data with PKGBUILD."
+#~ msgstr ""
+#~ "${colorW}${pkgsdeps[$i]}${reset} 软件包未能安装. 检查 .SRCINFO 中与 "
+#~ "PKGBUILD 不匹配的数据."
+
+#~ msgid "$(date -d \"@${info[18]}\" \"+%c\")"
+#~ msgstr "$(date -d \"@${info[18]}\" \"+%c\")"
+
+#~ msgid "All packages clones"
+#~ msgstr "所有软件包的克隆"
+
+#~ msgid "$2 [Y/n] "
+#~ msgstr "$2 [Y/n] "
+
+#~ msgid "$2 [y/N] "
+#~ msgstr "$2 [y/N] "
+
+#~ msgid ""
+#~ "   -d, --download   download target(s) -- pass twice to download AUR "
+#~ "dependencies"
+#~ msgstr "   -d, --download   下载目标 -- 使用两次来下载 AUR 依赖"
+
+#~ msgid "   -m, --makepkg    download and make target(s)"
+#~ msgstr "   -m, --makepkg    下载并构建目标"
+
+#~ msgid "${colorW}editor${reset} variable unset"
+#~ msgstr "未设置 ${colorW}editor${reset} 变量"
